@@ -1,24 +1,20 @@
 
 
-## Plan: Admin-Rolle für UserKI-Eins@outlook.de zuweisen
+## Plan: OTP-Eingabe auf der Profilseite fuer Gast-Upgrade
 
-### Problem
-Der User hat keine Admin-Rolle in der `user_roles`-Tabelle. Dadurch wird `profile.is_admin` als `false` geladen und der "Teilnehmer"-Menüeintrag im Dropdown nicht angezeigt.
+Der OTP-Code ist 8-stellig (wie auf der Login-Seite). Nach Klick auf "Verknuepfen" fehlt ein Eingabefeld fuer den Code.
 
-### Loesung
-Eine Datenbank-Migration ausfuehren, die einen Eintrag in `user_roles` fuer die bekannte User-ID einfuegt:
+### Aenderungen in `src/pages/Profile.tsx`
 
-```sql
-INSERT INTO user_roles (user_id, role)
-VALUES ('27b38beb-b70c-42e8-af41-ac1557d3587d', 'admin')
-ON CONFLICT (user_id, role) DO NOTHING;
-```
+1. **Neuen State** `upgradeStep`: `"email"` oder `"otp"` (default: `"email"`)
+2. **Nach erfolgreichem E-Mail-Versand**: `upgradeStep` auf `"otp"` setzen
+3. **OTP-Schritt rendern** (wenn `upgradeStep === "otp"`):
+   - Hinweistext: "Code wurde an {email} gesendet"
+   - `InputOTP` mit `maxLength={8}` und 8 Slots (gleiche Komponente wie Login-Seite)
+   - "Bestaetigen"-Button → ruft `verifyOTP(upgradeEmail, code)` auf
+   - Bei Erfolg: Toast, `refreshProfile()`, Banner verschwindet automatisch
+   - "Neuen Code senden"-Link + "Andere E-Mail"-Link zum Zuruecksetzen
+4. **Import** `InputOTP, InputOTPGroup, InputOTPSlot` aus `@/components/ui/input-otp` und `verifyOTP` aus AuthContext
 
-### Ergebnis
-Nach der Migration und einem erneuten Login (oder Seiten-Refresh) wird:
-- `profile.is_admin = true` geladen
-- Der "Teilnehmer"-Link im User-Dropdown sichtbar
-- Zugriff auf `/admin/teilnehmer` moeglich
-
-Keine Code-Aenderungen noetig -- nur die Datenbank-Migration.
+Keine Datenbank-Aenderungen noetig.
 
