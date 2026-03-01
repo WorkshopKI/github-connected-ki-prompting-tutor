@@ -23,13 +23,14 @@ export const Navigation = () => {
   };
 
   const navItems = [
-    { label: "Home", id: "hero" },
-    { label: "Stufen", id: "stufen" },
-    { label: "ACTA", id: "acta" },
-    { label: "Bibliothek", id: "bibliothek" },
-    { label: "Übungen", id: "uebungen" },
-    { label: "Ressourcen", id: "ressourcen" },
-    { label: "Advanced", id: "advanced" }
+    { label: "Home", id: "hero", type: "scroll" as const },
+    { label: "Stufen", id: "stufen", type: "scroll" as const },
+    { label: "ACTA", id: "acta", type: "scroll" as const },
+    { label: "Bibliothek", id: "bibliothek", type: "scroll" as const },
+    { label: "Playground", id: "/playground", type: "route" as const },
+    { label: "Übungen", id: "uebungen", type: "scroll" as const },
+    { label: "Ressourcen", id: "ressourcen", type: "scroll" as const },
+    { label: "Advanced", id: "advanced", type: "scroll" as const },
   ];
 
   return (
@@ -44,12 +45,20 @@ export const Navigation = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 md:gap-2">
+            <div className="flex items-center gap-1 md:gap-2 overflow-x-auto flex-nowrap">
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className="px-2 md:px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                  onClick={() =>
+                    item.type === "route"
+                      ? navigate(item.id)
+                      : scrollToSection(item.id)
+                  }
+                  className={`px-2 md:px-4 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors ${
+                    item.type === "route" && location.pathname === item.id
+                      ? "text-foreground bg-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
                 >
                   {item.label}
                 </button>

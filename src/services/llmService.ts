@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type Msg = { role: "user" | "assistant" | "system"; content: string };
+export type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 const PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/llm-proxy`;
 
