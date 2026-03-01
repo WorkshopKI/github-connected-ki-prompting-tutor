@@ -40,7 +40,7 @@ export const Navigation = () => {
             <div className="bg-gradient-primary p-2 rounded-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-xl hidden sm:inline">KI Prompting Kurs</span>
+            <span className="font-bold text-xl hidden sm:inline">KI Prompting Tutor</span>
           </div>
           
           <div className="flex items-center gap-2">
