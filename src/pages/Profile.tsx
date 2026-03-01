@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
@@ -8,9 +8,13 @@ import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { ArrowLeft, User, BookOpen, Trophy, Mail, Save } from "lucide-react";
+import { ArrowLeft, User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
+import { saveUserKey } from "@/services/llmService";
 
 const Profile = () => {
   const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile } = useAuthContext();
@@ -23,6 +27,54 @@ const Profile = () => {
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeStep, setUpgradeStep] = useState<"email" | "otp">("email");
   const [otpCode, setOtpCode] = useState("");
+  const [selectedModel, setSelectedModel] = useState(profile?.preferred_model ?? "google/gemini-3-flash-preview");
+  const [savingModel, setSavingModel] = useState(false);
+  const [budget, setBudget] = useState<{ provisioned_key_budget: number; custom_key_active: boolean; active_key_source: string } | null>(null);
+  const [customApiKey, setCustomApiKey] = useState("");
+  const [savingKey, setSavingKey] = useState(false);
+
+  const MODEL_OPTIONS = [
+    { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
+    { value: "openai/gpt-5.2", label: "GPT-5.2" },
+    { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (Standard)" },
+    { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6" },
+    { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
+  ];
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+      if (data) setBudget(data);
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (profile?.preferred_model) setSelectedModel(profile.preferred_model);
+  }, [profile?.preferred_model]);
+
+  const handleSaveModel = async () => {
+    if (!user) return;
+    setSavingModel(true);
+    const { error } = await supabase.from("user_profiles").update({ preferred_model: selectedModel, updated_at: new Date().toISOString() }).eq("id", user.id);
+    setSavingModel(false);
+    if (error) { toast.error("Fehler beim Speichern"); } else { toast.success("Modell gespeichert!"); await refreshProfile(); }
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!customApiKey.trim()) return;
+    setSavingKey(true);
+    const result = await saveUserKey(customApiKey.trim());
+    setSavingKey(false);
+    if (result.error) { toast.error(result.error); } else {
+      toast.success("API-Key gespeichert!");
+      setCustomApiKey("");
+      // reload budget
+      if (user) {
+        const { data } = await supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle();
+        if (data) setBudget(data);
+      }
+    }
+  };
 
   if (isLoading) return null;
   if (!isLoggedIn) {
@@ -206,6 +258,90 @@ const Profile = () => {
                 <div className="mt-1 capitalize">{syncStatus}</div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* KI-Einstellungen */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5" /> KI-Einstellungen
+            </CardTitle>
+            <CardDescription>Wähle das Modell für die Prompt-Bewertung.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground mb-1 block">Bevorzugtes Modell</label>
+              <div className="flex gap-2">
+                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MODEL_OPTIONS.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" onClick={handleSaveModel} disabled={savingModel || selectedModel === profile?.preferred_model}>
+                  <Save className="h-4 w-4 mr-1" /> {savingModel ? "…" : "Speichern"}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* KI-Budget */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5" /> KI-Budget
+            </CardTitle>
+            <CardDescription>Dein verbleibendes Kontingent für KI-Bewertungen.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {budget ? (
+              <>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Verbleibend</span>
+                  <span className="font-semibold">${budget.provisioned_key_budget.toFixed(2)} / $5.00</span>
+                </div>
+                <Progress value={(budget.provisioned_key_budget / 5) * 100} className="h-2" />
+                <div className="flex items-center gap-2">
+                  {budget.custom_key_active && (
+                    <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> Eigener Key aktiv</Badge>
+                  )}
+                  <Badge variant="secondary">{budget.active_key_source === "custom" ? "Custom" : "Standard"}</Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">Budget-Daten werden geladen…</p>
+            )}
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="apikey">
+                <AccordionTrigger className="text-sm">
+                  <span className="flex items-center gap-2"><Key className="h-4 w-4" /> Eigenen API-Key hinterlegen</span>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                    <li>Erstelle ein Konto bei{" "}
+                      <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">OpenRouter <ExternalLink className="h-3 w-3" /></a>
+                    </li>
+                    <li>Lade Guthaben auf (ab $5)</li>
+                    <li>Erstelle einen API-Key unter „Keys"</li>
+                    <li>Füge den Key hier ein:</li>
+                  </ol>
+                  <div className="flex gap-2">
+                    <Input type="password" placeholder="sk-or-..." value={customApiKey} onChange={(e) => setCustomApiKey(e.target.value)} className="flex-1" />
+                    <Button onClick={handleSaveApiKey} disabled={savingKey || !customApiKey.trim()}>
+                      {savingKey ? "Speichern…" : "Speichern"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Dein Key wird verschlüsselt gespeichert und nur serverseitig für KI-Anfragen verwendet.</p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 

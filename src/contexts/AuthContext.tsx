@@ -8,6 +8,7 @@ interface UserProfile {
   auth_method: "email_otp" | "guest";
   course_id: string | null;
   is_admin: boolean;
+  preferred_model: string;
 }
 
 interface AuthState {
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loadProfile = useCallback(async (userId: string) => {
     const { data } = await supabase
       .from("user_profiles")
-      .select("id, display_name, auth_method, course_id")
+      .select("id, display_name, auth_method, course_id, preferred_model")
       .eq("id", userId)
       .single();
 
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...data,
         auth_method: data.auth_method as "email_otp" | "guest",
         is_admin: !!roleData,
+        preferred_model: (data as any).preferred_model ?? "google/gemini-3-flash-preview",
       });
     }
   }, []);

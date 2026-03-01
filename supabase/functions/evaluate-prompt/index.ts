@@ -15,7 +15,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const { userPrompt, badPrompt, context, goodExample, improvementHints } = await req.json();
+    const { userPrompt, badPrompt, context, goodExample, improvementHints, model } = await req.json();
+    const selectedModel = model || "google/gemini-3-flash-preview";
 
     if (!userPrompt || !badPrompt) {
       return new Response(
@@ -45,7 +46,7 @@ Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: selectedModel,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Bewerte diesen verbesserten Prompt:\n\n"${userPrompt}"` },
