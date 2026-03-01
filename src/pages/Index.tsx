@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { BookOpen, Sparkles, Brain, Search } from "lucide-react";
 import { Hero } from "@/components/Hero";
 import { LevelCard } from "@/components/LevelCard";
@@ -12,6 +13,22 @@ import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection"
 
 const Index = () => {
   const [activeLevel, setActiveLevel] = useState<number>(1);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          const offset = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+          window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location.hash]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
