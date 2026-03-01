@@ -376,6 +376,97 @@ const promptLibrary: PromptItem[] = [
     prompt: "Entwirf ein Smart City Konzept für eine deutsche Mittelstadt (50.000 Einwohner) mit Fokus auf: Mobilität, Energie, Bürgerbeteiligung. Recherchiere Best Practices aus Europa, erstelle Phasenplan (5 Jahre) und Kostenübersicht.",
     needsWeb: true,
     level: "research"
+  },
+
+  // Deep Research - Wissenschaftliche Recherche
+  {
+    category: "Wissenschaftliche Recherche",
+    title: "Forschungsstand KI in Bildung",
+    prompt: "Recherchiere den aktuellen Forschungsstand zum Einsatz von KI in der schulischen Bildung. Berücksichtige Studien ab 2022, differenziere nach Primar- und Sekundarstufe, und erstelle eine Synopse mit Chancen, Risiken und Forschungslücken. Zitiere mindestens 5 Quellen.",
+    needsWeb: true,
+    level: "research"
+  },
+  {
+    category: "Wissenschaftliche Recherche",
+    title: "Metaanalyse Homeoffice",
+    prompt: "Führe eine strukturierte Literaturrecherche zum Thema 'Produktivität im Homeoffice vs. Büro' durch. Fasse die Ergebnisse von mindestens 6 Studien (≥2021) zusammen, identifiziere Widersprüche zwischen den Studien und leite daraus eine differenzierte Handlungsempfehlung für HR-Abteilungen ab.",
+    needsWeb: true,
+    level: "research"
+  },
+
+  // Deep Research - Zukunftsszenarien
+  {
+    category: "Zukunftsszenarien",
+    title: "Zukunft der Arbeit 2035",
+    prompt: "Entwickle drei unterschiedliche Zukunftsszenarien für den deutschen Arbeitsmarkt im Jahr 2035. Berücksichtige KI-Automatisierung, demografischen Wandel und Fachkräftemangel. Jedes Szenario soll enthalten: Annahmen, Auswirkungen auf 5 Branchen, Gewinner/Verlierer, politische Handlungsempfehlungen.",
+    level: "research"
+  },
+  {
+    category: "Zukunftsszenarien",
+    title: "Wasserstoff-Wirtschaft",
+    prompt: "Analysiere die Perspektiven einer Wasserstoff-basierten Wirtschaft in Deutschland bis 2040. Untersuche: Produktionskapazitäten (grün vs. blau vs. grau), Infrastrukturbedarf, Kosten pro kg über die Zeit, internationale Wettbewerbsposition. Erstelle eine SWOT-Analyse und vergleiche mit der Strategie von Japan und Südkorea.",
+    needsWeb: true,
+    level: "research"
+  },
+
+  // Deep Research - Rechtliche Analysen
+  {
+    category: "Rechtliche Analysen",
+    title: "DSGVO vs. AI Act",
+    prompt: "Erstelle eine juristische Vergleichsanalyse zwischen DSGVO und EU AI Act hinsichtlich: Schutzzweck, Risikoklassifizierung, Sanktionsmechanismen, Auswirkungen auf KMUs. Strukturiere als Vergleichstabelle + erläuternden Fließtext (800 Wörter). Benenne drei potenzielle Konflikte zwischen beiden Regelwerken.",
+    level: "research"
+  },
+  {
+    category: "Rechtliche Analysen",
+    title: "Urheberrecht KI-Inhalte",
+    prompt: "Recherchiere die aktuelle Rechtslage zu urheberrechtlich geschützten Inhalten, die von KI generiert wurden – in Deutschland, der EU und den USA. Vergleiche aktuelle Gerichtsurteile, identifiziere offene Rechtsfragen und erstelle eine Risikoeinschätzung für Unternehmen, die KI-generierte Inhalte kommerziell nutzen.",
+    needsWeb: true,
+    level: "research"
+  },
+
+  // Deep Research - Ethische Analysen
+  {
+    category: "Ethische Analysen",
+    title: "Ethik autonomer Fahrzeuge",
+    prompt: "Führe eine umfassende ethische Analyse zum Einsatz autonomer Fahrzeuge durch. Berücksichtige: Trolley-Problem-Varianten, Haftungsfragen, algorithmische Bias-Risiken, gesellschaftliche Akzeptanz. Strukturiere nach den ethischen Frameworks: Utilitarismus, Deontologie, Tugendethik. Formuliere ein abschließendes ethisches Leitlinienpapier (800 Wörter).",
+    level: "research"
+  },
+  {
+    category: "Ethische Analysen",
+    title: "KI in der Medizin",
+    prompt: "Analysiere die ethischen Implikationen von KI-gestützter Diagnostik in der Medizin. Untersuche: Genauigkeit vs. Erklärbarkeit, Arzt-Patient-Beziehung, Datenschutz, Zugang und Gerechtigkeit (Global North vs. South). Erstelle ein Ethik-Framework mit 10 Leitprinzipien und konkreten Anwendungsbeispielen.",
+    level: "research"
+  },
+
+  // Deep Research - Gesellschaftliche Analysen
+  {
+    category: "Gesellschaftliche Analysen",
+    title: "Social Media & Demokratie",
+    prompt: "Untersuche den Einfluss von Social-Media-Algorithmen auf demokratische Meinungsbildung. Analysiere: Filterblasen, Desinformation, Polarisierung, Einfluss auf Wahlen. Berücksichtige Fallstudien aus mindestens 3 Ländern (2020–2024) und entwickle einen Policy-Vorschlag für die EU-Ebene.",
+    needsWeb: true,
+    level: "research"
+  },
+  {
+    category: "Gesellschaftliche Analysen",
+    title: "Vier-Tage-Woche",
+    prompt: "Erstelle eine evidenzbasierte Analyse zur Einführung der 4-Tage-Woche in Deutschland. Berücksichtige: Pilotprojekte aus UK, Island und Belgien, Auswirkungen auf Produktivität, Mitarbeiterzufriedenheit, Branchenunterschiede, volkswirtschaftliche Effekte. Erstelle ein Pro/Contra-Papier mit finaler Empfehlung.",
+    needsWeb: true,
+    level: "research"
+  },
+
+  // Deep Research - Technische Analysen
+  {
+    category: "Technische Analysen",
+    title: "Cloud-Migration",
+    prompt: "Erstelle einen detaillierten Migrationsleitfaden für die Verlagerung einer On-Premise-IT-Infrastruktur in die Cloud (AWS vs. Azure vs. GCP) für ein mittelständisches Unternehmen (200 MA). Berücksichtige: Kostenvergleich (TCO 5 Jahre), Sicherheitsaspekte, Compliance (DSGVO), Migrationsphasen, Risiken. Output: Executive Summary + detaillierte Entscheidungsmatrix.",
+    level: "research"
+  },
+  {
+    category: "Technische Analysen",
+    title: "Programmiersprachen 2025",
+    prompt: "Vergleiche die Programmiersprachen Python, Rust und Go hinsichtlich: Performance-Benchmarks, Ökosystem, Lernkurve, Einsatzgebiete, Arbeitsmarkt-Nachfrage 2024/25. Nutze aktuelle Quellen (Stack Overflow Survey, TIOBE Index, GitHub Octoverse). Erstelle eine gewichtete Bewertungsmatrix und sprich eine differenzierte Empfehlung nach Use Case aus.",
+    needsWeb: true,
+    level: "research"
   }
 ];
 
@@ -416,7 +507,7 @@ export const PromptLibrary = () => {
           Prompt-Bibliothek
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Über 50 kategorisierte Beispiel-Prompts für jeden Anwendungsfall – 
+          Über 70 kategorisierte Beispiel-Prompts für jeden Anwendungsfall –
           von Alltag bis Deep Research
         </p>
       </div>
