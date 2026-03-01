@@ -1,5 +1,6 @@
 import { BookOpen } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthDialog } from "@/components/AuthDialog";
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
@@ -49,6 +50,7 @@ export const Navigation = () => {
                 </button>
               ))}
             </div>
+            <AuthDialog />
             <ThemeToggle />
           </div>
         </div>

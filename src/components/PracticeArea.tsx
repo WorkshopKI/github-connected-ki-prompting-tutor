@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ExerciseCard } from "./ExerciseCard";
 import { Lightbulb } from "lucide-react";
+import { useExerciseProgress } from "@/hooks/useExerciseProgress";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Exercise {
   id: number;
@@ -29,11 +31,7 @@ const exercises: Exercise[] = [
       "Definiere die Art der Mahlzeit (Frühstück, Mittag, Abend)"
     ],
     goodExample: "Suche ein vegetarisches Abendessen-Rezept für 4 Personen mit Tomaten, Pasta und Zwiebeln, die ich zu Hause habe. Keine Milchprodukte.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   },
   {
     id: 2,
@@ -47,11 +45,7 @@ const exercises: Exercise[] = [
       "Füge Reisegruppe hinzu (allein, Familie, Paar)"
     ],
     goodExample: "Empfehle ein Urlaubsziel in Europa für 7 Tage im September mit Budget von 1500€ für zwei Erwachsene. Wir mögen Kultur, gutes Essen und warmes Wetter.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   },
   {
     id: 3,
@@ -65,11 +59,7 @@ const exercises: Exercise[] = [
       "Füge wichtige Details oder Kontext hinzu"
     ],
     goodExample: "Schreibe eine professionelle E-Mail an einen Kunden, der vor 2 Wochen eine Bestellung aufgegeben hat. Informiere ihn über eine leichte Verzögerung (3 Tage) und biete 10% Rabatt auf die nächste Bestellung als Entschuldigung an. Ton: höflich und kundenorientiert.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   },
   {
     id: 4,
@@ -83,11 +73,7 @@ const exercises: Exercise[] = [
       "Füge verfügbare Daten oder Quellen hinzu"
     ],
     goodExample: "Erstelle einen 2-seitigen Quartalsreport über Social-Media-Performance für das Management. Fokus: Engagement-Rate, Follower-Wachstum und Top-3-Beiträge. Nutze die Daten aus dem angehängten Analytics-Export. Stil: prägnant mit Bullet Points.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   },
   {
     id: 5,
@@ -101,11 +87,7 @@ const exercises: Exercise[] = [
       "Erwähne wichtige Rahmenbedingungen"
     ],
     goodExample: "Vergleiche CRM-Systeme Salesforce und HubSpot für ein B2B-SaaS-Startup mit 25 Mitarbeitern. Kriterien: Kosten (Budget 500€/Monat), Benutzerfreundlichkeit, Integration mit bestehenden Tools (Slack, Google Workspace), Skalierbarkeit. Erstelle eine Entscheidungsmatrix.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   },
   {
     id: 6,
@@ -119,18 +101,22 @@ const exercises: Exercise[] = [
       "Definiere gewünschtes Output-Format"
     ],
     goodExample: "Recherchiere den Einfluss von KI-Chatbots auf Kundenzufriedenheit im E-Commerce. Fokus: aktuelle Studien (2023-2024), Conversion-Rate-Auswirkungen, ROI-Beispiele von mindestens 5 Unternehmen. Format: Executive Summary mit Quellenangaben und Key Findings in Tabellenform.",
-    evaluationCriteria: {
-      hasContext: true,
-      isSpecific: true,
-      hasConstraints: true
-    }
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   }
 ];
 
 export const PracticeArea = () => {
   const [selectedLevel, setSelectedLevel] = useState<number>(1);
+  const { user } = useAuth();
+  const { saveProgress, getBestScore } = useExerciseProgress();
 
   const filteredExercises = exercises.filter(ex => ex.level === selectedLevel);
+
+  const handleEvaluated = async (exerciseId: number, prompt: string, score: number, feedback: string) => {
+    if (user) {
+      await saveProgress(exerciseId, prompt, score, feedback);
+    }
+  };
 
   return (
     <section className="mb-16">
@@ -144,46 +130,38 @@ export const PracticeArea = () => {
           </h2>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-          Verbessere schlechte Prompts und erhalte direktes Feedback mit Verbesserungsvorschlägen
+          Verbessere schlechte Prompts und erhalte KI-gestütztes Feedback mit Verbesserungsvorschlägen
         </p>
         
         <div className="flex justify-center gap-3 flex-wrap">
-          <button
-            onClick={() => setSelectedLevel(1)}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              selectedLevel === 1
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
-          >
-            Level 1: Alltagshelfer
-          </button>
-          <button
-            onClick={() => setSelectedLevel(2)}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              selectedLevel === 2
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
-          >
-            Level 2: Juniorassistent
-          </button>
-          <button
-            onClick={() => setSelectedLevel(3)}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              selectedLevel === 3
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-            }`}
-          >
-            Level 3: Forschungsassistent
-          </button>
+          {[
+            { level: 1, label: "Level 1: Alltagshelfer" },
+            { level: 2, label: "Level 2: Juniorassistent" },
+            { level: 3, label: "Level 3: Forschungsassistent" },
+          ].map(({ level, label }) => (
+            <button
+              key={level}
+              onClick={() => setSelectedLevel(level)}
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                selectedLevel === level
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="space-y-6">
         {filteredExercises.map((exercise) => (
-          <ExerciseCard key={exercise.id} exercise={exercise} />
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            bestScore={user ? getBestScore(exercise.id) : undefined}
+            onEvaluated={handleEvaluated}
+          />
         ))}
       </div>
     </section>
