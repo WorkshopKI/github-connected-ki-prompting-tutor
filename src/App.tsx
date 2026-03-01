@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import AdminParticipants from "./pages/AdminParticipants";
+import Playground from "./pages/Playground";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/profil" element={<Profile />} />
               <Route path="/admin/teilnehmer" element={<AdminParticipants />} />
+              <Route path="/playground" element={<Playground />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

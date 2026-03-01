@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Check, Globe, Search } from "lucide-react";
+import { Copy, Check, Globe, Search, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface PromptItem {
@@ -473,6 +474,7 @@ const promptLibrary: PromptItem[] = [
 const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research"];
 
 export const PromptLibrary = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Alltag");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -571,18 +573,30 @@ export const PromptLibrary = () => {
                 </p>
               </div>
               
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 h-8 w-8"
-                onClick={() => copyToClipboard(prompt.prompt, index)}
-              >
-                {copiedIndex === index ? (
-                  <Check className="w-4 h-4 text-primary" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
-              </Button>
+              <div className="flex flex-col gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => copyToClipboard(prompt.prompt, index)}
+                  title="Prompt kopieren"
+                >
+                  {copiedIndex === index ? (
+                    <Check className="w-4 h-4 text-primary" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`)}
+                  title="Im Playground öffnen"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </Card>
         ))}
