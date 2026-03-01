@@ -1,0 +1,58 @@
+import { BookOpen } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    const offset = 80;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - offset;
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  }
+};
+
+export const Navigation = () => {
+  const navItems = [
+    { label: "Home", id: "hero" },
+    { label: "Stufen", id: "stufen" },
+    { label: "ACTA", id: "acta" },
+    { label: "Bibliothek", id: "bibliothek" },
+    { label: "Übungen", id: "uebungen" },
+    { label: "Ressourcen", id: "ressourcen" },
+    { label: "Advanced", id: "advanced" }
+  ];
+
+  return (
+    <nav className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-2">
+            <div className="bg-gradient-primary p-2 rounded-lg">
+              <BookOpen className="h-6 w-6 text-white" />
+            </div>
+            <span className="font-bold text-xl hidden sm:inline">KI Prompting Kurs</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className="px-2 md:px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <ThemeToggle />
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};

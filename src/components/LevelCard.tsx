@@ -1,0 +1,68 @@
+import { LucideIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+interface LevelCardProps {
+  level: number;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  examples: string[];
+  isActive: boolean;
+  onClick: () => void;
+}
+
+export const LevelCard = ({
+  level,
+  icon: Icon,
+  title,
+  description,
+  examples,
+  isActive,
+  onClick,
+}: LevelCardProps) => {
+  return (
+    <Card
+      className={cn(
+        "p-6 cursor-pointer transition-all hover:shadow-lg",
+        isActive
+          ? "border-primary shadow-glow bg-gradient-card"
+          : "hover:border-primary/50"
+      )}
+      onClick={onClick}
+    >
+      <div className="flex items-start gap-4 mb-4">
+        <div className={cn(
+          "p-3 rounded-xl transition-all",
+          isActive ? "bg-primary text-white" : "bg-primary/10 text-primary"
+        )}>
+          <Icon className="w-6 h-6" />
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-semibold text-muted-foreground mb-1">
+            Stufe {level}
+          </div>
+          <h3 className="text-xl font-bold mb-2">{title}</h3>
+        </div>
+      </div>
+      
+      <p className="text-muted-foreground mb-4">{description}</p>
+      
+      <div className="flex flex-wrap gap-2">
+        {examples.map((example, idx) => (
+          <span
+            key={idx}
+            className={cn(
+              "text-xs px-3 py-1 rounded-full transition-all",
+              isActive
+                ? "bg-primary/20 text-primary"
+                : "bg-muted text-muted-foreground"
+            )}
+          >
+            {example}
+          </span>
+        ))}
+      </div>
+    </Card>
+  );
+};
