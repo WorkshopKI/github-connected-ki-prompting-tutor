@@ -1,27 +1,24 @@
 
 
-## Plan: User-Dropdown-Menü in der Navigation
+## Plan: Admin-Rolle für UserKI-Eins@outlook.de zuweisen
 
-Die aktuelle `UserMenu`-Komponente zeigt E-Mail und Abmelden-Link inline an. Stattdessen wird ein Dropdown-Menü unter dem User-Icon erstellt.
+### Problem
+Der User hat keine Admin-Rolle in der `user_roles`-Tabelle. Dadurch wird `profile.is_admin` als `false` geladen und der "Teilnehmer"-Menüeintrag im Dropdown nicht angezeigt.
 
-### Änderungen
+### Loesung
+Eine Datenbank-Migration ausfuehren, die einen Eintrag in `user_roles` fuer die bekannte User-ID einfuegt:
 
-**`src/components/UserMenu.tsx`** — Komplett umbauen:
-- Radix `DropdownMenu` verwenden (bereits als `src/components/ui/dropdown-menu.tsx` vorhanden)
-- Trigger: User-Icon (Avatar-Kreis mit Initialen oder generisches User-Icon)
-- Menü-Inhalt:
-  - Header: E-Mail / Gastname + Kurs-ID
-  - Separator
-  - Platzhalter für "Credits" (OpenRouter-Budget, vorerst als deaktivierter Eintrag mit Coins-Icon)
-  - "E-Mail hinterlegen" (nur für Gäste)
-  - "Teilnehmer" (nur für Admins)
-  - Separator
-  - "Abmelden"
-- Nicht-eingeloggt: weiterhin "Anmelden →" Button
+```sql
+INSERT INTO user_roles (user_id, role)
+VALUES ('27b38beb-b70c-42e8-af41-ac1557d3587d', 'admin')
+ON CONFLICT (user_id, role) DO NOTHING;
+```
 
-### Technische Details
+### Ergebnis
+Nach der Migration und einem erneuten Login (oder Seiten-Refresh) wird:
+- `profile.is_admin = true` geladen
+- Der "Teilnehmer"-Link im User-Dropdown sichtbar
+- Zugriff auf `/admin/teilnehmer` moeglich
 
-- Import `DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel` aus `@/components/ui/dropdown-menu`
-- Trigger-Button: runder Avatar-Style-Button mit `User`-Icon, passend zum bestehenden Design (orange primary)
-- Keine weiteren Dateien betroffen — Navigation.tsx bleibt unverändert
+Keine Code-Aenderungen noetig -- nur die Datenbank-Migration.
 
