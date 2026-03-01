@@ -151,12 +151,12 @@ const Login = () => {
               ) : (
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Wir haben einen 6-stelligen Code an <span className="font-medium text-foreground">{email}</span> gesendet. Prüfe auch deinen Spam-Ordner.
+                    Wir haben einen 8-stelligen Code an <span className="font-medium text-foreground">{email}</span> gesendet. Prüfe auch deinen Spam-Ordner.
                   </p>
                   <div className="flex justify-center">
-                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                    <InputOTP maxLength={8} value={otp} onChange={setOtp}>
                       <InputOTPGroup>
-                        {[0, 1, 2, 3, 4, 5].map(i => (
+                        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
                           <InputOTPSlot key={i} index={i} />
                         ))}
                       </InputOTPGroup>
@@ -165,7 +165,7 @@ const Login = () => {
                   {emailError && <p className="text-sm text-destructive">{emailError}</p>}
                   <button
                     onClick={handleVerifyOTP}
-                    disabled={emailLoading || otp.length < 6}
+                    disabled={emailLoading || otp.length < 8}
                     className="w-full px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {emailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
