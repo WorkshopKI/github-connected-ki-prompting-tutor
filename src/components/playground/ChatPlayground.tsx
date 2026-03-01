@@ -1,7 +1,6 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Copy } from "lucide-react";
+import { Trash2, Copy, Download } from "lucide-react";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
@@ -16,6 +15,7 @@ export interface ChatPlaygroundProps {
   systemPrompt: string;
   onSystemPromptChange: (value: string) => void;
   onClearChat: () => void;
+  onStop: () => void;
   initialPrompt?: string;
 }
 
@@ -27,6 +27,7 @@ export const ChatPlayground = ({
   systemPrompt,
   onSystemPromptChange,
   onClearChat,
+  onStop,
   initialPrompt,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -53,6 +54,35 @@ export const ChatPlayground = ({
     }
   };
 
+  const exportAsMarkdown = () => {
+    if (messages.length === 0) return;
+    const lines: string[] = [
+      "# Playground-Gespräch",
+      "",
+      `*Exportiert am ${new Date().toLocaleDateString("de-DE")}*`,
+      "",
+    ];
+    if (systemPrompt.trim()) {
+      lines.push("## System-Prompt", "", `> ${systemPrompt}`, "");
+    }
+    lines.push("---", "");
+    for (const msg of messages) {
+      if (msg.role === "user") {
+        lines.push("### Du", "", msg.content, "");
+      } else if (msg.role === "assistant") {
+        lines.push("### KI", "", msg.content, "");
+      }
+    }
+    const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `playground-${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Gespräch exportiert!");
+  };
+
   const hasMessages = messages.length > 0 || isStreaming;
   const hasAssistantMessage = messages.some((m) => m.role === "assistant");
 
@@ -67,6 +97,16 @@ export const ChatPlayground = ({
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
         <span className="text-sm font-medium text-muted-foreground">Chat</span>
         <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={exportAsMarkdown}
+            disabled={!hasMessages}
+            className="text-xs"
+          >
+            <Download className="w-3 h-3 mr-1" />
+            Export
+          </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -119,6 +159,8 @@ export const ChatPlayground = ({
         <ChatInput
           onSend={onSendMessage}
           disabled={isStreaming}
+          isStreaming={isStreaming}
+          onStop={onStop}
           initialValue={initialPrompt}
         />
       </div>

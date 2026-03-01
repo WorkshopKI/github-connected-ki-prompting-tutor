@@ -6,10 +6,12 @@ import { Send, Square } from "lucide-react";
 export interface ChatInputProps {
   onSend: (message: string) => void;
   disabled: boolean;
+  isStreaming?: boolean;
+  onStop?: () => void;
   initialValue?: string;
 }
 
-export const ChatInput = ({ onSend, disabled, initialValue }: ChatInputProps) => {
+export const ChatInput = ({ onSend, disabled, isStreaming, onStop, initialValue }: ChatInputProps) => {
   const [input, setInput] = useState(initialValue ?? "");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const initialConsumed = useRef(false);
@@ -51,18 +53,26 @@ export const ChatInput = ({ onSend, disabled, initialValue }: ChatInputProps) =>
         rows={1}
         disabled={disabled}
       />
-      <Button
-        onClick={handleSend}
-        disabled={disabled || !input.trim()}
-        size="icon"
-        className="shrink-0 h-11 w-11"
-      >
-        {disabled ? (
+      {isStreaming ? (
+        <Button
+          onClick={onStop}
+          variant="destructive"
+          size="icon"
+          className="shrink-0 h-11 w-11"
+          title="Stoppen"
+        >
           <Square className="w-4 h-4" />
-        ) : (
+        </Button>
+      ) : (
+        <Button
+          onClick={handleSend}
+          disabled={disabled || !input.trim()}
+          size="icon"
+          className="shrink-0 h-11 w-11"
+        >
           <Send className="w-4 h-4" />
-        )}
-      </Button>
+        </Button>
+      )}
     </div>
   );
 };
