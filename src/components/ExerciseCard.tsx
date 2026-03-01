@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Check, X, ChevronDown, ChevronUp, Copy } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Copy, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Exercise {
   id: number;
@@ -20,60 +21,68 @@ interface Exercise {
 
 interface ExerciseCardProps {
   exercise: Exercise;
+  bestScore?: number | null;
+  onEvaluated?: (exerciseId: number, prompt: string, score: number, feedback: string) => void;
 }
 
-export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
+interface EvaluationResult {
+  hasContext: boolean;
+  isSpecific: boolean;
+  hasConstraints: boolean;
+  feedback: string;
+}
+
+export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardProps) => {
   const [userPrompt, setUserPrompt] = useState("");
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
-  const [evaluation, setEvaluation] = useState<{
-    hasContext: boolean;
-    isSpecific: boolean;
-    hasConstraints: boolean;
-  } | null>(null);
+  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
 
-  const evaluatePrompt = () => {
+  const evaluatePrompt = async () => {
     if (!userPrompt.trim()) {
       toast.error("Bitte gib einen verbesserten Prompt ein!");
       return;
     }
 
-    const prompt = userPrompt.toLowerCase();
-    
-    // Simple evaluation logic
-    const hasContext = prompt.length > 50 && (
-      prompt.includes("für") || 
-      prompt.includes("mit") || 
-      prompt.includes("zu hause") ||
-      prompt.includes("personen") ||
-      prompt.includes("budget")
-    );
-    
-    const isSpecific = prompt.length > 30 && (
-      /\d/.test(prompt) || // contains numbers
-      prompt.split(" ").length > 10
-    );
-    
-    const hasConstraints = (
-      prompt.includes("keine") ||
-      prompt.includes("ohne") ||
-      prompt.includes("vegetarisch") ||
-      prompt.includes("budget") ||
-      prompt.includes("maximal") ||
-      prompt.includes("style:") ||
-      prompt.includes("ton:")
-    );
+    setIsEvaluating(true);
 
-    setEvaluation({ hasContext, isSpecific, hasConstraints });
-    
-    const score = [hasContext, isSpecific, hasConstraints].filter(Boolean).length;
-    
-    if (score === 3) {
-      toast.success("Ausgezeichnet! Dein Prompt enthält alle wichtigen Elemente.");
-    } else if (score === 2) {
-      toast.info("Gut! Es fehlt noch ein Element für den perfekten Prompt.");
-    } else {
-      toast.error("Versuche, mehr Kontext und Details hinzuzufügen.");
+    try {
+      const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
+        body: {
+          userPrompt: userPrompt.trim(),
+          badPrompt: exercise.badPrompt,
+          context: exercise.context,
+          goodExample: exercise.goodExample,
+          improvementHints: exercise.improvementHints,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      const result = data as EvaluationResult;
+      setEvaluation(result);
+
+      const score = [result.hasContext, result.isSpecific, result.hasConstraints].filter(Boolean).length;
+
+      if (score === 3) {
+        toast.success("Ausgezeichnet! Dein Prompt enthält alle wichtigen Elemente.");
+      } else if (score === 2) {
+        toast.info("Gut! Es fehlt noch ein Element für den perfekten Prompt.");
+      } else {
+        toast.error("Versuche, mehr Kontext und Details hinzuzufügen.");
+      }
+
+      onEvaluated?.(exercise.id, userPrompt, score, result.feedback);
+    } catch (e) {
+      console.error("Evaluation error:", e);
+      toast.error("Bewertung fehlgeschlagen. Bitte versuche es erneut.");
+    } finally {
+      setIsEvaluating(false);
     }
   };
 
@@ -90,7 +99,17 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
   };
 
   return (
-    <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border">
+    <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border relative">
+      {bestScore !== null && bestScore !== undefined && (
+        <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
+          bestScore === 3 ? "bg-primary/20 text-primary" :
+          bestScore === 2 ? "bg-accent/20 text-accent-foreground" :
+          "bg-muted text-muted-foreground"
+        }`}>
+          Beste: {bestScore}/3 ⭐
+        </div>
+      )}
+
       <div className="mb-4">
         <div className="text-sm font-semibold text-muted-foreground mb-2">
           {exercise.context}
@@ -113,12 +132,13 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
           onChange={(e) => setUserPrompt(e.target.value)}
           placeholder="Schreibe hier deinen verbesserten Prompt..."
           className="min-h-[100px] mb-3"
+          disabled={isEvaluating}
         />
         
         <div className="flex gap-2 flex-wrap">
-          <Button onClick={evaluatePrompt} className="gap-2">
-            <Check className="w-4 h-4" />
-            Prompt bewerten
+          <Button onClick={evaluatePrompt} className="gap-2" disabled={isEvaluating}>
+            {isEvaluating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            {isEvaluating ? "Wird bewertet..." : "Prompt bewerten"}
           </Button>
           <Button variant="outline" onClick={() => setShowHints(!showHints)} className="gap-2">
             {showHints ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -154,8 +174,8 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
 
       {evaluation && (
         <div className="mb-4 bg-background/50 border border-border rounded-lg p-4">
-          <div className="text-sm font-semibold mb-3">Dein Feedback:</div>
-          <div className="space-y-2">
+          <div className="text-sm font-semibold mb-3">KI-Feedback:</div>
+          <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
               {evaluation.hasContext ? (
                 <Check className="w-5 h-5 text-primary" />
@@ -187,6 +207,11 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
               </span>
             </div>
           </div>
+          {evaluation.feedback && (
+            <div className="bg-muted/50 rounded-lg p-3 text-sm text-foreground">
+              {evaluation.feedback}
+            </div>
+          )}
         </div>
       )}
 
