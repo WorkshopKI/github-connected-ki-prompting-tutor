@@ -8,6 +8,8 @@ import { SyncProvider } from "@/contexts/SyncContext";
 import { GuestBanner } from "@/components/GuestBanner";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import AdminParticipants from "./pages/AdminParticipants";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/profil" element={<Profile />} />
+              <Route path="/admin/teilnehmer" element={<AdminParticipants />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
