@@ -30,7 +30,7 @@ export const SignupEmail = ({
     <Preview>Dein Bestätigungscode für {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Willkommen beim KI Prompting Kurs!</Heading>
+        <Heading style={h1}>Willkommen beim Workshop KI - Prompting Tutor!</Heading>
         <Text style={text}>
           Gib den folgenden Code ein, um deine E-Mail-Adresse ({recipient}) zu bestätigen:
         </Text>
