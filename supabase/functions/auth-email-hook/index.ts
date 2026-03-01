@@ -17,7 +17,7 @@ const corsHeaders = {
 
 const EMAIL_SUBJECTS: Record<string, string> = {
   signup: 'Dein Bestätigungscode',
-  invite: 'Einladung zum KI Prompting Kurs',
+  invite: 'Einladung zum Workshop KI - Prompting Tutor',
   magiclink: 'Dein Anmeldecode',
   recovery: 'Passwort zurücksetzen',
   email_change: 'E-Mail-Änderung bestätigen',
@@ -35,7 +35,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "Github connected KI Prompting Tutor"
+const SITE_NAME = "Workshop KI - Prompting Tutor"
 const SENDER_DOMAIN = "notify.kilab.org"
 const ROOT_DOMAIN = "kilab.org"
 const FROM_DOMAIN = "kilab.org" // Domain shown in From address (may be root or sender subdomain)
