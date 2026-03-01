@@ -5,6 +5,7 @@ import { useSyncContext } from "@/contexts/SyncContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -12,7 +13,7 @@ import { ArrowLeft, User, BookOpen, Trophy, Mail, Save } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 
 const Profile = () => {
-  const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, refreshProfile } = useAuthContext();
+  const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile } = useAuthContext();
   const { exercises, completedLessons, challengeCards, syncStatus } = useSyncContext();
   const navigate = useNavigate();
 
@@ -20,6 +21,8 @@ const Profile = () => {
   const [saving, setSaving] = useState(false);
   const [upgradeEmail, setUpgradeEmail] = useState("");
   const [upgrading, setUpgrading] = useState(false);
+  const [upgradeStep, setUpgradeStep] = useState<"email" | "otp">("email");
+  const [otpCode, setOtpCode] = useState("");
 
   if (isLoading) return null;
   if (!isLoggedIn) {
@@ -51,7 +54,34 @@ const Profile = () => {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success("Bestätigungs-E-Mail gesendet! Prüfe dein Postfach.");
+      toast.success("Code wurde gesendet! Prüfe dein Postfach.");
+      setUpgradeStep("otp");
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (otpCode.length !== 8) return;
+    setUpgrading(true);
+    const result = await verifyOTP(upgradeEmail.trim(), otpCode);
+    setUpgrading(false);
+    if (result.error) {
+      toast.error(result.error);
+      setOtpCode("");
+    } else {
+      toast.success("E-Mail erfolgreich verknüpft!");
+      await refreshProfile();
+    }
+  };
+
+  const handleResendCode = async () => {
+    setOtpCode("");
+    setUpgrading(true);
+    const result = await upgradeGuestToEmail(upgradeEmail.trim());
+    setUpgrading(false);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Neuer Code wurde gesendet!");
     }
   };
 
@@ -82,19 +112,59 @@ const Profile = () => {
                 <Mail className="h-4 w-4" /> E-Mail hinterlegen
               </CardTitle>
               <CardDescription>
-                Sichere deinen Fortschritt dauerhaft, indem du dein Gast-Konto mit einer E-Mail verknüpfst.
+                {upgradeStep === "email"
+                  ? "Sichere deinen Fortschritt dauerhaft, indem du dein Gast-Konto mit einer E-Mail verknüpfst."
+                  : `Code wurde an ${upgradeEmail} gesendet. Gib den 8-stelligen Code ein.`}
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="deine@email.de"
-                value={upgradeEmail}
-                onChange={(e) => setUpgradeEmail(e.target.value)}
-              />
-              <Button onClick={handleUpgrade} disabled={upgrading || !upgradeEmail.trim()}>
-                {upgrading ? "Senden…" : "Verknüpfen"}
-              </Button>
+            <CardContent>
+              {upgradeStep === "email" ? (
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="deine@email.de"
+                    value={upgradeEmail}
+                    onChange={(e) => setUpgradeEmail(e.target.value)}
+                  />
+                  <Button onClick={handleUpgrade} disabled={upgrading || !upgradeEmail.trim()}>
+                    {upgrading ? "Senden…" : "Verknüpfen"}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <InputOTP maxLength={8} value={otpCode} onChange={setOtpCode}>
+                      <InputOTPGroup>
+                        {Array.from({ length: 8 }, (_, i) => (
+                          <InputOTPSlot key={i} index={i} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+                  <Button
+                    onClick={handleVerifyOTP}
+                    disabled={upgrading || otpCode.length !== 8}
+                    className="w-full"
+                  >
+                    {upgrading ? "Prüfen…" : "Bestätigen"}
+                  </Button>
+                  <div className="flex justify-between text-sm">
+                    <button
+                      onClick={handleResendCode}
+                      disabled={upgrading}
+                      className="text-primary hover:underline disabled:opacity-50"
+                    >
+                      Neuen Code senden
+                    </button>
+                    <button
+                      onClick={() => { setUpgradeStep("email"); setOtpCode(""); }}
+                      className="text-muted-foreground hover:underline"
+                    >
+                      Andere E-Mail
+                    </button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
