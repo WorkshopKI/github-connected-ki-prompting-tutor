@@ -1,62 +1,120 @@
 
 
-## Plan: Add Lovable Cloud with AI Feedback, Progress Tracking & API Integration
+## Plan: Full Course Management Platform
 
-### Step 1: Enable Lovable Cloud
-Set up Lovable Cloud to get database, auth, and edge functions.
+This is a large-scale transformation of the app into a course management platform with enrollment, guest auth, LLM proxy, admin panel, and sync. I'll break it into implementation phases.
 
-### Step 2: Database Schema
-Create tables:
-- **profiles** — user id, display name, created_at
-- **exercise_progress** — user id, exercise id, user prompt, score (0-3), completed_at
+### Security Note
 
-### Step 3: Authentication
-Add a simple login/signup flow (email-based) so progress can be tied to users. Add auth state management and a login button in the Navigation.
+Your schema puts `is_admin` on `user_profiles`. Per security best practices, admin roles should be in a **separate `user_roles` table** with a `SECURITY DEFINER` function to check roles — this prevents privilege escalation. The plan below uses this pattern instead.
 
-### Step 4: AI-Powered Prompt Evaluation Edge Function
-Create `supabase/functions/evaluate-prompt/index.ts` that:
-- Receives the user's prompt + the exercise context (bad prompt, good example, hints)
-- Calls Lovable AI (Gemini) with a system prompt instructing it to evaluate the user's prompt on context, specificity, and constraints
-- Returns structured feedback using tool calling (score per criterion + textual feedback)
-- Replaces the current keyword-based heuristic in ExerciseCard
+### Phase 1: Database Schema (Migration)
 
-### Step 5: Save Progress
-After evaluation, store the result in `exercise_progress`. Show completed exercises with scores on the UI (checkmarks on exercise cards, optional progress summary).
+Create all tables in a single migration:
 
-### Step 6: Frontend Integration
-- Update `ExerciseCard` to call the edge function instead of local `evaluatePrompt()`
-- Show AI-generated feedback text alongside the criteria checkmarks
-- Add loading state during AI evaluation
-- Display saved progress when user is logged in
+- **courses** — course management with enrollment settings
+- **enrollment_whitelist** — email whitelist per course
+- **user_profiles** — replaces existing `profiles` table (id = auth.users.id, with `auth_method`, `course_id`)
+- **user_roles** — separate table for admin role (security best practice)
+- **guest_tokens** — guest login tokens with expiry
+- **user_progress** — lesson/quiz/challenge tracking (arrays + JSONB)
+- **user_projects** — user ML projects with pipeline config
+- **user_api_keys** — encrypted API key storage
+- Drop existing `profiles` and `exercise_progress` tables (replaced by new schema)
+- Update `handle_new_user` trigger to insert into `user_profiles` + `user_progress`
+- RLS policies using `has_role()` security definer function for admin checks
 
-### Technical Details
+### Phase 2: Edge Functions (5 functions)
 
-**Edge function config** (`supabase/config.toml`):
-```toml
-[functions.evaluate-prompt]
-verify_jwt = false
-```
+1. **check-enrollment** — validates course code, checks capacity, adds to whitelist
+2. **guest-login** — creates auth user for guest token, generates session
+3. **llm-proxy** — decrypts user API key, proxies to OpenRouter, handles budget exhaustion
+4. **save-user-key** — validates and encrypts custom OpenRouter key
+5. **provision-key** — (optional) assigns pre-provisioned key to user
 
-**AI call** uses `google/gemini-3-flash-preview` with tool calling to return structured JSON:
-```json
-{
-  "hasContext": true,
-  "isSpecific": false,
-  "hasConstraints": true,
-  "feedback": "Your prompt provides good context about dietary needs, but could be more specific about..."
-}
-```
+All use CORS headers, `verify_jwt = false` in config.toml, and service role key for privileged operations. Will need `ENCRYPTION_KEY` secret for AES-256.
 
-**Files to create:**
-- `supabase/functions/evaluate-prompt/index.ts`
-- `src/components/AuthDialog.tsx` (login/signup modal)
-- `src/hooks/useAuth.ts`
-- `src/hooks/useExerciseProgress.ts`
-- Database migration for profiles + exercise_progress tables
+### Phase 3: Auth Context & Provider
 
-**Files to modify:**
-- `src/components/ExerciseCard.tsx` — replace local eval with edge function call
-- `src/components/Navigation.tsx` — add login/profile button
-- `src/components/PracticeArea.tsx` — show progress indicators
-- `supabase/config.toml` — add function config
+- New `src/contexts/AuthContext.tsx` with `signInWithOTP`, `verifyOTP`, `signInWithGuestToken`, `signOut`, `upgradeGuestToEmail`
+- Profile auto-loading on auth state change
+- Wrap app in `AuthProvider` in `App.tsx`
+
+### Phase 4: Login Page (`/login`)
+
+- Two pill-tabs: "Mit E-Mail anmelden" (OTP flow with course code) and "Mit Gast-Code anmelden"
+- OTP input using 6-digit component (reuse `input-otp`)
+- Orange design theme (#F97316), German text
+- Error messages for invalid course/OTP/guest codes
+- Post-login redirect to `/`, guest banner if not upgraded
+
+### Phase 5: Sync Provider
+
+- `src/contexts/SyncContext.tsx` — LocalStorage-first, cloud sync when logged in
+- Merge logic using `updated_at` timestamps
+- Existing `useProgress`-style hooks internally delegate to SyncContext
+- Sync status indicator in sidebar
+
+### Phase 6: Navigation & Sidebar Updates
+
+- User menu at bottom of nav: email/guest display, sign out, admin link
+- Guest upgrade prompt
+- Sync status icon
+
+### Phase 7: Admin Page (`/admin/teilnehmer`)
+
+- Course selector dropdown
+- Invite emails / create guest tokens with copy button
+- Participants table with status badges and budget info
+- Budget overview card
+- Protected route (redirect non-admins)
+
+### Phase 8: LLM Service & Budget Dialog
+
+- `src/services/llmService.ts` — calls `llm-proxy` edge function
+- Budget-exhausted modal with accordion for custom key input
+- Calls `save-user-key` edge function
+
+### Phase 9: Profile Page (`/profil`)
+
+- Display name editing, course info, progress summary, LLM status
+- Guest upgrade flow with OTP verification
+- Orange highlight section for guest users
+
+### Files to Create
+
+- `supabase/functions/check-enrollment/index.ts`
+- `supabase/functions/guest-login/index.ts`
+- `supabase/functions/llm-proxy/index.ts`
+- `supabase/functions/save-user-key/index.ts`
+- `supabase/functions/provision-key/index.ts`
+- `src/contexts/AuthContext.tsx`
+- `src/contexts/SyncContext.tsx`
+- `src/pages/Login.tsx`
+- `src/pages/Profile.tsx`
+- `src/pages/AdminParticipants.tsx`
+- `src/components/BudgetDialog.tsx`
+- `src/components/GuestBanner.tsx`
+- `src/components/OTPInput.tsx`
+- `src/components/UserMenu.tsx`
+- `src/services/llmService.ts`
+
+### Files to Modify
+
+- `src/App.tsx` — add AuthProvider, SyncProvider, new routes
+- `src/components/Navigation.tsx` — add user menu
+- `supabase/config.toml` — add new edge functions
+- `src/hooks/useExerciseProgress.ts` — adapt to new schema
+- `src/components/PracticeArea.tsx` — use new auth context
+- `src/components/ExerciseCard.tsx` — use new auth context
+
+### Implementation Order
+
+Given the size, I recommend implementing in this order across multiple messages:
+1. Database migration (schema + RLS + trigger) + request `ENCRYPTION_KEY` secret
+2. Auth context + login page
+3. Edge functions (check-enrollment, guest-login)
+4. Edge functions (llm-proxy, save-user-key)
+5. Sync provider + existing hook refactoring
+6. Admin page + profile page + budget dialog
 
