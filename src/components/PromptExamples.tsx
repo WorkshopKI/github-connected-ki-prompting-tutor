@@ -35,46 +35,66 @@ const level1Examples: PromptExample[] = [
 
 const level2Examples: PromptExample[] = [
   {
-    category: "Brainstorming",
-    prompt: "Liste mir 10 kreative und unkonventionelle Ideen für eine Social-Media-Marketing-Kampagne für ein neues Bio-Erfrischungsgetränk."
+    category: "System-Prompt Design",
+    prompt: "Du bist ein Projektmanagement-Experte. Dein Name ist PM-Bot. Du arbeitest für ein Startup mit 20 Mitarbeitern, das agile Methoden (Scrum) nutzt. Antworte immer strukturiert mit Bulletpoints. Berücksichtige unser Sprint-Zyklus von 2 Wochen."
   },
   {
-    category: "Feedback",
-    prompt: "Hilf mir konstruktives Feedback für einen Kollegen zu formulieren. Er liefert gute Arbeit, verpasst aber oft Deadlines. Der Ton soll wertschätzend, aber klar sein."
+    category: "Projekt-Konventionen (claude.md)",
+    prompt: "Erstelle eine claude.md-Datei für ein React-Projekt. Definiere: Coding-Stil (Tailwind, funktionale Komponenten), Namenskonventionen (PascalCase für Komponenten), bevorzugte Libraries, und Teststandards. Die KI soll diese Konventionen automatisch befolgen."
   },
   {
-    category: "Meeting-Agenda",
-    prompt: "Erstelle eine effektive Agenda für ein Team-Meeting zum Thema 'Quartalsplanung Q2' mit Zeitangaben für jeden Punkt."
+    category: "Wissensbasis aufbauen",
+    prompt: "Ich möchte eine Wissensbasis für meine KI erstellen. Fasse die folgenden 5 Dokumente zusammen und erstelle daraus ein Kontext-Dokument, das ich als System-Prompt verwenden kann: [Unternehmensrichtlinien, Produktkatalog, FAQ, Stilguide, Zielgruppenanalyse]."
   },
   {
-    category: "Statusbericht",
-    prompt: "Erstelle mir eine Vorlage für einen wöchentlichen Projektstatusbericht mit den Abschnitten: Fortschritt, Herausforderungen, nächste Schritte."
+    category: "Few-Shot Kontext",
+    prompt: "Hier sind 3 Beispiele unserer Kundenkommunikation. Analysiere den Stil, Ton und die Struktur. Erstelle dann eine Kontext-Beschreibung, die ich als Vorlage für alle zukünftigen Antworten verwenden kann."
   },
   {
-    category: "Marketing-Trends",
-    prompt: "Was sind die neuesten Trends in der digitalen Marketingbranche? Nutze die Websuche für aktuelle Informationen.",
-    needsWeb: true
+    category: "Umgebungs-Design",
+    prompt: "Entwirf ein optimales System-Prompt-Setup für einen Kundenservice-Bot: Rolle, Tonalität, erlaubte Aktionen, verbotene Themen, Eskalationsregeln. Der Bot soll nur über unsere Produkte sprechen und bei Beschwerden an einen Menschen weiterleiten."
   }
 ];
 
 const level3Examples: PromptExample[] = [
   {
-    category: "Produktvergleich",
-    prompt: "Erstelle einen detaillierten Vergleich zwischen dem VW ID.3, Tesla Model 3 und Renault Megane E-Tech. Berücksichtige: Reichweite im Winter, Gesamtkosten über 5 Jahre (Anschaffung, Versicherung, Wartung) und prognostizierten Restwert. Gib das Ergebnis als übersichtliche Tabelle aus und erstelle eine gewichtete Entscheidungsmatrix (Kosten 40%, Reichweite 30%, Restwert 30%). Begründe deine finale Empfehlung."
+    category: "Werte-Hierarchie",
+    prompt: "Du bist mein persönlicher Berater. Priorisiere bei allen Empfehlungen: 1. Datenschutz > 2. Benutzerfreundlichkeit > 3. Kosten. Wenn zwei Optionen gleichwertig sind, wähle die datenschutzfreundlichere. Begründe Entscheidungen immer anhand dieser Hierarchie."
   },
   {
-    category: "Vergleichsstudie",
-    prompt: "Vergleiche Offshore- mit Onshore-Windkraft in Europa hinsichtlich Kosten/MWh, Umweltauswirkungen, Genehmigungsdauer und Akzeptanz in der Bevölkerung. Strukturiere als Tabelle, diskutiere Vor- und Nachteile in Fließtext und zitiere mindestens vier aktuelle Studien (Jahr ≥ 2022).",
-    needsWeb: true
+    category: "Entscheidungsregeln",
+    prompt: "Du triffst Entscheidungen für unser Marketing-Team. Regeln: Budget unter 500€ → entscheide selbst. Budget 500-2000€ → schlage 2 Optionen vor mit Pro/Contra. Budget über 2000€ → erstelle vollständige Analyse, triff keine Entscheidung. Bei Unsicherheit: frage immer nach."
   },
   {
-    category: "Strategiepapier",
-    prompt: "Erstelle ein detailliertes Konzept (ca. 1.200 Wörter) für die Digitalisierung der Patientenakten in einer mittelgroßen Arztpraxis: Stakeholder-Analyse, Zeitplan, Kostenabschätzung, Change-Management-Maßnahmen, Risiken & Gegenmaßnahmen. Füge am Ende eine Prioritäten-Roadmap in Stichpunkten an."
+    category: "Autonome Zielvorgabe",
+    prompt: "Dein Ziel: Erstelle einen vollständigen Social-Media-Kalender für Q2. Du darfst: Themen recherchieren, Texte schreiben, Hashtags wählen. Du darfst NICHT: Budget festlegen, Kooperationspartner kontaktieren, bezahlte Werbung planen. Wenn du dir bei einem Thema unsicher bist, markiere es mit [REVIEW]."
   },
   {
-    category: "Marktanalyse",
-    prompt: "Analysiere den deutschen Markt für pflanzliche Fleischersatzprodukte: Marktgröße 2024, Wachstumsprognose bis 2028, wichtigste Player, Zielgruppen-Segmentierung, Preissensitivität. Stelle die Ergebnisse in einem Executive Summary (max. 500 Wörter) + detaillierte Tabelle dar.",
-    needsWeb: true
+    category: "Eskalationsmuster",
+    prompt: "Du bearbeitest Kundenanfragen autonom. Eskaliere an einen Menschen wenn: 1) Der Kunde rechtliche Schritte androht, 2) Eine Erstattung über 100€ nötig ist, 3) Du eine Frage dreimal nicht beantworten konntest, 4) Der Kunde explizit einen Menschen verlangt."
+  },
+  {
+    category: "Qualitätssicherung",
+    prompt: "Überprüfe jede deiner Antworten anhand dieser Checkliste bevor du sie gibst: [ ] Ist die Aussage faktenbasiert? [ ] Habe ich Quellen genannt? [ ] Ist der Ton professionell? [ ] Gibt es Widersprüche zu früheren Aussagen? Wenn ein Punkt nicht erfüllt ist, korrigiere zuerst."
+  }
+];
+
+const level4Examples: PromptExample[] = [
+  {
+    category: "Agenten-Blueprint",
+    prompt: "BLUEPRINT: Marktrecherche für SaaS-Wettbewerbsanalyse.\n\nHABITAT: Nur öffentlich zugängliche Webquellen und Preisseiten.\nHANDS: Web-Recherche, Dokumenterstellung, Tabellen. KEIN Zugriff auf interne Daten.\nLEASH: Arbeite vollständig autonom. Frage nur nach, wenn Wettbewerber nicht eindeutig identifizierbar.\nPROOF: Jede Behauptung mit URL-Quelle belegen. Erstelle am Ende ein Confidence-Rating (hoch/mittel/niedrig) pro Datenpunkt.\n\nABNAHMEKRITERIEN: Vergleichstabelle mit min. 5 Wettbewerbern, Preise aktuell (2026), 3 Nischen-Empfehlungen."
+  },
+  {
+    category: "Mehrtages-Spezifikation",
+    prompt: "SPEZIFIKATION: Erstelle einen vollständigen Onboarding-Leitfaden für neue Mitarbeiter.\n\nPHASE 1 (Tag 1): Sammle alle verfügbaren Unternehmensinfos und strukturiere sie.\nPHASE 2 (Tag 2): Erstelle 90-Tage-Plan mit Meilensteinen.\nPHASE 3 (Tag 3): Schreibe Checklisten, E-Mail-Vorlagen und FAQ.\n\nCONSTRAINTS:\n- MUST: GoBD-konforme Dokumentation\n- MUST NOT: Keine personenbezogenen Beispieldaten verwenden\n- ESKALATION: Wenn arbeitsrechtliche Fragen aufkommen → [PAUSE]\n\nERFOLGSNACHWEIS: Inhaltsverzeichnis mit Seitenangaben, Review-Checkliste, 3 Test-Szenarien."
+  },
+  {
+    category: "Constraint-Architektur",
+    prompt: "Du arbeitest als autonomer Recherche-Agent. Hier ist deine vollständige Constraint-Architektur:\n\nMUST: Alle Fakten mit Primärquellen belegen. Widersprüchliche Quellen explizit kennzeichnen. Unsicherheit quantifizieren (70% sicher, etc.).\nMUST NOT: Keine Meinungen als Fakten darstellen. Keine Quellen älter als 2024. Keine Annahmen ohne Kennzeichnung.\nESKALATION: Bei widersprüchlichen Studien → beide zitieren + eigene Einschätzung markieren.\nOUTPUT: Executive Summary (300 Wörter) + Detailbericht + Quellenverzeichnis + Confidence-Matrix."
+  },
+  {
+    category: "Decomposition-Muster",
+    prompt: "Zerlege folgendes Großprojekt in autonome Teilaufgaben von je max. 2 Stunden:\n\nPROJEKT: Redesign unserer Unternehmenswebsite (5 Seiten, responsive, SEO-optimiert)\n\nFür jede Teilaufgabe definiere:\n1. Input: Was wird benötigt?\n2. Output: Was wird geliefert?\n3. Abhängigkeiten: Welche anderen Teilaufgaben müssen vorher fertig sein?\n4. Acceptance Criteria: Woran erkenne ich Fertigstellung?\n5. Geschätzte Dauer\n\nErstelle einen Dependency-Graph und einen optimalen Ausführungsplan."
   }
 ];
 
@@ -82,6 +102,7 @@ const allExamples = {
   1: level1Examples,
   2: level2Examples,
   3: level3Examples,
+  4: level4Examples,
 };
 
 interface PromptExamplesProps {
