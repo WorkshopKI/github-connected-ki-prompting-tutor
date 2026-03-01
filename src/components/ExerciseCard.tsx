@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 interface Exercise {
   id: number;
@@ -33,6 +34,7 @@ interface EvaluationResult {
 }
 
 export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardProps) => {
+  const { profile } = useAuthContext();
   const [userPrompt, setUserPrompt] = useState("");
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -55,6 +57,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
           context: exercise.context,
           goodExample: exercise.goodExample,
           improvementHints: exercise.improvementHints,
+          model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
         },
       });
 
