@@ -107,7 +107,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!data?.allowed) return { error: data?.reason || "Einschreibung nicht möglich." };
 
     // Step 2: Send OTP
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
     if (error) return { error: error.message };
     return {};
   };
@@ -143,7 +148,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const upgradeGuestToEmail = async (email: string): Promise<{ error?: string }> => {
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
     if (error) return { error: error.message };
     return {};
   };
