@@ -60,12 +60,10 @@ export const UserMenu = () => {
           <Coins className="mr-2 h-4 w-4" />
           Credits (bald verfügbar)
         </DropdownMenuItem>
-        {isGuest && (
-          <DropdownMenuItem onClick={() => navigate("/profil")}>
-            <Mail className="mr-2 h-4 w-4" />
-            E-Mail hinterlegen
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={() => navigate("/profil")}>
+          <User className="mr-2 h-4 w-4" />
+          Mein Profil
+        </DropdownMenuItem>
         {profile?.is_admin && (
           <DropdownMenuItem onClick={() => navigate("/admin/teilnehmer")}>
             <Users className="mr-2 h-4 w-4" />
