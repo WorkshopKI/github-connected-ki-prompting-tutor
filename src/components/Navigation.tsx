@@ -1,6 +1,7 @@
 import { BookOpen } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/components/UserMenu";
+import { SyncStatusIcon } from "@/components/SyncStatusIcon";
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
@@ -50,6 +51,7 @@ export const Navigation = () => {
                 </button>
               ))}
             </div>
+            <SyncStatusIcon />
             <UserMenu />
             <ThemeToggle />
           </div>
