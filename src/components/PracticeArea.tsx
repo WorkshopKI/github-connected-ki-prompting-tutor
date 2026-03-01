@@ -23,7 +23,7 @@ const exercises: Exercise[] = [
     id: 1,
     level: 1,
     badPrompt: "Was soll ich kochen?",
-    context: "Alltagshelfer - Rezeptsuche",
+    context: "Prompt Craft - Rezeptsuche",
     improvementHints: [
       "Füge Informationen über verfügbare Zutaten hinzu",
       "Gib an, für wie viele Personen gekocht werden soll",
@@ -37,7 +37,7 @@ const exercises: Exercise[] = [
     id: 2,
     level: 1,
     badPrompt: "Wo soll ich Urlaub machen?",
-    context: "Alltagshelfer - Reiseplanung",
+    context: "Prompt Craft - Reiseplanung",
     improvementHints: [
       "Definiere Budget und Reisedauer",
       "Gib Interessen und Aktivitätspräferenzen an",
@@ -51,7 +51,7 @@ const exercises: Exercise[] = [
     id: 3,
     level: 2,
     badPrompt: "Schreib eine E-Mail.",
-    context: "Juniorassistent - Geschäftskommunikation",
+    context: "Context Engineering - Geschäftskommunikation",
     improvementHints: [
       "Definiere Empfänger und Beziehung",
       "Gib den Zweck der E-Mail an",
@@ -65,7 +65,7 @@ const exercises: Exercise[] = [
     id: 4,
     level: 2,
     badPrompt: "Erstelle einen Report.",
-    context: "Juniorassistent - Dokumentation",
+    context: "Context Engineering - Dokumentation",
     improvementHints: [
       "Definiere das Thema und den Zweck des Reports",
       "Gib Zielgruppe und Länge an",
@@ -79,7 +79,7 @@ const exercises: Exercise[] = [
     id: 5,
     level: 3,
     badPrompt: "Vergleiche diese beiden Optionen.",
-    context: "Forschungsassistent - Vergleichsstudie",
+    context: "Intent Engineering - Vergleichsstudie",
     improvementHints: [
       "Benenne die konkreten Optionen",
       "Definiere Vergleichskriterien",
@@ -93,7 +93,7 @@ const exercises: Exercise[] = [
     id: 6,
     level: 3,
     badPrompt: "Recherchiere das Thema.",
-    context: "Forschungsassistent - Deep Research",
+    context: "Intent Engineering - Autonome Zielvorgabe",
     improvementHints: [
       "Definiere das konkrete Thema und Forschungsfrage",
       "Gib gewünschte Tiefe und Umfang an",
@@ -101,6 +101,36 @@ const exercises: Exercise[] = [
       "Definiere gewünschtes Output-Format"
     ],
     goodExample: "Recherchiere den Einfluss von KI-Chatbots auf Kundenzufriedenheit im E-Commerce. Fokus: aktuelle Studien (2023-2024), Conversion-Rate-Auswirkungen, ROI-Beispiele von mindestens 5 Unternehmen. Format: Executive Summary mit Quellenangaben und Key Findings in Tabellenform.",
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
+  },
+  {
+    id: 7,
+    level: 4,
+    badPrompt: "Mach eine Marktanalyse.",
+    context: "Specification Engineering - Agenten-Blueprint",
+    improvementHints: [
+      "Definiere den Arbeitsbereich (Habitat): Wo darf der Agent recherchieren?",
+      "Lege Werkzeuge fest (Hands): Was darf der Agent tun?",
+      "Bestimme den Autonomie-Grad (Leash): Wann soll er nachfragen?",
+      "Fordere Erfolgsnachweise (Proof): Wie beweist er korrekte Arbeit?",
+      "Definiere Acceptance Criteria: Woran erkennt man Fertigstellung?"
+    ],
+    goodExample: "BLUEPRINT: Wettbewerbsanalyse für KI-gestützte Projektmanagement-Tools.\n\nHABITAT: Öffentliche Webquellen, Preisseiten, G2/Capterra Reviews.\nHANDS: Web-Recherche und Dokumenterstellung. KEIN Zugriff auf interne Daten.\nLEASH: Arbeite autonom. Frage nach bei: unklarer Zielmarkt-Definition, mehr als 3 gleichwertigen Optionen.\nPROOF: Jede Preisangabe mit URL belegen. Confidence-Rating pro Datenpunkt.\n\nMUST: Min. 5 Wettbewerber, aktuelle Preise (2026), Feature-Matrix.\nMUST NOT: Keine Annahmen ohne Quellenangabe.\nACCEPTANCE: Vergleichstabelle + 3 datengestützte Nischen-Empfehlungen + Executive Summary (500 Wörter).",
+    evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
+  },
+  {
+    id: 8,
+    level: 4,
+    badPrompt: "Plane das Projekt für mich.",
+    context: "Specification Engineering - Decomposition & Constraint-Architektur",
+    improvementHints: [
+      "Zerlege das Großprojekt in Teilaufgaben unter 2 Stunden",
+      "Definiere für jede Teilaufgabe: Input, Output, Abhängigkeiten",
+      "Erstelle MUST/MUST-NOT Constraints",
+      "Definiere Eskalations-Trigger (wann soll die KI stoppen?)",
+      "Lege Abnahmekriterien fest (woran erkennt man Erfolg?)"
+    ],
+    goodExample: "SPEZIFIKATION: Redesign der Unternehmenswebsite (5 Seiten, responsive, SEO-optimiert).\n\nDECOMPOSITION: Zerlege in max. 2h-Teilaufgaben. Pro Aufgabe: Input, Output, Abhängigkeiten, Acceptance Criteria, Dauer.\n\nCONSTRAINTS:\nMUST: Mobile-First Design, WCAG 2.1 AA, Core Web Vitals bestehen.\nMUST NOT: Keine externen Fonts laden, keine Cookie-Banner ohne Rechtsgrundlage.\nESKALATION: Bei rechtlichen Fragen (Impressum, Datenschutz) → [PAUSE + Rückfrage].\n\nPROOF: Dependency-Graph, Gantt-Diagramm, Testplan mit 5 Szenarien.\nACCEPTANCE: Alle Seiten responsive getestet, Lighthouse Score >90, SEO-Checkliste erfüllt.",
     evaluationCriteria: { hasContext: true, isSpecific: true, hasConstraints: true }
   }
 ];
@@ -135,9 +165,10 @@ export const PracticeArea = () => {
         
         <div className="flex justify-center gap-3 flex-wrap">
           {[
-            { level: 1, label: "Level 1: Alltagshelfer" },
-            { level: 2, label: "Level 2: Juniorassistent" },
-            { level: 3, label: "Level 3: Forschungsassistent" },
+            { level: 1, label: "Level 1: Prompt Craft" },
+            { level: 2, label: "Level 2: Context Engineering" },
+            { level: 3, label: "Level 3: Intent Engineering" },
+            { level: 4, label: "Level 4: Specification Engineering" },
           ].map(({ level, label }) => (
             <button
               key={level}

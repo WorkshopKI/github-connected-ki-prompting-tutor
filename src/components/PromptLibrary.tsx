@@ -2,16 +2,27 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Check, Globe, Search, ExternalLink } from "lucide-react";
+import { Copy, Check, Globe, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+
+interface PromptConstraints {
+  musts: string[];
+  mustNots: string[];
+  escalationTriggers: string[];
+}
 
 interface PromptItem {
   category: string;
   title: string;
   prompt: string;
   needsWeb?: boolean;
-  level?: "alltag" | "beruf" | "websuche" | "research";
+  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint";
+  type?: "prompt" | "blueprint";
+  constraints?: PromptConstraints;
+  acceptanceCriteria?: string;
+  estimatedAgentTime?: string;
+  requiredTools?: string[];
 }
 
 const promptLibrary: PromptItem[] = [
@@ -468,10 +479,411 @@ const promptLibrary: PromptItem[] = [
     prompt: "Vergleiche die Programmiersprachen Python, Rust und Go hinsichtlich: Performance-Benchmarks, Ökosystem, Lernkurve, Einsatzgebiete, Arbeitsmarkt-Nachfrage 2024/25. Nutze aktuelle Quellen (Stack Overflow Survey, TIOBE Index, GitHub Octoverse). Erstelle eine gewichtete Bewertungsmatrix und sprich eine differenzierte Empfehlung nach Use Case aus.",
     needsWeb: true,
     level: "research"
+  },
+
+  // === BLUEPRINTS: Self-Contained Agenten-Spezifikationen ===
+
+  {
+    category: "Marktrecherche",
+    title: "Wettbewerbsanalyse SaaS-Produkt",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein erfahrener Marktanalyst. Erstelle eine vollständige Wettbewerbsanalyse für ein B2B-SaaS-Projektmanagement-Tool. Untersuche die 5 wichtigsten Wettbewerber (Asana, Monday.com, Jira, ClickUp, Notion). Für jeden Wettbewerber: Preismodell, Kernfeatures, Zielgruppe, Schwächen. Erstelle eine Feature-Vergleichsmatrix, identifiziere 3 unbesetzte Nischen und formuliere eine Go-to-Market-Empfehlung.",
+    needsWeb: true,
+    constraints: {
+      musts: [
+        "Mindestens 5 Wettbewerber mit aktuellen Preisen analysieren",
+        "Feature-Vergleichsmatrix als Tabelle ausgeben",
+        "Quellenangaben für alle Preise und Marktdaten"
+      ],
+      mustNots: [
+        "Keine Empfehlungen ohne Datengrundlage",
+        "Keine veralteten Preise (vor 2024) verwenden",
+        "Keine Bewertung eigener Stärken ohne Wettbewerbskontext"
+      ],
+      escalationTriggers: [
+        "Wenn Preisdaten nicht öffentlich verfügbar sind",
+        "Wenn ein Wettbewerber kürzlich akquiriert wurde",
+        "Wenn der Markt sich in den letzten 6 Monaten grundlegend verändert hat"
+      ]
+    },
+    acceptanceCriteria: "Die Analyse enthält eine vollständige Vergleichsmatrix mit mindestens 10 Feature-Kategorien, aktuelle Preisdaten aller 5 Wettbewerber, und 3 konkrete, datengestützte Nischen-Empfehlungen mit geschätztem Marktpotenzial.",
+    estimatedAgentTime: "~90 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Content-Strategie",
+    title: "Redaktionsplan Q2",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Content-Stratege für ein Tech-Startup. Erstelle einen vollständigen Redaktionsplan für Q2 2026 (April-Juni). Das Startup entwickelt KI-gestützte HR-Software. Zielgruppe: HR-Leiter in Unternehmen mit 100-500 Mitarbeitern. Kanäle: Blog, LinkedIn, Newsletter. Pro Woche: 2 Blog-Posts, 3 LinkedIn-Posts, 1 Newsletter. Für jeden Inhalt: Titel, Kernbotschaft, Keywords, CTA, geschätzte Reichweite.",
+    constraints: {
+      musts: [
+        "13 Wochen vollständig abdecken mit allen Kanälen",
+        "SEO-Keywords für jeden Blog-Post recherchieren",
+        "Saisonale Anlässe und HR-Events einbeziehen"
+      ],
+      mustNots: [
+        "Keine generischen Inhalte ohne Branchenbezug",
+        "Kein Content ohne klaren Call-to-Action",
+        "Keine Wiederholung von Themen innerhalb von 4 Wochen"
+      ],
+      escalationTriggers: [
+        "Wenn wichtige Branchenevents im Zeitraum stattfinden",
+        "Wenn aktuelle Gesetzesänderungen den HR-Bereich betreffen"
+      ]
+    },
+    acceptanceCriteria: "Der Plan umfasst alle 13 Wochen mit je 6 konkreten Content-Pieces, jeder Eintrag hat Titel, Keywords und CTA, und der Plan berücksichtigt mindestens 3 saisonale Anlässe.",
+    estimatedAgentTime: "~60 Minuten",
+    requiredTools: ["Web-Suche", "Tabellenkalkulation"]
+  },
+  {
+    category: "Technische Dokumentation",
+    title: "API-Dokumentation erstellen",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Technical Writer. Erstelle eine vollständige API-Dokumentation für eine REST-API mit den Endpunkten: Benutzer (CRUD), Projekte (CRUD), Aufgaben (CRUD + Zuweisung), Kommentare (Create/Read/Delete). Für jeden Endpunkt: HTTP-Methode, URL, Parameter, Request/Response-Body (JSON-Schema), Fehlercodes, Beispielaufrufe mit curl. Folge dem OpenAPI 3.0 Standard.",
+    constraints: {
+      musts: [
+        "Jeden Endpunkt mit mindestens 2 Beispielaufrufen dokumentieren",
+        "Alle Fehlercodes (400, 401, 403, 404, 500) pro Endpunkt auflisten",
+        "Authentifizierungsmechanismus (Bearer Token) durchgängig zeigen"
+      ],
+      mustNots: [
+        "Keine Endpunkte ohne Fehlerbehandlung dokumentieren",
+        "Keine inkonsistenten Namenskonventionen verwenden",
+        "Keine Beispiele ohne gültige JSON-Syntax"
+      ],
+      escalationTriggers: [
+        "Wenn Endpunkte zirkuläre Abhängigkeiten haben",
+        "Wenn Rate-Limiting-Strategie unklar ist"
+      ]
+    },
+    acceptanceCriteria: "Die Dokumentation enthält alle 4 Ressourcen mit vollständigen CRUD-Operationen, jeder Endpunkt hat Request/Response-Beispiele in gültigem JSON, und die Authentifizierung ist konsistent dokumentiert.",
+    estimatedAgentTime: "~45 Minuten",
+    requiredTools: ["Dokument-Analyse"]
+  },
+  {
+    category: "Geschäftsstrategie",
+    title: "Business Model Canvas",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Startup-Berater. Erstelle ein vollständiges Business Model Canvas für eine Online-Plattform, die Freelancer mit KMUs für kurzfristige Projektarbeit verbindet. Markt: DACH-Region. Differenzierung: KI-gestütztes Matching basierend auf Kompetenzen und Unternehmenskultur. Fülle alle 9 Canvas-Felder mit je 3-5 konkreten Punkten. Ergänze: SWOT-Analyse, Unit Economics (CAC, LTV, Break-Even), und 3 Pivotoptionen bei Nicht-Erreichen von Product-Market-Fit.",
+    constraints: {
+      musts: [
+        "Alle 9 Canvas-Felder vollständig ausfüllen",
+        "Unit Economics mit konkreten Zahlenbeispielen berechnen",
+        "Mindestens 3 Revenue Streams identifizieren"
+      ],
+      mustNots: [
+        "Keine unrealistischen Wachstumsannahmen (>100% MoM)",
+        "Keine Pivot-Optionen ohne Bezug zum Kernprodukt",
+        "Keine Kostenschätzungen ohne Marktvergleich"
+      ],
+      escalationTriggers: [
+        "Wenn regulatorische Hürden den Marktstart gefährden",
+        "Wenn vergleichbare Plattformen kürzlich gescheitert sind"
+      ]
+    },
+    acceptanceCriteria: "Das Canvas ist vollständig mit allen 9 Feldern, die Unit Economics sind mit Berechnungsweg nachvollziehbar, und die SWOT-Analyse enthält mindestens 4 Punkte pro Quadrant.",
+    estimatedAgentTime: "~75 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Personalwesen",
+    title: "Onboarding-Programm Design",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein HR-Experte. Entwirf ein vollständiges 90-Tage-Onboarding-Programm für Software-Entwickler in einem Tech-Unternehmen (50-200 MA). Das Programm soll abdecken: Woche 1 (Orientierung), Woche 2-4 (Einarbeitung), Monat 2 (Integration), Monat 3 (Selbstständigkeit). Pro Phase: Tägliche Aktivitäten, Lernziele, Buddy-System-Aufgaben, Check-in-Meetings, Erfolgskriterien. Erstelle außerdem: Checkliste für Manager, Feedback-Fragebogen für Tag 30/60/90.",
+    constraints: {
+      musts: [
+        "Jeden der 90 Tage mit mindestens einer Kernaktivität planen",
+        "Buddy-System mit konkreten Aufgaben pro Woche definieren",
+        "Messbare Erfolgskriterien für jede Phase festlegen"
+      ],
+      mustNots: [
+        "Keine Phase ohne Feedback-Möglichkeit gestalten",
+        "Keine unrealistischen Lernziele für die erste Woche",
+        "Keine Isolation des neuen Mitarbeiters von Teams"
+      ],
+      escalationTriggers: [
+        "Wenn der neue Mitarbeiter remote arbeitet",
+        "Wenn das Team sich in einer Umstrukturierung befindet"
+      ]
+    },
+    acceptanceCriteria: "Das Programm umfasst alle 90 Tage mit konkreten Aktivitäten, enthält die Manager-Checkliste und alle 3 Feedback-Fragebögen, und definiert messbare Erfolgskriterien pro Phase.",
+    estimatedAgentTime: "~60 Minuten",
+    requiredTools: ["Dokument-Analyse"]
+  },
+  {
+    category: "Datenanalyse",
+    title: "KPI-Dashboard Konzept",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Business-Intelligence-Analyst. Entwirf ein vollständiges KPI-Dashboard-Konzept für einen E-Commerce-Shop (Jahresumsatz 2-5 Mio. EUR). Das Dashboard soll enthalten: Executive Overview (5 Top-KPIs), Marketing (CAC, ROAS, Conversion-Funnel), Operations (Fulfillment, Retouren, Lagerumschlag), Finance (Umsatz, Marge, Cashflow). Für jede KPI: Definition, Datenquelle, Berechnungsformel, Zielwert, Alarm-Schwelle. Erstelle ein Wireframe-Konzept in ASCII-Art.",
+    constraints: {
+      musts: [
+        "Mindestens 20 KPIs über alle 4 Bereiche definieren",
+        "Jede KPI mit exakter Berechnungsformel versehen",
+        "Alarm-Schwellen mit Eskalationsprozess definieren"
+      ],
+      mustNots: [
+        "Keine Vanity-Metriken ohne Geschäftsbezug aufnehmen",
+        "Keine KPIs ohne definierte Datenquelle",
+        "Keine Dashboard-Seite mit mehr als 8 KPIs"
+      ],
+      escalationTriggers: [
+        "Wenn Datenquellen nicht automatisiert abfragbar sind",
+        "Wenn KPIs sich gegenseitig widersprechen"
+      ]
+    },
+    acceptanceCriteria: "Das Konzept enthält mindestens 20 KPIs mit Formeln und Datenquellen, das ASCII-Wireframe zeigt alle 4 Dashboard-Bereiche, und jede Alarm-Schwelle hat einen definierten Eskalationsprozess.",
+    estimatedAgentTime: "~50 Minuten",
+    requiredTools: ["Tabellenkalkulation", "Dokument-Analyse"]
+  },
+  {
+    category: "Rechtliche Analyse",
+    title: "DSGVO-Audit Checkliste",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Datenschutzberater. Erstelle eine vollständige DSGVO-Audit-Checkliste für ein SaaS-Unternehmen, das Kundendaten verarbeitet. Die Checkliste soll abdecken: Verarbeitungsverzeichnis, Rechtsgrundlagen, Betroffenenrechte, TOMs, Auftragsverarbeitung, Datenschutz-Folgenabschätzung, Meldepflichten. Pro Bereich: Prüfpunkte, Dokumentationsanforderungen, häufige Mängel, Maßnahmen bei Nichtkonformität. Erstelle zusätzlich einen Zeitplan für die Durchführung des Audits.",
+    constraints: {
+      musts: [
+        "Alle DSGVO-Artikel referenzieren die für SaaS relevant sind",
+        "Mindestens 50 Prüfpunkte über alle Bereiche erstellen",
+        "Zeitplan mit realistischen Aufwandsschätzungen pro Bereich"
+      ],
+      mustNots: [
+        "Keine rechtlichen Garantien oder Rechtsberatung geben",
+        "Keine veralteten Rechtsgrundlagen (vor Schrems II) verwenden",
+        "Keine Prüfpunkte ohne konkretes Nachweisdokument"
+      ],
+      escalationTriggers: [
+        "Wenn internationale Datentransfers stattfinden",
+        "Wenn besondere Kategorien personenbezogener Daten verarbeitet werden",
+        "Wenn der aktuelle Datenschutzbeauftragte extern ist"
+      ]
+    },
+    acceptanceCriteria: "Die Checkliste umfasst mindestens 50 Prüfpunkte mit DSGVO-Artikelreferenzen, der Audit-Zeitplan enthält realistische Aufwandsschätzungen, und häufige Mängel sind mit konkreten Gegenmaßnahmen dokumentiert.",
+    estimatedAgentTime: "~80 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Produktentwicklung",
+    title: "Feature-Spezifikation mit User Stories",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Product Owner. Erstelle eine vollständige Feature-Spezifikation für ein 'Team-Kalender'-Feature in einer Projektmanagement-App. Die Spezifikation soll enthalten: Problem Statement, Zielgruppe, 10 User Stories (mit Akzeptanzkriterien), Wireframes (ASCII), Datenmodell, API-Endpunkte, Edge Cases, Rollout-Plan (Feature Flags). Priorisiere nach MoSCoW und plane 3 Iterationen.",
+    constraints: {
+      musts: [
+        "Jede User Story mit mindestens 3 Akzeptanzkriterien versehen",
+        "Edge Cases für Zeitzonen, Feiertage und Berechtigungen abdecken",
+        "Datenmodell mit Relationen und Indizes spezifizieren"
+      ],
+      mustNots: [
+        "Keine User Stories ohne Akzeptanzkriterien",
+        "Keine Iteration mit mehr als 3 Must-Have Stories",
+        "Keine API-Endpunkte ohne Fehlerbehandlung spezifizieren"
+      ],
+      escalationTriggers: [
+        "Wenn Abhängigkeiten zu anderen Features bestehen",
+        "Wenn Performance-Anforderungen (>1000 Events) relevant werden"
+      ]
+    },
+    acceptanceCriteria: "Die Spezifikation enthält 10 User Stories mit je 3+ Akzeptanzkriterien, das Datenmodell ist vollständig, und der Rollout-Plan definiert 3 Iterationen mit MoSCoW-Priorisierung.",
+    estimatedAgentTime: "~70 Minuten",
+    requiredTools: ["Dokument-Analyse"]
+  },
+  {
+    category: "Bildung & Training",
+    title: "Workshop-Konzept KI-Kompetenz",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Trainings-Designer. Erstelle ein vollständiges 2-Tages-Workshop-Konzept 'KI-Kompetenz für Führungskräfte'. Zielgruppe: C-Level und Abteilungsleiter ohne technischen Hintergrund. Das Konzept soll enthalten: Lernziele, Agenda (minutengenau), Methoden-Mix (Vortrag, Übungen, Diskussion), 5 Hands-on-Übungen mit KI-Tools, Materialien-Liste, Evaluationsbogen. Berücksichtige: verschiedene Erfahrungslevel, Praxistransfer, Follow-up-Maßnahmen.",
+    constraints: {
+      musts: [
+        "Minutengenaue Agenda für beide Tage (je 8 Stunden)",
+        "Mindestens 5 Hands-on-Übungen mit konkreten KI-Tools",
+        "Praxistransfer-Aufgaben für die Wochen nach dem Workshop"
+      ],
+      mustNots: [
+        "Keine Übungen die technische Vorkenntnisse erfordern",
+        "Keine Vortragsblöcke länger als 30 Minuten",
+        "Keine Tools verwenden die kostenpflichtige Accounts erfordern"
+      ],
+      escalationTriggers: [
+        "Wenn Teilnehmer sensible Unternehmensdaten in KI-Tools eingeben möchten",
+        "Wenn die IT-Infrastruktur bestimmte Tools blockiert"
+      ]
+    },
+    acceptanceCriteria: "Das Konzept umfasst 2 vollständige Tagesagenden mit Minutenangaben, alle 5 Übungen haben Anleitungen und erwartete Ergebnisse, und der Evaluationsbogen misst mindestens 5 Lernziele.",
+    estimatedAgentTime: "~55 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Prozessoptimierung",
+    title: "Automatisierungs-Roadmap",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Prozessberater. Erstelle eine Automatisierungs-Roadmap für die Buchhaltung eines mittelständischen Unternehmens (50 MA, 500 Rechnungen/Monat). Analysiere den Ist-Prozess (Rechnungseingang bis Zahlung), identifiziere Automatisierungspotenziale, bewerte Tools (DATEV, Lexoffice, Candis), erstelle eine ROI-Berechnung und einen 6-Monats-Implementierungsplan. Berücksichtige: GoBD-Konformität, Mitarbeiter-Schulung, Fallback-Prozesse.",
+    constraints: {
+      musts: [
+        "Ist-Prozess als Flussdiagramm (ASCII) darstellen",
+        "ROI-Berechnung mit konkreten Zahlen (Zeitersparnis, Kosten)",
+        "GoBD-Konformität für jeden Automatisierungsschritt prüfen"
+      ],
+      mustNots: [
+        "Keine Automatisierung ohne Fallback-Prozess vorschlagen",
+        "Keine Tools ohne Preisvergleich empfehlen",
+        "Keine Prozessschritte eliminieren die gesetzlich vorgeschrieben sind"
+      ],
+      escalationTriggers: [
+        "Wenn bestehende ERP-Systeme inkompatibel sind",
+        "Wenn Mitarbeiter-Widerstand gegen Automatisierung besteht"
+      ]
+    },
+    acceptanceCriteria: "Die Roadmap enthält Ist- und Soll-Prozess als Flussdiagramm, die ROI-Berechnung zeigt den Break-Even-Punkt, und der 6-Monats-Plan hat Meilensteine mit konkreten Verantwortlichkeiten.",
+    estimatedAgentTime: "~65 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse", "Tabellenkalkulation"]
+  },
+  {
+    category: "App-Prototyp",
+    title: "MVP-Spezifikation Fitness-App",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Product Manager. Erstelle eine vollständige MVP-Spezifikation für eine KI-gestützte Fitness-App. Kernfunktionen: Personalisierte Trainingspläne, Fortschrittstracking, Ernährungsvorschläge. Zielgruppe: Fitness-Anfänger 25-40 Jahre. Erstelle: User Personas (3), User Journey Map, Feature-Priorisierung (MoSCoW), Wireframes (ASCII) für 5 Hauptscreens, Tech-Stack-Empfehlung, Kostenschätzung für 3-Monats-Entwicklung.",
+    constraints: {
+      musts: [
+        "3 detaillierte User Personas mit demografischen Daten erstellen",
+        "Wireframes für alle 5 Hauptscreens in ASCII-Art",
+        "Kostenschätzung aufgeschlüsselt nach Entwicklung, Design, Infrastruktur"
+      ],
+      mustNots: [
+        "Keine medizinischen Ratschläge in der App-Logik vorsehen",
+        "Keine Features planen die Wearable-Integration im MVP erfordern",
+        "Keine Kostenschätzung ohne Stundensatz-Angabe"
+      ],
+      escalationTriggers: [
+        "Wenn medizinische Haftungsfragen relevant werden",
+        "Wenn Datenschutz bei Gesundheitsdaten besondere Anforderungen stellt"
+      ]
+    },
+    acceptanceCriteria: "Die Spezifikation enthält 3 Personas, 5 ASCII-Wireframes, eine priorisierte Feature-Liste, und die Kostenschätzung liegt aufgeschlüsselt vor mit einem realistischen 3-Monats-Timeline.",
+    estimatedAgentTime: "~80 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Krisenmanagement",
+    title: "Kommunikationsplan Datenleck",
+    type: "blueprint",
+    level: "blueprint",
+    prompt: "Du bist ein Krisenberater. Erstelle einen vollständigen Krisenkommunikationsplan für den Fall eines Datenlecks in einem E-Commerce-Unternehmen (100.000 Kundendaten betroffen). Der Plan soll abdecken: Sofortmaßnahmen (erste 4 Stunden), Behördenmeldung (DSGVO-konform), Kundenkommunikation (E-Mail-Template, FAQ), Presse-Statement, Social-Media-Strategie, interne Kommunikation, Post-Mortem-Prozess. Zeitstrahl: Stunde 0 bis Tag 30.",
+    constraints: {
+      musts: [
+        "DSGVO 72-Stunden-Meldefrist berücksichtigen",
+        "Alle Kommunikationsvorlagen sofort einsetzbar formulieren",
+        "Eskalationskette mit konkreten Rollen und Verantwortlichkeiten"
+      ],
+      mustNots: [
+        "Keine Schuldzuweisungen in externen Kommunikationen",
+        "Keine technischen Details in der Kundenkommunikation",
+        "Keine Zusagen über Schadensersatz ohne rechtliche Prüfung"
+      ],
+      escalationTriggers: [
+        "Wenn Kreditkartendaten betroffen sind",
+        "Wenn die Presse vor der offiziellen Kommunikation berichtet",
+        "Wenn der Angriff noch andauert"
+      ]
+    },
+    acceptanceCriteria: "Der Plan enthält einen minutengenauen Zeitstrahl für die ersten 72 Stunden, alle Kommunikationsvorlagen sind direkt verwendbar, und die DSGVO-Meldefrist ist korrekt eingebaut.",
+    estimatedAgentTime: "~70 Minuten",
+    requiredTools: ["Web-Suche", "Dokument-Analyse"]
   }
 ];
 
-const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research"];
+const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints"];
+
+const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  if (prompt.type !== "blueprint" || !prompt.constraints) return null;
+
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        {prompt.estimatedAgentTime && (
+          <span className="inline-flex items-center gap-1 bg-accent/10 text-accent-foreground px-2 py-1 rounded">
+            <Clock className="w-3 h-3" />
+            {prompt.estimatedAgentTime}
+          </span>
+        )}
+        {prompt.requiredTools?.map((tool, i) => (
+          <span key={i} className="inline-flex items-center gap-1 bg-muted text-muted-foreground px-2 py-1 rounded">
+            <Wrench className="w-3 h-3" />
+            {tool}
+          </span>
+        ))}
+      </div>
+
+      <button
+        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+        className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+      >
+        {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        {expanded ? "Details ausblenden" : "Constraints & Abnahmekriterien"}
+      </button>
+
+      {expanded && (
+        <div className="space-y-3 pt-2 border-t border-border">
+          {prompt.constraints.musts.length > 0 && (
+            <div>
+              <div className="text-xs font-semibold text-primary mb-1 flex items-center gap-1">
+                <Shield className="w-3 h-3" /> Must
+              </div>
+              <ul className="space-y-1">
+                {prompt.constraints.musts.map((m, i) => (
+                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                    <span className="text-primary mt-0.5">+</span>{m}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {prompt.constraints.mustNots.length > 0 && (
+            <div>
+              <div className="text-xs font-semibold text-destructive mb-1">Must NOT</div>
+              <ul className="space-y-1">
+                {prompt.constraints.mustNots.map((m, i) => (
+                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                    <span className="text-destructive mt-0.5">-</span>{m}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {prompt.constraints.escalationTriggers.length > 0 && (
+            <div>
+              <div className="text-xs font-semibold text-accent-foreground mb-1">Eskalations-Trigger</div>
+              <ul className="space-y-1">
+                {prompt.constraints.escalationTriggers.map((m, i) => (
+                  <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                    <span className="text-accent-foreground mt-0.5">!</span>{m}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {prompt.acceptanceCriteria && (
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+              <div className="text-xs font-semibold text-primary mb-1">Abnahmekriterien</div>
+              <p className="text-xs text-foreground leading-relaxed">{prompt.acceptanceCriteria}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const PromptLibrary = () => {
   const navigate = useNavigate();
@@ -497,8 +909,9 @@ export const PromptLibrary = () => {
       (selectedCategory === "Alltag" && prompt.level === "alltag") ||
       (selectedCategory === "Beruf" && prompt.level === "beruf") ||
       (selectedCategory === "Websuche" && prompt.level === "websuche") ||
-      (selectedCategory === "Deep Research" && prompt.level === "research");
-    
+      (selectedCategory === "Deep Research" && prompt.level === "research") ||
+      (selectedCategory === "Blueprints" && prompt.type === "blueprint");
+
     return matchesSearch && matchesCategory;
   });
 
@@ -509,8 +922,8 @@ export const PromptLibrary = () => {
           Prompt-Bibliothek
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Über 70 kategorisierte Beispiel-Prompts für jeden Anwendungsfall –
-          von Alltag bis Deep Research
+          Über 80 kategorisierte Beispiel-Prompts und Agenten-Blueprints –
+          von Alltag bis autonome Spezifikationen
         </p>
       </div>
 
@@ -558,6 +971,12 @@ export const PromptLibrary = () => {
                   <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
                     {prompt.category}
                   </span>
+                  {prompt.type === "blueprint" && (
+                    <span className="inline-flex items-center gap-1 text-xs bg-primary/20 text-primary font-semibold px-2 py-1 rounded">
+                      <Shield className="w-3 h-3" />
+                      Blueprint
+                    </span>
+                  )}
                   {prompt.needsWeb && (
                     <span className="inline-flex items-center gap-1 text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
                       <Globe className="w-3 h-3" />
@@ -568,9 +987,10 @@ export const PromptLibrary = () => {
                 <h4 className="font-semibold mb-2 text-sm">
                   {prompt.title}
                 </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
                   "{prompt.prompt}"
                 </p>
+                <BlueprintDetails prompt={prompt} />
               </div>
               
               <div className="flex flex-col gap-1 shrink-0">

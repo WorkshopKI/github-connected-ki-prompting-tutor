@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Check, X, ChevronDown, ChevronUp, Copy, Loader2 } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, MessageSquare } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { streamChat, type Msg } from "@/services/llmService";
 
 interface Exercise {
   id: number;
@@ -40,6 +41,9 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
   const [showSolution, setShowSolution] = useState(false);
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [coachSuggestion, setCoachSuggestion] = useState("");
+  const [isCoaching, setIsCoaching] = useState(false);
+  const [showCoach, setShowCoach] = useState(false);
 
   const evaluatePrompt = async () => {
     if (!userPrompt.trim()) {
@@ -89,6 +93,57 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     }
   };
 
+  const askCoach = async () => {
+    const promptText = userPrompt.trim();
+    if (!promptText) {
+      toast.error("Bitte gib zuerst einen Prompt-Entwurf ein!");
+      return;
+    }
+
+    setIsCoaching(true);
+    setShowCoach(true);
+    setCoachSuggestion("");
+
+    const systemMsg: Msg = {
+      role: "system",
+      content: `Du bist ein Experte für Prompt-Engineering und ein freundlicher Coach. Der Nutzer versucht, einen schlechten Prompt zu verbessern.
+
+Kontext der Übung: ${exercise.context}
+Schlechter Original-Prompt: "${exercise.badPrompt}"
+Verbesserungshinweise: ${exercise.improvementHints.join(", ")}
+
+Deine Aufgabe:
+1. Analysiere den Prompt-Entwurf des Nutzers
+2. Identifiziere 2-3 konkrete Schwachstellen (Ambiguitäten, fehlender Kontext, fehlende Constraints)
+3. Stelle gezielte Rückfragen, die dem Nutzer helfen, den Prompt selbst zu verbessern
+4. Schlage am Ende einen optimierten Prompt vor, der alle Schwachstellen behebt
+
+Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar mit Überschriften.`
+    };
+
+    const userMsg: Msg = {
+      role: "user",
+      content: `Hier ist mein Prompt-Entwurf: "${promptText}"\n\nBitte analysiere ihn und hilf mir, ihn zu verbessern.`
+    };
+
+    let accumulated = "";
+    await streamChat({
+      messages: [systemMsg, userMsg],
+      model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
+      onDelta: (text) => {
+        accumulated += text;
+        setCoachSuggestion(accumulated);
+      },
+      onDone: () => {
+        setIsCoaching(false);
+      },
+      onError: (error) => {
+        setIsCoaching(false);
+        toast.error(error);
+      },
+    });
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("In Zwischenablage kopiert!");
@@ -99,6 +154,8 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     setEvaluation(null);
     setShowSolution(false);
     setShowHints(false);
+    setCoachSuggestion("");
+    setShowCoach(false);
   };
 
   return (
@@ -150,6 +207,15 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
           <Button variant="outline" onClick={() => setShowSolution(!showSolution)} className="gap-2">
             {showSolution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             {showSolution ? "Lösung ausblenden" : "Musterlösung anzeigen"}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={askCoach}
+            className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
+            disabled={isCoaching || isEvaluating}
+          >
+            {isCoaching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {isCoaching ? "Coach denkt..." : "KI-Coach fragen"}
           </Button>
           {(evaluation || userPrompt) && (
             <Button variant="ghost" onClick={resetExercise}>
@@ -215,6 +281,29 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
               {evaluation.feedback}
             </div>
           )}
+        </div>
+      )}
+
+      {showCoach && coachSuggestion && (
+        <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-semibold text-primary flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              KI-Coach: Reverse Prompting
+              {isCoaching && <Loader2 className="w-3 h-3 animate-spin" />}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCoach(false)}
+              className="text-xs"
+            >
+              Ausblenden
+            </Button>
+          </div>
+          <div className="prose prose-sm max-w-none text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+            {coachSuggestion}
+          </div>
         </div>
       )}
 

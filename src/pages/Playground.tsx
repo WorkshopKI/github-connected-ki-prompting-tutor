@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles } from "lucide-react";
+import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { Navigation } from "@/components/Navigation";
 import { BudgetDialog } from "@/components/BudgetDialog";
@@ -17,6 +17,7 @@ import { TechniquePanel } from "@/components/playground/TechniquePanel";
 import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
+import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
 
 const LS_CONVERSATIONS = "playground_conversations";
 const LS_ACTIVE_ID = "playground_active_id";
@@ -80,6 +81,14 @@ const Playground = () => {
   });
   const [actaOpen, setActaOpen] = useState(true);
   const [techniquesOpen, setTechniquesOpen] = useState(false);
+  const [agentOpen, setAgentOpen] = useState(false);
+  const [agentConfig, setAgentConfig] = useState<AgentConfig>({
+    habitat: "",
+    hands: ["read", "write", "web"],
+    leash: 50,
+    proof: "sources",
+    task: "",
+  });
 
   // --- UI state ---
   const [showBudgetDialog, setShowBudgetDialog] = useState(false);
@@ -288,6 +297,11 @@ const Playground = () => {
     sendMessage(promptTemplate);
   };
 
+  const handleStartAgent = (assembledPrompt: string) => {
+    setActiveTab("chat");
+    sendMessage(assembledPrompt);
+  };
+
   // Get last user prompt for evaluation
   const lastUserPrompt = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
@@ -377,6 +391,15 @@ const Playground = () => {
                 onToggle={() => setTechniquesOpen((o) => !o)}
               />
 
+              {/* Agent Simulator */}
+              <AgentKnobs
+                config={agentConfig}
+                onConfigChange={setAgentConfig}
+                onStartAgent={handleStartAgent}
+                isOpen={agentOpen}
+                onToggle={() => setAgentOpen((o) => !o)}
+              />
+
               {/* Prompt Evaluation */}
               {lastUserPrompt && (
                 <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-4">
@@ -397,6 +420,10 @@ const Playground = () => {
                     <MessageSquare className="w-3.5 h-3.5" />
                     Chat
                   </TabsTrigger>
+                  <TabsTrigger value="agent" className="gap-1.5">
+                    <Bot className="w-3.5 h-3.5" />
+                    Agent
+                  </TabsTrigger>
                   <TabsTrigger value="compare" className="gap-1.5">
                     <GitCompare className="w-3.5 h-3.5" />
                     Vergleich
@@ -415,6 +442,41 @@ const Playground = () => {
                     onStop={handleStop}
                     initialPrompt={prefilledPrompt}
                   />
+                </TabsContent>
+
+                <TabsContent value="agent" className="mt-0">
+                  <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Bot className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Agenten-Simulator</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Konfiguriere einen autonomen KI-Agenten mit den 4 Zuverlässigkeits-Reglern
+                      in der linken Seitenleiste. Definiere Arbeitsbereich, Werkzeuge, Autonomie-Grad
+                      und Erfolgsnachweise, um einen &quot;Worker&quot; zu instruieren wie einen Junior-Mitarbeiter.
+                    </p>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <div className="text-xs font-semibold text-primary mb-1">Habitat</div>
+                        <p className="text-xs text-muted-foreground">Wo darf der Agent arbeiten? Definiere erlaubte Datenquellen und Arbeitsbereiche.</p>
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <div className="text-xs font-semibold text-primary mb-1">Hands</div>
+                        <p className="text-xs text-muted-foreground">Was darf der Agent tun? Wähle erlaubte Werkzeuge und Aktionen.</p>
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <div className="text-xs font-semibold text-primary mb-1">Leash</div>
+                        <p className="text-xs text-muted-foreground">Wie autonom? Vom Schritt-für-Schritt bis zur vollen Selbstständigkeit.</p>
+                      </div>
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <div className="text-xs font-semibold text-primary mb-1">Proof</div>
+                        <p className="text-xs text-muted-foreground">Wie beweist er Erfolg? Quellenangaben, Logs oder Checklisten.</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Nutze den &quot;Agenten-Simulator&quot; in der Seitenleiste, um den Agenten zu konfigurieren und zu starten.
+                    </p>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="compare" className="mt-0">

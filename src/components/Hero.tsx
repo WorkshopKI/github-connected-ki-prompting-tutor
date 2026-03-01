@@ -34,11 +34,11 @@ export const Hero = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mt-16">
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">3</div>
-              <div className="text-sm text-muted-foreground">Lernstufen</div>
+              <div className="text-3xl font-bold text-primary mb-1">4</div>
+              <div className="text-sm text-muted-foreground">Disziplinen</div>
             </div>
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">50+</div>
+              <div className="text-3xl font-bold text-primary mb-1">80+</div>
               <div className="text-sm text-muted-foreground">Beispiele</div>
             </div>
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">

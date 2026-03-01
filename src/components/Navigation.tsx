@@ -24,11 +24,12 @@ export const Navigation = () => {
 
   const navItems = [
     { label: "Home", id: "hero", type: "scroll" as const },
-    { label: "Stufen", id: "stufen", type: "scroll" as const },
+    { label: "Disziplinen", id: "stufen", type: "scroll" as const },
     { label: "ACTA", id: "acta", type: "scroll" as const },
     { label: "Bibliothek", id: "bibliothek", type: "scroll" as const },
     { label: "Playground", id: "/playground", type: "route" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
+    { label: "Decomposition", id: "decomposition", type: "scroll" as const },
     { label: "Ressourcen", id: "ressourcen", type: "scroll" as const },
     { label: "Advanced", id: "advanced", type: "scroll" as const },
   ];
