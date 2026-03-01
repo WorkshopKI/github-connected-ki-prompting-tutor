@@ -14,53 +14,272 @@ export type Database = {
   }
   public: {
     Tables: {
-      exercise_progress: {
+      courses: {
         Row: {
-          completed_at: string
-          exercise_id: number
-          feedback: string | null
+          created_at: string
+          default_key_budget: number
+          enrollment_open: boolean
           id: string
-          score: number
-          user_id: string
-          user_prompt: string
+          max_participants: number
+          name: string
         }
         Insert: {
-          completed_at?: string
-          exercise_id: number
-          feedback?: string | null
-          id?: string
-          score?: number
-          user_id: string
-          user_prompt: string
+          created_at?: string
+          default_key_budget?: number
+          enrollment_open?: boolean
+          id: string
+          max_participants?: number
+          name: string
         }
         Update: {
-          completed_at?: string
-          exercise_id?: number
-          feedback?: string | null
+          created_at?: string
+          default_key_budget?: number
+          enrollment_open?: boolean
           id?: string
-          score?: number
-          user_id?: string
-          user_prompt?: string
+          max_participants?: number
+          name?: string
         }
         Relationships: []
       }
-      profiles: {
+      enrollment_whitelist: {
+        Row: {
+          course_id: string
+          email: string
+          id: string
+          invited_at: string
+          is_active: boolean
+          registered_at: string | null
+        }
+        Insert: {
+          course_id: string
+          email: string
+          id?: string
+          invited_at?: string
+          is_active?: boolean
+          registered_at?: string | null
+        }
+        Update: {
+          course_id?: string
+          email?: string
+          id?: string
+          invited_at?: string
+          is_active?: boolean
+          registered_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollment_whitelist_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guest_tokens: {
+        Row: {
+          course_id: string
+          created_at: string
+          display_name: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          token: string
+          upgraded_to_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          display_name: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          token: string
+          upgraded_to_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          display_name?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          token?: string
+          upgraded_to_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guest_tokens_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_api_keys: {
+        Row: {
+          active_key_source: string
+          created_at: string
+          custom_key_active: boolean
+          custom_key_encrypted: string | null
+          id: string
+          provisioned_key_budget: number
+          provisioned_key_encrypted: string | null
+          provisioned_key_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_key_source?: string
+          created_at?: string
+          custom_key_active?: boolean
+          custom_key_encrypted?: string | null
+          id?: string
+          provisioned_key_budget?: number
+          provisioned_key_encrypted?: string | null
+          provisioned_key_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_key_source?: string
+          created_at?: string
+          custom_key_active?: boolean
+          custom_key_encrypted?: string | null
+          id?: string
+          provisioned_key_budget?: number
+          provisioned_key_encrypted?: string | null
+          provisioned_key_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          auth_method: string
+          course_id: string | null
+          display_name: string | null
+          enrolled_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          auth_method?: string
+          course_id?: string | null
+          display_name?: string | null
+          enrolled_at?: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          auth_method?: string
+          course_id?: string | null
+          display_name?: string | null
+          enrolled_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_progress: {
+        Row: {
+          challenge_cards_completed: string[]
+          completed_lessons: string[]
+          id: string
+          last_visited: string | null
+          quiz_scores: Json
+          updated_at: string
+          user_id: string
+          werkstatt_progress: Json
+        }
+        Insert: {
+          challenge_cards_completed?: string[]
+          completed_lessons?: string[]
+          id?: string
+          last_visited?: string | null
+          quiz_scores?: Json
+          updated_at?: string
+          user_id: string
+          werkstatt_progress?: Json
+        }
+        Update: {
+          challenge_cards_completed?: string[]
+          completed_lessons?: string[]
+          id?: string
+          last_visited?: string | null
+          quiz_scores?: Json
+          updated_at?: string
+          user_id?: string
+          werkstatt_progress?: Json
+        }
+        Relationships: []
+      }
+      user_projects: {
         Row: {
           created_at: string
-          display_name: string | null
+          dataset_ref: string | null
+          evaluation_results: Json
           id: string
+          pipeline_config: Json
+          project_name: string
+          project_type: string | null
+          trained_models: Json
+          updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          display_name?: string | null
+          dataset_ref?: string | null
+          evaluation_results?: Json
           id?: string
+          pipeline_config?: Json
+          project_name: string
+          project_type?: string | null
+          trained_models?: Json
+          updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
-          display_name?: string | null
+          dataset_ref?: string | null
+          evaluation_results?: Json
           id?: string
+          pipeline_config?: Json
+          project_name?: string
+          project_type?: string | null
+          trained_models?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
         }
         Relationships: []
@@ -70,10 +289,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -200,6 +425,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
