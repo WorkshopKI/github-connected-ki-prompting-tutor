@@ -1,120 +1,41 @@
 
 
-## Plan: Full Course Management Platform
+## Problem
 
-This is a large-scale transformation of the app into a course management platform with enrollment, guest auth, LLM proxy, admin panel, and sync. I'll break it into implementation phases.
+Die App verwendet `supabase.auth.signInWithOtp({ email })`, was standardmässig einen **Magic Link** (Bestätigungslink) per E-Mail sendet -- keinen 6-stelligen Code. Das erklärt:
+- Screenshot 1: E-Mail mit "Verify Email"-Button statt OTP-Code
+- Screenshot 2: Klick auf den Button leitet zu Lovable's Login weiter (weil die Redirect-URL nicht zur App zeigt)
 
-### Security Note
+Die Login-Seite erwartet aber einen 6-stelligen Code (InputOTP-Komponente).
 
-Your schema puts `is_admin` on `user_profiles`. Per security best practices, admin roles should be in a **separate `user_roles` table** with a `SECURITY DEFINER` function to check roles — this prevents privilege escalation. The plan below uses this pattern instead.
+## Lösung
 
-### Phase 1: Database Schema (Migration)
+Eine einzige Änderung in `src/contexts/AuthContext.tsx`: Den `signInWithOtp`-Aufruf so konfigurieren, dass ein **6-stelliger OTP-Code** per E-Mail gesendet wird statt eines Magic Links.
 
-Create all tables in a single migration:
+### Technische Änderung
 
-- **courses** — course management with enrollment settings
-- **enrollment_whitelist** — email whitelist per course
-- **user_profiles** — replaces existing `profiles` table (id = auth.users.id, with `auth_method`, `course_id`)
-- **user_roles** — separate table for admin role (security best practice)
-- **guest_tokens** — guest login tokens with expiry
-- **user_progress** — lesson/quiz/challenge tracking (arrays + JSONB)
-- **user_projects** — user ML projects with pipeline config
-- **user_api_keys** — encrypted API key storage
-- Drop existing `profiles` and `exercise_progress` tables (replaced by new schema)
-- Update `handle_new_user` trigger to insert into `user_profiles` + `user_progress`
-- RLS policies using `has_role()` security definer function for admin checks
+In `AuthContext.tsx`, Zeile wo `signInWithOtp` aufgerufen wird, die Option `shouldCreateUser: true` explizit setzen und -- entscheidend -- die E-Mail-Redirect deaktivieren, damit ein Code statt Link gesendet wird:
 
-### Phase 2: Edge Functions (5 functions)
+```typescript
+// Vorher:
+const { error } = await supabase.auth.signInWithOtp({ email });
 
-1. **check-enrollment** — validates course code, checks capacity, adds to whitelist
-2. **guest-login** — creates auth user for guest token, generates session
-3. **llm-proxy** — decrypts user API key, proxies to OpenRouter, handles budget exhaustion
-4. **save-user-key** — validates and encrypts custom OpenRouter key
-5. **provision-key** — (optional) assigns pre-provisioned key to user
+// Nachher:
+const { error } = await supabase.auth.signInWithOtp({
+  email,
+  options: {
+    shouldCreateUser: true,
+  },
+});
+```
 
-All use CORS headers, `verify_jwt = false` in config.toml, and service role key for privileged operations. Will need `ENCRYPTION_KEY` secret for AES-256.
+Allerdings: Ob ein OTP-Code oder ein Magic Link gesendet wird, hängt von der **Auth-Konfiguration** im Backend ab. Die Standard-E-Mail-Templates senden immer einen Link. Um einen 6-stelligen Code zu erhalten, muss das E-Mail-Template den `{{ .Token }}`-Platzhalter verwenden statt `{{ .ConfirmationURL }}`.
 
-### Phase 3: Auth Context & Provider
+### Vollständiger Plan
 
-- New `src/contexts/AuthContext.tsx` with `signInWithOTP`, `verifyOTP`, `signInWithGuestToken`, `signOut`, `upgradeGuestToEmail`
-- Profile auto-loading on auth state change
-- Wrap app in `AuthProvider` in `App.tsx`
+1. **Auth-Konfiguration prüfen und anpassen** -- Das E-Mail-OTP-Template so konfigurieren, dass es den numerischen Token (`{{ .Token }}`) anzeigt statt eines Bestätigungslinks. Dies erfordert eine Anpassung der Auth-E-Mail-Templates über die Lovable Cloud Email-Einstellungen oder durch Scaffolding eigener E-Mail-Templates.
 
-### Phase 4: Login Page (`/login`)
+2. **`AuthContext.tsx` anpassen** -- Sicherstellen, dass `signInWithOtp` korrekt konfiguriert ist (kein `emailRedirectTo` setzen, da wir keinen Link wollen).
 
-- Two pill-tabs: "Mit E-Mail anmelden" (OTP flow with course code) and "Mit Gast-Code anmelden"
-- OTP input using 6-digit component (reuse `input-otp`)
-- Orange design theme (#F97316), German text
-- Error messages for invalid course/OTP/guest codes
-- Post-login redirect to `/`, guest banner if not upgraded
-
-### Phase 5: Sync Provider
-
-- `src/contexts/SyncContext.tsx` — LocalStorage-first, cloud sync when logged in
-- Merge logic using `updated_at` timestamps
-- Existing `useProgress`-style hooks internally delegate to SyncContext
-- Sync status indicator in sidebar
-
-### Phase 6: Navigation & Sidebar Updates
-
-- User menu at bottom of nav: email/guest display, sign out, admin link
-- Guest upgrade prompt
-- Sync status icon
-
-### Phase 7: Admin Page (`/admin/teilnehmer`)
-
-- Course selector dropdown
-- Invite emails / create guest tokens with copy button
-- Participants table with status badges and budget info
-- Budget overview card
-- Protected route (redirect non-admins)
-
-### Phase 8: LLM Service & Budget Dialog
-
-- `src/services/llmService.ts` — calls `llm-proxy` edge function
-- Budget-exhausted modal with accordion for custom key input
-- Calls `save-user-key` edge function
-
-### Phase 9: Profile Page (`/profil`)
-
-- Display name editing, course info, progress summary, LLM status
-- Guest upgrade flow with OTP verification
-- Orange highlight section for guest users
-
-### Files to Create
-
-- `supabase/functions/check-enrollment/index.ts`
-- `supabase/functions/guest-login/index.ts`
-- `supabase/functions/llm-proxy/index.ts`
-- `supabase/functions/save-user-key/index.ts`
-- `supabase/functions/provision-key/index.ts`
-- `src/contexts/AuthContext.tsx`
-- `src/contexts/SyncContext.tsx`
-- `src/pages/Login.tsx`
-- `src/pages/Profile.tsx`
-- `src/pages/AdminParticipants.tsx`
-- `src/components/BudgetDialog.tsx`
-- `src/components/GuestBanner.tsx`
-- `src/components/OTPInput.tsx`
-- `src/components/UserMenu.tsx`
-- `src/services/llmService.ts`
-
-### Files to Modify
-
-- `src/App.tsx` — add AuthProvider, SyncProvider, new routes
-- `src/components/Navigation.tsx` — add user menu
-- `supabase/config.toml` — add new edge functions
-- `src/hooks/useExerciseProgress.ts` — adapt to new schema
-- `src/components/PracticeArea.tsx` — use new auth context
-- `src/components/ExerciseCard.tsx` — use new auth context
-
-### Implementation Order
-
-Given the size, I recommend implementing in this order across multiple messages:
-1. Database migration (schema + RLS + trigger) + request `ENCRYPTION_KEY` secret
-2. Auth context + login page
-3. Edge functions (check-enrollment, guest-login)
-4. Edge functions (llm-proxy, save-user-key)
-5. Sync provider + existing hook refactoring
-6. Admin page + profile page + budget dialog
+3. **Eigene E-Mail-Templates erstellen** -- Mit `scaffold_auth_email_templates` brandkonforme Templates erstellen, die den 6-stelligen Code anzeigen statt eines "Verify Email"-Buttons. Das Magic-Link-Template wird so angepasst, dass es den OTP-Code prominent darstellt.
 
