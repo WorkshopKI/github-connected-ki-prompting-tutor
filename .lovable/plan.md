@@ -1,20 +1,21 @@
 
 
-## Plan: OTP-Eingabe auf der Profilseite fuer Gast-Upgrade
+## Problem
 
-Der OTP-Code ist 8-stellig (wie auf der Login-Seite). Nach Klick auf "Verknuepfen" fehlt ein Eingabefeld fuer den Code.
+Die Navigation-Links (Home, Stufen, ACTA etc.) nutzen `scrollToSection`, das nur `document.getElementById` + `scrollTo` macht. Auf der Profilseite existieren diese Elemente nicht — es passiert nichts.
 
-### Aenderungen in `src/pages/Profile.tsx`
+## Loesung
 
-1. **Neuen State** `upgradeStep`: `"email"` oder `"otp"` (default: `"email"`)
-2. **Nach erfolgreichem E-Mail-Versand**: `upgradeStep` auf `"otp"` setzen
-3. **OTP-Schritt rendern** (wenn `upgradeStep === "otp"`):
-   - Hinweistext: "Code wurde an {email} gesendet"
-   - `InputOTP` mit `maxLength={8}` und 8 Slots (gleiche Komponente wie Login-Seite)
-   - "Bestaetigen"-Button → ruft `verifyOTP(upgradeEmail, code)` auf
-   - Bei Erfolg: Toast, `refreshProfile()`, Banner verschwindet automatisch
-   - "Neuen Code senden"-Link + "Andere E-Mail"-Link zum Zuruecksetzen
-4. **Import** `InputOTP, InputOTPGroup, InputOTPSlot` aus `@/components/ui/input-otp` und `verifyOTP` aus AuthContext
+In `scrollToSection` in `Navigation.tsx` pruefen, ob wir auf `/` sind. Falls nicht, zuerst per `navigate` zur Startseite navigieren und den Hash als Parameter uebergeben, damit nach dem Laden gescrollt wird.
 
-Keine Datenbank-Aenderungen noetig.
+### Aenderungen
+
+**`src/components/Navigation.tsx`**:
+- `useNavigate` und `useLocation` aus `react-router-dom` importieren
+- In `scrollToSection`: Wenn `location.pathname !== "/"`, per `navigate("/#" + id)` weiterleiten
+- Sonst wie bisher scrollen
+
+**`src/pages/Index.tsx`**:
+- Beim Mount pruefen ob `location.hash` gesetzt ist (z.B. `#acta`)
+- Falls ja, nach kurzem Timeout zum entsprechenden Element scrollen
 
