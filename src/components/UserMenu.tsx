@@ -1,6 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { LogOut, User, Users, Mail, Ticket } from "lucide-react";
+import { LogOut, User, Users, Mail, Coins } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export const UserMenu = () => {
   const { isLoggedIn, isLoading, profile, user, signOut } = useAuthContext();
@@ -21,41 +30,54 @@ export const UserMenu = () => {
 
   const isGuest = profile?.auth_method === "guest";
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "User";
+  const initials = displayName.slice(0, 2).toUpperCase();
   const courseId = profile?.course_id;
 
   return (
-    <div className="flex flex-col gap-1 text-sm">
-      <div className="flex items-center gap-2">
-        {isGuest ? <Ticket className="w-4 h-4 text-muted-foreground" /> : <User className="w-4 h-4 text-muted-foreground" />}
-        <span className="font-medium text-foreground truncate">
-          {isGuest ? `${displayName} (Gast)` : user?.email}
-        </span>
-      </div>
-      {courseId && <span className="text-xs text-muted-foreground ml-6">{courseId}</span>}
-      <div className="flex flex-col gap-0.5 ml-6 mt-1">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full h-9 w-9 bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-xs"
+        >
+          {initials}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium leading-none">
+              {isGuest ? `${displayName} (Gast)` : user?.email}
+            </p>
+            {courseId && (
+              <p className="text-xs text-muted-foreground">{courseId}</p>
+            )}
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem disabled className="text-muted-foreground">
+          <Coins className="mr-2 h-4 w-4" />
+          Credits (bald verfügbar)
+        </DropdownMenuItem>
         {isGuest && (
-          <button
-            onClick={() => navigate("/profil")}
-            className="text-xs text-primary hover:underline text-left flex items-center gap-1"
-          >
-            <Mail className="w-3 h-3" /> E-Mail hinterlegen
-          </button>
+          <DropdownMenuItem onClick={() => navigate("/profil")}>
+            <Mail className="mr-2 h-4 w-4" />
+            E-Mail hinterlegen
+          </DropdownMenuItem>
         )}
         {profile?.is_admin && (
-          <button
-            onClick={() => navigate("/admin/teilnehmer")}
-            className="text-xs text-muted-foreground hover:text-foreground text-left flex items-center gap-1"
-          >
-            <Users className="w-3 h-3" /> Teilnehmer
-          </button>
+          <DropdownMenuItem onClick={() => navigate("/admin/teilnehmer")}>
+            <Users className="mr-2 h-4 w-4" />
+            Teilnehmer
+          </DropdownMenuItem>
         )}
-        <button
-          onClick={signOut}
-          className="text-xs text-muted-foreground hover:text-foreground text-left flex items-center gap-1"
-        >
-          <LogOut className="w-3 h-3" /> Abmelden
-        </button>
-      </div>
-    </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={signOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Abmelden
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
