@@ -192,11 +192,11 @@ export const ResourcesSection = () => {
       </div>
 
       {/* Golden Rules Banner */}
-      <div className="mt-8 bg-gradient-primary rounded-2xl p-6 md:p-8 text-center shadow-lg border border-primary/20">
-        <h4 className="text-xl md:text-2xl font-bold mb-3 text-primary-foreground">
+      <div className="mt-8 bg-gradient-card rounded-2xl p-6 md:p-8 text-center shadow-lg border border-border">
+        <h4 className="text-xl md:text-2xl font-bold mb-3 text-foreground">
           Die goldene Regel des Promptings
         </h4>
-        <p className="text-lg text-primary-foreground/90 max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Je mehr relevanter Kontext und je spezifischer deine Anfrage, desto besser und nützlicher wird die Antwort der KI sein.
         </p>
       </div>
