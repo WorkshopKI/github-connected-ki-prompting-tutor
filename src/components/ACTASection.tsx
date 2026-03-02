@@ -37,18 +37,18 @@ export const ACTASection = () => {
   const [showExample, setShowExample] = useState(true);
 
   return (
-    <section className="mb-12">
-      <div className="text-center mb-6">
-        <h2 className="text-3xl md:text-4xl font-bold mb-2">
+    <section className="mb-16">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Die ACTA-Methode
         </h2>
-        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Ein strukturiertes Framework für perfekte Prompts
         </p>
       </div>
 
       {/* Compact 4-column grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {actaCards.map((card, i) => (
           <div
             key={i}
@@ -60,8 +60,8 @@ export const ACTASection = () => {
               </div>
               <span className="text-xl font-bold text-primary">{card.letter}</span>
             </div>
-            <p className="font-semibold mb-1">{card.title}</p>
-            <p className="text-sm text-muted-foreground mb-4">
+            <h3 className="text-xl font-bold mb-2">{card.title}</h3>
+            <p className="text-muted-foreground mb-4">
               {card.description}
             </p>
             <div className="border-l-2 border-primary pl-3">

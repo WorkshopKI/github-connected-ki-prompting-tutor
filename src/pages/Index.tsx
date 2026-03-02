@@ -56,7 +56,7 @@ const Index = () => {
               level={1}
               icon={Sparkles}
               title="Fragen"
-              description="Pr\u00e4zise Fragen f\u00fcr direkte Antworten mit der ACTA-Methode"
+              description="Präzise Fragen für direkte Antworten mit der ACTA-Methode"
               examples={["Rezepte", "Reiseplanung", "Geschenkideen"]}
               isActive={activeLevel === 1}
               onClick={() => setActiveLevel(1)}
@@ -65,7 +65,7 @@ const Index = () => {
               level={2}
               icon={Brain}
               title="Gestalten"
-              description="Die Informationsumgebung f\u00fcr die KI formen, damit Prompts einfach bleiben"
+              description="Die Informationsumgebung für die KI formen, damit Prompts einfach bleiben"
               examples={["System-Prompts", "Konventionen", "Wissensbasis"]}
               isActive={activeLevel === 2}
               onClick={() => setActiveLevel(2)}
@@ -74,7 +74,7 @@ const Index = () => {
               level={3}
               icon={Search}
               title="Steuern"
-              description="Ziele, Werte und Entscheidungsregeln kodieren f\u00fcr autonomes Handeln"
+              description="Ziele, Werte und Entscheidungsregeln kodieren für autonomes Handeln"
               examples={["Werte-Hierarchien", "Entscheidungsregeln", "Eskalation"]}
               isActive={activeLevel === 3}
               onClick={() => setActiveLevel(3)}
@@ -83,7 +83,7 @@ const Index = () => {
               level={4}
               icon={Cpu}
               title="Spezifizieren"
-              description="Wasserdichte Blueprints f\u00fcr mehrt\u00e4gige autonome Aufgaben erstellen"
+              description="Wasserdichte Blueprints für mehrtägige autonome Aufgaben erstellen"
               examples={["Agenten-Specs", "Blueprints", "Abnahmekriterien"]}
               isActive={activeLevel === 4}
               onClick={() => setActiveLevel(4)}
