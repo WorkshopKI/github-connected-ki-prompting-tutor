@@ -11,6 +11,7 @@ import { ResourcesSection } from "@/components/ResourcesSection";
 import { ACTASection } from "@/components/ACTASection";
 import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection";
 import { DecompositionAssistant } from "@/components/DecompositionAssistant";
+import { Footer } from "@/components/Footer";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const ScrollReveal = ({ children, className }: { children: ReactNode; className?: string }) => {
@@ -201,6 +202,7 @@ const Index = () => {
           </section>
         </ScrollReveal>
       </main>
+      <Footer />
     </div>
   );
 };
