@@ -107,8 +107,7 @@ export const AdvancedPromptingSection = () => {
           Advanced Prompting Methoden
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Fortgeschrittene Techniken für Experten: Gehe über einfache Prompts hinaus und nutze
-          die mentalen Modelle professioneller Prompt-Engineers
+          Fortgeschrittene Methoden und mentale Modelle aus dem professionellen Prompt-Engineering
         </p>
       </div>
 
@@ -120,9 +119,9 @@ export const AdvancedPromptingSection = () => {
               <TabsTrigger
                 key={technique.id}
                 value={technique.id}
-                className="flex flex-col gap-2 py-3 data-[state=active]:bg-primary/10 transition-all duration-300 hover:scale-105 hover:bg-muted/50"
+                className="flex flex-col gap-2 py-3 text-foreground/60 data-[state=active]:text-foreground data-[state=active]:bg-primary/10 transition-all duration-300 hover:scale-105 hover:text-foreground hover:bg-muted/50"
               >
-                <Icon className={`w-5 h-5 ${technique.color} transition-transform duration-300`} />
+                <Icon className={`w-5 h-5 transition-transform duration-300`} />
                 <span className="text-sm font-bold text-center leading-tight">
                   {technique.title}
                 </span>

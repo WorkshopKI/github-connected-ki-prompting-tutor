@@ -34,7 +34,7 @@ const actaCards = [
 ];
 
 export const ACTASection = () => {
-  const [showExample, setShowExample] = useState(false);
+  const [showExample, setShowExample] = useState(true);
 
   return (
     <section className="mb-12">
@@ -48,24 +48,24 @@ export const ACTASection = () => {
       </div>
 
       {/* Compact 4-column grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-gradient-card rounded-xl p-4 shadow-sm border border-border"
+            className="bg-gradient-card rounded-xl p-6 shadow-sm border border-border"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="bg-primary/10 p-1.5 rounded-lg">
-                <card.icon className="w-4 h-4 text-primary" />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="bg-primary/10 p-3 rounded-xl">
+                <card.icon className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-lg font-bold text-primary">{card.letter}</span>
+              <span className="text-xl font-bold text-primary">{card.letter}</span>
             </div>
-            <p className="font-semibold text-sm mb-1">{card.title}</p>
-            <p className="text-xs text-muted-foreground mb-3">
+            <p className="font-semibold mb-1">{card.title}</p>
+            <p className="text-sm text-muted-foreground mb-4">
               {card.description}
             </p>
-            <div className="border-l-2 border-primary pl-2">
-              <p className="text-xs italic text-muted-foreground">
+            <div className="border-l-2 border-primary pl-3">
+              <p className="text-sm italic text-muted-foreground">
                 &bdquo;{card.quote}&ldquo;
               </p>
             </div>
