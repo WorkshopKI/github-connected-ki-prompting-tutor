@@ -23,7 +23,7 @@ const exercises: Exercise[] = [
     id: 1,
     level: 1,
     badPrompt: "Was soll ich kochen?",
-    context: "Prompt Craft - Rezeptsuche",
+    context: "Fragen - Rezeptsuche",
     improvementHints: [
       "Füge Informationen über verfügbare Zutaten hinzu",
       "Gib an, für wie viele Personen gekocht werden soll",
@@ -37,7 +37,7 @@ const exercises: Exercise[] = [
     id: 2,
     level: 1,
     badPrompt: "Wo soll ich Urlaub machen?",
-    context: "Prompt Craft - Reiseplanung",
+    context: "Fragen - Reiseplanung",
     improvementHints: [
       "Definiere Budget und Reisedauer",
       "Gib Interessen und Aktivitätspräferenzen an",
@@ -51,7 +51,7 @@ const exercises: Exercise[] = [
     id: 3,
     level: 2,
     badPrompt: "Schreib eine E-Mail.",
-    context: "Context Engineering - Geschäftskommunikation",
+    context: "Gestalten - Geschäftskommunikation",
     improvementHints: [
       "Definiere Empfänger und Beziehung",
       "Gib den Zweck der E-Mail an",
@@ -65,7 +65,7 @@ const exercises: Exercise[] = [
     id: 4,
     level: 2,
     badPrompt: "Erstelle einen Report.",
-    context: "Context Engineering - Dokumentation",
+    context: "Gestalten - Dokumentation",
     improvementHints: [
       "Definiere das Thema und den Zweck des Reports",
       "Gib Zielgruppe und Länge an",
@@ -79,7 +79,7 @@ const exercises: Exercise[] = [
     id: 5,
     level: 3,
     badPrompt: "Vergleiche diese beiden Optionen.",
-    context: "Intent Engineering - Vergleichsstudie",
+    context: "Steuern - Vergleichsstudie",
     improvementHints: [
       "Benenne die konkreten Optionen",
       "Definiere Vergleichskriterien",
@@ -93,7 +93,7 @@ const exercises: Exercise[] = [
     id: 6,
     level: 3,
     badPrompt: "Recherchiere das Thema.",
-    context: "Intent Engineering - Autonome Zielvorgabe",
+    context: "Steuern - Autonome Zielvorgabe",
     improvementHints: [
       "Definiere das konkrete Thema und Forschungsfrage",
       "Gib gewünschte Tiefe und Umfang an",
@@ -107,7 +107,7 @@ const exercises: Exercise[] = [
     id: 7,
     level: 4,
     badPrompt: "Mach eine Marktanalyse.",
-    context: "Specification Engineering - Agenten-Blueprint",
+    context: "Spezifizieren - Agenten-Blueprint",
     improvementHints: [
       "Definiere den Arbeitsbereich (Habitat): Wo darf der Agent recherchieren?",
       "Lege Werkzeuge fest (Hands): Was darf der Agent tun?",
@@ -122,7 +122,7 @@ const exercises: Exercise[] = [
     id: 8,
     level: 4,
     badPrompt: "Plane das Projekt für mich.",
-    context: "Specification Engineering - Decomposition & Constraint-Architektur",
+    context: "Spezifizieren - Decomposition & Constraints",
     improvementHints: [
       "Zerlege das Großprojekt in Teilaufgaben unter 2 Stunden",
       "Definiere für jede Teilaufgabe: Input, Output, Abhängigkeiten",
@@ -165,10 +165,10 @@ export const PracticeArea = () => {
         
         <div className="flex justify-center gap-3 flex-wrap">
           {[
-            { level: 1, label: "Level 1: Prompt Craft" },
-            { level: 2, label: "Level 2: Context Engineering" },
-            { level: 3, label: "Level 3: Intent Engineering" },
-            { level: 4, label: "Level 4: Specification Engineering" },
+            { level: 1, label: "Fragen" },
+            { level: 2, label: "Gestalten" },
+            { level: 3, label: "Steuern" },
+            { level: 4, label: "Spezifizieren" },
           ].map(({ level, label }) => (
             <button
               key={level}
