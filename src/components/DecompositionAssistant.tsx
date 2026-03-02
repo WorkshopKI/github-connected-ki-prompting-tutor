@@ -2,10 +2,29 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Loader2, Scissors, Sparkles, Copy, Check } from "lucide-react";
+import { Loader2, Scissors, Sparkles, Copy, Check, Lightbulb } from "lucide-react";
 import { toast } from "sonner";
 import { streamChat, type Msg } from "@/services/llmService";
 import { useAuthContext } from "@/contexts/AuthContext";
+
+const exampleProjects = [
+  {
+    label: "Website Redesign",
+    text: "Redesign unserer Unternehmenswebsite mit 5 Seiten, responsive, SEO-optimiert, mit Blog-Integration und Kontaktformular. Aktuelle Seite ist WordPress, neue Seite soll mit Next.js gebaut werden.",
+  },
+  {
+    label: "Mobile App",
+    text: "Entwicklung einer Fitness-Tracking-App (iOS + Android) mit Nutzerregistrierung, Trainingsplan-Erstellung, Fortschritts-Tracking mit Diagrammen und Push-Benachrichtigungen für Erinnerungen.",
+  },
+  {
+    label: "Online-Kurs erstellen",
+    text: "Einen 8-wöchigen Online-Kurs zum Thema 'KI im Marketing' erstellen: Kursstruktur, 16 Video-Lektionen, Übungsaufgaben, Quiz, Teilnehmer-Zertifikate und eine Landing Page für den Verkauf.",
+  },
+  {
+    label: "Daten-Pipeline",
+    text: "Aufbau einer automatisierten Daten-Pipeline: CSV-Dateien aus 3 Quellen einlesen, bereinigen, in eine PostgreSQL-Datenbank laden, tägliche Reports als PDF generieren und per E-Mail versenden.",
+  },
+];
 
 export const DecompositionAssistant = () => {
   const { profile, isLoggedIn } = useAuthContext();
@@ -152,9 +171,24 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
             placeholder="z.B.: Redesign unserer Unternehmenswebsite mit 5 Seiten, responsive, SEO-optimiert, mit Blog-Integration und Kontaktformular..."
-            className="min-h-[120px] mb-4"
+            className="min-h-[120px] mb-3"
             disabled={isProcessing}
           />
+
+          <div className="flex items-center gap-2 flex-wrap mb-4">
+            <Lightbulb className="w-4 h-4 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground">Beispiele:</span>
+            {exampleProjects.map((ex) => (
+              <button
+                key={ex.label}
+                onClick={() => setProjectDescription(ex.text)}
+                disabled={isProcessing}
+                className="text-xs px-3 py-1 rounded-full border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
+              >
+                {ex.label}
+              </button>
+            ))}
+          </div>
 
           <div className="flex gap-3 flex-wrap">
             <Button
