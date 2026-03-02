@@ -131,7 +131,7 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
 
       <div className="grid md:grid-cols-2 gap-3">
         {examples.map((example, index) => (
-          <Card key={index} className="p-4 hover:shadow-md transition-all">
+          <Card key={index} className="p-4 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
