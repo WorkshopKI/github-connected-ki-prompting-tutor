@@ -160,7 +160,7 @@ export const PracticeArea = () => {
           </h2>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-          Verbessere schlechte Prompts und erhalte KI-gestütztes Feedback mit Verbesserungsvorschlägen
+          Verbessere Prompts und erhalte KI-gestütztes Feedback mit Verbesserungsvorschlägen
         </p>
         
         <div className="flex justify-center gap-3 flex-wrap">

@@ -922,8 +922,7 @@ export const PromptLibrary = () => {
           Prompt-Bibliothek
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Über 80 kategorisierte Beispiel-Prompts und Agenten-Blueprints –
-          von Alltag bis autonome Spezifikationen
+          80+ Beispiel-Prompts und Agenten-Blueprints – von Alltag bis autonome Spezifikationen
         </p>
       </div>
 
