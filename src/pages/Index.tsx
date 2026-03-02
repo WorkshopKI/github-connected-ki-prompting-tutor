@@ -136,8 +136,7 @@ const Index = () => {
                 </h3>
                 <p className="text-lg text-muted-foreground">
                   Prompting 2026 ist kein &quot;Wort-Zauber&quot; mehr, sondern eine Kommunikationsdisziplin.
-                  Der Weg führt von der schnellen Chat-Korrektur zur vollständigen Vorab-Spezifikation
-                  mit 10-facher Effizienz.
+                  Der Weg führt von der schnellen Chat-Korrektur zur vollständigen Vorab-Spezifikation.
                 </p>
               </div>
             </div>
