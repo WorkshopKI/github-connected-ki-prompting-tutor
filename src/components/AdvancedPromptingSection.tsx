@@ -110,16 +110,16 @@ export const AdvancedPromptingSection = () => {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-6">
         {techniques.map((technique) => {
           const Icon = technique.icon;
           return (
-            <Card key={technique.id} className="p-5 bg-gradient-card border-border">
+            <Card key={technique.id} className="p-6 bg-gradient-card border-border">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-xl bg-primary/10">
                   <Icon className={`w-5 h-5 ${technique.color}`} />
                 </div>
-                <h3 className="text-lg font-bold">{technique.title}</h3>
+                <h3 className="text-xl font-bold">{technique.title}</h3>
               </div>
 
               <div className="space-y-5">
@@ -152,8 +152,8 @@ export const AdvancedPromptingSection = () => {
           );
         })}
 
-        <Card className="p-5 bg-gradient-card border-border">
-          <h3 className="text-lg font-bold mb-3">
+        <Card className="p-6 bg-gradient-card border-border">
+          <h3 className="text-xl font-bold mb-4">
             Wichtige Prinzipien
           </h3>
           <ul className="space-y-3 text-sm">
