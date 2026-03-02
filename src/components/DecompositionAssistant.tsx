@@ -148,6 +148,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Werkzeug</span>
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="bg-primary/10 p-2.5 rounded-lg">
             <Scissors className="w-6 h-6 text-primary" />

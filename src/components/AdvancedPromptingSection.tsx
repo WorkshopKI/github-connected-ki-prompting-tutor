@@ -102,6 +102,7 @@ export const AdvancedPromptingSection = () => {
   return (
     <section id="advanced" className="mb-16 scroll-mt-20">
       <div className="text-center mb-10">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Fortgeschritten</span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Advanced Prompting Methoden
         </h2>
