@@ -1,6 +1,5 @@
-import { Shield, Target, Brain, Zap, Users, Thermometer } from "lucide-react";
+import { Shield, Target, Brain, Zap, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const AdvancedPromptingSection = () => {
   const techniques = [
@@ -102,7 +101,7 @@ export const AdvancedPromptingSection = () => {
 
   return (
     <section id="advanced" className="mb-16 scroll-mt-20">
-      <div className="text-center mb-12">
+      <div className="text-center mb-10">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Advanced Prompting Methoden
         </h2>
@@ -111,96 +110,72 @@ export const AdvancedPromptingSection = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="self-correction" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8 h-auto">
-          {techniques.map((technique) => {
-            const Icon = technique.icon;
-            return (
-              <TabsTrigger
-                key={technique.id}
-                value={technique.id}
-                className="flex flex-col gap-2 py-3 text-foreground/60 data-[state=active]:text-foreground data-[state=active]:bg-primary/10 transition-all duration-300 hover:scale-105 hover:text-foreground hover:bg-muted/50"
-              >
-                <Icon className={`w-5 h-5 transition-transform duration-300`} />
-                <span className="text-sm font-bold text-center leading-tight">
-                  {technique.title}
-                </span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-
+      <div className="grid md:grid-cols-2 gap-4">
         {techniques.map((technique) => {
           const Icon = technique.icon;
           return (
-            <TabsContent key={technique.id} value={technique.id} className="space-y-6">
-              <Card className="p-6 bg-gradient-card border-border">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 rounded-xl bg-primary/10">
-                    <Icon className={`w-6 h-6 ${technique.color}`} />
-                  </div>
-                  <h3 className="text-2xl font-bold">{technique.title}</h3>
+            <Card key={technique.id} className="p-5 bg-gradient-card border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 rounded-xl bg-primary/10">
+                  <Icon className={`w-5 h-5 ${technique.color}`} />
                 </div>
+                <h3 className="text-lg font-bold">{technique.title}</h3>
+              </div>
 
-                <div className="space-y-6">
-                  {technique.methods.map((method, idx) => (
-                    <div key={idx} className="space-y-3">
-                      <h4 className="text-lg font-semibold text-primary">
-                        {method.name}
-                      </h4>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {method.description}
+              <div className="space-y-5">
+                {technique.methods.map((method, idx) => (
+                  <div key={idx} className="space-y-2">
+                    <h4 className="text-sm font-semibold text-primary">
+                      {method.name}
+                    </h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {method.description}
+                    </p>
+
+                    <div className="bg-muted/50 rounded-lg p-3 border border-border">
+                      <div className="text-[11px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                        Beispiel
+                      </div>
+                      <p className="text-xs italic text-foreground leading-relaxed">
+                        "{method.example}"
                       </p>
-                      
-                      <div className="bg-muted/50 rounded-lg p-4 border border-border">
-                        <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                          Beispiel
-                        </div>
-                        <p className="text-sm italic text-foreground leading-relaxed">
-                          "{method.example}"
-                        </p>
-                      </div>
-
-                      <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
-                        <div className="text-xs font-semibold text-primary mb-1 uppercase tracking-wide">
-                          💡 Wann verwenden?
-                        </div>
-                        <p className="text-sm text-foreground">
-                          {method.use}
-                        </p>
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </Card>
-            </TabsContent>
+
+                    <p className="text-xs text-muted-foreground">
+                      <span className="font-semibold text-primary">Wann verwenden?</span>{" "}
+                      {method.use}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
           );
         })}
-      </Tabs>
 
-      <Card className="mt-8 p-6 bg-gradient-primary text-white">
-        <h3 className="text-xl font-bold mb-3">
-          🎯 Wichtige Prinzipien für Advanced Prompting
-        </h3>
-        <ul className="space-y-2 text-sm">
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">•</span>
-            <span><strong>Strukturiere den Denkprozess:</strong> Frage nicht nach "Vorsicht", sondern baue Verifizierung als verpflichtenden Schritt ein.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">•</span>
-            <span><strong>Nutze Meta-Wissen der KI:</strong> Die KI wurde auf Prompt-Engineering trainiert - nutze dieses Wissen!</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">•</span>
-            <span><strong>Kämpfe gegen Kompression:</strong> Modelle sind trainiert, prägnant zu sein - fordere explizit Ausführlichkeit, wenn du sie brauchst.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5">•</span>
-            <span><strong>Simuliere menschliche Prozesse:</strong> Debatten, verschiedene Perspektiven und Unsicherheitsstufen führen zu besseren Ergebnissen.</span>
-          </li>
-        </ul>
-      </Card>
+        <Card className="p-5 bg-gradient-card border-border">
+          <h3 className="text-lg font-bold mb-3">
+            Wichtige Prinzipien
+          </h3>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-primary font-bold">1</span>
+              <span><strong>Strukturiere den Denkprozess:</strong> Frage nicht nach "Vorsicht", sondern baue Verifizierung als verpflichtenden Schritt ein.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-primary font-bold">2</span>
+              <span><strong>Nutze Meta-Wissen der KI:</strong> Die KI wurde auf Prompt-Engineering trainiert - nutze dieses Wissen!</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-primary font-bold">3</span>
+              <span><strong>Kämpfe gegen Kompression:</strong> Modelle sind trainiert, prägnant zu sein - fordere explizit Ausführlichkeit, wenn du sie brauchst.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-primary font-bold">4</span>
+              <span><strong>Simuliere menschliche Prozesse:</strong> Debatten, verschiedene Perspektiven und Unsicherheitsstufen führen zu besseren Ergebnissen.</span>
+            </li>
+          </ul>
+        </Card>
+      </div>
     </section>
   );
 };
