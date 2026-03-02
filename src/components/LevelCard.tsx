@@ -24,7 +24,7 @@ export const LevelCard = ({
   return (
     <Card
       className={cn(
-        "p-6 cursor-pointer transition-all hover:shadow-md bg-card",
+        "p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 bg-card",
         isActive
           ? "border-primary shadow-glow"
           : "hover:border-primary/50"

@@ -14,7 +14,7 @@ export const ResourcesSection = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Checkliste für gute Prompts */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -64,7 +64,7 @@ export const ResourcesSection = () => {
         </div>
 
         {/* Tipps für bessere Ergebnisse */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <Lightbulb className="w-5 h-5 text-primary" />
@@ -114,7 +114,7 @@ export const ResourcesSection = () => {
         </div>
 
         {/* Häufige Fehler vermeiden */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-destructive/10 p-2.5 rounded-lg">
               <AlertCircle className="w-5 h-5 text-destructive" />
@@ -157,7 +157,7 @@ export const ResourcesSection = () => {
         </div>
 
         {/* Wissenswertes */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <BookOpen className="w-5 h-5 text-primary" />

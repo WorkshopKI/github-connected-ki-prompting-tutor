@@ -114,7 +114,7 @@ export const AdvancedPromptingSection = () => {
         {techniques.map((technique) => {
           const Icon = technique.icon;
           return (
-            <Card key={technique.id} className="p-6 bg-card border-border shadow-sm hover:shadow-md transition-shadow">
+            <Card key={technique.id} className="p-6 bg-card border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2.5 rounded-lg bg-primary/10">
                   <Icon className={`w-5 h-5 ${technique.color}`} />
@@ -152,7 +152,7 @@ export const AdvancedPromptingSection = () => {
           );
         })}
 
-        <Card className="p-6 bg-card border-border shadow-sm hover:shadow-md transition-shadow">
+        <Card className="p-6 bg-card border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <h3 className="text-xl font-bold mb-4">
             Wichtige Prinzipien
           </h3>

@@ -131,7 +131,7 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
 
       <div className="grid md:grid-cols-2 gap-3">
         {examples.map((example, index) => (
-          <Card key={index} className="p-4 hover:shadow-md transition-shadow">
+          <Card key={index} className="p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
@@ -157,7 +157,7 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
                 onClick={() => copyToClipboard(example.prompt, index)}
               >
                 {copiedIndex === index ? (
-                  <Check className="w-3.5 h-3.5 text-primary" />
+                  <Check className="w-3.5 h-3.5 text-primary animate-scale-in" />
                 ) : (
                   <Copy className="w-3.5 h-3.5" />
                 )}
