@@ -49,6 +49,9 @@ All colors MUST be HSL.
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
+    --section-gap: 5rem;
+    --content-max-width: 72rem;
+
     --chart-1: 18.2813 57.1429% 43.9216%;
 
     --chart-2: 251.4545 84.6154% 74.5098%;
@@ -182,6 +185,10 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   }
 }
