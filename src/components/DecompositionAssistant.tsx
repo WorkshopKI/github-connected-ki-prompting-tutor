@@ -134,7 +134,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
             <Scissors className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold">
-            Decomposition-Assistent
+            Projekt-Zerlegung
           </h2>
         </div>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -200,7 +200,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
 
           {!isLoggedIn && (
             <p className="text-xs text-muted-foreground mt-3">
-              Melde dich an, um den Decomposition-Assistenten zu nutzen.
+              Melde dich an, um die Projekt-Zerlegung zu nutzen.
             </p>
           )}
         </Card>
