@@ -185,7 +185,7 @@ export const PracticeArea = () => {
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
         {filteredExercises.map((exercise) => (
           <ExerciseCard
             key={exercise.id}
