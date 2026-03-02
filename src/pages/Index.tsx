@@ -55,8 +55,8 @@ const Index = () => {
             <LevelCard
               level={1}
               icon={Sparkles}
-              title="Prompt Craft"
-              description="Die ACTA-Methode für präzise, synchrone Interaktionen"
+              title="Fragen"
+              description="Pr\u00e4zise Fragen f\u00fcr direkte Antworten mit der ACTA-Methode"
               examples={["Rezepte", "Reiseplanung", "Geschenkideen"]}
               isActive={activeLevel === 1}
               onClick={() => setActiveLevel(1)}
@@ -64,27 +64,27 @@ const Index = () => {
             <LevelCard
               level={2}
               icon={Brain}
-              title="Context Engineering"
-              description="Gestalte die Informationsumgebung, damit Prompts einfach bleiben"
-              examples={["System-Prompts", "Projekt-Konventionen", "Wissensbasis"]}
+              title="Gestalten"
+              description="Die Informationsumgebung f\u00fcr die KI formen, damit Prompts einfach bleiben"
+              examples={["System-Prompts", "Konventionen", "Wissensbasis"]}
               isActive={activeLevel === 2}
               onClick={() => setActiveLevel(2)}
             />
             <LevelCard
               level={3}
               icon={Search}
-              title="Intent Engineering"
-              description="Kodiere Ziele, Werte und Entscheidungshierarchien für autonomes Handeln"
-              examples={["Werte-Hierarchien", "Entscheidungsregeln", "Zielvorgaben"]}
+              title="Steuern"
+              description="Ziele, Werte und Entscheidungsregeln kodieren f\u00fcr autonomes Handeln"
+              examples={["Werte-Hierarchien", "Entscheidungsregeln", "Eskalation"]}
               isActive={activeLevel === 3}
               onClick={() => setActiveLevel(3)}
             />
             <LevelCard
               level={4}
               icon={Cpu}
-              title="Specification Engineering"
-              description="Erstelle wasserdichte Blueprints für mehrtägige autonome Aufgaben"
-              examples={["Agenten-Specs", "Blueprints", "Acceptance Criteria"]}
+              title="Spezifizieren"
+              description="Wasserdichte Blueprints f\u00fcr mehrt\u00e4gige autonome Aufgaben erstellen"
+              examples={["Agenten-Specs", "Blueprints", "Abnahmekriterien"]}
               isActive={activeLevel === 4}
               onClick={() => setActiveLevel(4)}
             />
