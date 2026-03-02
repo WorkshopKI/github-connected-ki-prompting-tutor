@@ -107,8 +107,7 @@ export const AdvancedPromptingSection = () => {
           Advanced Prompting Methoden
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Fortgeschrittene Techniken für Experten: Gehe über einfache Prompts hinaus und nutze
-          die mentalen Modelle professioneller Prompt-Engineers
+          Fortgeschrittene Methoden und mentale Modelle aus dem professionellen Prompt-Engineering
         </p>
       </div>
 
