@@ -59,10 +59,10 @@ const Index = () => {
           <section id="stufen" className="mb-16 scroll-mt-20">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Die vier Disziplinen des Promptings
+                Prompting in vier Stufen
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Vom einfachen Fragen zum autonomen Delegieren – meistere die Kommunikation mit KI auf jedem Level
+                Von der gezielten Frage bis zur vollständigen Aufgabenspezifikation für KI-Agenten
               </p>
             </div>
 
