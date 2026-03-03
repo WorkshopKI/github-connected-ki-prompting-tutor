@@ -9,12 +9,14 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { ArrowLeft, User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink } from "lucide-react";
+import { ArrowLeft, User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { saveUserKey } from "@/services/llmService";
+import { BUILTIN_MODELS, LATEST_MODELS } from "@/data/models";
+import { useCustomModels } from "@/hooks/useCustomModels";
 
 const Profile = () => {
   const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile } = useAuthContext();
@@ -32,14 +34,8 @@ const Profile = () => {
   const [budget, setBudget] = useState<{ provisioned_key_budget: number; custom_key_active: boolean; active_key_source: string } | null>(null);
   const [customApiKey, setCustomApiKey] = useState("");
   const [savingKey, setSavingKey] = useState(false);
-
-  const MODEL_OPTIONS = [
-    { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
-    { value: "openai/gpt-5.2", label: "GPT-5.2" },
-    { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (Standard)" },
-    { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6" },
-    { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
-  ];
+  const { customModels, addCustomModel, removeCustomModel } = useCustomModels();
+  const [newModelId, setNewModelId] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -73,6 +69,22 @@ const Profile = () => {
         const { data } = await supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle();
         if (data) setBudget(data);
       }
+    }
+  };
+
+  const handleAddCustomModel = () => {
+    const id = newModelId.trim();
+    if (!id) return;
+    if (!id.includes("/")) {
+      toast.error("Bitte im Format 'provider/model-name' eingeben (z.B. 'meta-llama/llama-3-70b')");
+      return;
+    }
+    const added = addCustomModel(id);
+    if (added) {
+      toast.success("Modell hinzugefügt!");
+      setNewModelId("");
+    } else {
+      toast.error("Dieses Modell existiert bereits in der Liste.");
     }
   };
 
@@ -278,15 +290,84 @@ const Profile = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {MODEL_OPTIONS.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                    ))}
+                    <SelectGroup>
+                      <SelectLabel>Standard-Modelle</SelectLabel>
+                      {BUILTIN_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Latest-Versionen</SelectLabel>
+                      {LATEST_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                    {customModels.length > 0 && (
+                      <>
+                        <SelectSeparator />
+                        <SelectGroup>
+                          <SelectLabel>Eigene Modelle</SelectLabel>
+                          {customModels.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
                 <Button variant="outline" onClick={handleSaveModel} disabled={savingModel || selectedModel === profile?.preferred_model}>
                   <Save className="h-4 w-4 mr-1" /> {savingModel ? "…" : "Speichern"}
                 </Button>
               </div>
+            </div>
+
+            {/* Custom model management */}
+            <div className="border-t border-border pt-4">
+              <label className="text-sm font-medium text-muted-foreground mb-1 block">
+                Eigenes OpenRouter-Modell hinzufügen
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="z.B. meta-llama/llama-3-70b"
+                  value={newModelId}
+                  onChange={(e) => setNewModelId(e.target.value)}
+                  className="flex-1"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddCustomModel();
+                    }
+                  }}
+                />
+                <Button variant="outline" onClick={handleAddCustomModel} disabled={!newModelId.trim()}>
+                  <Plus className="h-4 w-4 mr-1" /> Hinzufügen
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Modell-IDs findest du auf{" "}
+                <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-0.5">
+                  openrouter.ai/models <ExternalLink className="h-3 w-3" />
+                </a>
+              </p>
+              {customModels.length > 0 && (
+                <div className="mt-3 space-y-1">
+                  {customModels.map((m) => (
+                    <div key={m.value} className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-1.5 text-sm">
+                      <span className="truncate mr-2" title={m.value}>
+                        {m.label} <span className="text-muted-foreground text-xs">({m.value})</span>
+                      </span>
+                      <button
+                        onClick={() => removeCustomModel(m.value)}
+                        className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                        title="Entfernen"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -308,10 +389,11 @@ const Profile = () => {
                 </div>
                 <Progress value={(budget.provisioned_key_budget / 5) * 100} className="h-2" />
                 <div className="flex items-center gap-2">
-                  {budget.custom_key_active && (
-                    <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> Eigener Key aktiv</Badge>
+                  {budget.active_key_source === "custom" ? (
+                    <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> OpenRouter (eigener Key)</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="gap-1"><Cloud className="h-3 w-3" /> Cloud AI (Standard)</Badge>
                   )}
-                  <Badge variant="secondary">{budget.active_key_source === "custom" ? "Custom" : "Standard"}</Badge>
                 </div>
               </>
             ) : (
