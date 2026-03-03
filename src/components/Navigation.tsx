@@ -32,14 +32,13 @@ export const Navigation = () => {
   };
 
   const navItems = [
-    { label: "Home", id: "hero", type: "scroll" as const },
-    { label: "Disziplinen", id: "stufen", type: "scroll" as const },
+    { label: "Stufen", id: "stufen", type: "scroll" as const },
     { label: "ACTA", id: "acta", type: "scroll" as const },
     { label: "Bibliothek", id: "bibliothek", type: "scroll" as const },
     { label: "Playground", id: "/playground", type: "route" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
-    { label: "Zerlegung", id: "decomposition", type: "scroll" as const },
-    { label: "Ressourcen", id: "ressourcen", type: "scroll" as const },
+    { label: "Tools", id: "decomposition", type: "scroll" as const },
+    { label: "Tipps", id: "ressourcen", type: "scroll" as const },
     { label: "Advanced", id: "advanced", type: "scroll" as const },
   ];
 
@@ -53,15 +52,18 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
+    <nav className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => scrollToSection("hero")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <div className="bg-gradient-primary p-2 rounded-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-xl hidden sm:inline">KI Prompting Tutor</span>
-          </div>
+            <span className="font-bold text-base hidden sm:inline">Prompting Tutor</span>
+          </button>
 
           <div className="hidden md:flex items-center gap-1 md:gap-2">
             {navItems.map((item) => (
@@ -91,7 +93,7 @@ export const Navigation = () => {
                   <span className="sr-only">Menü öffnen</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-72">
+              <SheetContent side="right" className="w-72 overflow-y-auto">
                 <SheetTitle className="text-lg font-bold mb-4">Navigation</SheetTitle>
                 <nav className="flex flex-col gap-1">
                   {navItems.map((item) => (

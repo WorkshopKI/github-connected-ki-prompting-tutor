@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { Loader2, Scissors, Sparkles, Copy, Check, Lightbulb } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Loader2, Scissors, Sparkles, Copy, Check, Lightbulb, Code, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { streamChat, type Msg } from "@/services/llmService";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { staticDecompositionResults } from "@/data/decompositionExamples";
 
 const exampleProjects = [
   {
@@ -26,30 +28,7 @@ const exampleProjects = [
   },
 ];
 
-export const DecompositionAssistant = () => {
-  const { profile, isLoggedIn } = useAuthContext();
-  const [projectDescription, setProjectDescription] = useState("");
-  const [result, setResult] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const decompose = async () => {
-    if (!projectDescription.trim()) {
-      toast.error("Bitte beschreibe dein Projekt!");
-      return;
-    }
-
-    if (!isLoggedIn) {
-      toast.error("Bitte melde dich an, um diese Funktion zu nutzen.");
-      return;
-    }
-
-    setIsProcessing(true);
-    setResult("");
-
-    const systemMsg: Msg = {
-      role: "system",
-      content: `Du bist ein Experte für Projekt-Decomposition und agentisches Arbeiten. Deine Aufgabe ist es, komplexe Projekte in kleine, unabhängig ausführbare Teilaufgaben zu zerlegen.
+const SYSTEM_PROMPT = `Du bist ein Experte für Projekt-Decomposition und agentisches Arbeiten. Deine Aufgabe ist es, komplexe Projekte in kleine, unabhängig ausführbare Teilaufgaben zu zerlegen.
 
 Jede Teilaufgabe soll:
 - Maximal 2 Stunden dauern (ideale Granularität für KI-Agenten)
@@ -70,8 +49,48 @@ Erstelle am Ende:
 - Einen **optimalen Ausführungsplan** (welche Aufgaben parallel laufen können)
 - Eine **Gesamtschätzung** der Projektdauer bei sequenzieller vs. paralleler Ausführung
 
-Antworte auf Deutsch. Formatiere übersichtlich mit Markdown.`
-    };
+Antworte auf Deutsch. Formatiere übersichtlich mit Markdown.`;
+
+export const DecompositionAssistant = () => {
+  const { profile, isLoggedIn } = useAuthContext();
+  const [projectDescription, setProjectDescription] = useState("");
+  const [result, setResult] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isStaticExample, setIsStaticExample] = useState(false);
+  const [resultOpen, setResultOpen] = useState(true);
+  const [promptOpen, setPromptOpen] = useState(false);
+
+  const handleExampleClick = (ex: typeof exampleProjects[number]) => {
+    setProjectDescription(ex.text);
+    const staticResult = staticDecompositionResults[ex.label];
+    if (staticResult) {
+      setResult(staticResult);
+      setIsStaticExample(true);
+      setResultOpen(true);
+    }
+  };
+
+  const decompose = async () => {
+    if (!projectDescription.trim()) {
+      toast.error("Bitte beschreibe dein Projekt!");
+      return;
+    }
+
+    if (!isLoggedIn) {
+      toast.error("Bitte melde dich an, um diese Funktion zu nutzen.");
+      return;
+    }
+
+    // If showing a static example and text hasn't changed, no need to re-fetch
+    if (isStaticExample && result) return;
+
+    setIsProcessing(true);
+    setResult("");
+    setIsStaticExample(false);
+    setResultOpen(true);
+
+    const systemMsg: Msg = { role: "system", content: SYSTEM_PROMPT };
 
     const userMsg: Msg = {
       role: "user",
@@ -99,7 +118,13 @@ Antworte auf Deutsch. Formatiere übersichtlich mit Markdown.`
   const optimize = async () => {
     if (!result.trim()) return;
 
+    if (!isLoggedIn) {
+      toast.error("Bitte melde dich an, um diese Funktion zu nutzen.");
+      return;
+    }
+
     setIsProcessing(true);
+    setIsStaticExample(false);
 
     const systemMsg: Msg = {
       role: "system",
@@ -170,7 +195,10 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
           </label>
           <Textarea
             value={projectDescription}
-            onChange={(e) => setProjectDescription(e.target.value)}
+            onChange={(e) => {
+              setProjectDescription(e.target.value);
+              setIsStaticExample(false);
+            }}
             placeholder="z.B.: Redesign unserer Unternehmenswebsite mit 5 Seiten, responsive, SEO-optimiert, mit Blog-Integration und Kontaktformular..."
             className="min-h-[120px] mb-3"
             disabled={isProcessing}
@@ -182,7 +210,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
             {exampleProjects.map((ex) => (
               <button
                 key={ex.label}
-                onClick={() => setProjectDescription(ex.text)}
+                onClick={() => handleExampleClick(ex)}
                 disabled={isProcessing}
                 className="text-xs px-3 py-1 rounded-full border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
               >
@@ -191,10 +219,26 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
             ))}
           </div>
 
+          {/* System-Prompt anzeigen */}
+          <Collapsible open={promptOpen} onOpenChange={setPromptOpen} className="mb-4">
+            <CollapsibleTrigger asChild>
+              <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Code className="w-3.5 h-3.5" />
+                System-Prompt anzeigen
+                <ChevronDown className={`w-3 h-3 transition-transform ${promptOpen ? 'rotate-180' : ''}`} />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <pre className="mt-2 p-4 bg-muted/50 rounded-lg text-xs text-muted-foreground whitespace-pre-wrap border border-border leading-relaxed max-h-64 overflow-y-auto">
+                {SYSTEM_PROMPT}
+              </pre>
+            </CollapsibleContent>
+          </Collapsible>
+
           <div className="flex gap-3 flex-wrap">
             <Button
               onClick={decompose}
-              disabled={isProcessing || !projectDescription.trim() || !isLoggedIn}
+              disabled={isProcessing || !projectDescription.trim() || (!isLoggedIn && !isStaticExample)}
               className="gap-2"
             >
               {isProcessing && !result ? (
@@ -210,7 +254,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
                 <Button
                   variant="outline"
                   onClick={optimize}
-                  disabled={isProcessing}
+                  disabled={isProcessing || !isLoggedIn}
                   className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
                 >
                   {isProcessing && result ? (
@@ -235,22 +279,33 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
 
           {!isLoggedIn && (
             <p className="text-xs text-muted-foreground mt-3">
-              Melde dich an, um die Projekt-Zerlegung zu nutzen.
+              Beispiele funktionieren ohne Login. Für eigene Projekte bitte anmelden.
             </p>
           )}
         </Card>
 
+        {/* Ergebnis — collapsible */}
         {result && (
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Scissors className="w-4 h-4 text-primary" />
-              <h3 className="font-semibold">Projekt-Zerlegung</h3>
-              {isProcessing && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
-            </div>
-            <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap text-sm leading-relaxed">
-              {result}
-            </div>
-          </Card>
+          <Collapsible open={resultOpen} onOpenChange={setResultOpen}>
+            <Card className="p-6">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-2 w-full text-left">
+                  <Scissors className="w-4 h-4 text-primary shrink-0" />
+                  <h3 className="font-semibold flex-1">Projekt-Zerlegung</h3>
+                  {isStaticExample && (
+                    <span className="text-xs text-muted-foreground mr-2">Vorschau</span>
+                  )}
+                  {isProcessing && <Loader2 className="w-3 h-3 animate-spin text-primary mr-2" />}
+                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${resultOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="prose prose-sm max-w-none text-foreground whitespace-pre-wrap text-sm leading-relaxed mt-4">
+                  {result}
+                </div>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         )}
       </div>
     </section>

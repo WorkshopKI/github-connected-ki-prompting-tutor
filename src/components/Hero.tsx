@@ -1,16 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 export const Hero = () => {
-  const scrollToContent = () => {
-    const target = document.getElementById("stufen");
-    if (target) {
-      const offset = 80;
-      const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
-  };
-
   return (
     <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
       <div
@@ -33,46 +23,37 @@ export const Hero = () => {
             className="text-4xl md:text-6xl lg:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
-            Einstieg in Prompting !
+            Einstieg in Prompting
           </h1>
 
           <p
             className="text-xl md:text-2xl text-muted-foreground mb-6 max-w-3xl mx-auto animate-fade-up"
             style={{ opacity: 0, animationDelay: '200ms' }}
           >
-            Lerne, wie du künstlicher Intelligenz präzise Anweisungen gibst und
-            vom einfachen Fragen zum cleveren Auftraggeber wirst
+            Präzise Anweisungen für KI formulieren — von der einfachen Frage bis zur komplexen Spezifikation
           </p>
 
           <div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-fade-up"
-            style={{ opacity: 0, animationDelay: '300ms' }}
-          >
-            <Button size="lg" className="text-lg px-8 shadow-glow hover:shadow-lg transition-all" onClick={scrollToContent}>
-              Jetzt lernen
-              <ArrowDown className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-
-          <div
             className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mt-10 animate-fade-up"
-            style={{ opacity: 0, animationDelay: '400ms' }}
+            style={{ opacity: 0, animationDelay: '300ms' }}
           >
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
               <div className="text-3xl font-bold text-primary mb-1">4</div>
-              <div className="text-sm text-muted-foreground">Disziplinen</div>
+              <div className="text-sm text-muted-foreground">Stufen</div>
             </div>
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
               <div className="text-3xl font-bold text-primary mb-1">80+</div>
               <div className="text-sm text-muted-foreground">Beispiele</div>
             </div>
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">∞</div>
-              <div className="text-sm text-muted-foreground">Möglichkeiten</div>
+              <div className="text-3xl font-bold text-primary mb-1">6</div>
+              <div className="text-sm text-muted-foreground">Übungen</div>
             </div>
             <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">100%</div>
-              <div className="text-sm text-muted-foreground">Interaktiv</div>
+              <div className="flex justify-center mb-1">
+                <MessageSquare className="w-7 h-7 text-primary" />
+              </div>
+              <div className="text-sm text-muted-foreground">KI-Feedback</div>
             </div>
           </div>
         </div>
