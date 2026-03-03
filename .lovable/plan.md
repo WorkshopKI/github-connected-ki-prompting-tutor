@@ -1,26 +1,30 @@
 
 
-## Plan: Improve error message in `saveUserKey`
+## Problem
 
-### What's already done
-- Both edge functions (`llm-proxy` and `save-user-key`) already use `getUser()` — no changes needed there.
+The `save-user-key` edge function fails with `"Invalid key length"` when trying to encrypt the OpenRouter API key. This happens at the AES-256-GCM key import step, meaning the `ENCRYPTION_KEY` secret is not exactly 64 hex characters (32 bytes).
 
-### Remaining change
-**`src/services/llmService.ts` line 104**: The `saveUserKey` error handler currently falls back to `"Verbindungsfehler"`. It should try to extract the actual error message from the response body first, since `supabase.functions.invoke` may include the server error in the response.
+## Root Cause
 
-Change:
+The `ENCRYPTION_KEY` secret stored in your backend is not the correct length for AES-256-GCM encryption. It must be exactly 64 hexadecimal characters (representing 32 bytes).
+
+## Fix
+
+1. **Generate a valid 256-bit hex key** and update the `ENCRYPTION_KEY` secret. A valid key looks like: `a]1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b` (64 hex chars).
+
+2. **Add a validation guard** in the edge function so that if the key is misconfigured, the error message is clear instead of a generic crypto error.
+
+### Changes
+
+**`supabase/functions/save-user-key/index.ts`**: Add a length check after reading `ENCRYPTION_KEY`:
 ```typescript
-// Before
-const msg = error instanceof Error ? error.message : "Verbindungsfehler";
-
-// After  
-const msg = (error as any)?.message || (error instanceof Error ? error.message : "Verbindungsfehler");
+const encKey = Deno.env.get("ENCRYPTION_KEY");
+if (!encKey || encKey.length !== 64) {
+  return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
+}
 ```
 
-Actually, `supabase.functions.invoke` returns `{ data, error }` where `error` is a `FunctionsHttpError` / `FunctionsRelayError` / `FunctionsFetchError`. The `.message` property already contains the actual error. The current code already handles `error instanceof Error` which should work. However, if the edge function returns an error in the response body (non-2xx), the SDK puts the error details in `error.message`. The fallback string `"Verbindungsfehler"` only triggers if `error` is not an Error instance, which is unlikely.
+Also add the same guard in **`supabase/functions/llm-proxy/index.ts`** if it uses the same encrypt/decrypt pattern.
 
-A more robust approach: also try to parse the response context from the error object to surface the server's actual error text.
-
-### Single file change
-- **`src/services/llmService.ts`**: Update the `saveUserKey` catch block to better surface the real error message from the edge function response.
+**Secret update**: Re-set the `ENCRYPTION_KEY` secret to a valid 64-character hex string.
 
