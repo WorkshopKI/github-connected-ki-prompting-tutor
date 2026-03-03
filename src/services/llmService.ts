@@ -100,7 +100,10 @@ export async function saveUserKey(apiKey: string): Promise<{ success?: boolean; 
   const { data, error } = await supabase.functions.invoke("save-user-key", {
     body: { apiKey },
   });
-  if (error) return { error: "Verbindungsfehler" };
+  if (error) {
+    const msg = error instanceof Error ? error.message : "Verbindungsfehler";
+    return { error: msg };
+  }
   if (data?.error) return { error: data.error };
   return { success: true };
 }
