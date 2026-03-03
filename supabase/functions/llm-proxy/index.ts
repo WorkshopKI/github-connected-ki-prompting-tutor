@@ -75,7 +75,9 @@ serve(async (req) => {
     if (activeSource === "custom" && keyRow?.custom_key_active && keyRow?.custom_key_encrypted) {
       // Custom OpenRouter key
       const encKey = Deno.env.get("ENCRYPTION_KEY");
-      if (!encKey) return jsonRes({ error: "Server encryption not configured" }, 500);
+      if (!encKey || encKey.length !== 64) {
+        return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
+      }
       try {
         apiKey = await decrypt(keyRow.custom_key_encrypted, encKey);
       } catch {

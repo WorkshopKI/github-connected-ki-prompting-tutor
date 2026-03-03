@@ -61,7 +61,10 @@ serve(async (req) => {
 
     /* ── Encrypt & store ── */
     const encKey = Deno.env.get("ENCRYPTION_KEY");
-    if (!encKey) return jsonRes({ error: "Server encryption not configured" }, 500);
+    if (!encKey || encKey.length !== 64) {
+      console.error("ENCRYPTION_KEY length:", encKey?.length ?? 0);
+      return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
+    }
 
     const encrypted = await encrypt(apiKey, encKey);
 
