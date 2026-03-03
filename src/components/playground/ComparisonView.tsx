@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,14 +8,7 @@ import { Send, Square, Bot, Loader2 } from "lucide-react";
 import { streamChat, type Msg } from "@/services/llmService";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
-
-const MODEL_OPTIONS = [
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
-  { value: "openai/gpt-5.2", label: "GPT-5.2" },
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash" },
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6" },
-  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
-];
+import { BUILTIN_MODELS, LATEST_MODELS, getAllModels, getModelLabel } from "@/data/models";
 
 interface ComparisonResult {
   model: string;
@@ -116,8 +109,8 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     setResultB((prev) => prev ? { ...prev, isStreaming: false } : null);
   };
 
-  const modelLabelA = MODEL_OPTIONS.find((m) => m.value === modelA)?.label ?? modelA;
-  const modelLabelB = MODEL_OPTIONS.find((m) => m.value === modelB)?.label ?? modelB;
+  const modelLabelA = getModelLabel(modelA);
+  const modelLabelB = getModelLabel(modelB);
 
   return (
     <div className="space-y-4">
@@ -130,11 +123,33 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {MODEL_OPTIONS.map((m) => (
-                <SelectItem key={m.value} value={m.value}>
-                  {m.label}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectLabel>Standard</SelectLabel>
+                {BUILTIN_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel>Latest</SelectLabel>
+                {LATEST_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              {(() => {
+                const custom = getAllModels().filter((m) => m.isCustom);
+                return custom.length > 0 ? (
+                  <>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Eigene</SelectLabel>
+                      {custom.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </>
+                ) : null;
+              })()}
             </SelectContent>
           </Select>
         </div>
@@ -145,11 +160,33 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {MODEL_OPTIONS.map((m) => (
-                <SelectItem key={m.value} value={m.value}>
-                  {m.label}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                <SelectLabel>Standard</SelectLabel>
+                {BUILTIN_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel>Latest</SelectLabel>
+                {LATEST_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              {(() => {
+                const custom = getAllModels().filter((m) => m.isCustom);
+                return custom.length > 0 ? (
+                  <>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Eigene</SelectLabel>
+                      {custom.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </>
+                ) : null;
+              })()}
             </SelectContent>
           </Select>
         </div>

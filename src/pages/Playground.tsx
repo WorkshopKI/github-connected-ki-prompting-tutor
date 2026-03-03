@@ -4,7 +4,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { streamChat, type Msg } from "@/services/llmService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot } from "lucide-react";
 import { toast } from "sonner";
@@ -18,17 +18,10 @@ import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
+import { BUILTIN_MODELS, LATEST_MODELS, getAllModels } from "@/data/models";
 
 const LS_CONVERSATIONS = "playground_conversations";
 const LS_ACTIVE_ID = "playground_active_id";
-
-const MODEL_OPTIONS = [
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
-  { value: "openai/gpt-5.2", label: "GPT-5.2" },
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (Standard)" },
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6" },
-  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
-];
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -328,15 +321,37 @@ const Playground = () => {
 
           <div className="ml-auto">
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-[200px] text-sm">
+              <SelectTrigger className="w-[220px] text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {MODEL_OPTIONS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>
-                    {m.label}
-                  </SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>Standard</SelectLabel>
+                  {BUILTIN_MODELS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>Latest</SelectLabel>
+                  {LATEST_MODELS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+                {(() => {
+                  const custom = getAllModels().filter((m) => m.isCustom);
+                  return custom.length > 0 ? (
+                    <>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>Eigene</SelectLabel>
+                        {custom.map((m) => (
+                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </>
+                  ) : null;
+                })()}
               </SelectContent>
             </Select>
           </div>
