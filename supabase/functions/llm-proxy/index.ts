@@ -46,7 +46,7 @@ serve(async (req) => {
     const userId = claimsData.claims.sub as string;
 
     /* ── Request body ── */
-    const { messages, model } = await req.json();
+    const { messages, model, reasoning } = await req.json();
     if (!messages || !Array.isArray(messages)) return jsonRes({ error: "messages required" }, 400);
 
     /* ── Load user API key config ── */
@@ -100,17 +100,21 @@ serve(async (req) => {
 
     /* ── Call LLM ── */
     const llmModel = model || "google/gemini-3-flash-preview";
+    const llmBody: Record<string, unknown> = {
+      model: llmModel,
+      messages,
+      stream: true,
+    };
+    if (reasoning && typeof reasoning === "object") {
+      llmBody.reasoning = reasoning;
+    }
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: llmModel,
-        messages,
-        stream: true,
-      }),
+      body: JSON.stringify(llmBody),
     });
 
     if (!response.ok) {

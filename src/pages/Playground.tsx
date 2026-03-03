@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot } from "lucide-react";
+import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot, Brain } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Navigation } from "@/components/Navigation";
 import { BudgetDialog } from "@/components/BudgetDialog";
@@ -18,7 +20,7 @@ import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
-import { BUILTIN_MODELS, LATEST_MODELS, getAllModels } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, getAllModels } from "@/data/models";
 
 const LS_CONVERSATIONS = "playground_conversations";
 const LS_ACTIVE_ID = "playground_active_id";
@@ -60,6 +62,9 @@ const Playground = () => {
   const [systemPrompt, setSystemPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState(
     profile?.preferred_model ?? "google/gemini-3-flash-preview"
+  );
+  const [thinkingEnabled, setThinkingEnabled] = useState(
+    () => localStorage.getItem("thinking_enabled") === "true"
   );
 
   // --- Conversation management ---
@@ -199,6 +204,7 @@ const Playground = () => {
       await streamChat({
         messages: apiMessages,
         model: selectedModel,
+        reasoning: thinkingEnabled ? { effort: "high" } : undefined,
         signal: abortRef.current.signal,
         onDelta: (text) => {
           accRef.current += text;
@@ -319,7 +325,20 @@ const Playground = () => {
 
           <h1 className="text-2xl font-bold">Prompt-Playground</h1>
 
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <Switch
+                id="thinking-toggle"
+                checked={thinkingEnabled}
+                onCheckedChange={(checked) => {
+                  setThinkingEnabled(checked);
+                  localStorage.setItem("thinking_enabled", String(checked));
+                }}
+              />
+              <Label htmlFor="thinking-toggle" className="text-xs flex items-center gap-1 cursor-pointer" title="Erweiterte Denkfähigkeit aktivieren (Reasoning/Thinking)">
+                <Brain className="h-3.5 w-3.5" /> Thinking
+              </Label>
+            </div>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger className="w-[220px] text-sm">
                 <SelectValue />
@@ -327,14 +346,14 @@ const Playground = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Standard</SelectLabel>
-                  {BUILTIN_MODELS.map((m) => (
+                  {STANDARD_MODELS.map((m) => (
                     <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                   ))}
                 </SelectGroup>
                 <SelectSeparator />
                 <SelectGroup>
-                  <SelectLabel>Latest</SelectLabel>
-                  {LATEST_MODELS.map((m) => (
+                  <SelectLabel>Premium</SelectLabel>
+                  {PREMIUM_MODELS.map((m) => (
                     <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                   ))}
                 </SelectGroup>

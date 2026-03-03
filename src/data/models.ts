@@ -2,25 +2,27 @@ export interface ModelOption {
   value: string;
   label: string;
   isLatest?: boolean;
+  isPremium?: boolean;
   isCustom?: boolean;
 }
 
-/** Spezifische Versionen (Standard-Auswahl) */
-export const BUILTIN_MODELS: ModelOption[] = [
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
-  { value: "openai/gpt-5.2", label: "GPT-5.2" },
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (Standard)" },
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6" },
-  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
+/**
+ * Standard-Modelle — empfohlene aktuelle Versionen für den Alltagsgebrauch.
+ * Bei neuen Releases hier die Model-IDs aktualisieren.
+ */
+export const STANDARD_MODELS: ModelOption[] = [
+  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true },
+  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6 (latest)", isLatest: true },
+  { value: "openai/gpt-5.2", label: "GPT-5.2 (latest)", isLatest: true },
 ];
 
-/** "Latest" Aliase — OpenRouter löst diese auf die aktuelle Version auf */
-export const LATEST_MODELS: ModelOption[] = [
-  { value: "openai/chatgpt-4o-latest", label: "ChatGPT (latest)", isLatest: true },
-  { value: "anthropic/claude-sonnet-4", label: "Claude Sonnet (latest)", isLatest: true },
-  { value: "anthropic/claude-opus-4", label: "Claude Opus (latest)", isLatest: true },
-  { value: "google/gemini-2.5-flash", label: "Gemini Flash (latest)", isLatest: true },
-  { value: "google/gemini-2.5-pro", label: "Gemini Pro (latest)", isLatest: true },
+/**
+ * Premium-Modelle — leistungsstärkere (und teurere) Modelle für anspruchsvolle Aufgaben.
+ * Bei neuen Releases hier die Model-IDs aktualisieren.
+ */
+export const PREMIUM_MODELS: ModelOption[] = [
+  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6 (latest)", isPremium: true, isLatest: true },
+  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true },
 ];
 
 export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
@@ -42,7 +44,7 @@ export function saveCustomModels(models: ModelOption[]): void {
 
 export function addCustomModel(modelId: string): ModelOption[] {
   const current = loadCustomModels();
-  const allKnown = [...BUILTIN_MODELS, ...LATEST_MODELS, ...current];
+  const allKnown = [...STANDARD_MODELS, ...PREMIUM_MODELS, ...current];
   if (allKnown.some((m) => m.value === modelId)) return current;
 
   const label = modelId.includes("/")
@@ -59,9 +61,9 @@ export function removeCustomModel(modelId: string): ModelOption[] {
   return updated;
 }
 
-/** Alle verfügbaren Modelle: Standard + Latest + Eigene */
+/** Alle verfügbaren Modelle: Standard + Premium + Eigene */
 export function getAllModels(): ModelOption[] {
-  return [...BUILTIN_MODELS, ...LATEST_MODELS, ...loadCustomModels()];
+  return [...STANDARD_MODELS, ...PREMIUM_MODELS, ...loadCustomModels()];
 }
 
 /** Model-ID zu Display-Label auflösen */
