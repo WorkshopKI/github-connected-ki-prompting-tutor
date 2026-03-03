@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { streamChat, type Msg } from "@/services/llmService";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
-import { STANDARD_MODELS, PREMIUM_MODELS, getAllModels, getModelLabel } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels, getModelLabel } from "@/data/models";
 
 interface ComparisonResult {
   model: string;
@@ -145,6 +145,13 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel>Open Source</SelectLabel>
+                {OPEN_SOURCE_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
               {(() => {
                 const custom = getAllModels().filter((m) => m.isCustom);
                 return custom.length > 0 ? (
@@ -179,6 +186,13 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
               <SelectGroup>
                 <SelectLabel>Premium</SelectLabel>
                 {PREMIUM_MODELS.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                ))}
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel>Open Source</SelectLabel>
+                {OPEN_SOURCE_MODELS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>

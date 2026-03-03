@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { ArrowLeft, User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { saveUserKey } from "@/services/llmService";
-import { STANDARD_MODELS, PREMIUM_MODELS } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
 
 const Profile = () => {
@@ -300,6 +300,13 @@ const Profile = () => {
                     <SelectGroup>
                       <SelectLabel>Premium-Modelle</SelectLabel>
                       {PREMIUM_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Open Source Modelle</SelectLabel>
+                      {OPEN_SOURCE_MODELS.map((m) => (
                         <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                       ))}
                     </SelectGroup>

@@ -3,6 +3,7 @@ export interface ModelOption {
   label: string;
   isLatest?: boolean;
   isPremium?: boolean;
+  isOpenSource?: boolean;
   isCustom?: boolean;
 }
 
@@ -25,6 +26,19 @@ export const PREMIUM_MODELS: ModelOption[] = [
   { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true },
 ];
 
+/**
+ * Open-Source-Modelle — leistungsfähige Modelle mit offenen Gewichten.
+ */
+export const OPEN_SOURCE_MODELS: ModelOption[] = [
+  { value: "mistralai/mistral-large-2512", label: "Mistral Large 3 (2512)", isOpenSource: true },
+  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B", isOpenSource: true },
+  { value: "google/gemma-3-27b-it", label: "Gemma 3 27B", isOpenSource: true },
+  { value: "mistralai/mistral-small-3.1-24b-instruct", label: "Mistral Small 3.1 24B", isOpenSource: true },
+  { value: "allenai/olmo-3.1-32b-think", label: "OLMo 3.1 32B Think", isOpenSource: true },
+  { value: "qwen/qwen3.5-122b-a10b", label: "Qwen 3.5 122B-A10B", isOpenSource: true },
+  { value: "qwen/qwen3.5-397b-a17b", label: "Qwen 3.5 397B-A17B", isOpenSource: true },
+];
+
 export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
 
 const LS_CUSTOM_MODELS = "custom_openrouter_models";
@@ -44,7 +58,7 @@ export function saveCustomModels(models: ModelOption[]): void {
 
 export function addCustomModel(modelId: string): ModelOption[] {
   const current = loadCustomModels();
-  const allKnown = [...STANDARD_MODELS, ...PREMIUM_MODELS, ...current];
+  const allKnown = [...STANDARD_MODELS, ...PREMIUM_MODELS, ...OPEN_SOURCE_MODELS, ...current];
   if (allKnown.some((m) => m.value === modelId)) return current;
 
   const label = modelId.includes("/")
@@ -63,7 +77,7 @@ export function removeCustomModel(modelId: string): ModelOption[] {
 
 /** Alle verfügbaren Modelle: Standard + Premium + Eigene */
 export function getAllModels(): ModelOption[] {
-  return [...STANDARD_MODELS, ...PREMIUM_MODELS, ...loadCustomModels()];
+  return [...STANDARD_MODELS, ...PREMIUM_MODELS, ...OPEN_SOURCE_MODELS, ...loadCustomModels()];
 }
 
 /** Model-ID zu Display-Label auflösen */
