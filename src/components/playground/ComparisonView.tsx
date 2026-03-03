@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Send, Square, Bot, Loader2 } from "lucide-react";
+import { Send, Square, Bot, Loader2, Brain } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { streamChat, type Msg } from "@/services/llmService";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
-import { BUILTIN_MODELS, LATEST_MODELS, getAllModels, getModelLabel } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, getAllModels, getModelLabel } from "@/data/models";
 
 interface ComparisonResult {
   model: string;
@@ -22,6 +24,9 @@ export interface ComparisonViewProps {
 }
 
 export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonViewProps) => {
+  const [thinkingEnabled, setThinkingEnabled] = useState(
+    () => localStorage.getItem("thinking_enabled") === "true"
+  );
   const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
   const [modelB, setModelB] = useState("anthropic/claude-sonnet-4.6");
   const [prompt, setPrompt] = useState("");
@@ -58,10 +63,13 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     abortA.current = new AbortController();
     abortB.current = new AbortController();
 
+    const reasoningParam = thinkingEnabled ? { effort: "high" } : undefined;
+
     // Stream model A
     streamChat({
       messages: apiMessages,
       model: modelA,
+      reasoning: reasoningParam,
       signal: abortA.current.signal,
       onDelta: (text) => {
         accA.current += text;
@@ -83,6 +91,7 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     streamChat({
       messages: apiMessages,
       model: modelB,
+      reasoning: reasoningParam,
       signal: abortB.current.signal,
       onDelta: (text) => {
         accB.current += text;
@@ -125,14 +134,14 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Standard</SelectLabel>
-                {BUILTIN_MODELS.map((m) => (
+                {STANDARD_MODELS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>
               <SelectSeparator />
               <SelectGroup>
-                <SelectLabel>Latest</SelectLabel>
-                {LATEST_MODELS.map((m) => (
+                <SelectLabel>Premium</SelectLabel>
+                {PREMIUM_MODELS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>
@@ -162,14 +171,14 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Standard</SelectLabel>
-                {BUILTIN_MODELS.map((m) => (
+                {STANDARD_MODELS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>
               <SelectSeparator />
               <SelectGroup>
-                <SelectLabel>Latest</SelectLabel>
-                {LATEST_MODELS.map((m) => (
+                <SelectLabel>Premium</SelectLabel>
+                {PREMIUM_MODELS.map((m) => (
                   <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                 ))}
               </SelectGroup>
@@ -190,6 +199,21 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Thinking toggle */}
+      <div className="flex items-center gap-1.5">
+        <Switch
+          id="comparison-thinking-toggle"
+          checked={thinkingEnabled}
+          onCheckedChange={(checked) => {
+            setThinkingEnabled(checked);
+            localStorage.setItem("thinking_enabled", String(checked));
+          }}
+        />
+        <Label htmlFor="comparison-thinking-toggle" className="text-xs flex items-center gap-1 cursor-pointer" title="Erweiterte Denkfähigkeit aktivieren (Reasoning/Thinking)">
+          <Brain className="h-3.5 w-3.5" /> Thinking
+        </Label>
       </div>
 
       {/* Prompt input */}

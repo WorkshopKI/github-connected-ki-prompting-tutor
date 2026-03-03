@@ -7,6 +7,7 @@ const PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/llm-proxy`;
 export async function streamChat({
   messages,
   model,
+  reasoning,
   signal,
   onDelta,
   onDone,
@@ -14,6 +15,7 @@ export async function streamChat({
 }: {
   messages: Msg[];
   model?: string;
+  reasoning?: { effort: string };
   signal?: AbortSignal;
   onDelta: (text: string) => void;
   onDone: () => void;
@@ -25,6 +27,9 @@ export async function streamChat({
     return;
   }
 
+  const body: Record<string, unknown> = { messages, model };
+  if (reasoning) body.reasoning = reasoning;
+
   let resp: Response;
   try {
     resp = await fetch(PROXY_URL, {
@@ -34,7 +39,7 @@ export async function streamChat({
         Authorization: `Bearer ${session.access_token}`,
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       },
-      body: JSON.stringify({ messages, model }),
+      body: JSON.stringify(body),
       signal,
     });
   } catch (e) {
