@@ -1,14 +1,26 @@
 
 
-## Problem
+## Plan: Improve error message in `saveUserKey`
 
-Das UserMenu zeigt den Link zur Profilseite (`/profil`) nur fuer Gast-Nutzer an (Zeile 63-68: `{isGuest && ...}`). Fuer angemeldete E-Mail-Nutzer fehlt der Menue-Eintrag komplett.
+### What's already done
+- Both edge functions (`llm-proxy` and `save-user-key`) already use `getUser()` — no changes needed there.
 
-## Loesung
+### Remaining change
+**`src/services/llmService.ts` line 104**: The `saveUserKey` error handler currently falls back to `"Verbindungsfehler"`. It should try to extract the actual error message from the response body first, since `supabase.functions.invoke` may include the server error in the response.
 
-In `src/components/UserMenu.tsx` einen "Mein Profil"-Eintrag hinzufuegen, der fuer **alle** angemeldeten Nutzer sichtbar ist (nicht nur Gaeste). Der bestehende Gast-spezifische "E-Mail hinterlegen"-Eintrag kann entfernt werden, da die Profilseite diese Funktion bereits enthaelt.
+Change:
+```typescript
+// Before
+const msg = error instanceof Error ? error.message : "Verbindungsfehler";
 
-**Aenderung in `src/components/UserMenu.tsx`:**
-- Nach dem Credits-Eintrag einen neuen Menue-Eintrag "Mein Profil" mit User-Icon einfuegen, der zu `/profil` navigiert
-- Den Gast-exklusiven "E-Mail hinterlegen"-Eintrag entfernen (redundant, da auf der Profilseite vorhanden)
+// After  
+const msg = (error as any)?.message || (error instanceof Error ? error.message : "Verbindungsfehler");
+```
+
+Actually, `supabase.functions.invoke` returns `{ data, error }` where `error` is a `FunctionsHttpError` / `FunctionsRelayError` / `FunctionsFetchError`. The `.message` property already contains the actual error. The current code already handles `error instanceof Error` which should work. However, if the edge function returns an error in the response body (non-2xx), the SDK puts the error details in `error.message`. The fallback string `"Verbindungsfehler"` only triggers if `error` is not an Error instance, which is unlikely.
+
+A more robust approach: also try to parse the response context from the error object to surface the server's actual error text.
+
+### Single file change
+- **`src/services/llmService.ts`**: Update the `saveUserKey` catch block to better surface the real error message from the edge function response.
 
