@@ -74,8 +74,9 @@ serve(async (req) => {
 
     if (activeSource === "custom" && keyRow?.custom_key_active && keyRow?.custom_key_encrypted) {
       // Custom OpenRouter key
-      const encKey = Deno.env.get("ENCRYPTION_KEY");
-      if (!encKey || encKey.length !== 64) {
+      const encKeyRaw = Deno.env.get("ENCRYPTION_KEY");
+      const encKey = encKeyRaw?.trim();
+      if (!encKey || encKey.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(encKey)) {
         return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
       }
       try {

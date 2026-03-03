@@ -60,8 +60,9 @@ serve(async (req) => {
     }
 
     /* ── Encrypt & store ── */
-    const encKey = Deno.env.get("ENCRYPTION_KEY");
-    if (!encKey || encKey.length !== 64) {
+    const encKeyRaw = Deno.env.get("ENCRYPTION_KEY");
+    const encKey = encKeyRaw?.trim();
+    if (!encKey || encKey.length !== 64 || !/^[0-9a-fA-F]{64}$/.test(encKey)) {
       console.error("ENCRYPTION_KEY length:", encKey?.length ?? 0);
       return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
     }
