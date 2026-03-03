@@ -102,6 +102,7 @@ export const AdvancedPromptingSection = () => {
   return (
     <section id="advanced" className="mb-16 scroll-mt-20">
       <div className="text-center mb-10">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Fortgeschritten</span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Advanced Prompting Methoden
         </h2>
@@ -114,9 +115,9 @@ export const AdvancedPromptingSection = () => {
         {techniques.map((technique) => {
           const Icon = technique.icon;
           return (
-            <Card key={technique.id} className="p-6 bg-gradient-card border-border">
+            <Card key={technique.id} className="p-6 bg-card border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 rounded-xl bg-primary/10">
+                <div className="p-2.5 rounded-lg bg-primary/10">
                   <Icon className={`w-5 h-5 ${technique.color}`} />
                 </div>
                 <h3 className="text-xl font-bold">{technique.title}</h3>
@@ -152,7 +153,7 @@ export const AdvancedPromptingSection = () => {
           );
         })}
 
-        <Card className="p-6 bg-gradient-card border-border">
+        <Card className="p-6 bg-card border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <h3 className="text-xl font-bold mb-4">
             Wichtige Prinzipien
           </h3>

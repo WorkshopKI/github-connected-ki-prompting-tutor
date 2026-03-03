@@ -918,6 +918,7 @@ export const PromptLibrary = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-8">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Sammlung</span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Prompt-Bibliothek
         </h2>
@@ -963,7 +964,7 @@ export const PromptLibrary = () => {
       {/* Prompts Grid */}
       <div className="grid md:grid-cols-2 gap-4">
         {filteredPrompts.map((prompt, index) => (
-          <Card key={index} className="p-5 hover:shadow-lg transition-all">
+          <Card key={index} className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -1001,7 +1002,7 @@ export const PromptLibrary = () => {
                   title="Prompt kopieren"
                 >
                   {copiedIndex === index ? (
-                    <Check className="w-4 h-4 text-primary" />
+                    <Check className="w-4 h-4 text-primary animate-scale-in" />
                   ) : (
                     <Copy className="w-4 h-4" />
                   )}

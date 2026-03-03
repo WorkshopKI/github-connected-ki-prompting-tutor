@@ -24,19 +24,19 @@ export const LevelCard = ({
   return (
     <Card
       className={cn(
-        "p-6 cursor-pointer transition-all hover:shadow-lg",
+        "p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 bg-card",
         isActive
-          ? "border-primary shadow-glow bg-gradient-card"
+          ? "border-primary shadow-glow"
           : "hover:border-primary/50"
       )}
       onClick={onClick}
     >
       <div className="flex items-start gap-4 mb-4">
         <div className={cn(
-          "p-3 rounded-xl transition-all",
+          "p-2.5 rounded-lg transition-all",
           isActive ? "bg-primary text-white" : "bg-primary/10 text-primary"
         )}>
-          <Icon className="w-6 h-6" />
+          <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1">
           <div className="text-sm font-semibold text-muted-foreground mb-1">

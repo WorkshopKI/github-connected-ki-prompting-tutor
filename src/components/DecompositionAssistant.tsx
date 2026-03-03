@@ -148,9 +148,10 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Werkzeug</span>
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="bg-primary/20 p-3 rounded-xl">
-            <Scissors className="w-8 h-8 text-primary" />
+          <div className="bg-primary/10 p-2.5 rounded-lg">
+            <Scissors className="w-6 h-6 text-primary" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold">
             Projekt-Zerlegung
@@ -162,7 +163,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6 bg-gradient-card rounded-2xl border border-border shadow-lg p-8 md:p-12">
         <Card className="p-6">
           <label className="block text-sm font-semibold mb-2">
             Beschreibe dein Projekt

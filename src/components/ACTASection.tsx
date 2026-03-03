@@ -39,6 +39,7 @@ export const ACTASection = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-10">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Methodik</span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Die ACTA-Methode
         </h2>
@@ -52,11 +53,11 @@ export const ACTASection = () => {
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-gradient-card rounded-xl p-6 shadow-sm border border-border"
+            className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-primary/10 p-3 rounded-xl">
-                <card.icon className="w-6 h-6 text-primary" />
+              <div className="bg-primary/10 p-2.5 rounded-lg">
+                <card.icon className="w-5 h-5 text-primary" />
               </div>
               <span className="text-xl font-bold text-primary">{card.letter}</span>
             </div>
@@ -97,7 +98,7 @@ export const ACTASection = () => {
 
       {/* Collapsible practice example */}
       {showExample && (
-        <div className="bg-gradient-card rounded-2xl p-6 shadow-lg border border-border mt-4">
+        <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-lg border border-border mt-4">
           <h3 className="text-xl font-bold mb-4 text-center">
             ACTA in der Praxis – Vollständiges Beispiel
           </h3>

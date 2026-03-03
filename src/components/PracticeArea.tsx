@@ -151,9 +151,10 @@ export const PracticeArea = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Praxis</span>
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="bg-accent/20 p-3 rounded-xl">
-            <Lightbulb className="w-8 h-8 text-accent-foreground" />
+          <div className="bg-primary/10 p-2.5 rounded-lg">
+            <Lightbulb className="w-6 h-6 text-primary" />
           </div>
           <h2 className="text-3xl md:text-4xl font-bold">
             Interaktiver Übungsbereich

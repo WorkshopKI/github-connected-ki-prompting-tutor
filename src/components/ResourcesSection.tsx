@@ -1,4 +1,4 @@
-import { CheckCircle2, Lightbulb, AlertCircle, BookOpen } from "lucide-react";
+import { CheckCircle2, Lightbulb, AlertCircle, BookOpen, Repeat, MessageCircleQuestion, LayoutList, Palette, FileSearch, Brain, BookCopy, LayoutTemplate, Thermometer } from "lucide-react";
 
 export const ResourcesSection = () => {
   return (
@@ -14,9 +14,9 @@ export const ResourcesSection = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Checkliste für gute Prompts */}
-        <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="bg-primary/10 p-2.5 rounded-xl">
+            <div className="bg-primary/10 p-2.5 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-primary" />
             </div>
             <h3 className="text-xl font-bold">
@@ -64,9 +64,9 @@ export const ResourcesSection = () => {
         </div>
 
         {/* Tipps für bessere Ergebnisse */}
-        <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="bg-primary/10 p-2.5 rounded-xl">
+            <div className="bg-primary/10 p-2.5 rounded-lg">
               <Lightbulb className="w-5 h-5 text-primary" />
             </div>
             <h3 className="text-xl font-bold">
@@ -75,43 +75,48 @@ export const ResourcesSection = () => {
           </div>
 
           <div className="space-y-3">
-            <div>
-              <p className="font-medium text-sm">🎯 Iterativ vorgehen</p>
-              <p className="text-xs text-muted-foreground">
-                Verfeinere deine Prompts basierend auf den Antworten der KI
-              </p>
+            <div className="flex items-start gap-3">
+              <Repeat className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Iterativ vorgehen</p>
+                <p className="text-xs text-muted-foreground">Verfeinere deine Prompts basierend auf den Antworten der KI</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">🔄 Nachfragen stellen</p>
-              <p className="text-xs text-muted-foreground">
-                Bitte um Klarstellungen oder zusätzliche Details
-              </p>
+            <div className="flex items-start gap-3">
+              <MessageCircleQuestion className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Nachfragen stellen</p>
+                <p className="text-xs text-muted-foreground">Bitte um Klarstellungen oder zusätzliche Details</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">📝 Struktur vorgeben</p>
-              <p className="text-xs text-muted-foreground">
-                Fordere Aufzählungen, Tabellen oder spezifische Formate
-              </p>
+            <div className="flex items-start gap-3">
+              <LayoutList className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Struktur vorgeben</p>
+                <p className="text-xs text-muted-foreground">Fordere Aufzählungen, Tabellen oder spezifische Formate</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">🎨 Ton & Stil bestimmen</p>
-              <p className="text-xs text-muted-foreground">
-                Formal, freundlich, technisch – gib den gewünschten Ton an
-              </p>
+            <div className="flex items-start gap-3">
+              <Palette className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Ton & Stil bestimmen</p>
+                <p className="text-xs text-muted-foreground">Formal, freundlich, technisch – gib den gewünschten Ton an</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">🔍 Quellen anfordern</p>
-              <p className="text-xs text-muted-foreground">
-                Bitte um Begründungen oder Quellenangaben für Fakten
-              </p>
+            <div className="flex items-start gap-3">
+              <FileSearch className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Quellen anfordern</p>
+                <p className="text-xs text-muted-foreground">Bitte um Begründungen oder Quellenangaben für Fakten</p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Häufige Fehler vermeiden */}
-        <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="bg-destructive/10 p-2.5 rounded-xl">
+            <div className="bg-destructive/10 p-2.5 rounded-lg">
               <AlertCircle className="w-5 h-5 text-destructive" />
             </div>
             <h3 className="text-xl font-bold">
@@ -152,9 +157,9 @@ export const ResourcesSection = () => {
         </div>
 
         {/* Wissenswertes */}
-        <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="bg-primary/10 p-2.5 rounded-xl">
+            <div className="bg-primary/10 p-2.5 rounded-lg">
               <BookOpen className="w-5 h-5 text-primary" />
             </div>
             <h3 className="text-xl font-bold">
@@ -163,36 +168,40 @@ export const ResourcesSection = () => {
           </div>
 
           <div className="space-y-3">
-            <div>
-              <p className="font-medium text-sm">💡 Chain-of-Thought</p>
-              <p className="text-xs text-muted-foreground">
-                Bitte die KI, Schritt für Schritt zu denken und zu erklären
-              </p>
+            <div className="flex items-start gap-3">
+              <Brain className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Chain-of-Thought</p>
+                <p className="text-xs text-muted-foreground">Bitte die KI, Schritt für Schritt zu denken und zu erklären</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">🎭 Few-Shot Learning</p>
-              <p className="text-xs text-muted-foreground">
-                Gib 2-3 Beispiele, damit die KI das Muster versteht
-              </p>
+            <div className="flex items-start gap-3">
+              <BookCopy className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Few-Shot Learning</p>
+                <p className="text-xs text-muted-foreground">Gib 2-3 Beispiele, damit die KI das Muster versteht</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">🔄 Prompt-Templates</p>
-              <p className="text-xs text-muted-foreground">
-                Erstelle wiederverwendbare Vorlagen für häufige Aufgaben
-              </p>
+            <div className="flex items-start gap-3">
+              <LayoutTemplate className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Prompt-Templates</p>
+                <p className="text-xs text-muted-foreground">Erstelle wiederverwendbare Vorlagen für häufige Aufgaben</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">⚖️ Temperatur-Konzept</p>
-              <p className="text-xs text-muted-foreground">
-                Höhere Temperatur = kreativer, niedrigere = präziser
-              </p>
+            <div className="flex items-start gap-3">
+              <Thermometer className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Temperatur-Konzept</p>
+                <p className="text-xs text-muted-foreground">Höhere Temperatur = kreativer, niedrigere = präziser</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Golden Rules Banner */}
-      <div className="mt-6 bg-gradient-card rounded-xl p-6 text-center shadow-lg border border-border">
+      <div className="mt-6 bg-gradient-card rounded-2xl p-8 md:p-12 text-center shadow-lg border border-border">
         <h4 className="text-xl font-bold mb-2 text-foreground">
           Die goldene Regel des Promptings
         </h4>
