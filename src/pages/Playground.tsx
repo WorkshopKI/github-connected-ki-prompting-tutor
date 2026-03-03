@@ -20,7 +20,7 @@ import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
-import { STANDARD_MODELS, PREMIUM_MODELS, getAllModels } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels } from "@/data/models";
 
 const LS_CONVERSATIONS = "playground_conversations";
 const LS_ACTIVE_ID = "playground_active_id";
@@ -354,6 +354,13 @@ const Playground = () => {
                 <SelectGroup>
                   <SelectLabel>Premium</SelectLabel>
                   {PREMIUM_MODELS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+                <SelectSeparator />
+                <SelectGroup>
+                  <SelectLabel>Open Source</SelectLabel>
+                  {OPEN_SOURCE_MODELS.map((m) => (
                     <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                   ))}
                 </SelectGroup>
