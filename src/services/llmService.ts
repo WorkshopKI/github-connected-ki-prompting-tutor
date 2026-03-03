@@ -101,7 +101,21 @@ export async function saveUserKey(apiKey: string): Promise<{ success?: boolean; 
     body: { apiKey },
   });
   if (error) {
-    const msg = error instanceof Error ? error.message : "Verbindungsfehler";
+    let msg = "Verbindungsfehler";
+    if (error instanceof Error) {
+      // FunctionsHttpError includes the server's response in context
+      try {
+        const context = (error as any).context;
+        if (context instanceof Response) {
+          const body = await context.json().catch(() => null);
+          msg = body?.error || error.message;
+        } else {
+          msg = error.message;
+        }
+      } catch {
+        msg = error.message;
+      }
+    }
     return { error: msg };
   }
   if (data?.error) return { error: data.error };
