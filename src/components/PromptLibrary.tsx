@@ -919,8 +919,9 @@ export const PromptLibrary = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-8">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Sammlung</span>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>03</span>
+        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           Prompt-Sammlung
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -988,8 +989,8 @@ export const PromptLibrary = () => {
                 <h4 className="font-semibold mb-2 text-sm">
                   {prompt.title}
                 </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                  "{prompt.prompt}"
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/50 rounded-md px-3 py-2 line-clamp-3">
+                  {prompt.prompt}
                 </p>
                 <BlueprintDetails prompt={prompt} />
               </div>

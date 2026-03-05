@@ -173,22 +173,18 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Werkzeug</span>
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="bg-primary/10 p-2.5 rounded-lg">
-            <Scissors className="w-6 h-6 text-primary" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold">
-            Projekt-Zerlegung
-          </h2>
-        </div>
+        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>06</span>
+        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+          Projekt-Zerlegung
+        </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Zerlege komplexe Großprojekte in kleine, unabhängig ausführbare Teilaufgaben
           von unter 2 Stunden – die ideale Granularität für KI-Agenten
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6 bg-gradient-card rounded-2xl border border-border shadow-lg p-8 md:p-12">
+      <div className="max-w-4xl mx-auto space-y-6 bg-gradient-card rounded-2xl shadow-lg p-8 md:p-12">
         <Card className="p-6">
           <label className="block text-sm font-semibold mb-2">
             Beschreibe dein Projekt

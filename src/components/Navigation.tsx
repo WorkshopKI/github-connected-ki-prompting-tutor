@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { BookOpen, Menu } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/components/UserMenu";
@@ -50,12 +51,9 @@ export const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <button
             onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center"
           >
-            <div className="bg-gradient-primary p-2 rounded-lg">
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
-            <span className="font-bold text-base hidden sm:inline">Prompting Tutor</span>
+            <Logo size="md" />
           </button>
 
           <div className="hidden md:flex items-center gap-1 md:gap-2">
@@ -71,8 +69,9 @@ export const Navigation = () => {
             <Button
               size="sm"
               onClick={() => navigate("/playground")}
-              className="ml-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              className="ml-2 gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm group"
             >
+              <Sparkles className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform duration-200" />
               Prompt-Labor
             </Button>
           </div>

@@ -151,15 +151,11 @@ export const PracticeArea = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Praxis</span>
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="bg-primary/10 p-2.5 rounded-lg">
-            <Lightbulb className="w-6 h-6 text-primary" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold">
-            Interaktiver Übungsbereich
-          </h2>
-        </div>
+        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>04</span>
+        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+          Interaktiver Übungsbereich
+        </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
           Verbessere Prompts und erhalte KI-gestütztes Feedback mit Verbesserungsvorschlägen
         </p>

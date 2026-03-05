@@ -39,11 +39,12 @@ export const ACTASection = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-10">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Methodik</span>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>02</span>
+        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
           Die ACTA-Methode
         </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
           Ein strukturiertes Framework für perfekte Prompts
         </p>
       </div>
@@ -53,7 +54,7 @@ export const ACTASection = () => {
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:ring-1 hover:ring-primary/10 hover:-translate-y-0.5 transition-all duration-200"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-primary/10 p-2.5 rounded-lg">
@@ -61,13 +62,13 @@ export const ACTASection = () => {
               </div>
               <span className="text-xl font-bold text-primary">{card.letter}</span>
             </div>
-            <h3 className="text-xl font-bold mb-2">{card.title}</h3>
+            <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
             <p className="text-muted-foreground mb-4">
               {card.description}
             </p>
-            <div className="border-l-2 border-primary pl-3">
-              <p className="text-sm italic text-muted-foreground">
-                &bdquo;{card.quote}&ldquo;
+            <div className="bg-muted/50 rounded-md px-3 py-2">
+              <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                {card.quote}
               </p>
             </div>
           </div>
@@ -103,33 +104,41 @@ export const ACTASection = () => {
             ACTA in der Praxis – Vollständiges Beispiel
           </h3>
 
-          <div className="bg-background/50 rounded-xl p-5 space-y-3">
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Act (Rolle)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Du bist ein erfahrener Social-Media-Manager mit Fokus auf LinkedIn.&ldquo;
-              </p>
+          <div className="bg-background/50 rounded-xl p-5 space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Act (Rolle)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Du bist ein erfahrener Social-Media-Manager mit Fokus auf LinkedIn.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Context (Hintergrund)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Unser Unternehmen ist ein B2B-SaaS-Startup für Projektmanagement. Wir haben gerade ein neues Feature für die automatisierte Zeiterfassung gelauncht. Zielgruppe sind Teamleiter und Projektmanager in mittelständischen Unternehmen.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Context (Hintergrund)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Unser Unternehmen ist ein B2B-SaaS-Startup für Projektmanagement. Wir haben gerade ein neues Feature für die automatisierte Zeiterfassung gelauncht. Zielgruppe sind Teamleiter und Projektmanager in mittelständischen Unternehmen.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Task (Aufgabe)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Erstelle einen LinkedIn-Post, der das neue Feature vorstellt und die Vorteile für Teamleiter hervorhebt.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Task (Aufgabe)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Erstelle einen LinkedIn-Post, der das neue Feature vorstellt und die Vorteile für Teamleiter hervorhebt.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Ausgabe (Format)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Der Post soll max. 150 Wörter haben, mit 3-5 Bulletpoints für die Key-Benefits und einem Call-to-Action am Ende.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Ausgabe (Format)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Der Post soll max. 150 Wörter haben, mit 3-5 Bulletpoints für die Key-Benefits und einem Call-to-Action am Ende.
+                </p>
+              </div>
             </div>
           </div>
         </div>

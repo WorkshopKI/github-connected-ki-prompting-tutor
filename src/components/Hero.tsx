@@ -1,13 +1,17 @@
+import { ChevronDown } from "lucide-react";
+
 export const Hero = () => {
   return (
-    <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
+    <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 opacity-40 dark:opacity-20"
         style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.07) 1px, transparent 0)',
+          backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.08) 1px, transparent 0)',
           backgroundSize: '24px 24px',
         }}
       />
+
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
 
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
@@ -18,7 +22,7 @@ export const Hero = () => {
           </div>
 
           <h1
-            className="text-4xl md:text-6xl lg:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
             Einstieg in Prompting
@@ -38,6 +42,10 @@ export const Hero = () => {
             4 Disziplinen · ACTA-Methode · Interaktives Prompt-Labor · KI-gestütztes Feedback
           </p>
         </div>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
+        <ChevronDown className="w-5 h-5 text-muted-foreground" />
       </div>
     </section>
   );
