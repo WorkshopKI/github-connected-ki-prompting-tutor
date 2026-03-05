@@ -1,4 +1,4 @@
-import { Palette } from "lucide-react";
+import { Check, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +14,20 @@ import { themeCategories, themePresets } from "@/components/themePresets";
 export const ThemePresetPicker = () => {
   const { theme, setTheme } = useTheme();
 
+  const selectedThemeName =
+    themePresets.find((preset) => preset.id === theme)?.name ?? "Theme wählen";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Palette className="h-4 w-4" /> Theme
+        <Button variant="outline" size="sm" className="gap-2 max-w-[220px]">
+          <Palette className="h-4 w-4 shrink-0" />
+          <span className="truncate">{selectedThemeName}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72 max-h-[70vh] overflow-auto">
-        <DropdownMenuLabel>Design-Prototypen</DropdownMenuLabel>
-        {themeCategories.map((category, idx) => (
+      <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-auto">
+        <DropdownMenuLabel>Themes</DropdownMenuLabel>
+        {themeCategories.map((category) => (
           <div key={category.key}>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs text-muted-foreground">{category.title}</DropdownMenuLabel>
@@ -33,12 +37,10 @@ export const ThemePresetPicker = () => {
                 <DropdownMenuItem
                   key={preset.id}
                   onClick={() => setTheme(preset.id)}
-                  className="flex flex-col items-start gap-0.5"
+                  className="flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className={theme === preset.id ? "text-primary font-semibold" : "font-medium"}>{preset.name}</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{preset.description}</span>
+                  <span className={theme === preset.id ? "text-primary font-semibold" : "font-medium"}>{preset.name}</span>
+                  {theme === preset.id && <Check className="h-4 w-4 text-primary" />}
                 </DropdownMenuItem>
               ))}
           </div>

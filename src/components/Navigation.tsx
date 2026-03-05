@@ -24,7 +24,7 @@ export const Navigation = () => {
 
   useEffect(() => {
     if (location.pathname !== "/") return;
-    const sections = ["hero", "stufen", "acta", "bibliothek", "uebungen", "themes", "organisation"];
+    const sections = ["hero", "stufen", "acta", "bibliothek", "uebungen", "organisation"];
     const observers: IntersectionObserver[] = [];
     sections.forEach((id) => {
       const el = document.getElementById(id);
@@ -60,7 +60,6 @@ export const Navigation = () => {
     { label: "Methoden", id: "acta", type: "scroll" as const },
     { label: "Sammlung", id: "bibliothek", type: "scroll" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
-    { label: "Themes", id: "themes", type: "scroll" as const },
     { label: "Organisation", id: "organisation", type: "scroll" as const },
   ];
 
