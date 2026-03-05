@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ThemePresetPicker } from "@/components/ThemePresetPicker";
 import { UserMenu } from "@/components/UserMenu";
 import { SyncStatusIcon } from "@/components/SyncStatusIcon";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ export const Navigation = () => {
 
   useEffect(() => {
     if (location.pathname !== "/") return;
-    const sections = ["hero", "stufen", "acta", "bibliothek", "uebungen"];
+    const sections = ["hero", "stufen", "acta", "bibliothek", "uebungen", "themes", "organisation"];
     const observers: IntersectionObserver[] = [];
     sections.forEach((id) => {
       const el = document.getElementById(id);
@@ -59,6 +60,8 @@ export const Navigation = () => {
     { label: "Methoden", id: "acta", type: "scroll" as const },
     { label: "Sammlung", id: "bibliothek", type: "scroll" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
+    { label: "Themes", id: "themes", type: "scroll" as const },
+    { label: "Organisation", id: "organisation", type: "scroll" as const },
   ];
 
   const handleNavClick = (item: typeof navItems[number]) => {
@@ -105,6 +108,7 @@ export const Navigation = () => {
           <div className="flex items-center gap-2">
             <SyncStatusIcon />
             <UserMenu />
+            <ThemePresetPicker />
             <ThemeToggle />
 
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
