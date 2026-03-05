@@ -139,7 +139,7 @@ export const AdvancedPromptingSection = () => {
   return (
     <section id="advanced" className="mb-16 scroll-mt-20">
       <div className="text-center mb-10">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Fortgeschritten</span>
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-muted-foreground mb-2">Fortgeschritten</span>
         <h2 className="text-2xl md:text-3xl font-bold mb-4">
           Fortgeschrittene Techniken
         </h2>
@@ -191,8 +191,8 @@ export const AdvancedPromptingSection = () => {
         {/* Right: Detail Panel */}
         <Card className="flex-1 p-8 bg-card border-border shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="bg-primary/10 p-2.5 rounded-lg">
-              <activeTechnique.icon className="w-5 h-5 text-primary" />
+            <div className="bg-muted p-2.5 rounded-lg">
+              <activeTechnique.icon className="w-5 h-5 text-foreground/70" />
             </div>
             <h3 className="text-lg font-semibold">{activeTechnique.title}</h3>
           </div>
@@ -221,8 +221,8 @@ export const AdvancedPromptingSection = () => {
               >
                 <AccordionTrigger className="hover:no-underline py-4">
                   <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <Icon className="w-4 h-4 text-primary" />
+                    <div className="bg-muted p-2 rounded-lg">
+                      <Icon className="w-4 h-4 text-foreground/70" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-bold">{technique.shortTitle}</div>
@@ -251,8 +251,8 @@ export const AdvancedPromptingSection = () => {
       {/* Wichtige Prinzipien — Banner */}
       <Card className="p-6 md:p-8 bg-gradient-card shadow-sm border-0">
         <div className="flex items-center gap-3 mb-5">
-          <div className="bg-primary/10 p-2.5 rounded-lg">
-            <Lightbulb className="w-5 h-5 text-primary" />
+          <div className="bg-muted p-2.5 rounded-lg">
+            <Lightbulb className="w-5 h-5 text-foreground/70" />
           </div>
           <h3 className="text-lg font-bold">Wichtige Prinzipien</h3>
         </div>

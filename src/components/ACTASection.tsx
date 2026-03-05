@@ -39,7 +39,7 @@ export const ACTASection = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-10">
-        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Methodik</span>
+        <span className="inline-block text-xs font-semibold tracking-wider uppercase text-muted-foreground mb-2">Methodik</span>
         <h2 className="text-2xl md:text-3xl font-bold mb-4">
           Die ACTA-Methode
         </h2>
