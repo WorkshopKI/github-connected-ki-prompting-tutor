@@ -34,7 +34,7 @@ const actaCards = [
 ];
 
 export const ACTASection = () => {
-  const [showExample, setShowExample] = useState(true);
+  const [showExample, setShowExample] = useState(false);
 
   return (
     <section className="mb-16">

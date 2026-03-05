@@ -111,7 +111,9 @@ interface PromptExamplesProps {
 
 export const PromptExamples = ({ level }: PromptExamplesProps) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const examples = allExamples[level as keyof typeof allExamples] || level1Examples;
+  const visibleExamples = showAll ? examples : examples.slice(0, 3);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -130,7 +132,7 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-3">
-        {examples.map((example, index) => (
+        {visibleExamples.map((example, index) => (
           <Card key={index} className="p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
@@ -166,6 +168,14 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
           </Card>
         ))}
       </div>
+
+      {examples.length > 3 && (
+        <div className="text-center mt-4">
+          <Button variant="outline" size="sm" onClick={() => setShowAll(!showAll)}>
+            {showAll ? "Weniger anzeigen" : `Mehr Beispiele (${examples.length - 3})`}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
