@@ -49,12 +49,38 @@ export const ACTASection = () => {
         </p>
       </div>
 
+      {/* Stepper-Linie – nur auf Desktop */}
+      <div className="hidden lg:flex items-center justify-center mb-10">
+        <div className="flex items-center gap-0">
+          {[
+            { letter: "A", label: "Rolle" },
+            { letter: "C", label: "Kontext" },
+            { letter: "T", label: "Aufgabe" },
+            { letter: "A", label: "Format" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center">
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-sm">
+                  {item.letter}
+                </div>
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  {item.label}
+                </span>
+              </div>
+              {i < 3 && (
+                <div className="w-16 xl:w-24 h-px bg-primary/25 mx-2 mt-[-12px]" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Compact 4-column grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:ring-1 hover:ring-primary/10 hover:-translate-y-0.5 transition-all duration-200"
+            className="bg-card/80 rounded-lg p-5"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-primary/10 p-2.5 rounded-lg">

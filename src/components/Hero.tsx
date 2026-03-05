@@ -1,12 +1,20 @@
 import { ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export const Hero = () => {
+  const [showScroll, setShowScroll] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowScroll(false), 4000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
       <div
-        className="absolute inset-0 opacity-40 dark:opacity-20"
+        className="absolute inset-0 opacity-20 dark:opacity-10"
         style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.08) 1px, transparent 0)',
+          backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.04) 1px, transparent 0)',
           backgroundSize: '24px 24px',
         }}
       />
@@ -22,31 +30,27 @@ export const Hero = () => {
           </div>
 
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-foreground animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
-            Einstieg in Prompting
+            Einstieg in{" "}
+            <span className="text-primary">Prompting</span>
           </h1>
 
           <p
-            className="text-xl md:text-2xl text-muted-foreground mb-6 max-w-3xl mx-auto animate-fade-up"
+            className="text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto animate-fade-up"
             style={{ opacity: 0, animationDelay: '200ms' }}
           >
-            Präzise Anweisungen für KI formulieren — von der einfachen Frage bis zur komplexen Spezifikation
-          </p>
-
-          <p
-            className="text-sm text-muted-foreground mt-8 animate-fade-up"
-            style={{ opacity: 0, animationDelay: '300ms' }}
-          >
-            4 Disziplinen · ACTA-Methode · Interaktives Prompt-Labor · KI-gestütztes Feedback
+            Präzise Anweisungen für KI formulieren – von der einfachen Frage bis zur komplexen Spezifikation
           </p>
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
-        <ChevronDown className="w-5 h-5 text-muted-foreground" />
-      </div>
+      {showScroll && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce transition-opacity duration-500">
+          <ChevronDown className="w-5 h-5 text-muted-foreground/50" />
+        </div>
+      )}
     </section>
   );
 };

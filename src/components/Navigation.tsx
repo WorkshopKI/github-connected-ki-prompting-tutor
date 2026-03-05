@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -18,6 +19,26 @@ export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero");
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+    const sections = ["hero", "stufen", "acta", "bibliothek", "uebungen"];
+    const observers: IntersectionObserver[] = [];
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActiveSection(id);
+        },
+        { rootMargin: "-50% 0px -50% 0px" }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, [location.pathname]);
 
   const scrollToSection = (id: string) => {
     if (location.pathname !== "/") {
@@ -61,7 +82,12 @@ export const Navigation = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className="px-2 md:px-4 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
+                className={cn(
+                  "px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+                  activeSection === item.id
+                    ? "text-foreground border-b-2 border-primary rounded-none"
+                    : "text-muted-foreground hover:text-foreground rounded-md"
+                )}
               >
                 {item.label}
               </button>

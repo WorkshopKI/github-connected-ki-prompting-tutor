@@ -3,6 +3,7 @@ import { ExerciseCard } from "./ExerciseCard";
 import { Lightbulb } from "lucide-react";
 import { useExerciseProgress } from "@/hooks/useExerciseProgress";
 import { useAuth } from "@/hooks/useAuth";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Exercise {
   id: number;
@@ -160,26 +161,14 @@ export const PracticeArea = () => {
           Verbessere Prompts und erhalte KI-gestütztes Feedback mit Verbesserungsvorschlägen
         </p>
         
-        <div className="flex justify-center gap-3 flex-wrap">
-          {[
-            { level: 1, label: "Fragen" },
-            { level: 2, label: "Gestalten" },
-            { level: 3, label: "Steuern" },
-            { level: 4, label: "Spezifizieren" },
-          ].map(({ level, label }) => (
-            <button
-              key={level}
-              onClick={() => setSelectedLevel(level)}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                selectedLevel === level
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <Tabs defaultValue="1" onValueChange={(v) => setSelectedLevel(Number(v))}>
+          <TabsList className="mx-auto">
+            <TabsTrigger value="1">Fragen</TabsTrigger>
+            <TabsTrigger value="2">Gestalten</TabsTrigger>
+            <TabsTrigger value="3">Steuern</TabsTrigger>
+            <TabsTrigger value="4">Spezifizieren</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
