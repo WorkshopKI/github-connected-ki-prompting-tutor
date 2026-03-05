@@ -122,7 +122,7 @@ const Onboarding = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Onboarding & Lernpfade</h1>
+        <h1 className="text-2xl font-bold">Onboarding</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Systematisches Prompt-Training in {learningModules.length} Modulen
         </p>

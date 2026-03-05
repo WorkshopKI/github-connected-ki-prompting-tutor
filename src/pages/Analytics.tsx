@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookOpen, CheckCircle2, Star, FileDown, ArrowUpDown } from "lucide-react";
+import { BookOpen, CheckCircle2, Star, FileDown, ArrowUpDown, ChevronDown } from "lucide-react";
 import { promptLibrary } from "@/data/prompts";
 import { learningModules } from "@/data/learningPath";
 import { useSyncContext } from "@/contexts/SyncContext";
@@ -49,6 +50,18 @@ const Analytics = () => {
       .sort(([, a], [, b]) => b - a);
   }, []);
   const maxCategoryCount = categoryData.length > 0 ? categoryData[0][1] : 1;
+
+  // Group categories by count for collapsible sections
+  const categoryGroups = useMemo(() => {
+    const groups: { label: string; items: [string, number][]; defaultOpen: boolean }[] = [];
+    const top = categoryData.filter(([, c]) => c >= 3);
+    const mid = categoryData.filter(([, c]) => c === 2);
+    const rest = categoryData.filter(([, c]) => c <= 1);
+    if (top.length > 0) groups.push({ label: "Top-Kategorien (3+)", items: top, defaultOpen: true });
+    if (mid.length > 0) groups.push({ label: "Mittlere Kategorien (2)", items: mid, defaultOpen: true });
+    if (rest.length > 0) groups.push({ label: "Einzelne Kategorien (1)", items: rest, defaultOpen: false });
+    return groups;
+  }, [categoryData]);
 
   // Department table
   const departmentData = useMemo(() => {
@@ -153,21 +166,33 @@ const Analytics = () => {
         </Card>
       </div>
 
-      {/* Bar Chart: Prompts by Category */}
+      {/* Bar Chart: Prompts by Category (collapsible groups) */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
         <h2 className="font-semibold text-lg mb-4">Prompts nach Kategorie</h2>
-        <div className="space-y-2">
-          {categoryData.map(([category, count]) => (
-            <div key={category} className="flex items-center gap-3">
-              <span className="text-sm w-44 truncate text-right text-muted-foreground">{category}</span>
-              <div className="flex-1 h-6 bg-muted/30 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all"
-                  style={{ width: `${(count / maxCategoryCount) * 100}%` }}
-                />
-              </div>
-              <span className="text-sm font-medium w-8 text-right">{count}</span>
-            </div>
+        <div className="space-y-3">
+          {categoryGroups.map((group) => (
+            <Collapsible key={group.label} defaultOpen={group.defaultOpen}>
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-muted-foreground hover:text-foreground py-1.5 px-2 rounded-lg hover:bg-muted/50 transition-colors group">
+                <span>{group.label} ({group.items.length})</span>
+                <ChevronDown className="w-4 h-4 transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-2 mt-2">
+                  {group.items.map(([category, count]) => (
+                    <div key={category} className="flex items-center gap-3">
+                      <span className="text-sm w-44 truncate text-right text-muted-foreground">{category}</span>
+                      <div className="flex-1 h-6 bg-muted/30 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all"
+                          style={{ width: `${(count / maxCategoryCount) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium w-8 text-right">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           ))}
         </div>
       </Card>

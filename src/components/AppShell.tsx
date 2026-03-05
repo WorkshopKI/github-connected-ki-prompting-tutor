@@ -37,11 +37,10 @@ import {
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Prompt Library", icon: BookOpen, path: "/library" },
   { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
+  { label: "Prompt Library", icon: BookOpen, path: "/library" },
   { label: "Team Workspace", icon: Users, path: "/workspace" },
   { label: "Analytics", icon: BarChart3, path: "/analytics" },
-  { label: "Einstellungen", icon: Settings, path: "/settings" },
 ];
 
 const secondaryItems = [
@@ -52,6 +51,7 @@ function getPageTitle(pathname: string): string {
   const all = [...navItems, ...secondaryItems];
   const match = all.find((item) => item.path === pathname);
   if (match) return match.label;
+  if (pathname === "/settings") return "Einstellungen";
   if (pathname === "/profil") return "Profil";
   if (pathname === "/admin/teilnehmer") return "Teilnehmer-Verwaltung";
   return "Seite";
@@ -123,6 +123,15 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
             <div className="flex items-center gap-1">
               <SyncStatusIcon />
               <ThemePresetPicker />
+              <button
+                onClick={() => navigate("/settings")}
+                className={`inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
+                  isActive("/settings") ? "text-foreground bg-accent" : ""
+                }`}
+                title="Einstellungen"
+              >
+                <Settings className="h-4 w-4" />
+              </button>
             </div>
           </div>
         </SidebarFooter>
