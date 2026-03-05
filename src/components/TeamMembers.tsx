@@ -14,12 +14,12 @@ const mockMembers = [
 ];
 
 const roleColors: Record<string, string> = {
-  Admin: "bg-rose-100 text-rose-700",
-  Editor: "bg-blue-100 text-blue-700",
+  Admin: "bg-primary/15 text-primary font-semibold",
+  Editor: "bg-muted text-muted-foreground",
   Viewer: "bg-muted text-muted-foreground",
 };
 
-const avatarColors = ["bg-primary/20 text-primary", "bg-blue-100 text-blue-700", "bg-emerald-100 text-emerald-700", "bg-amber-100 text-amber-700", "bg-purple-100 text-purple-700", "bg-rose-100 text-rose-700"];
+const avatarColors = ["bg-primary/15 text-primary", "bg-muted text-foreground/70", "bg-primary/10 text-primary", "bg-muted text-muted-foreground"];
 
 export const TeamMembers = () => {
   return (
@@ -47,7 +47,7 @@ export const TeamMembers = () => {
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm">{member.name}</span>
                   <Badge className={`text-[10px] ${roleColors[member.role] || ""}`}>{member.role}</Badge>
-                  <span className={`w-2 h-2 rounded-full ${member.status === "online" ? "bg-emerald-500" : "bg-muted-foreground/30"}`} />
+                  <span className={`w-2 h-2 rounded-full ${member.status === "online" ? "bg-primary" : "bg-muted-foreground/30"}`} />
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                   <span>{member.department}</span>

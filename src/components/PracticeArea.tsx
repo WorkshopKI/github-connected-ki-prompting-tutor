@@ -22,8 +22,6 @@ export const PracticeArea = () => {
   return (
     <section className="mb-16">
       <div className="text-center mb-12">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>04</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           Interaktiver Übungsbereich
         </h2>

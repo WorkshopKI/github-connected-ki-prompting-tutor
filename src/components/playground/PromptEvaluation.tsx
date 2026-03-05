@@ -137,7 +137,7 @@ function CriterionBadge({ label, met }: { label: string; met: boolean }) {
     <div
       className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${
         met
-          ? "bg-green-500/10 text-green-700 dark:text-green-400"
+          ? "bg-primary/10 text-primary"
           : "bg-red-500/10 text-red-700 dark:text-red-400"
       }`}
     >

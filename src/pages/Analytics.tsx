@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BookOpen, CheckCircle2, Star, FileDown, ArrowUpDown, ChevronDown } from "lucide-react";
+import { StatCard } from "@/components/StatCard";
 import { promptLibrary } from "@/data/prompts";
 import { learningModules } from "@/data/learningPath";
 import { useSyncContext } from "@/contexts/SyncContext";
@@ -120,7 +121,7 @@ const Analytics = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold">Analytics & Insights</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Analytics & Insights</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Nutzung, Qualität und Governance-Metriken
           </p>
@@ -137,38 +138,14 @@ const Analytics = () => {
 
       {/* Top Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><BookOpen className="h-7 w-7 text-primary" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prompts in Library</p>
-              <p className="text-2xl font-bold">{totalPrompts}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><CheckCircle2 className="h-7 w-7 text-emerald-600" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Verifizierte Prompts</p>
-              <p className="text-2xl font-bold">{verifiedPrompts}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><Star className="h-7 w-7 text-amber-600" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prompt-Qualität</p>
-              <p className="text-2xl font-bold">{avgQuality}/5</p>
-            </div>
-          </div>
-        </Card>
+        <StatCard icon={BookOpen} label="Prompts in Library" value={totalPrompts} />
+        <StatCard icon={CheckCircle2} label="Verifizierte Prompts" value={verifiedPrompts} />
+        <StatCard icon={Star} label="Prompt-Qualität" value={`${avgQuality}/5`} />
       </div>
 
       {/* Bar Chart: Prompts by Category (collapsible groups) */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Prompts nach Kategorie</h2>
+        <h2 className="font-semibold text-base mb-4">Prompts nach Kategorie</h2>
         <div className="space-y-3">
           {categoryGroups.map((group) => (
             <Collapsible key={group.label} defaultOpen={group.defaultOpen}>
@@ -199,7 +176,7 @@ const Analytics = () => {
 
       {/* Table: Departments */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Prompts nach Abteilung & Risiko</h2>
+        <h2 className="font-semibold text-base mb-4">Prompts nach Abteilung & Risiko</h2>
         <Table>
           <TableHeader>
             <TableRow>
@@ -230,9 +207,9 @@ const Analytics = () => {
                 <TableCell className="font-medium">{dep.name}</TableCell>
                 <TableCell>{dep.total}</TableCell>
                 <TableCell>{dep.verified}</TableCell>
-                <TableCell>{dep.high > 0 ? <Badge className="bg-rose-100 text-rose-700">{dep.high}</Badge> : "—"}</TableCell>
-                <TableCell>{dep.medium > 0 ? <Badge className="bg-amber-100 text-amber-700">{dep.medium}</Badge> : "—"}</TableCell>
-                <TableCell>{dep.low > 0 ? <Badge className="bg-emerald-100 text-emerald-700">{dep.low}</Badge> : "—"}</TableCell>
+                <TableCell>{dep.high > 0 ? <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400">{dep.high}</Badge> : "—"}</TableCell>
+                <TableCell>{dep.medium > 0 ? <Badge className="bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400">{dep.medium}</Badge> : "—"}</TableCell>
+                <TableCell>{dep.low > 0 ? <Badge className="bg-primary/10 text-primary">{dep.low}</Badge> : "—"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -241,7 +218,7 @@ const Analytics = () => {
 
       {/* Onboarding Progress */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Onboarding-Fortschritt</h2>
+        <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
         <div className="flex items-center gap-1 flex-wrap">
           {learningModules.map((mod, i) => {
             const isComplete = completedLessons.includes(mod.id);
@@ -252,7 +229,7 @@ const Analytics = () => {
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 ${
                         isComplete
-                          ? "bg-emerald-100 border-emerald-500 text-emerald-700"
+                          ? "bg-primary/15 border-primary text-primary"
                           : "bg-muted border-muted-foreground/20 text-muted-foreground"
                       }`}
                     >
@@ -262,7 +239,7 @@ const Analytics = () => {
                   <TooltipContent>{mod.title}</TooltipContent>
                 </Tooltip>
                 {i < learningModules.length - 1 && (
-                  <div className={`w-6 h-0.5 ${isComplete ? "bg-emerald-500" : "bg-muted-foreground/20"}`} />
+                  <div className={`w-6 h-0.5 ${isComplete ? "bg-primary" : "bg-muted-foreground/20"}`} />
                 )}
               </div>
             );
@@ -282,23 +259,23 @@ const Analytics = () => {
           <h3 className="font-semibold mb-3">Risiko-Verteilung</h3>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs w-12 text-rose-600">Hoch</span>
+              <span className="text-xs w-12 text-red-700 dark:text-red-400">Hoch</span>
               <div className="flex-1 h-4 bg-muted/30 rounded-full overflow-hidden">
-                <div className="h-full bg-rose-500 rounded-full" style={{ width: `${(riskCounts.high / maxRisk) * 100}%` }} />
+                <div className="h-full bg-red-500 dark:bg-red-600 rounded-full" style={{ width: `${(riskCounts.high / maxRisk) * 100}%` }} />
               </div>
               <span className="text-xs w-6 text-right">{riskCounts.high}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs w-12 text-amber-600">Mittel</span>
+              <span className="text-xs w-12 text-amber-800 dark:text-amber-400">Mittel</span>
               <div className="flex-1 h-4 bg-muted/30 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${(riskCounts.medium / maxRisk) * 100}%` }} />
+                <div className="h-full bg-amber-500 dark:bg-amber-600 rounded-full" style={{ width: `${(riskCounts.medium / maxRisk) * 100}%` }} />
               </div>
               <span className="text-xs w-6 text-right">{riskCounts.medium}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs w-12 text-emerald-600">Niedrig</span>
+              <span className="text-xs w-12 text-primary">Niedrig</span>
               <div className="flex-1 h-4 bg-muted/30 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(riskCounts.low / maxRisk) * 100}%` }} />
+                <div className="h-full bg-primary rounded-full" style={{ width: `${(riskCounts.low / maxRisk) * 100}%` }} />
               </div>
               <span className="text-xs w-6 text-right">{riskCounts.low}</span>
             </div>
@@ -309,7 +286,7 @@ const Analytics = () => {
           <h3 className="font-semibold mb-3">Abteilungs-Abdeckung</h3>
           <div className="flex flex-wrap gap-1.5">
             {allDepartments.covered.map((dep) => (
-              <Badge key={dep} className="bg-emerald-100 text-emerald-700">{dep}</Badge>
+              <Badge key={dep} className="bg-primary/10 text-primary">{dep}</Badge>
             ))}
             {allDepartments.missing.map((dep) => (
               <Badge key={dep} variant="outline" className="text-muted-foreground">{dep}</Badge>

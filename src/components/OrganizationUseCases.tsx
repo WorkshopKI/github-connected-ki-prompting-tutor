@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { orgUseCases } from "@/data/orgUseCases";
 
 const riskStyles = {
-  niedrig: "bg-emerald-100 text-emerald-700",
-  mittel: "bg-amber-100 text-amber-700",
-  hoch: "bg-rose-100 text-rose-700",
+  niedrig: "bg-primary/10 text-primary",
+  mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
+  hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
 };
 
 export const OrganizationUseCases = () => {
@@ -41,10 +41,8 @@ export const OrganizationUseCases = () => {
   };
 
   return (
-    <section className="mb-16 md:mb-20" id="organisation">
+    <section className="mb-0" id="organisation">
       <div className="text-center mb-8">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: "hsl(var(--primary-deep))" }}>05</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "hsl(var(--primary-deep))" }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Use Cases im Unternehmenskontext</h2>
         <p className="text-muted-foreground max-w-3xl mx-auto">
           Wähle Abteilung, Risiko-Level und Rolle. Nutze freigegebene Templates als Startpunkt für wiederholbare Team-Qualität.

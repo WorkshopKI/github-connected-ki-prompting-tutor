@@ -78,10 +78,10 @@ const componentMap: Record<string, React.ComponentType> = {
 };
 
 const typeBadgeColors: Record<string, string> = {
-  theorie: "bg-blue-100 text-blue-700",
-  praxis: "bg-emerald-100 text-emerald-700",
-  quiz: "bg-amber-100 text-amber-700",
-  pruefung: "bg-rose-100 text-rose-700",
+  theorie: "bg-muted text-muted-foreground",
+  praxis: "bg-primary/10 text-primary",
+  quiz: "bg-muted text-muted-foreground",
+  pruefung: "bg-primary/10 text-primary",
 };
 
 const typeLabels: Record<string, string> = {
@@ -122,7 +122,7 @@ const Onboarding = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Onboarding</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Onboarding</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Systematisches Prompt-Training in {learningModules.length} Modulen
         </p>
@@ -137,11 +137,11 @@ const Onboarding = () => {
         <Progress value={progressPercent} className="h-3 mb-4" />
         <div className="flex gap-4 text-sm">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
             {completedCount} Abgeschlossen
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary/40" />
             {availableCount} In Bearbeitung
           </span>
           <span className="flex items-center gap-1.5">
@@ -152,7 +152,7 @@ const Onboarding = () => {
       </Card>
 
       {/* Module List */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {learningModules.map((mod, index) => {
           const status = moduleStatuses[mod.id];
           const isExpanded = expandedModule === mod.id;
@@ -160,61 +160,55 @@ const Onboarding = () => {
 
           return (
             <div key={mod.id}>
-              <Card
-                className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  status === "completed"
-                    ? "border-l-4 border-l-green-500 border-border"
-                    : status === "available"
-                    ? "border-l-4 border-l-orange-500 border-border hover:shadow-md"
-                    : "opacity-50 pointer-events-none border-border"
-                }`}
-                onClick={() => toggleModule(mod.id)}
-              >
-                <div className="flex items-center gap-4">
-                  {/* Number Badge */}
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
-                      status === "completed"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : status === "available"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {status === "completed" ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : status === "locked" ? (
-                      <Lock className="w-4 h-4" />
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-sm">{mod.title}</h3>
-                      <Badge variant="secondary" className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
-                        {typeLabels[mod.type]}
-                      </Badge>
-                      <Badge variant="outline" className="text-[10px]">
-                        {mod.duration}
-                      </Badge>
+              {status === "locked" ? (
+                <Card className="px-4 py-3 rounded-lg border border-border opacity-40">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-muted-foreground text-xs font-bold shrink-0">
+                      {index + 1}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                    <span className="text-sm text-muted-foreground">{mod.title}</span>
+                    <Badge className={`ml-auto text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
+                      {typeLabels[mod.type]} · {mod.duration}
+                    </Badge>
                   </div>
-
-                  {/* Status */}
-                  <div className="shrink-0">
-                    {status === "completed" && (
-                      <span className="text-xs text-emerald-600 font-medium">Abgeschlossen</span>
-                    )}
-                    {status === "available" && (
-                      <Play className="w-5 h-5 text-amber-600" />
-                    )}
+                </Card>
+              ) : (
+                <Card
+                  className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    status === "completed"
+                      ? "border-l-4 border-l-primary/50 border-border"
+                      : "border-l-4 border-l-primary border-border hover:shadow-md bg-primary/[0.02]"
+                  }`}
+                  onClick={() => toggleModule(mod.id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
+                      status === "completed"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-primary text-primary-foreground"
+                    }`}>
+                      {status === "completed" ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm">{mod.title}</span>
+                        <Badge className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
+                          {typeLabels[mod.type]}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{mod.duration}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                    </div>
+                    <div className="shrink-0">
+                      {status === "completed" ? (
+                        <span className="text-xs text-primary font-medium">Abgeschlossen</span>
+                      ) : (
+                        <Play className="w-5 h-5 text-primary" />
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              )}
 
               {/* Expanded Content */}
               {isExpanded && Component && (
