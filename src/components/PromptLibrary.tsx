@@ -360,79 +360,41 @@ export const PromptLibrary = () => {
               className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               onClick={() => handlePromptClick(prompt)}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="text-[11px] font-semibold tracking-wide uppercase text-foreground/50">
-                      {prompt.category}
-                    </span>
-                    {prompt.type === "blueprint" && (
-                      <span className="inline-flex items-center gap-1 text-xs bg-primary/20 text-primary font-semibold px-2 py-1 rounded">
-                        <Shield className="w-3 h-3" /> Blueprint
-                      </span>
-                    )}
-                    {prompt.needsWeb && (
-                      <span className="inline-flex items-center gap-1 text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
-                        <Globe className="w-3 h-3" /> Websuche
-                      </span>
-                    )}
-                    {prompt.official ? (
-                      <Badge className="bg-primary/10 text-primary text-xs gap-1">
-                        <Shield className="w-3 h-3" /> Verifiziert
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">Entwurf</Badge>
-                    )}
-                  </div>
-                  <h4 className="font-semibold mb-1 text-sm">{prompt.title}</h4>
-                  {prompt.department && (
-                    <p className="text-[11px] text-muted-foreground mb-2">
-                      Abteilung: {prompt.department}{prompt.riskLevel ? ` \u00b7 Risiko: ${prompt.riskLevel}` : ""}
-                    </p>
-                  )}
-                  <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-3">
-                    {prompt.prompt}
-                  </p>
-
-                  {extractVariables(prompt.prompt).length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      <span className="text-[10px] text-muted-foreground">Variablen:</span>
-                      {extractVariables(prompt.prompt).map((v) => (
-                        <Badge key={v} variant="outline" className="text-[10px] px-1.5 py-0">{`{{${v}}}`}</Badge>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="mt-2">
-                    <InlineRating title={prompt.title} />
-                  </div>
-
-                  <BlueprintDetails prompt={prompt} />
-                </div>
-
-                <div className="flex flex-col gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => copyToClipboard(prompt.prompt, index)}
-                    title="Prompt kopieren"
+              {/* Zeile 1: Titel + Status-Badge */}
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h4 className="font-semibold text-sm">{prompt.title}</h4>
+                {prompt.official ? (
+                  <Badge className="bg-primary/10 text-primary text-xs shrink-0">Verifiziert</Badge>
+                ) : (
+                  <Badge variant="secondary" className="text-xs shrink-0">Entwurf</Badge>
+                )}
+              </div>
+              {/* Zeile 2: Kategorie + Level als Text */}
+              <p className="text-[11px] text-muted-foreground mb-3">
+                {prompt.category}{prompt.level ? ` \u00b7 ${prompt.level}` : ""}{prompt.type === "blueprint" ? " \u00b7 Blueprint" : ""}{prompt.needsWeb ? " \u00b7 Websuche" : ""}{prompt.department ? ` \u00b7 ${prompt.department}` : ""}
+              </p>
+              {/* Zeile 3: Prompt-Text */}
+              <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-2 mb-3">
+                {prompt.prompt}
+              </p>
+              {/* Zeile 4: Rating + Actions */}
+              <div className="flex items-center justify-between">
+                <InlineRating title={prompt.title} />
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); copyToClipboard(prompt.prompt, index); }}
+                    className="p-1.5 rounded-md hover:bg-muted transition-colors"
+                    title="Kopieren"
                   >
-                    {copiedIndex === index ? (
-                      <Check className="w-4 h-4 text-primary animate-scale-in" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`)}
-                    title="Im Playground öffnen"
+                    {copiedIndex === index ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`); }}
+                    className="p-1.5 rounded-md hover:bg-muted transition-colors"
+                    title="Im Playground \u00f6ffnen"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
+                    <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
                 </div>
               </div>
             </Card>
