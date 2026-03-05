@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600&family=Libre+Baskerville:wght@700&family=Manrope:wght@300;400;500;600&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,6 +42,12 @@ All colors MUST be HSL.
 
     --primary-deep: 15 45% 38%;
 
+    --surface-1: 0 0% 100%;
+    --surface-2: 44 29% 94%;
+    --text-primary: 48 20% 18%;
+    --text-muted: 50 4% 36%;
+    --border-subtle: 48 12% 86%;
+
     --gradient-primary: linear-gradient(135deg, hsl(18, 65%, 48%), hsl(28, 55%, 52%));
     --gradient-subtle: linear-gradient(180deg, hsl(25, 20%, 96%), hsl(30, 25%, 92%));
     --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(30, 30%, 94%));
@@ -81,6 +89,8 @@ All colors MUST be HSL.
     --sidebar-ring: 0 0% 70.9804%;
 
     --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 
@@ -144,6 +154,12 @@ All colors MUST be HSL.
 
     --primary-deep: 15 50% 55%;
 
+    --surface-1: 60 2% 16%;
+    --surface-2: 60 3% 11%;
+    --text-primary: 46 10% 84%;
+    --text-muted: 51 8% 72%;
+    --border-subtle: 60 5% 24%;
+
     --gradient-primary: linear-gradient(135deg, hsl(18, 60%, 55%), hsl(28, 50%, 55%));
     --gradient-subtle: linear-gradient(180deg, hsl(20, 25%, 10%), hsl(20, 20%, 14%));
     --gradient-card: linear-gradient(135deg, hsl(20, 20%, 14%), hsl(20, 18%, 16%));
@@ -171,6 +187,8 @@ All colors MUST be HSL.
     --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
     --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
     --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --radius: 0.5rem;
@@ -190,10 +208,11 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-body;
+    font-family: var(--font-body);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading);
     letter-spacing: -0.02em;
   }
 }
@@ -209,4 +228,35 @@ All colors MUST be HSL.
 @keyframes scale-in {
   from { transform: scale(0.5); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@layer base {
+  .muted-stone-contrast {
+    --background: 42 7% 94%; --foreground: 32 10% 18%; --card: 42 10% 98%; --card-foreground: 32 10% 18%;
+    --primary: 18 28% 42%; --primary-foreground: 0 0% 100%; --muted: 40 8% 90%; --muted-foreground: 31 7% 35%;
+    --border: 32 8% 78%; --input: 32 8% 74%; --ring: 18 28% 42%;
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .muted-moss-light {
+    --background: 84 12% 97%; --foreground: 108 8% 22%; --card: 76 14% 99%; --card-foreground: 108 8% 22%;
+    --primary: 132 16% 45%; --primary-foreground: 0 0% 100%; --muted: 82 10% 93%; --muted-foreground: 108 6% 40%;
+    --border: 88 8% 85%; --input: 88 8% 81%; --ring: 132 16% 45%;
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .silber {
+    --background: 0 0% 94%; --foreground: 0 0% 20%; --card: 0 0% 91%; --card-foreground: 0 0% 20%;
+    --primary: 0 0% 33%; --primary-foreground: 0 0% 94%; --muted: 0 0% 90%; --muted-foreground: 0 0% 67%;
+    --border: 0 0% 88%; --input: 0 0% 86%; --ring: 0 0% 33%;
+    --radius: 0.75rem;
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 94%), hsl(0 0% 92%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 97%), hsl(0 0% 92%));
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.04), 0 4px 16px hsl(0 0% 0% / 0.02);
+    --font-heading: 'Sora', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  }
+
 }

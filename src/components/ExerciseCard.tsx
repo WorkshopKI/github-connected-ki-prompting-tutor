@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, MessageSquare } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, MessageSquare, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
@@ -44,6 +44,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
   const [coachSuggestion, setCoachSuggestion] = useState("");
   const [isCoaching, setIsCoaching] = useState(false);
   const [showCoach, setShowCoach] = useState(false);
+  const [teamReviewNote, setTeamReviewNote] = useState("");
 
   const evaluatePrompt = async () => {
     if (!userPrompt.trim()) {
@@ -243,7 +244,12 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
 
       {evaluation && (
         <div className="mb-4 bg-background/50 border border-border rounded-lg p-4">
-          <div className="text-sm font-semibold mb-3">KI-Feedback:</div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-semibold">KI-Feedback:</div>
+            <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
+              Score: {[evaluation.hasContext, evaluation.isSpecific, evaluation.hasConstraints].filter(Boolean).length}/3
+            </div>
+          </div>
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2">
               {evaluation.hasContext ? (
@@ -281,6 +287,20 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
               {evaluation.feedback}
             </div>
           )}
+        </div>
+      )}
+
+      {evaluation && (
+        <div className="mb-4 border border-border/80 rounded-lg p-4 bg-muted/20">
+          <div className="text-sm font-semibold mb-2 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-primary" /> Team-Review (optional)
+          </div>
+          <Textarea
+            value={teamReviewNote}
+            onChange={(e) => setTeamReviewNote(e.target.value)}
+            placeholder="Notiere hier Team-Feedback oder Freigabehinweise für diesen Prompt..."
+            className="min-h-[76px]"
+          />
         </div>
       )}
 
