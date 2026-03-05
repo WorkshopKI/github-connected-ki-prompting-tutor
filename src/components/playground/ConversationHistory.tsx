@@ -33,6 +33,7 @@ export interface ConversationHistoryProps {
   onNew: () => void;
   onDelete: (id: string) => void;
   onRename: (id: string, title: string) => void;
+  bare?: boolean;
 }
 
 export const ConversationHistory = ({
@@ -42,6 +43,7 @@ export const ConversationHistory = ({
   onNew,
   onDelete,
   onRename,
+  bare,
 }: ConversationHistoryProps) => {
   const [open, setOpen] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,20 +63,8 @@ export const ConversationHistory = ({
 
   const sorted = [...conversations].sort((a, b) => b.updatedAt - a.updatedAt);
 
-  return (
-    <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
-        <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
-          <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm">Verlauf</span>
-            <span className="text-xs text-muted-foreground">({conversations.length})</span>
-          </div>
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </CollapsibleTrigger>
-
-        <CollapsibleContent>
-          <div className="px-3 pb-3 space-y-2">
+  const content = (
+    <div className={bare ? "space-y-2 px-3 pb-3" : "px-3 pb-3 space-y-2"}>
             <Button onClick={onNew} variant="outline" size="sm" className="w-full text-xs">
               <Plus className="w-3 h-3 mr-1" />
               Neues Gespräch
@@ -154,7 +144,24 @@ export const ConversationHistory = ({
                 )}
               </div>
             </ScrollArea>
+    </div>
+  );
+
+  if (bare) return content;
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
+        <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-primary" />
+            <span className="font-semibold text-sm">Verlauf</span>
+            <span className="text-xs text-muted-foreground">({conversations.length})</span>
           </div>
+          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          {content}
         </CollapsibleContent>
       </div>
     </Collapsible>

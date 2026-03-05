@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot, Brain } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot, Brain, Wrench, History, Wand2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -77,9 +79,7 @@ const Playground = () => {
   const [actaFields, setActaFields] = useState<ACTAFields>({
     act: "", context: "", task: "", ausgabe: "",
   });
-  const [actaOpen, setActaOpen] = useState(true);
-  const [techniquesOpen, setTechniquesOpen] = useState(false);
-  const [agentOpen, setAgentOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
     habitat: "",
     hands: ["read", "write", "web"],
@@ -403,43 +403,78 @@ const Playground = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-[380px_1fr] gap-6">
-            {/* Left sidebar */}
-            <aside className="space-y-4">
-              {/* Conversation history */}
-              <ConversationHistory
-                conversations={conversations}
-                activeId={activeConversationId}
-                onSelect={handleSelectConversation}
-                onNew={handleNewConversation}
-                onDelete={handleDeleteConversation}
-                onRename={handleRenameConversation}
-              />
+          <div className="grid lg:grid-cols-[320px_1fr] gap-6">
+            {/* Left sidebar - desktop */}
+            <aside className="hidden lg:block space-y-4">
+              <Accordion type="single" collapsible defaultValue="acta">
+                <AccordionItem value="history" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <History className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-sm">Verlauf ({conversations.length})</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-3 pb-3">
+                    <ConversationHistory
+                      conversations={conversations}
+                      activeId={activeConversationId}
+                      onSelect={handleSelectConversation}
+                      onNew={handleNewConversation}
+                      onDelete={handleDeleteConversation}
+                      onRename={handleRenameConversation}
+                      bare
+                    />
+                  </AccordionContent>
+                </AccordionItem>
 
-              {/* ACTA Builder */}
-              <ACTABuilder
-                fields={actaFields}
-                onFieldsChange={setActaFields}
-                onSendToPlayground={handleSendFromACTA}
-                isOpen={actaOpen}
-                onToggle={() => setActaOpen((o) => !o)}
-              />
+                <AccordionItem value="acta" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">ACTA-Baukasten</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ACTABuilder
+                      fields={actaFields}
+                      onFieldsChange={setActaFields}
+                      onSendToPlayground={handleSendFromACTA}
+                      bare
+                    />
+                  </AccordionContent>
+                </AccordionItem>
 
-              {/* Advanced Techniques */}
-              <TechniquePanel
-                onApplyToChat={handleApplyTechnique}
-                isOpen={techniquesOpen}
-                onToggle={() => setTechniquesOpen((o) => !o)}
-              />
+                <AccordionItem value="techniques" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <Wand2 className="w-4 h-4 text-primary" />
+                      <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <TechniquePanel
+                      onApplyToChat={handleApplyTechnique}
+                      bare
+                    />
+                  </AccordionContent>
+                </AccordionItem>
 
-              {/* Agent Simulator */}
-              <AgentKnobs
-                config={agentConfig}
-                onConfigChange={setAgentConfig}
-                onStartAgent={handleStartAgent}
-                isOpen={agentOpen}
-                onToggle={() => setAgentOpen((o) => !o)}
-              />
+                <AccordionItem value="agent" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm">Agenten-Modus</span>
+                      <span className="ml-2 text-xs bg-secondary px-2 py-0.5 rounded-full">Fortgeschritten</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <AgentKnobs
+                      config={agentConfig}
+                      onConfigChange={setAgentConfig}
+                      onStartAgent={handleStartAgent}
+                      bare
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
 
               {/* Prompt Evaluation */}
               {lastUserPrompt && (
@@ -452,6 +487,87 @@ const Playground = () => {
                 </div>
               )}
             </aside>
+
+            {/* Mobile sidebar toggle */}
+            <div className="lg:hidden fixed bottom-4 left-4 z-40">
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button size="icon" className="rounded-full shadow-lg h-12 w-12 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Wrench className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80 overflow-y-auto">
+                  <SheetTitle className="text-lg font-bold mb-4">Werkzeuge</SheetTitle>
+                  <Accordion type="single" collapsible defaultValue="acta">
+                    <AccordionItem value="history">
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <History className="w-4 h-4 text-primary" />
+                          <span className="font-semibold text-sm">Verlauf ({conversations.length})</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ConversationHistory
+                          conversations={conversations}
+                          activeId={activeConversationId}
+                          onSelect={(conv) => { handleSelectConversation(conv); setSidebarOpen(false); }}
+                          onNew={() => { handleNewConversation(); setSidebarOpen(false); }}
+                          onDelete={handleDeleteConversation}
+                          onRename={handleRenameConversation}
+                          bare
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="acta">
+                      <AccordionTrigger className="hover:no-underline">
+                        <span className="font-semibold text-sm">ACTA-Baukasten</span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ACTABuilder
+                          fields={actaFields}
+                          onFieldsChange={setActaFields}
+                          onSendToPlayground={(p) => { handleSendFromACTA(p); setSidebarOpen(false); }}
+                          bare
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="techniques">
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <Wand2 className="w-4 h-4 text-primary" />
+                          <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <TechniquePanel
+                          onApplyToChat={(p) => { handleApplyTechnique(p); setSidebarOpen(false); }}
+                          bare
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    <AccordionItem value="agent">
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-sm">Agenten-Modus</span>
+                          <span className="ml-2 text-xs bg-secondary px-2 py-0.5 rounded-full">Fortgeschritten</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <AgentKnobs
+                          config={agentConfig}
+                          onConfigChange={setAgentConfig}
+                          onStartAgent={(p) => { handleStartAgent(p); setSidebarOpen(false); }}
+                          bare
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </SheetContent>
+              </Sheet>
+            </div>
 
             {/* Main area with tabs */}
             <main className="min-h-[600px]">
