@@ -140,7 +140,7 @@ export const AdvancedPromptingSection = () => {
     <section id="advanced" className="mb-16 scroll-mt-20">
       <div className="text-center mb-10">
         <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Fortgeschritten</span>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">
           Fortgeschrittene Techniken
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -194,7 +194,7 @@ export const AdvancedPromptingSection = () => {
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <activeTechnique.icon className="w-5 h-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">{activeTechnique.title}</h3>
+            <h3 className="text-lg font-semibold">{activeTechnique.title}</h3>
           </div>
 
           <div className="space-y-8">

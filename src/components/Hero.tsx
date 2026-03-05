@@ -18,7 +18,7 @@ export const Hero = () => {
           </div>
 
           <h1
-            className="text-4xl md:text-6xl lg:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-primary animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
             Einstieg in Prompting

@@ -178,7 +178,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
           <div className="bg-primary/10 p-2.5 rounded-lg">
             <Scissors className="w-6 h-6 text-primary" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold">
+          <h2 className="text-2xl md:text-3xl font-bold">
             Projekt-Zerlegung
           </h2>
         </div>

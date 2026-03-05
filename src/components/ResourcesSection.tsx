@@ -4,7 +4,7 @@ export const ResourcesSection = () => {
   return (
     <section className="mb-24">
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold mb-4">
           Ressourcen & Best Practices
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -19,7 +19,7 @@ export const ResourcesSection = () => {
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-primary" />
             </div>
-            <h3 className="text-xl font-bold">Gute Prompts</h3>
+            <h3 className="text-lg font-semibold">Gute Prompts</h3>
           </div>
 
           <div className="space-y-3">
@@ -105,7 +105,7 @@ export const ResourcesSection = () => {
             <div className="bg-destructive/10 p-2.5 rounded-lg">
               <AlertCircle className="w-5 h-5 text-destructive" />
             </div>
-            <h3 className="text-xl font-bold">H&auml;ufige Fehler</h3>
+            <h3 className="text-lg font-semibold">H&auml;ufige Fehler</h3>
           </div>
 
           <div className="space-y-3">
