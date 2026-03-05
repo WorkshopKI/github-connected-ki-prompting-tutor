@@ -147,8 +147,8 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground leading-snug line-clamp-3">
-                  &quot;{example.prompt}&quot;
+                <p className="text-xs leading-relaxed text-foreground/80 bg-muted/50 rounded-md px-3 py-2 font-mono">
+                  {example.prompt}
                 </p>
               </div>
 

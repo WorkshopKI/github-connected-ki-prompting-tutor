@@ -113,12 +113,12 @@ const MethodDetail = ({ method }: { method: typeof techniques[0]["methods"][0] }
     <h4 className="text-base font-bold text-foreground">{method.name}</h4>
     <p className="text-sm text-muted-foreground leading-relaxed">{method.description}</p>
 
-    <div className="bg-muted/50 rounded-lg p-4 border border-border">
+    <div className="bg-muted/50 rounded-lg p-4">
       <div className="text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">
         Beispiel-Prompt
       </div>
-      <p className="text-sm italic text-foreground leading-relaxed">
-        "{method.example}"
+      <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+        {method.example}
       </p>
     </div>
 

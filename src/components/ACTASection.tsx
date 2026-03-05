@@ -66,9 +66,9 @@ export const ACTASection = () => {
             <p className="text-muted-foreground mb-4">
               {card.description}
             </p>
-            <div className="border-l-2 border-primary pl-3">
-              <p className="text-sm italic text-muted-foreground">
-                &bdquo;{card.quote}&ldquo;
+            <div className="bg-muted/50 rounded-md px-3 py-2">
+              <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                {card.quote}
               </p>
             </div>
           </div>
@@ -104,33 +104,41 @@ export const ACTASection = () => {
             ACTA in der Praxis – Vollständiges Beispiel
           </h3>
 
-          <div className="bg-background/50 rounded-xl p-5 space-y-3">
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Act (Rolle)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Du bist ein erfahrener Social-Media-Manager mit Fokus auf LinkedIn.&ldquo;
-              </p>
+          <div className="bg-background/50 rounded-xl p-5 space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Act (Rolle)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Du bist ein erfahrener Social-Media-Manager mit Fokus auf LinkedIn.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Context (Hintergrund)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Unser Unternehmen ist ein B2B-SaaS-Startup für Projektmanagement. Wir haben gerade ein neues Feature für die automatisierte Zeiterfassung gelauncht. Zielgruppe sind Teamleiter und Projektmanager in mittelständischen Unternehmen.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Context (Hintergrund)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Unser Unternehmen ist ein B2B-SaaS-Startup für Projektmanagement. Wir haben gerade ein neues Feature für die automatisierte Zeiterfassung gelauncht. Zielgruppe sind Teamleiter und Projektmanager in mittelständischen Unternehmen.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Task (Aufgabe)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Erstelle einen LinkedIn-Post, der das neue Feature vorstellt und die Vorteile für Teamleiter hervorhebt.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Task (Aufgabe)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Erstelle einen LinkedIn-Post, der das neue Feature vorstellt und die Vorteile für Teamleiter hervorhebt.
+                </p>
+              </div>
             </div>
 
-            <div className="border-l-4 border-primary pl-4">
-              <p className="text-sm font-semibold text-primary mb-1">Ausgabe (Format)</p>
-              <p className="text-sm text-muted-foreground">
-                &bdquo;Der Post soll max. 150 Wörter haben, mit 3-5 Bulletpoints für die Key-Benefits und einem Call-to-Action am Ende.&ldquo;
-              </p>
+            <div>
+              <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Ausgabe (Format)</p>
+              <div className="bg-muted/50 rounded-md px-3 py-2">
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+                  Der Post soll max. 150 Wörter haben, mit 3-5 Bulletpoints für die Key-Benefits und einem Call-to-Action am Ende.
+                </p>
+              </div>
             </div>
           </div>
         </div>

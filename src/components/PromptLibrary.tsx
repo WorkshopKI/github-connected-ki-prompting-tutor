@@ -989,8 +989,8 @@ export const PromptLibrary = () => {
                 <h4 className="font-semibold mb-2 text-sm">
                   {prompt.title}
                 </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                  "{prompt.prompt}"
+                <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/50 rounded-md px-3 py-2 line-clamp-3">
+                  {prompt.prompt}
                 </p>
                 <BlueprintDetails prompt={prompt} />
               </div>
