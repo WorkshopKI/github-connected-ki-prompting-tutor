@@ -20,9 +20,9 @@ export const ThemePresetPicker = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 max-w-[180px]">
-          <Palette className="h-4 w-4 shrink-0" />
-          <span className="truncate">{selectedThemeName}</span>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Palette className="h-4 w-4" />
+          <span className="sr-only">Theme wählen</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
