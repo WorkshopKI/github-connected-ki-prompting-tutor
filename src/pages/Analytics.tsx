@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BookOpen, CheckCircle2, Star, FileDown, ArrowUpDown, ChevronDown } from "lucide-react";
+import { StatCard } from "@/components/StatCard";
 import { promptLibrary } from "@/data/prompts";
 import { learningModules } from "@/data/learningPath";
 import { useSyncContext } from "@/contexts/SyncContext";
@@ -137,33 +138,9 @@ const Analytics = () => {
 
       {/* Top Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><BookOpen className="h-7 w-7 text-primary" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prompts in Library</p>
-              <p className="text-2xl font-bold">{totalPrompts}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><CheckCircle2 className="h-7 w-7 text-primary" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Verifizierte Prompts</p>
-              <p className="text-2xl font-bold">{verifiedPrompts}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2"><Star className="h-7 w-7 text-primary" /></div>
-            <div>
-              <p className="text-sm text-muted-foreground">Prompt-Qualität</p>
-              <p className="text-2xl font-bold">{avgQuality}/5</p>
-            </div>
-          </div>
-        </Card>
+        <StatCard icon={BookOpen} label="Prompts in Library" value={totalPrompts} />
+        <StatCard icon={CheckCircle2} label="Verifizierte Prompts" value={verifiedPrompts} />
+        <StatCard icon={Star} label="Prompt-Qualität" value={`${avgQuality}/5`} />
       </div>
 
       {/* Bar Chart: Prompts by Category (collapsible groups) */}

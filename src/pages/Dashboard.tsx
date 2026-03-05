@@ -12,6 +12,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { StatCard } from "@/components/StatCard";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { promptLibrary } from "@/data/prompts";
@@ -102,44 +103,10 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          {
-            icon: BookOpen,
-            label: "Gesamt Prompts",
-            value: stats.totalPrompts,
-          },
-          {
-            icon: Building2,
-            label: "Abteilungen",
-            value: stats.departments,
-          },
-          {
-            icon: GraduationCap,
-            label: "Onboarding",
-            value: `${stats.onboardingPercent}%`,
-          },
-          {
-            icon: CheckCircle2,
-            label: "Übungen",
-            value: `${stats.exercisesDone}/${stats.exercisesTotal}`,
-          },
-        ].map((stat) => (
-          <Card
-            key={stat.label}
-            className="p-5 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary/40" />
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/8">
-                <stat.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-                <p className="text-xl font-bold">{stat.value}</p>
-              </div>
-            </div>
-          </Card>
-        ))}
+        <StatCard icon={BookOpen} label="Gesamt Prompts" value={stats.totalPrompts} />
+        <StatCard icon={Building2} label="Abteilungen" value={stats.departments} />
+        <StatCard icon={GraduationCap} label="Onboarding" value={`${stats.onboardingPercent}%`} />
+        <StatCard icon={CheckCircle2} label="Übungen" value={`${stats.exercisesDone}/${stats.exercisesTotal}`} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
