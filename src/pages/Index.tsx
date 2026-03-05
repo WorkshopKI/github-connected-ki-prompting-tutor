@@ -120,7 +120,9 @@ const Index = () => {
           </ScrollReveal>
         </div>
 
-        {/* Prompt-Bibliothek */}
+        <div className="max-w-xs mx-auto border-t border-border/50 my-20" />
+
+        {/* Prompt-Sammlung */}
         <ScrollReveal>
           <div id="bibliothek" className="scroll-mt-20">
             <PromptLibrary />
@@ -135,6 +137,8 @@ const Index = () => {
             </div>
           </ScrollReveal>
         </div>
+
+        <div className="max-w-xs mx-auto border-t border-border/50 my-20" />
 
         {/* Ressourcen & Best Practices */}
         <ScrollReveal>
