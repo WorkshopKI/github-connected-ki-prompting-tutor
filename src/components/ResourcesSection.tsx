@@ -14,7 +14,7 @@ export const ResourcesSection = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Gute Prompts: Checkliste + Profi-Tipps */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-primary/10 p-2.5 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -100,7 +100,7 @@ export const ResourcesSection = () => {
         </div>
 
         {/* H&auml;ufige Fehler + Wissenswertes */}
-        <div className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-destructive/10 p-2.5 rounded-lg">
               <AlertCircle className="w-5 h-5 text-destructive" />
@@ -173,7 +173,7 @@ export const ResourcesSection = () => {
       </div>
 
       {/* Golden Rules Banner */}
-      <div className="mt-6 bg-gradient-card rounded-2xl p-8 md:p-12 text-center shadow-lg border border-border">
+      <div className="mt-6 bg-gradient-card rounded-2xl p-8 md:p-12 text-center shadow-md">
         <h4 className="text-xl font-bold mb-2 text-foreground">
           Die goldene Regel des Promptings
         </h4>

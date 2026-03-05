@@ -217,7 +217,7 @@ export const AdvancedPromptingSection = () => {
               <AccordionItem
                 key={technique.id}
                 value={technique.id}
-                className="bg-card rounded-xl border border-border shadow-sm px-4 overflow-hidden"
+                className="bg-card rounded-xl shadow-sm px-4 overflow-hidden"
               >
                 <AccordionTrigger className="hover:no-underline py-4">
                   <div className="flex items-center gap-3">
@@ -249,7 +249,7 @@ export const AdvancedPromptingSection = () => {
       </div>
 
       {/* Wichtige Prinzipien — Banner */}
-      <Card className="p-6 md:p-8 bg-gradient-card border-border shadow-sm">
+      <Card className="p-6 md:p-8 bg-gradient-card shadow-sm border-0">
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-primary/10 p-2.5 rounded-lg">
             <Lightbulb className="w-5 h-5 text-primary" />

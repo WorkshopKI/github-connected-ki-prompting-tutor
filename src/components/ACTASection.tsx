@@ -53,7 +53,7 @@ export const ACTASection = () => {
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-card rounded-xl p-6 border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+            className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:ring-1 hover:ring-primary/10 hover:-translate-y-0.5 transition-all duration-200"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="bg-primary/10 p-2.5 rounded-lg">

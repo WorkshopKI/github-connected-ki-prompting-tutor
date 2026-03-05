@@ -24,10 +24,10 @@ export const LevelCard = ({
   return (
     <Card
       className={cn(
-        "p-6 cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 bg-card",
+        "p-6 cursor-pointer transition-all duration-200 rounded-xl bg-card shadow-sm hover:shadow-md hover:ring-1 hover:ring-primary/10 hover:-translate-y-0.5",
         isActive
-          ? "border-primary shadow-glow"
-          : "hover:border-primary/50"
+          ? "shadow-glow ring-1 ring-primary/20 bg-gradient-card"
+          : ""
       )}
       onClick={onClick}
     >

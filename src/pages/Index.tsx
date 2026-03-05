@@ -166,7 +166,7 @@ const Index = () => {
         {/* Kernprinzip: Spezifikation */}
         <ScrollReveal>
           <section className="mb-24">
-            <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-lg border border-border">
+            <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-md ring-1 ring-primary/10">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-primary/10 p-3 rounded-xl">
                   <BookOpen className="w-8 h-8 text-primary" />
