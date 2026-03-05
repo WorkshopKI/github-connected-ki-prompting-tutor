@@ -66,12 +66,12 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader className="p-4">
+        <SidebarHeader className="px-4 pt-5 pb-3">
           <button
             onClick={() => navigate("/")}
             className="flex items-center"
           >
-            <Logo size="sm" />
+            <Logo size="sm" variant="sidebar" />
           </button>
         </SidebarHeader>
 
@@ -117,16 +117,16 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="p-3">
+        <SidebarFooter className="p-3 border-t border-sidebar-border">
           <div className="flex items-center justify-between">
             <UserMenu />
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <SyncStatusIcon />
               <ThemePresetPicker />
               <button
                 onClick={() => navigate("/settings")}
-                className={`inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ${
-                  isActive("/settings") ? "text-foreground bg-accent" : ""
+                className={`inline-flex items-center justify-center rounded-md p-1.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors ${
+                  isActive("/settings") ? "text-sidebar-foreground bg-sidebar-accent" : ""
                 }`}
                 title="Einstellungen"
               >
