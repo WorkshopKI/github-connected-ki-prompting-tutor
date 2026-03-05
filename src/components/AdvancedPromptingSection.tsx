@@ -198,12 +198,31 @@ export const AdvancedPromptingSection = () => {
             <h3 className="text-lg font-semibold">{activeTechnique.title}</h3>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-1">
             {activeTechnique.methods.map((method, idx) => (
-              <div key={idx}>
-                {idx > 0 && <hr className="border-border mb-8" />}
-                <MethodDetail method={method} />
-              </div>
+              <Accordion key={`${activeTechnique.id}-${idx}`} type="single" collapsible>
+                <AccordionItem value={`method-${idx}`} className="border-none">
+                  <AccordionTrigger className="py-2.5 hover:no-underline">
+                    <span className="text-sm font-semibold text-left">{method.name}</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-1 pb-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                      {method.description}
+                    </p>
+                    <div className="bg-muted/50 rounded-md p-3">
+                      <div className="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">
+                        Beispiel
+                      </div>
+                      <p className="text-xs font-mono text-foreground/80 leading-relaxed">
+                        {method.example}
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      <span className="font-semibold">Wann verwenden?</span> {method.use}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             ))}
           </div>
         </Card>
