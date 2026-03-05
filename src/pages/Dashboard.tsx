@@ -135,7 +135,7 @@ const Dashboard = () => {
             <div className={`absolute top-0 left-0 right-0 h-1 ${stat.color}`} />
             <div className="flex items-center gap-3">
               <div className="p-2">
-                <stat.icon className="h-5 w-5 text-foreground/70" />
+                <stat.icon className="h-7 w-7 text-foreground/70" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>

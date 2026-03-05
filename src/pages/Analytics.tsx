@@ -139,7 +139,7 @@ const Analytics = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="p-5 rounded-xl border border-border shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2"><BookOpen className="h-5 w-5 text-primary" /></div>
+            <div className="p-2"><BookOpen className="h-7 w-7 text-primary" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Prompts in Library</p>
               <p className="text-2xl font-bold">{totalPrompts}</p>
@@ -148,7 +148,7 @@ const Analytics = () => {
         </Card>
         <Card className="p-5 rounded-xl border border-border shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2"><CheckCircle2 className="h-5 w-5 text-emerald-600" /></div>
+            <div className="p-2"><CheckCircle2 className="h-7 w-7 text-emerald-600" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Verifizierte Prompts</p>
               <p className="text-2xl font-bold">{verifiedPrompts}</p>
@@ -157,7 +157,7 @@ const Analytics = () => {
         </Card>
         <Card className="p-5 rounded-xl border border-border shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2"><Star className="h-5 w-5 text-amber-600" /></div>
+            <div className="p-2"><Star className="h-7 w-7 text-amber-600" /></div>
             <div>
               <p className="text-sm text-muted-foreground">Prompt-Qualität</p>
               <p className="text-2xl font-bold">{avgQuality}/5</p>
