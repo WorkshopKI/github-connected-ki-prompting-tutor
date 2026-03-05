@@ -160,61 +160,55 @@ const Onboarding = () => {
 
           return (
             <div key={mod.id}>
-              <Card
-                className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                  status === "completed"
-                    ? "border-l-4 border-l-primary/50 border-border"
-                    : status === "available"
-                    ? "border-l-4 border-l-primary border-border hover:shadow-md"
-                    : "opacity-50 pointer-events-none border-border"
-                }`}
-                onClick={() => toggleModule(mod.id)}
-              >
-                <div className="flex items-center gap-4">
-                  {/* Number Badge */}
-                  <div
-                    className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
+              {status === "locked" ? (
+                <Card className="px-4 py-3 rounded-lg border border-border opacity-40">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-muted-foreground text-xs font-bold shrink-0">
+                      {index + 1}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{mod.title}</span>
+                    <Badge className={`ml-auto text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
+                      {typeLabels[mod.type]} · {mod.duration}
+                    </Badge>
+                  </div>
+                </Card>
+              ) : (
+                <Card
+                  className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                    status === "completed"
+                      ? "border-l-4 border-l-primary/50 border-border"
+                      : "border-l-4 border-l-primary border-border hover:shadow-md bg-primary/[0.02]"
+                  }`}
+                  onClick={() => toggleModule(mod.id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
                       status === "completed"
                         ? "bg-primary/15 text-primary"
-                        : status === "available"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {status === "completed" ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : status === "locked" ? (
-                      <Lock className="w-4 h-4" />
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-sm">{mod.title}</h3>
-                      <Badge variant="secondary" className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
-                        {typeLabels[mod.type]}
-                      </Badge>
-                      <Badge variant="outline" className="text-[10px]">
-                        {mod.duration}
-                      </Badge>
+                        : "bg-primary text-primary-foreground"
+                    }`}>
+                      {status === "completed" ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm">{mod.title}</span>
+                        <Badge className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
+                          {typeLabels[mod.type]}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{mod.duration}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                    </div>
+                    <div className="shrink-0">
+                      {status === "completed" ? (
+                        <span className="text-xs text-primary font-medium">Abgeschlossen</span>
+                      ) : (
+                        <Play className="w-5 h-5 text-primary" />
+                      )}
+                    </div>
                   </div>
-
-                  {/* Status */}
-                  <div className="shrink-0">
-                    {status === "completed" && (
-                      <span className="text-xs text-primary font-medium">Abgeschlossen</span>
-                    )}
-                    {status === "available" && (
-                      <Play className="w-5 h-5 text-primary" />
-                    )}
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              )}
 
               {/* Expanded Content */}
               {isExpanded && Component && (
