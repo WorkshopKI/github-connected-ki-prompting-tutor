@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Check, Globe, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench } from "lucide-react";
+import { Copy, Check, Globe, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -17,12 +17,15 @@ interface PromptItem {
   title: string;
   prompt: string;
   needsWeb?: boolean;
-  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint";
+  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint" | "organisation";
   type?: "prompt" | "blueprint";
   constraints?: PromptConstraints;
   acceptanceCriteria?: string;
   estimatedAgentTime?: string;
   requiredTools?: string[];
+  department?: string;
+  riskLevel?: "niedrig" | "mittel" | "hoch";
+  official?: boolean;
 }
 
 const promptLibrary: PromptItem[] = [
@@ -798,10 +801,37 @@ const promptLibrary: PromptItem[] = [
     acceptanceCriteria: "Der Plan enthält einen minutengenauen Zeitstrahl für die ersten 72 Stunden, alle Kommunikationsvorlagen sind direkt verwendbar, und die DSGVO-Meldefrist ist korrekt eingebaut.",
     estimatedAgentTime: "~70 Minuten",
     requiredTools: ["Web-Suche", "Dokument-Analyse"]
+  },
+  {
+    category: "Organisation",
+    title: "Support-Standardantworten",
+    prompt: "Erstelle 5 standardisierte Antwortvorlagen für Support-Tickets der Kategorie {{Kategorie}}. Struktur: Empathie, Lösungsschritte, Nächste Aktion, Abschluss. Ton: professionell und klar.",
+    level: "organisation",
+    department: "Support",
+    riskLevel: "mittel",
+    official: true
+  },
+  {
+    category: "Organisation",
+    title: "Sales Discovery Call Briefing",
+    prompt: "Erstelle ein Discovery-Call-Briefing für {{Kundensegment}} mit Ziel: {{Ziel}}. Liefere 8 Fragen, 3 Qualifizierungskriterien und ein Follow-up-Template.",
+    level: "organisation",
+    department: "Vertrieb",
+    riskLevel: "niedrig",
+    official: false
+  },
+  {
+    category: "Organisation",
+    title: "Legal Review Check",
+    prompt: "Erzeuge eine Vorprüfungsliste für {{Vertragsart}} mit Bereichen: Laufzeit, Haftung, Datenschutz, Kündigung, Haftungsbegrenzung. Markiere Punkte, die Legal final prüfen muss.",
+    level: "organisation",
+    department: "Legal",
+    riskLevel: "hoch",
+    official: true
   }
 ];
 
-const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints"];
+const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
 const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
   const [expanded, setExpanded] = useState(false);
@@ -891,6 +921,8 @@ export const PromptLibrary = () => {
   const [selectedCategory, setSelectedCategory] = useState("Alltag");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [departmentFilter, setDepartmentFilter] = useState("Alle");
+  const [riskFilter, setRiskFilter] = useState("Alle");
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -911,10 +943,17 @@ export const PromptLibrary = () => {
       (selectedCategory === "Beruf" && prompt.level === "beruf") ||
       (selectedCategory === "Websuche" && prompt.level === "websuche") ||
       (selectedCategory === "Deep Research" && prompt.level === "research") ||
-      (selectedCategory === "Blueprints" && prompt.type === "blueprint");
+      (selectedCategory === "Blueprints" && prompt.type === "blueprint") ||
+      (selectedCategory === "Organisation" && prompt.level === "organisation");
 
-    return matchesSearch && matchesCategory;
+    const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
+    const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
+
+    return matchesSearch && matchesCategory && matchesDepartment && matchesRisk;
   });
+
+  const departments = ["Alle", "Support", "Vertrieb", "Legal"];
+  const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
 
   return (
     <section className="mb-16">
@@ -954,6 +993,36 @@ export const PromptLibrary = () => {
             </Button>
           ))}
         </div>
+
+
+        {selectedCategory === "Organisation" && (
+          <div className="space-y-2">
+            <div className="flex flex-wrap justify-center gap-2">
+              {departments.map((department) => (
+                <Button
+                  key={department}
+                  variant={departmentFilter === department ? "default" : "outline"}
+                  onClick={() => setDepartmentFilter(department)}
+                  size="sm"
+                >
+                  <Building2 className="w-3.5 h-3.5 mr-1" /> {department}
+                </Button>
+              ))}
+            </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              {riskLevels.map((risk) => (
+                <Button
+                  key={risk}
+                  variant={riskFilter === risk ? "default" : "outline"}
+                  onClick={() => setRiskFilter(risk)}
+                  size="sm"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 mr-1" /> Risiko: {risk}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Results Count */}
@@ -985,10 +1054,23 @@ export const PromptLibrary = () => {
                       Websuche
                     </span>
                   )}
+                  {prompt.level === "organisation" && (
+                    <span className="inline-flex items-center gap-1 text-xs bg-primary/15 text-primary px-2 py-1 rounded">
+                      <Building2 className="w-3 h-3" /> Organisation
+                    </span>
+                  )}
+                  {prompt.official && (
+                    <span className="inline-flex items-center gap-1 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
+                      <Shield className="w-3 h-3" /> Freigegeben
+                    </span>
+                  )}
                 </div>
-                <h4 className="font-semibold mb-2 text-sm">
+                <h4 className="font-semibold mb-1 text-sm">
                   {prompt.title}
                 </h4>
+                {prompt.department && (
+                  <p className="text-[11px] text-muted-foreground mb-2">Abteilung: {prompt.department} {prompt.riskLevel ? `· Risiko: ${prompt.riskLevel}` : ""}</p>
+                )}
                 <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-3">
                   {prompt.prompt}
                 </p>
