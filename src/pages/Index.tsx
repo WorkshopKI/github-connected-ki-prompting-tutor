@@ -112,47 +112,43 @@ const Index = () => {
           </section>
         </ScrollReveal>
 
-        {/* ACTA-Methode */}
-        <div className="bg-muted/30 -mx-4 px-4 py-20 md:-mx-8 md:px-8">
+        {/* ACTA-Methode – Full-Bleed */}
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-24 md:mb-32">
           <ScrollReveal>
-            <div id="acta" className="scroll-mt-20">
+            <div id="acta" className="scroll-mt-20 max-w-7xl mx-auto">
               <ACTASection />
               <ACTAQuickChallenge />
             </div>
           </ScrollReveal>
         </div>
 
-        <div className="max-w-xs mx-auto border-t border-border/50 my-20" />
-
         {/* Prompt-Sammlung */}
         <ScrollReveal>
-          <div id="bibliothek" className="scroll-mt-20">
+          <div id="bibliothek" className="scroll-mt-20 mb-20 md:mb-24">
             <PromptLibrary />
           </div>
         </ScrollReveal>
 
         {/* Interaktiver Übungsbereich */}
-        <div className="bg-muted/30 -mx-4 px-4 py-20 md:-mx-8 md:px-8">
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-20 md:mb-24">
           <ScrollReveal>
-            <div id="uebungen" className="scroll-mt-20">
+            <div id="uebungen" className="scroll-mt-20 max-w-7xl mx-auto">
               <PracticeArea />
             </div>
           </ScrollReveal>
         </div>
 
-        <div className="max-w-xs mx-auto border-t border-border/50 my-20" />
-
         {/* Ressourcen & Best Practices */}
         <ScrollReveal>
-          <div id="ressourcen" className="scroll-mt-20">
+          <div id="ressourcen" className="scroll-mt-20 mb-20 md:mb-24">
             <ResourcesSection />
           </div>
         </ScrollReveal>
 
         {/* Decomposition-Assistent */}
-        <div className="bg-muted/30 -mx-4 px-4 py-20 md:-mx-8 md:px-8">
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-20 md:mb-24">
           <ScrollReveal>
-            <div id="decomposition" className="scroll-mt-20">
+            <div id="decomposition" className="scroll-mt-20 max-w-7xl mx-auto">
               <DecompositionAssistant />
             </div>
           </ScrollReveal>
@@ -160,15 +156,16 @@ const Index = () => {
 
         {/* Advanced Prompting Methoden */}
         <ScrollReveal>
-          <div id="advanced" className="scroll-mt-20">
+          <div id="advanced" className="scroll-mt-20 mb-24 md:mb-32">
             <AdvancedPromptingSection />
           </div>
         </ScrollReveal>
 
-        {/* Kernprinzip: Spezifikation */}
-        <ScrollReveal>
-          <section className="mb-24">
-            <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-md ring-1 ring-primary/10">
+        {/* Kernprinzip: Spezifikation – Full-Bleed */}
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20">
+          <ScrollReveal>
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-md ring-1 ring-primary/10">
               <div className="flex items-start gap-4 mb-6">
                 <div className="bg-muted p-3 rounded-xl">
                   <BookOpen className="w-8 h-8 text-foreground/70" />
@@ -206,9 +203,10 @@ const Index = () => {
                   </p>
                 </div>
               </div>
+              </div>
             </div>
-          </section>
-        </ScrollReveal>
+          </ScrollReveal>
+        </div>
       </main>
       <Footer />
     </div>
