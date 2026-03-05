@@ -14,6 +14,7 @@ import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection"
 import { DecompositionAssistant } from "@/components/DecompositionAssistant";
 import { Footer } from "@/components/Footer";
 import { OrganizationUseCases } from "@/components/OrganizationUseCases";
+import { ThemePrototypeGallery } from "@/components/ThemePrototypeGallery";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Button } from "@/components/ui/button";
 
@@ -170,6 +171,12 @@ const Index = () => {
             </div>
           </ScrollReveal>
         </div>
+
+        <SectionDivider />
+
+        <ScrollReveal>
+          <ThemePrototypeGallery />
+        </ScrollReveal>
 
         <SectionDivider />
 
