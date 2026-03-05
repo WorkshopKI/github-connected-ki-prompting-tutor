@@ -137,10 +137,8 @@ export const AdvancedPromptingSection = () => {
   const activeTechnique = techniques.find(t => t.id === activeId)!;
 
   return (
-    <section id="advanced" className="mb-16 scroll-mt-20">
+    <section id="advanced" className="mb-0">
       <div className="text-center mb-10">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>07</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           Fortgeschrittene Techniken
         </h2>

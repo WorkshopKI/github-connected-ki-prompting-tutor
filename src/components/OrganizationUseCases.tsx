@@ -41,10 +41,8 @@ export const OrganizationUseCases = () => {
   };
 
   return (
-    <section className="mb-16 md:mb-20" id="organisation">
+    <section className="mb-0" id="organisation">
       <div className="text-center mb-8">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: "hsl(var(--primary-deep))" }}>05</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "hsl(var(--primary-deep))" }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Use Cases im Unternehmenskontext</h2>
         <p className="text-muted-foreground max-w-3xl mx-auto">
           Wähle Abteilung, Risiko-Level und Rolle. Nutze freigegebene Templates als Startpunkt für wiederholbare Team-Qualität.

@@ -8,10 +8,8 @@ export const ThemePrototypeGallery = () => {
   const { setTheme, theme } = useTheme();
 
   return (
-    <section id="themes" className="mb-16 md:mb-20 scroll-mt-20">
+    <section id="themes" className="mb-0">
       <div className="text-center mb-8">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: "hsl(var(--primary-deep))" }}>THEMES</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "hsl(var(--primary-deep))" }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Theme-Prototypen & Brainstorming</h2>
         <p className="text-muted-foreground max-w-3xl mx-auto">
           Visuelle Vorschläge basierend auf deinen Favoriten. Klicke auf <em>Anwenden</em>, um den Prototyp direkt auf die Lern-App zu legen.
