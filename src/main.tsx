@@ -10,8 +10,11 @@ createRoot(document.getElementById("root")!).render(
     enableSystem={false}
     themes={[
       "muted-stone-contrast",
+      "muted-stone-contrast-dark",
       "muted-moss-light",
+      "muted-moss-light-dark",
       "silber",
+      "silber-dark",
     ]}
   >
     <App />
