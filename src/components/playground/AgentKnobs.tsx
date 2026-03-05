@@ -103,7 +103,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
         className="flex items-center justify-between w-full p-4 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Agenten-Simulator</span>
+          <span className="text-sm font-semibold">Agenten-Modus</span>
           <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">4 Regler</span>
         </div>
         {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -115,7 +115,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
           <div>
             <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
               <MapPin className="w-3.5 h-3.5 text-primary" />
-              Habitat – Wo darf der Agent arbeiten?
+              Arbeitsbereich – Wo darf der Assistent arbeiten?
             </label>
             <Textarea
               value={config.habitat}
@@ -129,7 +129,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
           <div>
             <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
               <Hand className="w-3.5 h-3.5 text-primary" />
-              Hands – Was darf der Agent tun?
+              Werkzeuge – Was darf der Assistent tun?
             </label>
             <div className="flex flex-wrap gap-1.5">
               {HAND_OPTIONS.map((opt) => (
@@ -152,7 +152,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
           <div>
             <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
               <Link2 className="w-3.5 h-3.5 text-primary" />
-              Leash – Wie autonom?
+              Autonomie – Wie selbstständig?
               <span className="ml-auto text-muted-foreground font-normal">{config.leash}%</span>
             </label>
             <Slider
@@ -173,7 +173,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
           <div>
             <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
               <CheckSquare className="w-3.5 h-3.5 text-primary" />
-              Proof – Wie belegt er Erfolg?
+              Nachweis – Wie belegt er Erfolg?
             </label>
             <Select value={config.proof} onValueChange={(v) => update({ proof: v })}>
               <SelectTrigger className="text-xs">
@@ -197,7 +197,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
             <Textarea
               value={config.task}
               onChange={(e) => update({ task: e.target.value })}
-              placeholder="Beschreibe die Aufgabe, die der Agent autonom erledigen soll..."
+              placeholder="Beschreibe die Aufgabe, die der Assistent autonom erledigen soll..."
               className="text-xs min-h-[80px]"
             />
           </div>
@@ -209,7 +209,7 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
             size="sm"
           >
             <Play className="w-3.5 h-3.5" />
-            Agent starten
+            Assistent starten
           </Button>
         </div>
       )}

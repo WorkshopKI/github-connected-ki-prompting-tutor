@@ -77,7 +77,7 @@ export const ConversationHistory = ({
           <div className="px-3 pb-3 space-y-2">
             <Button onClick={onNew} variant="outline" size="sm" className="w-full text-xs">
               <Plus className="w-3 h-3 mr-1" />
-              Neuer Chat
+              Neues Gespräch
             </Button>
 
             <ScrollArea className="max-h-[250px]">

@@ -72,7 +72,7 @@ export const ACTABuilder = ({
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">ACTA-Builder</span>
+            <span className="font-semibold text-sm">ACTA-Baukasten</span>
             <Badge variant="secondary" className="text-xs">
               {filledCount}/4
             </Badge>
@@ -85,7 +85,7 @@ export const ACTABuilder = ({
             {/* Template selector */}
             <Select onValueChange={handleTemplateSelect}>
               <SelectTrigger className="w-full text-sm">
-                <SelectValue placeholder="Vorlage wählen..." />
+                <SelectValue placeholder="Vorlage auswählen..." />
               </SelectTrigger>
               <SelectContent>
                 {ACTA_TEMPLATES.map((t, i) => (
@@ -146,7 +146,7 @@ export const ACTABuilder = ({
             <div className="flex gap-2">
               <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
                 <Send className="w-3 h-3 mr-1.5" />
-                An Playground senden
+                Prompt zusammenbauen
               </Button>
               <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
                 <Copy className="w-3 h-3 mr-1.5" />

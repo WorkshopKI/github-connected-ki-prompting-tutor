@@ -39,7 +39,7 @@ export const TechniquePanel = ({ onApplyToChat, isOpen, onToggle }: TechniquePan
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
             <Wand2 className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm">Advanced Techniken</span>
+            <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
             <Badge variant="secondary" className="text-xs">
               {TECHNIQUE_TEMPLATES.length}
             </Badge>

@@ -320,10 +320,10 @@ const Playground = () => {
             className="gap-1"
           >
             <ArrowLeft className="w-4 h-4" />
-            Zurück
+            Zurück zum Kurs
           </Button>
 
-          <h1 className="text-2xl font-bold">Prompt-Playground</h1>
+          <h1 className="text-2xl font-bold">Prompt-Labor</h1>
 
           <div className="ml-auto flex items-center gap-3">
             <div className="flex items-center gap-1.5">
@@ -336,7 +336,7 @@ const Playground = () => {
                 }}
               />
               <Label htmlFor="thinking-toggle" className="text-xs flex items-center gap-1 cursor-pointer" title="Erweiterte Denkfähigkeit aktivieren (Reasoning/Thinking)">
-                <Brain className="h-3.5 w-3.5" /> Thinking
+                <Brain className="h-3.5 w-3.5" /> Denkprozess
               </Label>
             </div>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
@@ -392,7 +392,7 @@ const Playground = () => {
                 Anmeldung erforderlich
               </CardTitle>
               <CardDescription>
-                Melde dich an, um den Playground zu nutzen und KI-Modelle
+                Melde dich an, um das Prompt-Labor zu nutzen und KI-Modelle
                 direkt auszuprobieren.
               </CardDescription>
             </CardHeader>
@@ -463,7 +463,7 @@ const Playground = () => {
                   </TabsTrigger>
                   <TabsTrigger value="agent" className="gap-1.5">
                     <Bot className="w-3.5 h-3.5" />
-                    Agent
+                    Assistent
                   </TabsTrigger>
                   <TabsTrigger value="compare" className="gap-1.5">
                     <GitCompare className="w-3.5 h-3.5" />
@@ -489,10 +489,10 @@ const Playground = () => {
                   <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <Bot className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Agenten-Simulator</h3>
+                      <h3 className="text-lg font-semibold">Agenten-Modus</h3>
                     </div>
                     <p className="text-sm text-muted-foreground mb-6">
-                      Konfiguriere einen autonomen KI-Agenten mit den 4 Zuverlässigkeits-Reglern
+                      Konfiguriere einen autonomen KI-Assistenten mit den 4 Zuverlässigkeits-Reglern
                       in der linken Seitenleiste. Definiere Arbeitsbereich, Werkzeuge, Autonomie-Grad
                       und Erfolgsnachweise, um einen &quot;Worker&quot; zu instruieren wie einen Junior-Mitarbeiter.
                     </p>
@@ -515,7 +515,7 @@ const Playground = () => {
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground text-center">
-                      Nutze den &quot;Agenten-Simulator&quot; in der Seitenleiste, um den Agenten zu konfigurieren und zu starten.
+                      Nutze den &quot;Agenten-Modus&quot; in der Seitenleiste, um den Assistenten zu konfigurieren und zu starten.
                     </p>
                   </div>
                 </TabsContent>

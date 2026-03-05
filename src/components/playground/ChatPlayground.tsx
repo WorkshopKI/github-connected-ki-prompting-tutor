@@ -57,7 +57,7 @@ export const ChatPlayground = ({
   const exportAsMarkdown = () => {
     if (messages.length === 0) return;
     const lines: string[] = [
-      "# Playground-Gespräch",
+      "# Prompt-Labor-Gespräch",
       "",
       `*Exportiert am ${new Date().toLocaleDateString("de-DE")}*`,
       "",
@@ -105,7 +105,7 @@ export const ChatPlayground = ({
             className="text-xs"
           >
             <Download className="w-3 h-3 mr-1" />
-            Export
+            Exportieren
           </Button>
           <Button
             variant="ghost"
@@ -125,7 +125,7 @@ export const ChatPlayground = ({
             className="text-xs text-destructive hover:text-destructive"
           >
             <Trash2 className="w-3 h-3 mr-1" />
-            Leeren
+            Verlauf leeren
           </Button>
         </div>
       </div>
