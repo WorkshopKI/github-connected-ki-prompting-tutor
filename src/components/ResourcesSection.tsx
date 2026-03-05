@@ -16,7 +16,7 @@ export const ResourcesSection = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Gute Prompts: Checkliste + Profi-Tipps */}
-        <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div className="bg-card/80 rounded-lg p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-muted p-2.5 rounded-lg">
               <CheckCircle2 className="w-5 h-5 text-foreground/70" />
@@ -65,7 +65,7 @@ export const ResourcesSection = () => {
         </div>
 
         {/* H&auml;ufige Fehler + Wissenswertes */}
-        <div className="bg-card rounded-xl p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+        <div className="bg-card/80 rounded-lg p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="bg-muted p-2.5 rounded-lg">
               <AlertCircle className="w-5 h-5 text-foreground/70" />
@@ -108,7 +108,7 @@ export const ResourcesSection = () => {
       </div>
 
       {/* Best Practices Grid */}
-      <div className="mt-6 bg-card rounded-xl p-6 shadow-sm">
+      <div className="mt-6 bg-card/80 rounded-lg p-5">
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-muted p-2.5 rounded-lg">
             <Lightbulb className="w-5 h-5 text-foreground/70" />
@@ -184,7 +184,7 @@ export const ResourcesSection = () => {
       </div>
 
       {/* Golden Rules Banner */}
-      <div className="mt-6 bg-gradient-card rounded-2xl p-8 md:p-12 text-center shadow-md">
+      <div className="mt-6 bg-gradient-card rounded-2xl p-8 md:p-10 text-center shadow-md">
         <h4 className="text-xl font-bold mb-2 text-foreground">
           Die goldene Regel des Promptings
         </h4>
