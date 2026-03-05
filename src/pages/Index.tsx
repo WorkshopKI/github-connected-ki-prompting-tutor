@@ -59,6 +59,8 @@ const Index = () => {
         <ScrollReveal>
           <section id="stufen" className="mb-24 scroll-mt-20">
             <div className="text-center mb-12">
+              <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>01</span>
+              <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
               <h2 className="text-2xl md:text-3xl font-bold mb-4">
                 Prompting in vier Stufen
               </h2>

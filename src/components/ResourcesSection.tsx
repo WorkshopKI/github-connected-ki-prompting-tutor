@@ -4,7 +4,9 @@ export const ResourcesSection = () => {
   return (
     <section className="mb-24">
       <div className="text-center mb-10">
-        <h2 className="text-2xl md:text-3xl font-bold mb-4">
+        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>05</span>
+        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           Ressourcen & Best Practices
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
