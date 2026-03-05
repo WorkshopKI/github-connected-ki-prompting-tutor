@@ -259,4 +259,156 @@ All colors MUST be HSL.
     --font-body: 'Sora', ui-sans-serif, system-ui, sans-serif;
   }
 
+  /* ── Dark variants ── */
+
+  .muted-stone-contrast-dark {
+    --background: 32 8% 12%;
+    --foreground: 32 8% 85%;
+    --card: 32 6% 15%;
+    --card-foreground: 32 8% 90%;
+    --popover: 32 6% 14%;
+    --popover-foreground: 32 8% 88%;
+    --primary: 18 30% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 32 6% 20%;
+    --secondary-foreground: 32 8% 85%;
+    --muted: 32 5% 17%;
+    --muted-foreground: 31 6% 60%;
+    --accent: 32 6% 20%;
+    --accent-foreground: 32 8% 90%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 6% 22%;
+    --input: 32 6% 28%;
+    --ring: 18 30% 55%;
+    --primary-deep: 18 32% 58%;
+    --surface-1: 32 6% 14%;
+    --surface-2: 32 5% 10%;
+    --text-primary: 32 8% 88%;
+    --text-muted: 31 6% 60%;
+    --border-subtle: 32 6% 24%;
+    --gradient-primary: linear-gradient(135deg, hsl(18, 35%, 50%), hsl(28, 30%, 52%));
+    --gradient-subtle: linear-gradient(180deg, hsl(32, 8%, 12%), hsl(32, 6%, 10%));
+    --gradient-card: linear-gradient(135deg, hsl(32, 6%, 15%), hsl(32, 5%, 13%));
+    --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.20), 0 1px 2px hsl(0 0% 0% / 0.15);
+    --shadow-md: 0 1px 3px hsl(0 0% 0% / 0.20), 0 2px 4px hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 1px 3px hsl(0 0% 0% / 0.20), 0 4px 6px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 40px hsla(18, 30%, 55%, 0.25);
+    --chart-1: 18 30% 50%;
+    --chart-2: 251 60% 65%;
+    --chart-3: 32 8% 20%;
+    --chart-4: 248 25% 30%;
+    --chart-5: 18 40% 48%;
+    --sidebar: 32 6% 10%;
+    --sidebar-foreground: 32 8% 80%;
+    --sidebar-primary: 18 30% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 32 6% 18%;
+    --sidebar-accent-foreground: 32 8% 80%;
+    --sidebar-border: 32 6% 20%;
+    --sidebar-ring: 32 6% 35%;
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .muted-moss-light-dark {
+    --background: 100 8% 11%;
+    --foreground: 90 8% 85%;
+    --card: 100 6% 14%;
+    --card-foreground: 90 8% 90%;
+    --popover: 100 6% 13%;
+    --popover-foreground: 90 8% 88%;
+    --primary: 132 20% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 100 6% 18%;
+    --secondary-foreground: 90 8% 85%;
+    --muted: 100 5% 16%;
+    --muted-foreground: 100 5% 58%;
+    --accent: 100 6% 18%;
+    --accent-foreground: 90 8% 90%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 95 6% 20%;
+    --input: 95 6% 26%;
+    --ring: 132 20% 52%;
+    --primary-deep: 132 22% 55%;
+    --surface-1: 100 6% 13%;
+    --surface-2: 100 5% 9%;
+    --text-primary: 90 8% 88%;
+    --text-muted: 100 5% 58%;
+    --border-subtle: 95 6% 22%;
+    --gradient-primary: linear-gradient(135deg, hsl(132, 22%, 48%), hsl(120, 18%, 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(100, 8%, 11%), hsl(100, 6%, 9%));
+    --gradient-card: linear-gradient(135deg, hsl(100, 6%, 14%), hsl(100, 5%, 12%));
+    --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.20), 0 1px 2px hsl(0 0% 0% / 0.15);
+    --shadow-md: 0 1px 3px hsl(0 0% 0% / 0.20), 0 2px 4px hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 1px 3px hsl(0 0% 0% / 0.20), 0 4px 6px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 40px hsla(132, 20%, 52%, 0.25);
+    --chart-1: 132 20% 48%;
+    --chart-2: 251 60% 65%;
+    --chart-3: 100 8% 18%;
+    --chart-4: 248 25% 30%;
+    --chart-5: 132 30% 45%;
+    --sidebar: 100 6% 9%;
+    --sidebar-foreground: 90 8% 80%;
+    --sidebar-primary: 132 20% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 100 6% 16%;
+    --sidebar-accent-foreground: 90 8% 80%;
+    --sidebar-border: 95 6% 18%;
+    --sidebar-ring: 95 6% 32%;
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .silber-dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 85%;
+    --card: 0 0% 13%;
+    --card-foreground: 0 0% 88%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 86%;
+    --primary: 0 0% 62%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 85%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 88%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 25%;
+    --ring: 0 0% 62%;
+    --primary-deep: 0 0% 65%;
+    --surface-1: 0 0% 12%;
+    --surface-2: 0 0% 8%;
+    --text-primary: 0 0% 88%;
+    --text-muted: 0 0% 55%;
+    --border-subtle: 0 0% 22%;
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 10%), hsl(0 0% 8%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 13%), hsl(0 0% 11%));
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.25), 0 4px 16px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0 1px 3px hsl(0 0% 0% / 0.25), 0 2px 4px hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 1px 3px hsl(0 0% 0% / 0.25), 0 4px 6px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 40px hsla(0, 0%, 60%, 0.15);
+    --chart-1: 0 0% 50%;
+    --chart-2: 0 0% 65%;
+    --chart-3: 0 0% 18%;
+    --chart-4: 0 0% 30%;
+    --chart-5: 0 0% 45%;
+    --sidebar: 0 0% 8%;
+    --sidebar-foreground: 0 0% 78%;
+    --sidebar-primary: 0 0% 62%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 78%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 0 0% 30%;
+    --radius: 0.75rem;
+    --font-heading: 'Sora', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Sora', ui-sans-serif, system-ui, sans-serif;
+  }
+
 }
