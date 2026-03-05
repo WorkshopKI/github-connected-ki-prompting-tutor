@@ -37,7 +37,7 @@ function storeRating(title: string, rating: number) {
     const ratings = stored ? JSON.parse(stored) : {};
     ratings[title] = rating;
     localStorage.setItem("prompt_ratings", JSON.stringify(ratings));
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) => {

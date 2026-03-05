@@ -320,7 +320,7 @@ const Playground = () => {
             className="gap-1"
           >
             <ArrowLeft className="w-4 h-4" />
-            Zurück zum Kurs
+            Zurück zur Plattform
           </Button>
 
           <h1 className="text-2xl font-bold">Prompt-Labor</h1>
