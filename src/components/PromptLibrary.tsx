@@ -1,13 +1,44 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Check, Globe, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Copy, Check, Globe, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { promptLibrary } from "@/data/prompts";
 import type { PromptItem } from "@/data/prompts";
+import { PromptDetail } from "@/components/PromptDetail";
+
 const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
+
+function getStoredRating(title: string): number {
+  try {
+    const stored = localStorage.getItem("prompt_ratings");
+    if (!stored) return 0;
+    const ratings = JSON.parse(stored);
+    return ratings[title] || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function storeRating(title: string, rating: number) {
+  try {
+    const stored = localStorage.getItem("prompt_ratings");
+    const ratings = stored ? JSON.parse(stored) : {};
+    ratings[title] = rating;
+    localStorage.setItem("prompt_ratings", JSON.stringify(ratings));
+  } catch {}
+}
+
+function extractVariables(text: string): string[] {
+  const matches = text.match(/\{\{(.+?)\}\}/g);
+  if (!matches) return [];
+  return [...new Set(matches.map((m) => m.replace(/\{\{|\}\}/g, "")))];
+}
 
 const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
   const [expanded, setExpanded] = useState(false);
@@ -99,6 +130,12 @@ export const PromptLibrary = () => {
   const [showAll, setShowAll] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState("Alle");
   const [riskFilter, setRiskFilter] = useState("Alle");
+  const [onlyVerified, setOnlyVerified] = useState(false);
+  const [viewMode, setViewMode] = useState<string>("grid");
+  const [sortByRating, setSortByRating] = useState(false);
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -107,45 +144,83 @@ export const PromptLibrary = () => {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const filteredPrompts = promptLibrary.filter((prompt) => {
-    const matchesSearch = 
-      prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prompt.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = 
-      selectedCategory === "Alle" ||
-      (selectedCategory === "Alltag" && prompt.level === "alltag") ||
-      (selectedCategory === "Beruf" && prompt.level === "beruf") ||
-      (selectedCategory === "Websuche" && prompt.level === "websuche") ||
-      (selectedCategory === "Deep Research" && prompt.level === "research") ||
-      (selectedCategory === "Blueprints" && prompt.type === "blueprint") ||
-      (selectedCategory === "Organisation" && prompt.level === "organisation");
+  const allDepartments = useMemo(() => {
+    const deps = new Set<string>();
+    promptLibrary.forEach((p) => { if (p.department) deps.add(p.department); });
+    return Array.from(deps);
+  }, []);
 
-    const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
-    const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
+  const toggleDepartment = (dep: string) => {
+    setSelectedDepartments((prev) =>
+      prev.includes(dep) ? prev.filter((d) => d !== dep) : [...prev, dep]
+    );
+  };
 
-    return matchesSearch && matchesCategory && matchesDepartment && matchesRisk;
-  });
+  const filteredPrompts = useMemo(() => {
+    let filtered = promptLibrary.filter((prompt) => {
+      const matchesSearch =
+        prompt.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        prompt.category.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesCategory =
+        selectedCategory === "Alle" ||
+        (selectedCategory === "Alltag" && prompt.level === "alltag") ||
+        (selectedCategory === "Beruf" && prompt.level === "beruf") ||
+        (selectedCategory === "Websuche" && prompt.level === "websuche") ||
+        (selectedCategory === "Deep Research" && prompt.level === "research") ||
+        (selectedCategory === "Blueprints" && prompt.type === "blueprint") ||
+        (selectedCategory === "Organisation" && prompt.level === "organisation");
+
+      const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
+      const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
+      const matchesVerified = !onlyVerified || prompt.official;
+      const matchesSelectedDepartments =
+        selectedDepartments.length === 0 ||
+        (prompt.department && selectedDepartments.includes(prompt.department));
+
+      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments;
+    });
+
+    if (sortByRating) {
+      filtered = [...filtered].sort((a, b) => getStoredRating(b.title) - getStoredRating(a.title));
+    }
+
+    return filtered;
+  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments]);
 
   const departments = ["Alle", "Support", "Vertrieb", "Legal"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
 
-  return (
-    <section className="mb-16">
-      <div className="text-center mb-8">
-        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>03</span>
-        <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
-          Prompt-Sammlung
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Kopiere Prompts als Startpunkt oder öffne sie direkt im Prompt-Labor
-        </p>
-      </div>
+  const handlePromptClick = (prompt: PromptItem) => {
+    setSelectedPrompt(prompt);
+    setDetailOpen(true);
+  };
 
-      {/* Search and Filter */}
-      <div className="mb-8 space-y-4">
+  const InlineRating = ({ title }: { title: string }) => {
+    const stored = getStoredRating(title);
+    const [hover, setHover] = useState(0);
+
+    return (
+      <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={(e) => { e.stopPropagation(); storeRating(title, star); toast.success(`${star} Sterne`); }}
+            onMouseEnter={() => setHover(star)}
+            onMouseLeave={() => setHover(0)}
+            className="p-0"
+          >
+            <Star className={`w-3.5 h-3.5 ${star <= (hover || stored) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/20"}`} />
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <section>
+      <div className="mb-6 space-y-4">
         <div className="relative max-w-2xl mx-auto">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
@@ -170,6 +245,38 @@ export const PromptLibrary = () => {
           ))}
         </div>
 
+        {allDepartments.length > 0 && (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {allDepartments.map((dep) => (
+              <Button
+                key={dep}
+                variant={selectedDepartments.includes(dep) ? "default" : "outline"}
+                onClick={() => toggleDepartment(dep)}
+                size="sm"
+                className="gap-1"
+              >
+                <Building2 className="w-3 h-3" /> {dep}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={onlyVerified} onCheckedChange={setOnlyVerified} />
+              Nur verifizierte
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <Switch checked={sortByRating} onCheckedChange={setSortByRating} />
+              Nach Bewertung
+            </label>
+          </div>
+          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)}>
+            <ToggleGroupItem value="grid" aria-label="Grid"><LayoutGrid className="h-4 w-4" /></ToggleGroupItem>
+            <ToggleGroupItem value="list" aria-label="List"><List className="h-4 w-4" /></ToggleGroupItem>
+          </ToggleGroup>
+        </div>
 
         {selectedCategory === "Organisation" && (
           <div className="space-y-2">
@@ -201,88 +308,139 @@ export const PromptLibrary = () => {
         )}
       </div>
 
-      {/* Results Count */}
       <div className="text-center mb-6">
         <p className="text-sm text-muted-foreground">
           {filteredPrompts.length} {filteredPrompts.length === 1 ? "Prompt" : "Prompts"} gefunden
         </p>
       </div>
 
-      {/* Prompts Grid */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {(showAll ? filteredPrompts : filteredPrompts.slice(0, 6)).map((prompt, index) => (
-          <Card key={index} className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="text-[11px] font-semibold tracking-wide uppercase text-foreground/50">
-                    {prompt.category}
-                  </span>
-                  {prompt.type === "blueprint" && (
-                    <span className="inline-flex items-center gap-1 text-xs bg-primary/20 text-primary font-semibold px-2 py-1 rounded">
-                      <Shield className="w-3 h-3" />
-                      Blueprint
-                    </span>
-                  )}
-                  {prompt.needsWeb && (
-                    <span className="inline-flex items-center gap-1 text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
-                      <Globe className="w-3 h-3" />
-                      Websuche
-                    </span>
-                  )}
-                  {prompt.level === "organisation" && (
-                    <span className="inline-flex items-center gap-1 text-xs bg-primary/15 text-primary px-2 py-1 rounded">
-                      <Building2 className="w-3 h-3" /> Organisation
-                    </span>
-                  )}
-                  {prompt.official && (
-                    <span className="inline-flex items-center gap-1 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
-                      <Shield className="w-3 h-3" /> Freigegeben
-                    </span>
-                  )}
-                </div>
-                <h4 className="font-semibold mb-1 text-sm">
-                  {prompt.title}
-                </h4>
-                {prompt.department && (
-                  <p className="text-[11px] text-muted-foreground mb-2">Abteilung: {prompt.department} {prompt.riskLevel ? `· Risiko: ${prompt.riskLevel}` : ""}</p>
-                )}
-                <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-3">
-                  {prompt.prompt}
-                </p>
-                <BlueprintDetails prompt={prompt} />
-              </div>
-              
-              <div className="flex flex-col gap-1 shrink-0">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => copyToClipboard(prompt.prompt, index)}
-                  title="Prompt kopieren"
+      {viewMode === "list" ? (
+        <div className="border border-border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="text-left p-3 font-medium">Titel</th>
+                <th className="text-left p-3 font-medium hidden md:table-cell">Kategorie</th>
+                <th className="text-left p-3 font-medium hidden md:table-cell">Abteilung</th>
+                <th className="text-left p-3 font-medium hidden sm:table-cell">Level</th>
+                <th className="text-left p-3 font-medium">Bewertung</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(showAll ? filteredPrompts : filteredPrompts.slice(0, 20)).map((prompt, index) => (
+                <tr
+                  key={index}
+                  className="border-t border-border hover:bg-muted/30 cursor-pointer transition-colors"
+                  onClick={() => handlePromptClick(prompt)}
                 >
-                  {copiedIndex === index ? (
-                    <Check className="w-4 h-4 text-primary animate-scale-in" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{prompt.title}</span>
+                      {prompt.official && (
+                        <Badge className="bg-emerald-100 text-emerald-700 text-[10px] px-1 py-0">Verifiziert</Badge>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-3 text-muted-foreground hidden md:table-cell">{prompt.category}</td>
+                  <td className="p-3 text-muted-foreground hidden md:table-cell">{prompt.department || "\u2014"}</td>
+                  <td className="p-3 hidden sm:table-cell">
+                    <Badge variant="outline" className="text-[10px]">{prompt.level || "\u2014"}</Badge>
+                  </td>
+                  <td className="p-3"><InlineRating title={prompt.title} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-4">
+          {(showAll ? filteredPrompts : filteredPrompts.slice(0, 6)).map((prompt, index) => (
+            <Card
+              key={index}
+              className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              onClick={() => handlePromptClick(prompt)}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="text-[11px] font-semibold tracking-wide uppercase text-foreground/50">
+                      {prompt.category}
+                    </span>
+                    {prompt.type === "blueprint" && (
+                      <span className="inline-flex items-center gap-1 text-xs bg-primary/20 text-primary font-semibold px-2 py-1 rounded">
+                        <Shield className="w-3 h-3" /> Blueprint
+                      </span>
+                    )}
+                    {prompt.needsWeb && (
+                      <span className="inline-flex items-center gap-1 text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
+                        <Globe className="w-3 h-3" /> Websuche
+                      </span>
+                    )}
+                    {prompt.official ? (
+                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs gap-1">
+                        <Shield className="w-3 h-3" /> Verifiziert
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs">Entwurf</Badge>
+                    )}
+                  </div>
+                  <h4 className="font-semibold mb-1 text-sm">{prompt.title}</h4>
+                  {prompt.department && (
+                    <p className="text-[11px] text-muted-foreground mb-2">
+                      Abteilung: {prompt.department}{prompt.riskLevel ? ` \u00b7 Risiko: ${prompt.riskLevel}` : ""}
+                    </p>
                   )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`)}
-                  title="Im Playground öffnen"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+                  <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-3">
+                    {prompt.prompt}
+                  </p>
 
-      {filteredPrompts.length > 6 && (
+                  {extractVariables(prompt.prompt).length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      <span className="text-[10px] text-muted-foreground">Variablen:</span>
+                      {extractVariables(prompt.prompt).map((v) => (
+                        <Badge key={v} variant="outline" className="text-[10px] px-1.5 py-0">{`{{${v}}}`}</Badge>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-2">
+                    <InlineRating title={prompt.title} />
+                  </div>
+
+                  <BlueprintDetails prompt={prompt} />
+                </div>
+
+                <div className="flex flex-col gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => copyToClipboard(prompt.prompt, index)}
+                    title="Prompt kopieren"
+                  >
+                    {copiedIndex === index ? (
+                      <Check className="w-4 h-4 text-primary animate-scale-in" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`)}
+                    title="Im Playground öffnen"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {filteredPrompts.length > (viewMode === "list" ? 20 : 6) && (
         <div className="text-center mt-6">
           <Button variant="outline" onClick={() => setShowAll(!showAll)}>
             {showAll ? "Weniger anzeigen" : `Alle ${filteredPrompts.length} Prompts anzeigen`}
@@ -297,6 +455,12 @@ export const PromptLibrary = () => {
           </p>
         </div>
       )}
+
+      <PromptDetail
+        prompt={selectedPrompt}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </section>
   );
 };
