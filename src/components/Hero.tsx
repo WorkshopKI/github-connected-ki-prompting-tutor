@@ -43,7 +43,7 @@ export const Hero = () => {
             className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-foreground animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
-            Prompting mit System – für <span className="text-primary">Einzelne und Teams</span>
+            Prompting mit System
           </h1>
 
           <p
@@ -57,7 +57,7 @@ export const Hero = () => {
           <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-up" style={{ opacity: 0, animationDelay: '300ms' }}>
             <Button onClick={() => scrollTo("stufen")} className="gap-2">
               <GraduationCap className="w-4 h-4" />
-              Lernpfad starten
+              Onboarding starten
             </Button>
             <Button variant="outline" onClick={() => scrollTo("organisation")} className="gap-2">
               <Building2 className="w-4 h-4" />

@@ -139,7 +139,7 @@ export const AdvancedPromptingSection = () => {
   return (
     <section id="advanced" className="mb-16 scroll-mt-20">
       <div className="text-center mb-10">
-        <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>07</span>
+        <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>07</span>
         <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
           Fortgeschrittene Techniken

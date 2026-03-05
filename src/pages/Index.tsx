@@ -1,6 +1,6 @@
 import { useState, useEffect, ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { BookOpen, Sparkles, Brain, Search, Cpu, Building2, GraduationCap } from "lucide-react";
+import { BookOpen, Sparkles, Brain, Search, Cpu } from "lucide-react";
 import { Hero } from "@/components/Hero";
 import { LevelCard } from "@/components/LevelCard";
 import { PromptExamples } from "@/components/PromptExamples";
@@ -15,7 +15,7 @@ import { DecompositionAssistant } from "@/components/DecompositionAssistant";
 import { Footer } from "@/components/Footer";
 import { OrganizationUseCases } from "@/components/OrganizationUseCases";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { Button } from "@/components/ui/button";
+
 
 const ScrollReveal = ({ children, className }: { children: ReactNode; className?: string }) => {
   const { ref, isVisible } = useScrollAnimation();
@@ -44,7 +44,6 @@ const scrollToSection = (id: string) => {
 
 const Index = () => {
   const [activeLevel, setActiveLevel] = useState<number>(1);
-  const [activeMode, setActiveMode] = useState<"lernen" | "organisation">("lernen");
   const location = useLocation();
 
   useEffect(() => {
@@ -63,37 +62,10 @@ const Index = () => {
       </div>
 
       <main className="container mx-auto px-4 py-12 max-w-7xl">
-        <div className="sticky top-[72px] z-30 mb-10 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/90 p-1 shadow-sm backdrop-blur">
-            <Button
-              size="sm"
-              variant={activeMode === "lernen" ? "default" : "ghost"}
-              className="rounded-full gap-2"
-              onClick={() => {
-                setActiveMode("lernen");
-                scrollToSection("stufen");
-              }}
-            >
-              <GraduationCap className="w-4 h-4" /> Lernmodus
-            </Button>
-            <Button
-              size="sm"
-              variant={activeMode === "organisation" ? "default" : "ghost"}
-              className="rounded-full gap-2"
-              onClick={() => {
-                setActiveMode("organisation");
-                scrollToSection("organisation");
-              }}
-            >
-              <Building2 className="w-4 h-4" /> Organisationsmodus
-            </Button>
-          </div>
-        </div>
-
         <ScrollReveal>
           <section id="stufen" className="mb-16 md:mb-20 scroll-mt-20">
             <div className="text-center mb-12">
-              <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: "hsl(var(--primary-deep))" }}>01</span>
+              <span className="font-mono text-lg tracking-widest block mb-3" style={{ color: "hsl(var(--primary-deep))" }}>01</span>
               <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "hsl(var(--primary-deep))" }} />
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Prompting in vier Stufen</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

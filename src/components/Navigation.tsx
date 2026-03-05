@@ -3,7 +3,6 @@ import { Menu, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { ThemePresetPicker } from "@/components/ThemePresetPicker";
 import { UserMenu } from "@/components/UserMenu";
 import { SyncStatusIcon } from "@/components/SyncStatusIcon";
@@ -58,7 +57,7 @@ export const Navigation = () => {
   const navItems = [
     { label: "Überblick", id: "hero", type: "scroll" as const },
     { label: "Methoden", id: "acta", type: "scroll" as const },
-    { label: "Sammlung", id: "bibliothek", type: "scroll" as const },
+    { label: "Prompt-Sammlung", id: "bibliothek", type: "scroll" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
     { label: "Organisation", id: "organisation", type: "scroll" as const },
   ];
@@ -69,7 +68,7 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50 overflow-hidden">
+    <nav className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <button
@@ -108,7 +107,6 @@ export const Navigation = () => {
             <SyncStatusIcon />
             <UserMenu />
             <ThemePresetPicker />
-            <ThemeToggle />
 
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>

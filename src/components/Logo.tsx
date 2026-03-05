@@ -19,7 +19,7 @@ export const Logo = ({ size = "md", className }: LogoProps) => {
       <span className={cn("font-bold tracking-tight", sizes[size])}>
         <span className="text-foreground">prompting</span>
         <span className="text-primary">.</span>
-        <span className="text-muted-foreground font-normal">kurs</span>
+        <span className="text-muted-foreground font-normal">studio</span>
       </span>
     </div>
   );
