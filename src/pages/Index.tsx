@@ -27,6 +27,10 @@ const ScrollReveal = ({ children, className }: { children: ReactNode; className?
   );
 };
 
+const SectionDivider = () => (
+  <div className="max-w-[4rem] mx-auto border-t border-border/40 my-20 md:my-28" />
+);
+
 const Index = () => {
   const [activeLevel, setActiveLevel] = useState<number>(1);
   const location = useLocation();
@@ -55,9 +59,9 @@ const Index = () => {
       </div>
 
       <main className="container mx-auto px-4 py-12 max-w-7xl">
-        {/* Die vier Disziplinen des Promptings 2026 */}
+        {/* Themenblock 1: Überblick */}
         <ScrollReveal>
-          <section id="stufen" className="mb-24 scroll-mt-20">
+          <section id="stufen" className="mb-16 md:mb-20 scroll-mt-20">
             <div className="text-center mb-12">
               <span className="font-mono text-xs tracking-widest block mb-3" style={{ color: 'hsl(var(--primary-deep))' }}>01</span>
               <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: 'hsl(var(--primary-deep))' }} />
@@ -112,8 +116,10 @@ const Index = () => {
           </section>
         </ScrollReveal>
 
-        {/* ACTA-Methode – Full-Bleed */}
-        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-24 md:mb-32">
+        <SectionDivider />
+
+        {/* Themenblock 2: ACTA-Methode – Full-Bleed */}
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-16 md:mb-20">
           <ScrollReveal>
             <div id="acta" className="scroll-mt-20 max-w-7xl mx-auto">
               <ACTASection />
@@ -122,15 +128,17 @@ const Index = () => {
           </ScrollReveal>
         </div>
 
-        {/* Prompt-Sammlung */}
+        <SectionDivider />
+
+        {/* Themenblock 3: Üben */}
         <ScrollReveal>
-          <div id="bibliothek" className="scroll-mt-20 mb-20 md:mb-24">
+          <div id="bibliothek" className="scroll-mt-20 mb-16 md:mb-20">
             <PromptLibrary />
           </div>
         </ScrollReveal>
 
-        {/* Interaktiver Übungsbereich */}
-        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-20 md:mb-24">
+        {/* Übungsbereich (gehört zu Block 3 – keine Trennlinie) */}
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-16 md:mb-20">
           <ScrollReveal>
             <div id="uebungen" className="scroll-mt-20 max-w-7xl mx-auto">
               <PracticeArea />
@@ -138,15 +146,17 @@ const Index = () => {
           </ScrollReveal>
         </div>
 
-        {/* Ressourcen & Best Practices */}
+        <SectionDivider />
+
+        {/* Themenblock 4: Vertiefen */}
         <ScrollReveal>
-          <div id="ressourcen" className="scroll-mt-20 mb-20 md:mb-24">
+          <div id="ressourcen" className="scroll-mt-20 mb-16 md:mb-20">
             <ResourcesSection />
           </div>
         </ScrollReveal>
 
-        {/* Decomposition-Assistent */}
-        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-20 md:mb-24">
+        {/* Decomposition-Assistent (gehört zu Block 4 – keine Trennlinie) */}
+        <div className="bg-muted/30 -mx-4 px-4 md:-mx-8 md:px-8 py-16 md:py-20 mb-16 md:mb-20">
           <ScrollReveal>
             <div id="decomposition" className="scroll-mt-20 max-w-7xl mx-auto">
               <DecompositionAssistant />
@@ -154,9 +164,9 @@ const Index = () => {
           </ScrollReveal>
         </div>
 
-        {/* Advanced Prompting Methoden */}
+        {/* Advanced Prompting (gehört zu Block 4 – keine Trennlinie) */}
         <ScrollReveal>
-          <div id="advanced" className="scroll-mt-20 mb-24 md:mb-32">
+          <div id="advanced" className="scroll-mt-20 mb-16 md:mb-20">
             <AdvancedPromptingSection />
           </div>
         </ScrollReveal>
