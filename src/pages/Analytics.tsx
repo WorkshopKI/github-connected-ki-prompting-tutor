@@ -121,7 +121,7 @@ const Analytics = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold">Analytics & Insights</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Analytics & Insights</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Nutzung, Qualität und Governance-Metriken
           </p>
@@ -145,7 +145,7 @@ const Analytics = () => {
 
       {/* Bar Chart: Prompts by Category (collapsible groups) */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Prompts nach Kategorie</h2>
+        <h2 className="font-semibold text-base mb-4">Prompts nach Kategorie</h2>
         <div className="space-y-3">
           {categoryGroups.map((group) => (
             <Collapsible key={group.label} defaultOpen={group.defaultOpen}>
@@ -176,7 +176,7 @@ const Analytics = () => {
 
       {/* Table: Departments */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Prompts nach Abteilung & Risiko</h2>
+        <h2 className="font-semibold text-base mb-4">Prompts nach Abteilung & Risiko</h2>
         <Table>
           <TableHeader>
             <TableRow>
@@ -218,7 +218,7 @@ const Analytics = () => {
 
       {/* Onboarding Progress */}
       <Card className="p-5 rounded-xl border border-border shadow-sm">
-        <h2 className="font-semibold text-lg mb-4">Onboarding-Fortschritt</h2>
+        <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
         <div className="flex items-center gap-1 flex-wrap">
           {learningModules.map((mod, i) => {
             const isComplete = completedLessons.includes(mod.id);

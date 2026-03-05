@@ -93,7 +93,7 @@ const Dashboard = () => {
     <div className="space-y-8">
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold tracking-tight">
           {getGreeting()}{displayName ? `, ${displayName}` : ""}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -114,7 +114,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2">
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg">Beliebte Prompts</h2>
+              <h2 className="font-semibold text-base">Beliebte Prompts</h2>
               <Button
                 variant="ghost"
                 size="sm"
@@ -164,7 +164,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="space-y-4">
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
-            <h2 className="font-semibold text-lg mb-4">Schnellzugriff</h2>
+            <h2 className="font-semibold text-base mb-4">Schnellzugriff</h2>
             <div className="space-y-2">
               <Button
                 variant="outline"
@@ -199,7 +199,7 @@ const Dashboard = () => {
 
           {/* Progress */}
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
-            <h2 className="font-semibold text-lg mb-4">Lernfortschritt</h2>
+            <h2 className="font-semibold text-base mb-4">Lernfortschritt</h2>
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">

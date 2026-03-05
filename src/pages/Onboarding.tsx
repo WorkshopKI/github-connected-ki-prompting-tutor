@@ -122,7 +122,7 @@ const Onboarding = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Onboarding</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Onboarding</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Systematisches Prompt-Training in {learningModules.length} Modulen
         </p>
@@ -152,7 +152,7 @@ const Onboarding = () => {
       </Card>
 
       {/* Module List */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {learningModules.map((mod, index) => {
           const status = moduleStatuses[mod.id];
           const isExpanded = expandedModule === mod.id;

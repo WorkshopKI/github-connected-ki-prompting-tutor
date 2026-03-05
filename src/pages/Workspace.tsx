@@ -8,7 +8,7 @@ const Workspace = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold">Team Workspace</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Team Workspace</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Zusammenarbeit, Use Cases und Qualitätssicherung
         </p>
