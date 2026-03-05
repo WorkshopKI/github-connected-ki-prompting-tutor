@@ -211,7 +211,7 @@ export const PromptLibrary = () => {
             onMouseLeave={() => setHover(0)}
             className="p-0"
           >
-            <Star className={`w-3.5 h-3.5 ${star <= (hover || stored) ? "fill-amber-400 text-amber-400" : "text-muted-foreground/20"}`} />
+            <Star className={`w-3.5 h-3.5 ${star <= (hover || stored) ? "fill-primary text-primary" : "text-muted-foreground/20"}`} />
           </button>
         ))}
       </div>
@@ -337,7 +337,7 @@ export const PromptLibrary = () => {
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{prompt.title}</span>
                       {prompt.official && (
-                        <Badge className="bg-emerald-100 text-emerald-700 text-[10px] px-1 py-0">Verifiziert</Badge>
+                        <Badge className="bg-primary/10 text-primary text-[10px] px-1 py-0">Verifiziert</Badge>
                       )}
                     </div>
                   </td>
@@ -377,7 +377,7 @@ export const PromptLibrary = () => {
                       </span>
                     )}
                     {prompt.official ? (
-                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs gap-1">
+                      <Badge className="bg-primary/10 text-primary text-xs gap-1">
                         <Shield className="w-3 h-3" /> Verifiziert
                       </Badge>
                     ) : (

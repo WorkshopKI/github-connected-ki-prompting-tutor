@@ -59,7 +59,7 @@ const roles = [
   {
     name: "Admin",
     description: "Vollzugriff auf alle Funktionen",
-    color: "bg-rose-100 text-rose-700",
+    color: "bg-primary/15 text-primary font-semibold",
     permissions: ["Prompts erstellen & bearbeiten", "Prompts verifizieren", "Rollen verwalten", "Einstellungen ändern", "Analytics einsehen", "Team verwalten"],
   },
   {
@@ -71,7 +71,7 @@ const roles = [
   {
     name: "Editor",
     description: "Kann Prompts erstellen und bearbeiten",
-    color: "bg-blue-100 text-blue-700",
+    color: "bg-muted text-muted-foreground",
     permissions: ["Prompts erstellen & bearbeiten", "Eigene Prompts verwalten", "Onboarding absolvieren"],
   },
   {
@@ -198,7 +198,7 @@ const Settings = () => {
         {/* Compliance */}
         <TabsContent value="compliance" className="space-y-6">
           <Alert variant="destructive" className="border-amber-200 bg-amber-50 text-amber-800">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <AlertTriangle className="h-4 w-4 text-primary" />
             <AlertDescription>
               Definieren Sie Regeln für die Prompt-Erstellung in Ihrer Organisation.
             </AlertDescription>

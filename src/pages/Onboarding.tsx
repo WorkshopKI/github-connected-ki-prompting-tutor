@@ -78,10 +78,10 @@ const componentMap: Record<string, React.ComponentType> = {
 };
 
 const typeBadgeColors: Record<string, string> = {
-  theorie: "bg-blue-100 text-blue-700",
-  praxis: "bg-emerald-100 text-emerald-700",
-  quiz: "bg-amber-100 text-amber-700",
-  pruefung: "bg-rose-100 text-rose-700",
+  theorie: "bg-muted text-muted-foreground",
+  praxis: "bg-primary/10 text-primary",
+  quiz: "bg-muted text-muted-foreground",
+  pruefung: "bg-primary/10 text-primary",
 };
 
 const typeLabels: Record<string, string> = {
@@ -137,11 +137,11 @@ const Onboarding = () => {
         <Progress value={progressPercent} className="h-3 mb-4" />
         <div className="flex gap-4 text-sm">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
             {completedCount} Abgeschlossen
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+            <span className="w-2.5 h-2.5 rounded-full bg-primary/40" />
             {availableCount} In Bearbeitung
           </span>
           <span className="flex items-center gap-1.5">
@@ -163,9 +163,9 @@ const Onboarding = () => {
               <Card
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   status === "completed"
-                    ? "border-l-4 border-l-green-500 border-border"
+                    ? "border-l-4 border-l-primary/50 border-border"
                     : status === "available"
-                    ? "border-l-4 border-l-orange-500 border-border hover:shadow-md"
+                    ? "border-l-4 border-l-primary border-border hover:shadow-md"
                     : "opacity-50 pointer-events-none border-border"
                 }`}
                 onClick={() => toggleModule(mod.id)}
@@ -175,9 +175,9 @@ const Onboarding = () => {
                   <div
                     className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
                       status === "completed"
-                        ? "bg-emerald-100 text-emerald-700"
+                        ? "bg-primary/15 text-primary"
                         : status === "available"
-                        ? "bg-amber-100 text-amber-700"
+                        ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -207,10 +207,10 @@ const Onboarding = () => {
                   {/* Status */}
                   <div className="shrink-0">
                     {status === "completed" && (
-                      <span className="text-xs text-emerald-600 font-medium">Abgeschlossen</span>
+                      <span className="text-xs text-primary font-medium">Abgeschlossen</span>
                     )}
                     {status === "available" && (
-                      <Play className="w-5 h-5 text-amber-600" />
+                      <Play className="w-5 h-5 text-primary" />
                     )}
                   </div>
                 </div>

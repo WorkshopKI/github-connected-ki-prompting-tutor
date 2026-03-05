@@ -71,9 +71,9 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
   };
 
   const riskColors: Record<string, string> = {
-    niedrig: "bg-emerald-100 text-emerald-700",
-    mittel: "bg-amber-100 text-amber-700",
-    hoch: "bg-rose-100 text-rose-700",
+    niedrig: "bg-primary/10 text-primary",
+    mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
+    hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
   };
 
   return (
@@ -99,7 +99,7 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
               </span>
             )}
             {prompt.official ? (
-              <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 gap-1">
+              <Badge className="bg-primary/10 text-primary gap-1">
                 <Shield className="w-3 h-3" /> Verifiziert
               </Badge>
             ) : (
@@ -192,7 +192,7 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
                 <Star
                   className={`w-5 h-5 transition-colors ${
                     star <= (hoverRating || currentRating)
-                      ? "fill-amber-400 text-amber-400"
+                      ? "fill-primary text-primary"
                       : "text-muted-foreground/30"
                   }`}
                 />

@@ -77,15 +77,15 @@ const Dashboard = () => {
     };
   }, [completedLessons, exerciseResults]);
 
-  const displayName = profile?.display_name || "dort";
+  const displayName = profile?.display_name;
 
   const levelBadgeColors: Record<string, string> = {
-    alltag: "bg-blue-100 text-blue-700",
-    beruf: "bg-purple-100 text-purple-700",
-    organisation: "bg-primary/15 text-primary",
-    blueprint: "bg-amber-100 text-amber-700",
-    research: "bg-emerald-100 text-emerald-700",
-    websuche: "bg-cyan-100 text-cyan-700",
+    alltag: "bg-muted text-muted-foreground",
+    beruf: "bg-muted text-muted-foreground",
+    organisation: "bg-primary/10 text-primary",
+    blueprint: "bg-primary/10 text-primary",
+    research: "bg-muted text-muted-foreground",
+    websuche: "bg-muted text-muted-foreground",
   };
 
   return (
@@ -93,7 +93,7 @@ const Dashboard = () => {
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold">
-          {getGreeting()}, {displayName}
+          {getGreeting()}{displayName ? `, ${displayName}` : ""}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           Dein Team hat {stats.totalPrompts} Prompts in der Library.
@@ -107,39 +107,35 @@ const Dashboard = () => {
             icon: BookOpen,
             label: "Gesamt Prompts",
             value: stats.totalPrompts,
-            color: "bg-primary",
           },
           {
             icon: Building2,
             label: "Abteilungen",
             value: stats.departments,
-            color: "bg-blue-500",
           },
           {
             icon: GraduationCap,
             label: "Onboarding",
             value: `${stats.onboardingPercent}%`,
-            color: "bg-emerald-500",
           },
           {
             icon: CheckCircle2,
             label: "Übungen",
             value: `${stats.exercisesDone}/${stats.exercisesTotal}`,
-            color: "bg-amber-500",
           },
         ].map((stat) => (
           <Card
             key={stat.label}
             className="p-5 bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
           >
-            <div className={`absolute top-0 left-0 right-0 h-1 ${stat.color}`} />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary/40" />
             <div className="flex items-center gap-3">
-              <div className="p-2">
-                <stat.icon className="h-7 w-7 text-foreground/70" />
+              <div className="p-2 rounded-lg bg-primary/8">
+                <stat.icon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-                <p className="text-2xl font-bold">{stat.value}</p>
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="text-xl font-bold">{stat.value}</p>
               </div>
             </div>
           </Card>

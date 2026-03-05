@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { orgUseCases } from "@/data/orgUseCases";
 
 const riskStyles = {
-  niedrig: "bg-emerald-100 text-emerald-700",
-  mittel: "bg-amber-100 text-amber-700",
-  hoch: "bg-rose-100 text-rose-700",
+  niedrig: "bg-primary/10 text-primary",
+  mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
+  hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
 };
 
 export const OrganizationUseCases = () => {

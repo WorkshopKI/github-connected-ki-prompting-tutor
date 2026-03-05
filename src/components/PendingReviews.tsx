@@ -10,8 +10,8 @@ const mockReviews = [
 ];
 
 const priorityColors: Record<string, string> = {
-  hoch: "bg-rose-100 text-rose-700",
-  mittel: "bg-amber-100 text-amber-700",
+  hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+  mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
   niedrig: "bg-muted text-muted-foreground",
 };
 
