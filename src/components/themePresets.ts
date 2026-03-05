@@ -1,4 +1,4 @@
-export type ThemeCategory = "minimalistisch" | "clean" | "wenig-farbe" | "elegant";
+export type ThemeCategory = "muted-stone" | "muted-moss" | "elegant-serif" | "orange-muted";
 
 export interface ThemePreset {
   id: string;
@@ -8,23 +8,24 @@ export interface ThemePreset {
 }
 
 export const themePresets: ThemePreset[] = [
-  { id: "minimal-pure", name: "Minimal Pure", category: "minimalistisch", description: "Nahezu monochrom, maximaler Weißraum." },
-  { id: "minimal-grid", name: "Minimal Grid", category: "minimalistisch", description: "Feine Rasterlinien, sachlicher Editorial-Look." },
-  { id: "minimal-ink", name: "Minimal Ink", category: "minimalistisch", description: "Klarer Schwarz-Weiß-Kontrast mit ruhigem Orange-Akzent." },
-  { id: "clean-soft", name: "Clean Soft", category: "clean", description: "Sanfte Oberflächen und klare Kanten für Lernfokus." },
-  { id: "clean-crisp", name: "Clean Crisp", category: "clean", description: "Hohe Lesbarkeit und präzise Konturen." },
-  { id: "clean-air", name: "Clean Air", category: "clean", description: "Sehr luftiges Layout mit reduzierten Schatten." },
-  { id: "muted-sand", name: "Muted Sand", category: "wenig-farbe", description: "Warmer Beigeton mit sehr dezenten Highlights." },
-  { id: "muted-stone", name: "Muted Stone", category: "wenig-farbe", description: "Steingraue Fläche, ideal für lange Lesewege." },
-  { id: "muted-moss", name: "Muted Moss", category: "wenig-farbe", description: "Sehr zurückhaltender Grünakzent (wie Screen2 inspiriert)." },
-  { id: "elegant-serif", name: "Elegant Serif", category: "elegant", description: "Hochwertiger, ruhiger Premium-Look." },
-  { id: "elegant-contrast", name: "Elegant Contrast", category: "elegant", description: "Edler Kontrast mit feinen Gold-ähnlichen Primärtönen." },
-  { id: "elegant-noir", name: "Elegant Noir", category: "elegant", description: "Dunkel-eleganter Auftritt für fokussiertes Arbeiten." },
+  { id: "muted-stone", name: "Muted Stone", category: "muted-stone", description: "Original-Favorit: ruhige Stein-Töne, sehr neutral." },
+  { id: "muted-stone-soft", name: "Muted Stone Soft", category: "muted-stone", description: "Heller, luftiger und besonders lesefreundlich." },
+  { id: "muted-stone-contrast", name: "Muted Stone Contrast", category: "muted-stone", description: "Etwas mehr Kontrast für klarere Content-Hierarchie." },
+
+  { id: "muted-moss", name: "Muted Moss", category: "muted-moss", description: "Original-Favorit: dezent-grüner, ruhiger Enterprise-Look." },
+  { id: "muted-moss-light", name: "Muted Moss Light", category: "muted-moss", description: "Heller Moss-Look mit sehr subtilen Akzenten." },
+  { id: "muted-moss-rich", name: "Muted Moss Rich", category: "muted-moss", description: "Etwas kräftigeres Moss für stärkere Buttons." },
+
+  { id: "elegant-serif", name: "Elegant Serif", category: "elegant-serif", description: "Original-Favorit: hochwertige, ruhige Premium-Wirkung." },
+  { id: "elegant-serif-warm", name: "Elegant Serif Warm", category: "elegant-serif", description: "Wärmeres Premium-Theme mit sanfter Eleganz." },
+  { id: "elegant-serif-noir", name: "Elegant Serif Noir", category: "elegant-serif", description: "Dunkle elegante Variante für fokussierte Sessions." },
+
+  { id: "orange-muted", name: "Orange Muted", category: "orange-muted", description: "Original-Orange, aber gedämpft und professioneller." },
 ];
 
 export const themeCategories: { key: ThemeCategory; title: string }[] = [
-  { key: "minimalistisch", title: "Sehr minimalistisch" },
-  { key: "clean", title: "Sehr clean" },
-  { key: "wenig-farbe", title: "Ganz wenig Farbe" },
-  { key: "elegant", title: "Elegant" },
+  { key: "muted-stone", title: "Muted Stone – Varianten" },
+  { key: "muted-moss", title: "Muted Moss – Varianten" },
+  { key: "elegant-serif", title: "Elegant Serif – Varianten" },
+  { key: "orange-muted", title: "Original Orange – Muted Variante" },
 ];

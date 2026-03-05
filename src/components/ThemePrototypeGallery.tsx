@@ -14,7 +14,7 @@ export const ThemePrototypeGallery = () => {
         <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "hsl(var(--primary-deep))" }} />
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">Theme-Prototypen & Brainstorming</h2>
         <p className="text-muted-foreground max-w-3xl mx-auto">
-          12 visuelle Vorschläge in 4 Kategorien. Klicke auf <em>Anwenden</em>, um den Prototyp direkt auf die Lern-App zu legen.
+          10 visuelle Vorschläge basierend auf deinen Favoriten. Klicke auf <em>Anwenden</em>, um den Prototyp direkt auf die Lern-App zu legen.
         </p>
       </div>
 

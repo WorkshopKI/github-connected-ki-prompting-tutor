@@ -6,13 +6,13 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider
     attribute="class"
-    defaultTheme="minimal-pure"
+    defaultTheme="muted-stone"
     enableSystem={false}
     themes={[
-      "minimal-pure", "minimal-grid", "minimal-ink",
-      "clean-soft", "clean-crisp", "clean-air",
-      "muted-sand", "muted-stone", "muted-moss",
-      "elegant-serif", "elegant-contrast", "elegant-noir"
+      "muted-stone", "muted-stone-soft", "muted-stone-contrast",
+      "muted-moss", "muted-moss-light", "muted-moss-rich",
+      "elegant-serif", "elegant-serif-warm", "elegant-serif-noir",
+      "orange-muted"
     ]}
   >
     <App />
