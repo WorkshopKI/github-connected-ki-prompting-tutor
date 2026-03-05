@@ -57,7 +57,7 @@ export const ChatPlayground = ({
   const exportAsMarkdown = () => {
     if (messages.length === 0) return;
     const lines: string[] = [
-      "# Playground-Gespräch",
+      "# Prompt-Labor-Gespräch",
       "",
       `*Exportiert am ${new Date().toLocaleDateString("de-DE")}*`,
       "",
@@ -105,7 +105,7 @@ export const ChatPlayground = ({
             className="text-xs"
           >
             <Download className="w-3 h-3 mr-1" />
-            Export
+            Exportieren
           </Button>
           <Button
             variant="ghost"
@@ -125,7 +125,7 @@ export const ChatPlayground = ({
             className="text-xs text-destructive hover:text-destructive"
           >
             <Trash2 className="w-3 h-3 mr-1" />
-            Leeren
+            Verlauf leeren
           </Button>
         </div>
       </div>
@@ -136,8 +136,24 @@ export const ChatPlayground = ({
         onScroll={handleScroll}
       >
         {!hasMessages && (
-          <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-            Sende eine Nachricht, um loszulegen...
+          <div className="flex items-center justify-center h-full">
+            <div className="grid grid-cols-2 gap-3 max-w-md w-full">
+              {[
+                { title: "Text erstellen", prompt: "Schreibe einen professionellen LinkedIn-Post über künstliche Intelligenz im Mittelstand." },
+                { title: "Analysieren", prompt: "Vergleiche die Vor- und Nachteile von Remote-Arbeit für ein Team mit 15 Personen." },
+                { title: "Ideen sammeln", prompt: "Generiere 10 kreative Marketingideen für ein nachhaltiges Mode-Label mit Budget unter 5000 Euro." },
+                { title: "Strukturieren", prompt: "Erstelle eine Checkliste für die Einführung eines neuen CRM-Systems in einem KMU." },
+              ].map((s) => (
+                <button
+                  key={s.title}
+                  onClick={() => onSendMessage(s.prompt)}
+                  className="bg-card border border-border rounded-lg p-4 hover:border-primary/50 cursor-pointer transition-colors text-left"
+                >
+                  <p className="text-sm font-medium mb-1">{s.title}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{s.prompt}</p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

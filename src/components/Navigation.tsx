@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserMenu } from "@/components/UserMenu";
 import { SyncStatusIcon } from "@/components/SyncStatusIcon";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -32,22 +33,14 @@ export const Navigation = () => {
   };
 
   const navItems = [
-    { label: "Stufen", id: "stufen", type: "scroll" as const },
-    { label: "ACTA", id: "acta", type: "scroll" as const },
-    { label: "Bibliothek", id: "bibliothek", type: "scroll" as const },
-    { label: "Playground", id: "/playground", type: "route" as const },
+    { label: "Überblick", id: "hero", type: "scroll" as const },
+    { label: "Methoden", id: "acta", type: "scroll" as const },
+    { label: "Sammlung", id: "bibliothek", type: "scroll" as const },
     { label: "Übungen", id: "uebungen", type: "scroll" as const },
-    { label: "Tools", id: "decomposition", type: "scroll" as const },
-    { label: "Tipps", id: "ressourcen", type: "scroll" as const },
-    { label: "Advanced", id: "advanced", type: "scroll" as const },
   ];
 
   const handleNavClick = (item: typeof navItems[number]) => {
-    if (item.type === "route") {
-      navigate(item.id);
-    } else {
-      scrollToSection(item.id);
-    }
+    scrollToSection(item.id);
     setMobileOpen(false);
   };
 
@@ -56,13 +49,13 @@ export const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <button
-            onClick={() => scrollToSection("hero")}
+            onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className="flex items-center gap-2 cursor-pointer"
           >
             <div className="bg-gradient-primary p-2 rounded-lg">
               <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-base hidden sm:inline">Prompting Tutor</span>
+            <span className="font-bold text-base hidden sm:inline">KI Prompting Tutor</span>
           </button>
 
           <div className="hidden md:flex items-center gap-1 md:gap-2">
@@ -70,15 +63,18 @@ export const Navigation = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className={`px-2 md:px-4 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors ${
-                  item.type === "route" && location.pathname === item.id
-                    ? "text-foreground bg-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
+                className="px-2 md:px-4 py-2 text-sm font-medium whitespace-nowrap rounded-md transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
               >
                 {item.label}
               </button>
             ))}
+            <Button
+              size="sm"
+              onClick={() => navigate("/playground")}
+              className="ml-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+            >
+              Prompt-Labor
+            </Button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -100,15 +96,18 @@ export const Navigation = () => {
                     <button
                       key={item.id}
                       onClick={() => handleNavClick(item)}
-                      className={`text-left px-4 py-3 rounded-md text-sm font-medium transition-colors ${
-                        item.type === "route" && location.pathname === item.id
-                          ? "text-foreground bg-accent"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                      }`}
+                      className="text-left px-4 py-3 rounded-md text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-accent"
                     >
                       {item.label}
                     </button>
                   ))}
+                  <Separator className="my-2" />
+                  <Button
+                    onClick={() => { navigate("/playground"); setMobileOpen(false); }}
+                    className="mx-4 bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Prompt-Labor
+                  </Button>
                 </nav>
               </SheetContent>
             </Sheet>

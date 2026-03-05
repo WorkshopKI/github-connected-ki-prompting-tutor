@@ -17,8 +17,9 @@ interface AgentKnobsProps {
   config: AgentConfig;
   onConfigChange: (config: AgentConfig) => void;
   onStartAgent: (assembledPrompt: string) => void;
-  isOpen: boolean;
-  onToggle: () => void;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  bare?: boolean;
 }
 
 const HAND_OPTIONS = [
@@ -79,7 +80,7 @@ Belege deine Arbeit durch: ${proofLabel}
 ${config.task}`;
 }
 
-export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onToggle }: AgentKnobsProps) => {
+export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onToggle, bare }: AgentKnobsProps) => {
   const update = (partial: Partial<AgentConfig>) => {
     onConfigChange({ ...config, ...partial });
   };
@@ -96,6 +97,108 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
     onStartAgent(buildAgentPrompt(config));
   };
 
+  const content = (
+    <div className="px-4 pb-4 space-y-4">
+      <div>
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
+          <MapPin className="w-3.5 h-3.5 text-primary" />
+          Arbeitsbereich – Wo darf der Assistent arbeiten?
+        </label>
+        <Textarea
+          value={config.habitat}
+          onChange={(e) => update({ habitat: e.target.value })}
+          placeholder="z.B. Nur in öffentlichen Webquellen und Preisseiten..."
+          className="text-xs min-h-[60px]"
+        />
+      </div>
+
+      <div>
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
+          <Hand className="w-3.5 h-3.5 text-primary" />
+          Werkzeuge – Was darf der Assistent tun?
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {HAND_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => toggleHand(opt.value)}
+              className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                config.hands.includes(opt.value)
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground border-border hover:border-primary/50"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
+          <Link2 className="w-3.5 h-3.5 text-primary" />
+          Autonomie – Wie selbstständig?
+          <span className="ml-auto text-muted-foreground font-normal">{config.leash}%</span>
+        </label>
+        <Slider
+          value={[config.leash]}
+          onValueChange={([v]) => update({ leash: v })}
+          min={0}
+          max={100}
+          step={10}
+          className="mb-1"
+        />
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>Schritt-für-Schritt</span>
+          <span>Volle Autonomie</span>
+        </div>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
+          <CheckSquare className="w-3.5 h-3.5 text-primary" />
+          Nachweis – Wie belegt er Erfolg?
+        </label>
+        <Select value={config.proof} onValueChange={(v) => update({ proof: v })}>
+          <SelectTrigger className="text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PROOF_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value} className="text-xs">
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <label className="text-xs font-semibold text-foreground mb-1.5 block">
+          Aufgabe für den Assistenten
+        </label>
+        <Textarea
+          value={config.task}
+          onChange={(e) => update({ task: e.target.value })}
+          placeholder="Beschreibe die Aufgabe, die der Assistent autonom erledigen soll..."
+          className="text-xs min-h-[80px]"
+        />
+      </div>
+
+      <Button
+        onClick={handleStart}
+        disabled={!config.task.trim()}
+        className="w-full gap-2"
+        size="sm"
+      >
+        <Play className="w-3.5 h-3.5" />
+        Assistent starten
+      </Button>
+    </div>
+  );
+
+  if (bare) return content;
+
   return (
     <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
       <button
@@ -103,116 +206,12 @@ export const AgentKnobs = ({ config, onConfigChange, onStartAgent, isOpen, onTog
         className="flex items-center justify-between w-full p-4 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold">Agenten-Simulator</span>
+          <span className="text-sm font-semibold">Agenten-Modus</span>
           <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">4 Regler</span>
         </div>
         {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
-
-      {isOpen && (
-        <div className="px-4 pb-4 space-y-4">
-          {/* Habitat */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
-              <MapPin className="w-3.5 h-3.5 text-primary" />
-              Habitat – Wo darf der Agent arbeiten?
-            </label>
-            <Textarea
-              value={config.habitat}
-              onChange={(e) => update({ habitat: e.target.value })}
-              placeholder="z.B. Nur in öffentlichen Webquellen und Preisseiten..."
-              className="text-xs min-h-[60px]"
-            />
-          </div>
-
-          {/* Hands */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
-              <Hand className="w-3.5 h-3.5 text-primary" />
-              Hands – Was darf der Agent tun?
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              {HAND_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => toggleHand(opt.value)}
-                  className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                    config.hands.includes(opt.value)
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background text-muted-foreground border-border hover:border-primary/50"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Leash */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
-              <Link2 className="w-3.5 h-3.5 text-primary" />
-              Leash – Wie autonom?
-              <span className="ml-auto text-muted-foreground font-normal">{config.leash}%</span>
-            </label>
-            <Slider
-              value={[config.leash]}
-              onValueChange={([v]) => update({ leash: v })}
-              min={0}
-              max={100}
-              step={10}
-              className="mb-1"
-            />
-            <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>Schritt-für-Schritt</span>
-              <span>Volle Autonomie</span>
-            </div>
-          </div>
-
-          {/* Proof */}
-          <div>
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-foreground mb-1.5">
-              <CheckSquare className="w-3.5 h-3.5 text-primary" />
-              Proof – Wie belegt er Erfolg?
-            </label>
-            <Select value={config.proof} onValueChange={(v) => update({ proof: v })}>
-              <SelectTrigger className="text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PROOF_OPTIONS.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value} className="text-xs">
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Task */}
-          <div>
-            <label className="text-xs font-semibold text-foreground mb-1.5 block">
-              Aufgabe für den Agenten
-            </label>
-            <Textarea
-              value={config.task}
-              onChange={(e) => update({ task: e.target.value })}
-              placeholder="Beschreibe die Aufgabe, die der Agent autonom erledigen soll..."
-              className="text-xs min-h-[80px]"
-            />
-          </div>
-
-          <Button
-            onClick={handleStart}
-            disabled={!config.task.trim()}
-            className="w-full gap-2"
-            size="sm"
-          >
-            <Play className="w-3.5 h-3.5" />
-            Agent starten
-          </Button>
-        </div>
-      )}
+      {isOpen && content}
     </div>
   );
 };

@@ -13,8 +13,9 @@ export interface ACTABuilderProps {
   fields: ACTAFields;
   onFieldsChange: (fields: ACTAFields) => void;
   onSendToPlayground: (assembledPrompt: string) => void;
-  isOpen: boolean;
-  onToggle: () => void;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  bare?: boolean;
 }
 
 const FIELD_CONFIG = [
@@ -39,6 +40,7 @@ export const ACTABuilder = ({
   onSendToPlayground,
   isOpen,
   onToggle,
+  bare,
 }: ACTABuilderProps) => {
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
   const assembled = assembleACTAPrompt(fields);
@@ -67,93 +69,93 @@ export const ACTABuilder = ({
     toast.success("Prompt kopiert!");
   };
 
+  const content = (
+    <div className="px-4 pb-4 space-y-4">
+      <Select onValueChange={handleTemplateSelect}>
+        <SelectTrigger className="w-full text-sm">
+          <SelectValue placeholder="Vorlage auswählen..." />
+        </SelectTrigger>
+        <SelectContent>
+          {ACTA_TEMPLATES.map((t, i) => (
+            <SelectItem key={i} value={String(i)}>
+              {t.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {FIELD_CONFIG.map((field) => {
+        const Icon = field.icon;
+        const value = fields[field.key];
+        const isFilled = value.trim().length > 10;
+
+        return (
+          <div key={field.key} className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Icon className="w-4 h-4 text-primary" />
+              <label className="text-xs font-medium">{field.label}</label>
+              <Badge
+                variant={isFilled ? "default" : "secondary"}
+                className="text-[10px] px-1.5 py-0 h-4 ml-auto"
+              >
+                {isFilled ? "✓" : "–"}
+              </Badge>
+            </div>
+            <Textarea
+              value={value}
+              onChange={(e) => updateField(field.key, e.target.value)}
+              placeholder={field.placeholder}
+              className="text-sm min-h-[60px] resize-none"
+              rows={2}
+            />
+          </div>
+        );
+      })}
+
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{filledCount}/4 Felder ausgefüllt</span>
+          <span>{filledCount === 4 ? "Vollständig!" : ""}</span>
+        </div>
+        <Progress value={filledCount * 25} className="h-1.5" />
+      </div>
+
+      {hasContent && (
+        <Card className="p-3 bg-background/50">
+          <p className="text-xs font-medium text-muted-foreground mb-1">Vorschau:</p>
+          <p className="text-xs whitespace-pre-wrap leading-relaxed">{assembled}</p>
+        </Card>
+      )}
+
+      <div className="flex gap-2">
+        <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
+          <Send className="w-3 h-3 mr-1.5" />
+          Prompt zusammenbauen
+        </Button>
+        <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
+          <Copy className="w-3 h-3 mr-1.5" />
+          Kopieren
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (bare) return content;
+
   return (
     <Collapsible open={isOpen} onOpenChange={onToggle}>
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">ACTA-Builder</span>
+            <span className="font-semibold text-sm">ACTA-Baukasten</span>
             <Badge variant="secondary" className="text-xs">
               {filledCount}/4
             </Badge>
           </div>
           {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
-
         <CollapsibleContent>
-          <div className="px-4 pb-4 space-y-4">
-            {/* Template selector */}
-            <Select onValueChange={handleTemplateSelect}>
-              <SelectTrigger className="w-full text-sm">
-                <SelectValue placeholder="Vorlage wählen..." />
-              </SelectTrigger>
-              <SelectContent>
-                {ACTA_TEMPLATES.map((t, i) => (
-                  <SelectItem key={i} value={String(i)}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* ACTA fields */}
-            {FIELD_CONFIG.map((field) => {
-              const Icon = field.icon;
-              const value = fields[field.key];
-              const isFilled = value.trim().length > 10;
-
-              return (
-                <div key={field.key} className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 text-primary" />
-                    <label className="text-xs font-medium">{field.label}</label>
-                    <Badge
-                      variant={isFilled ? "default" : "secondary"}
-                      className="text-[10px] px-1.5 py-0 h-4 ml-auto"
-                    >
-                      {isFilled ? "✓" : "–"}
-                    </Badge>
-                  </div>
-                  <Textarea
-                    value={value}
-                    onChange={(e) => updateField(field.key, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="text-sm min-h-[60px] resize-none"
-                    rows={2}
-                  />
-                </div>
-              );
-            })}
-
-            {/* Quality progress */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{filledCount}/4 Felder ausgefüllt</span>
-                <span>{filledCount === 4 ? "Vollständig!" : ""}</span>
-              </div>
-              <Progress value={filledCount * 25} className="h-1.5" />
-            </div>
-
-            {/* Live preview */}
-            {hasContent && (
-              <Card className="p-3 bg-background/50">
-                <p className="text-xs font-medium text-muted-foreground mb-1">Vorschau:</p>
-                <p className="text-xs whitespace-pre-wrap leading-relaxed">{assembled}</p>
-              </Card>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex gap-2">
-              <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
-                <Send className="w-3 h-3 mr-1.5" />
-                An Playground senden
-              </Button>
-              <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
-                <Copy className="w-3 h-3 mr-1.5" />
-                Kopieren
-              </Button>
-            </div>
-          </div>
+          {content}
         </CollapsibleContent>
       </div>
     </Collapsible>

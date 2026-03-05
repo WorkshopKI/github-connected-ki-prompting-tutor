@@ -1,5 +1,3 @@
-import { MessageSquare } from "lucide-react";
-
 export const Hero = () => {
   return (
     <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden">
@@ -33,29 +31,12 @@ export const Hero = () => {
             Präzise Anweisungen für KI formulieren — von der einfachen Frage bis zur komplexen Spezifikation
           </p>
 
-          <div
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto mt-10 animate-fade-up"
+          <p
+            className="text-sm text-muted-foreground mt-8 animate-fade-up"
             style={{ opacity: 0, animationDelay: '300ms' }}
           >
-            <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">4</div>
-              <div className="text-sm text-muted-foreground">Stufen</div>
-            </div>
-            <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">80+</div>
-              <div className="text-sm text-muted-foreground">Beispiele</div>
-            </div>
-            <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="text-3xl font-bold text-primary mb-1">6</div>
-              <div className="text-sm text-muted-foreground">Übungen</div>
-            </div>
-            <div className="bg-card/50 backdrop-blur border border-border rounded-xl p-4">
-              <div className="flex justify-center mb-1">
-                <MessageSquare className="w-7 h-7 text-primary" />
-              </div>
-              <div className="text-sm text-muted-foreground">KI-Feedback</div>
-            </div>
-          </div>
+            4 Disziplinen · ACTA-Methode · Interaktives Prompt-Labor · KI-gestütztes Feedback
+          </p>
         </div>
       </div>
     </section>

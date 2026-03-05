@@ -890,6 +890,7 @@ export const PromptLibrary = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Alltag");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -920,10 +921,10 @@ export const PromptLibrary = () => {
       <div className="text-center mb-8">
         <span className="inline-block text-xs font-semibold tracking-wider uppercase text-primary mb-2">Sammlung</span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Prompt-Bibliothek
+          Prompt-Sammlung
         </h2>
         <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          80+ Beispiel-Prompts und Agenten-Blueprints – von Alltag bis autonome Spezifikationen
+          Kopiere Prompts als Startpunkt oder öffne sie direkt im Prompt-Labor
         </p>
       </div>
 
@@ -963,7 +964,7 @@ export const PromptLibrary = () => {
 
       {/* Prompts Grid */}
       <div className="grid md:grid-cols-2 gap-4">
-        {filteredPrompts.map((prompt, index) => (
+        {(showAll ? filteredPrompts : filteredPrompts.slice(0, 6)).map((prompt, index) => (
           <Card key={index} className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -1021,6 +1022,14 @@ export const PromptLibrary = () => {
           </Card>
         ))}
       </div>
+
+      {filteredPrompts.length > 6 && (
+        <div className="text-center mt-6">
+          <Button variant="outline" onClick={() => setShowAll(!showAll)}>
+            {showAll ? "Weniger anzeigen" : `Alle ${filteredPrompts.length} Prompts anzeigen`}
+          </Button>
+        </div>
+      )}
 
       {filteredPrompts.length === 0 && (
         <div className="text-center py-12">
