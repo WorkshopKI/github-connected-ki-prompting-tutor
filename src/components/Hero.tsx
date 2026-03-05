@@ -1,5 +1,15 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Building2, GraduationCap } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+
+const scrollTo = (id: string) => {
+  const element = document.getElementById(id);
+  if (!element) return;
+  const offset = 80;
+  const elementPosition = element.getBoundingClientRect().top;
+  const offsetPosition = elementPosition + window.pageYOffset - offset;
+  window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+};
 
 export const Hero = () => {
   const [showScroll, setShowScroll] = useState(true);
@@ -10,7 +20,7 @@ export const Hero = () => {
   }, []);
 
   return (
-    <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
+    <section className="relative py-20 md:py-28 flex items-center justify-center overflow-hidden">
       <div
         className="absolute inset-0 opacity-20 dark:opacity-10"
         style={{
@@ -25,7 +35,7 @@ export const Hero = () => {
         <div className="max-w-4xl mx-auto">
           <div className="inline-block mb-4 animate-fade-up" style={{ opacity: 0 }}>
             <span className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
-              Interaktiver KI-Kurs
+              Prompting Tutor für Lernen & Organisationen
             </span>
           </div>
 
@@ -33,16 +43,33 @@ export const Hero = () => {
             className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-foreground animate-fade-up"
             style={{ opacity: 0, animationDelay: '100ms' }}
           >
-            Einstieg in{" "}
-            <span className="text-primary">Prompting</span>
+            Prompting mit System – für <span className="text-primary">Einzelne und Teams</span>
           </h1>
 
           <p
-            className="text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto animate-fade-up"
+            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-up"
             style={{ opacity: 0, animationDelay: '200ms' }}
           >
-            Präzise Anweisungen für KI formulieren – von der einfachen Frage bis zur komplexen Spezifikation
+            Lerne die ACTA-Methode, arbeite mit wiederverwendbaren Use Cases und etabliere
+            Prompt-Standards für deine Organisation.
           </p>
+
+          <div className="flex flex-wrap justify-center gap-3 mb-6 animate-fade-up" style={{ opacity: 0, animationDelay: '300ms' }}>
+            <Button onClick={() => scrollTo("stufen")} className="gap-2">
+              <GraduationCap className="w-4 h-4" />
+              Lernpfad starten
+            </Button>
+            <Button variant="outline" onClick={() => scrollTo("organisation")} className="gap-2">
+              <Building2 className="w-4 h-4" />
+              Use Cases im Unternehmen
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+            <span className="bg-muted px-2.5 py-1 rounded-full">Rollen & Governance</span>
+            <span className="bg-muted px-2.5 py-1 rounded-full">Prompt-Templates</span>
+            <span className="bg-muted px-2.5 py-1 rounded-full">Team-KPIs</span>
+          </div>
         </div>
       </div>
 
