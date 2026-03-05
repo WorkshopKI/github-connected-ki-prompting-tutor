@@ -1,4 +1,4 @@
-import { CheckCircle2, AlertCircle, Repeat, MessageCircleQuestion, LayoutList, Palette, FileSearch, Brain, BookCopy, LayoutTemplate, Thermometer } from "lucide-react";
+import { CheckCircle2, AlertCircle, Repeat, MessageCircleQuestion, LayoutList, Palette, FileSearch, Brain, BookCopy, LayoutTemplate, Thermometer, Lightbulb } from "lucide-react";
 
 export const ResourcesSection = () => {
   return (
@@ -61,43 +61,6 @@ export const ResourcesSection = () => {
               </div>
             </div>
 
-            <hr className="border-border my-3" />
-
-            <div className="flex items-start gap-3">
-              <Repeat className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Iterativ vorgehen</p>
-                <p className="text-xs text-muted-foreground">Verfeinere deine Prompts basierend auf den Antworten der KI</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <MessageCircleQuestion className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Nachfragen stellen</p>
-                <p className="text-xs text-muted-foreground">Bitte um Klarstellungen oder zus&auml;tzliche Details</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <LayoutList className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Struktur vorgeben</p>
-                <p className="text-xs text-muted-foreground">Fordere Aufz&auml;hlungen, Tabellen oder spezifische Formate</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Palette className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Ton & Stil bestimmen</p>
-                <p className="text-xs text-muted-foreground">Formal, freundlich, technisch &ndash; gib den gew&uuml;nschten Ton an</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <FileSearch className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Quellen anfordern</p>
-                <p className="text-xs text-muted-foreground">Bitte um Begr&uuml;ndungen oder Quellenangaben f&uuml;r Fakten</p>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -140,35 +103,81 @@ export const ResourcesSection = () => {
               </div>
             </div>
 
-            <hr className="border-border my-3" />
+          </div>
+        </div>
+      </div>
 
-            <div className="flex items-start gap-3">
-              <Brain className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Chain-of-Thought</p>
-                <p className="text-xs text-muted-foreground">Bitte die KI, Schritt f&uuml;r Schritt zu denken und zu erkl&auml;ren</p>
-              </div>
+      {/* Best Practices Grid */}
+      <div className="mt-6 bg-card rounded-xl p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="bg-muted p-2.5 rounded-lg">
+            <Lightbulb className="w-5 h-5 text-foreground/70" />
+          </div>
+          <h3 className="text-lg font-semibold">Best Practices</h3>
+        </div>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="flex items-start gap-3">
+            <Brain className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Chain-of-Thought</p>
+              <p className="text-xs text-muted-foreground">Bitte die KI, Schritt f&uuml;r Schritt zu denken und zu erkl&auml;ren</p>
             </div>
-            <div className="flex items-start gap-3">
-              <BookCopy className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Few-Shot Learning</p>
-                <p className="text-xs text-muted-foreground">Gib 2-3 Beispiele, damit die KI das Muster versteht</p>
-              </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <BookCopy className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Few-Shot Learning</p>
+              <p className="text-xs text-muted-foreground">Gib 2-3 Beispiele, damit die KI das Muster versteht</p>
             </div>
-            <div className="flex items-start gap-3">
-              <LayoutTemplate className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Prompt-Templates</p>
-                <p className="text-xs text-muted-foreground">Erstelle wiederverwendbare Vorlagen f&uuml;r h&auml;ufige Aufgaben</p>
-              </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <LayoutTemplate className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Prompt-Templates</p>
+              <p className="text-xs text-muted-foreground">Erstelle wiederverwendbare Vorlagen f&uuml;r h&auml;ufige Aufgaben</p>
             </div>
-            <div className="flex items-start gap-3">
-              <Thermometer className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Temperatur-Konzept</p>
-                <p className="text-xs text-muted-foreground">H&ouml;here Temperatur = kreativer, niedrigere = pr&auml;ziser</p>
-              </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Thermometer className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Temperatur-Konzept</p>
+              <p className="text-xs text-muted-foreground">H&ouml;here Temperatur = kreativer, niedrigere = pr&auml;ziser</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Repeat className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Iterativ vorgehen</p>
+              <p className="text-xs text-muted-foreground">Verfeinere deine Prompts basierend auf den Antworten der KI</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <MessageCircleQuestion className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Nachfragen stellen</p>
+              <p className="text-xs text-muted-foreground">Bitte um Klarstellungen oder zus&auml;tzliche Details</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <LayoutList className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Struktur vorgeben</p>
+              <p className="text-xs text-muted-foreground">Fordere Aufz&auml;hlungen, Tabellen oder spezifische Formate</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Palette className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Ton & Stil bestimmen</p>
+              <p className="text-xs text-muted-foreground">Formal, freundlich, technisch &ndash; gib den gew&uuml;nschten Ton an</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <FileSearch className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium text-sm">Quellen anfordern</p>
+              <p className="text-xs text-muted-foreground">Bitte um Begr&uuml;ndungen oder Quellenangaben f&uuml;r Fakten</p>
             </div>
           </div>
         </div>
