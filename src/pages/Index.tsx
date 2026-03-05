@@ -9,6 +9,7 @@ import { PracticeArea } from "@/components/PracticeArea";
 import { PromptLibrary } from "@/components/PromptLibrary";
 import { ResourcesSection } from "@/components/ResourcesSection";
 import { ACTASection } from "@/components/ACTASection";
+import { ACTAQuickChallenge } from "@/components/ACTAQuickChallenge";
 import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection";
 import { DecompositionAssistant } from "@/components/DecompositionAssistant";
 import { Footer } from "@/components/Footer";
@@ -114,6 +115,7 @@ const Index = () => {
           <ScrollReveal>
             <div id="acta" className="scroll-mt-20">
               <ACTASection />
+              <ACTAQuickChallenge />
             </div>
           </ScrollReveal>
         </div>
