@@ -12,8 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { ArrowLeft, User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud } from "lucide-react";
-import { Navigation } from "@/components/Navigation";
+import { User, BookOpen, Trophy, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud } from "lucide-react";
 import { saveUserKey } from "@/services/llmService";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
@@ -158,15 +157,12 @@ const Profile = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-2xl font-bold text-foreground">Mein Profil</h1>
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Mein Profil</h1>
+        <p className="text-muted-foreground text-sm mt-1">Kontoinformationen, KI-Einstellungen und Fortschritt</p>
+      </div>
+      <div className="max-w-2xl">
 
         {/* Guest upgrade banner */}
         {authMethod === "guest" && (
