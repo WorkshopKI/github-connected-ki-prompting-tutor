@@ -4,8 +4,6 @@ import {
   LayoutDashboard,
   BookOpen,
   GraduationCap,
-  Users,
-  BarChart3,
   Settings,
   Sparkles,
 } from "lucide-react";
@@ -38,10 +36,9 @@ import {
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
   { label: "Prompt Library", icon: BookOpen, path: "/library" },
-  { label: "Team Workspace", icon: Users, path: "/workspace" },
-  { label: "Analytics", icon: BarChart3, path: "/analytics" },
+  { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
+  { label: "Einstellungen", icon: Settings, path: "/settings" },
 ];
 
 const secondaryItems = [
@@ -52,7 +49,6 @@ function getPageTitle(pathname: string): string {
   const all = [...navItems, ...secondaryItems];
   const match = all.find((item) => item.path === pathname);
   if (match) return match.label;
-  if (pathname === "/settings") return "Einstellungen";
   if (pathname === "/admin/teilnehmer") return "Teilnehmer-Verwaltung";
   return "Seite";
 }
@@ -123,21 +119,12 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="p-3 border-t border-sidebar-border">
+        <SidebarFooter className="p-3">
           <div className="flex items-center justify-between">
             <UserMenu />
             <div className="flex items-center gap-2">
               <SyncStatusIcon />
               <ThemePresetPicker />
-              <button
-                onClick={() => navigate("/settings")}
-                className={`inline-flex items-center justify-center rounded-md p-1.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors ${
-                  isActive("/settings") ? "text-sidebar-foreground bg-sidebar-accent" : ""
-                }`}
-                title="Einstellungen"
-              >
-                <Settings className="h-4 w-4" />
-              </button>
             </div>
           </div>
         </SidebarFooter>

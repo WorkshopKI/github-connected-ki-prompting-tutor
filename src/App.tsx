@@ -11,8 +11,6 @@ import { AppShell } from "@/components/AppShell";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import Onboarding from "./pages/Onboarding";
-import Workspace from "./pages/Workspace";
-import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import AdminParticipants from "./pages/AdminParticipants";
@@ -41,8 +39,8 @@ const App = () => (
               <Route path="/" element={<PlatformLayout><Dashboard /></PlatformLayout>} />
               <Route path="/library" element={<PlatformLayout><Library /></PlatformLayout>} />
               <Route path="/onboarding" element={<PlatformLayout><Onboarding /></PlatformLayout>} />
-              <Route path="/workspace" element={<PlatformLayout><Workspace /></PlatformLayout>} />
-              <Route path="/analytics" element={<PlatformLayout><Analytics /></PlatformLayout>} />
+              <Route path="/workspace" element={<Navigate to="/library" replace />} />
+              <Route path="/analytics" element={<Navigate to="/" replace />} />
               <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
               <Route path="/profil" element={<Navigate to="/settings" replace />} />
               <Route path="/admin/teilnehmer" element={<PlatformLayout><AdminParticipants /></PlatformLayout>} />
