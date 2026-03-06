@@ -14,17 +14,9 @@ import {
   X,
   History,
 } from "lucide-react";
-import type { Msg } from "@/services/llmService";
+import type { SavedConversation } from "@/types";
 
-export interface SavedConversation {
-  id: string;
-  title: string;
-  messages: Msg[];
-  systemPrompt: string;
-  model: string;
-  createdAt: number;
-  updatedAt: number;
-}
+export type { SavedConversation } from "@/types";
 
 export interface ConversationHistoryProps {
   conversations: SavedConversation[];

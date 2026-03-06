@@ -1,15 +1,9 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import type { UserProfile } from "@/types";
 
-interface UserProfile {
-  id: string;
-  display_name: string | null;
-  auth_method: "email_otp" | "guest";
-  course_id: string | null;
-  is_admin: boolean;
-  preferred_model: string;
-}
+export type { UserProfile } from "@/types";
 
 interface AuthState {
   user: User | null;

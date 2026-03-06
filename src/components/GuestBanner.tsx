@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Lightbulb } from "lucide-react";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { loadStringFromStorage, saveToStorage } from "@/lib/storage";
 
 const STORAGE_KEY = "guest_banner_dismissed";
 
 export const GuestBanner = () => {
   const { isLoggedIn, authMethod, profile } = useAuthContext();
   const navigate = useNavigate();
-  const [dismissed, setDismissed] = useState(() => localStorage.getItem(STORAGE_KEY) === "true");
+  const [dismissed, setDismissed] = useState(() => loadStringFromStorage(STORAGE_KEY, "false") === "true");
 
   if (!isLoggedIn || authMethod !== "guest" || profile?.auth_method !== "guest" || dismissed) {
     return null;
@@ -27,7 +28,7 @@ export const GuestBanner = () => {
         </button>
       </span>
       <button
-        onClick={() => { setDismissed(true); localStorage.setItem(STORAGE_KEY, "true"); }}
+        onClick={() => { setDismissed(true); saveToStorage(STORAGE_KEY, "true"); }}
         className="ml-2 text-muted-foreground hover:text-foreground shrink-0"
       >
         <X className="w-4 h-4" />

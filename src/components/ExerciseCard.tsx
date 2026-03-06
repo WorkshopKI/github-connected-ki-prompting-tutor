@@ -1,33 +1,12 @@
 import { useState, useMemo } from "react";
-import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, MessageSquare, ShieldCheck } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useOrgContext } from "@/contexts/OrgContext";
-import { streamChat, type Msg } from "@/services/llmService";
-
-interface Exercise {
-  id: number;
-  level: number;
-  badPrompt: string;
-  context: string;
-  improvementHints: string[];
-  goodExample: string;
-  evaluationCriteria: {
-    hasContext: boolean;
-    isSpecific: boolean;
-    hasConstraints: boolean;
-  };
-  departmentVariants?: {
-    department: string;
-    badPrompt: string;
-    context: string;
-    improvementHints: string[];
-    goodExample: string;
-  }[];
-}
+import { useExerciseEvaluation } from "@/hooks/useExerciseEvaluation";
+import type { Exercise } from "@/types";
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -35,12 +14,11 @@ interface ExerciseCardProps {
   onEvaluated?: (exerciseId: number, prompt: string, score: number, feedback: string) => void;
 }
 
-interface EvaluationResult {
-  hasContext: boolean;
-  isSpecific: boolean;
-  hasConstraints: boolean;
-  feedback: string;
-}
+const evaluationCriteria = [
+  { key: "hasContext" as const, label: "Kontext", pass: "Gut beschrieben", fail: "Fehlt oder zu vage" },
+  { key: "isSpecific" as const, label: "Spezifität", pass: "Ausreichend spezifisch", fail: "Zu allgemein" },
+  { key: "hasConstraints" as const, label: "Rahmenbedingungen", pass: "Klar definiert", fail: "Nicht angegeben" },
+];
 
 export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardProps) => {
   const { profile } = useAuthContext();
@@ -61,114 +39,27 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     }
     return exercise;
   }, [exercise, scope, isDepartment]);
+
+  const {
+    evaluation,
+    isEvaluating,
+    coachSuggestion,
+    isCoaching,
+    showCoach,
+    setShowCoach,
+    evaluatePrompt,
+    askCoach,
+    reset,
+  } = useExerciseEvaluation({
+    exercise: effectiveExercise,
+    preferredModel: profile?.preferred_model,
+    onEvaluated,
+  });
+
   const [userPrompt, setUserPrompt] = useState("");
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
-  const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [coachSuggestion, setCoachSuggestion] = useState("");
-  const [isCoaching, setIsCoaching] = useState(false);
-  const [showCoach, setShowCoach] = useState(false);
   const [teamReviewNote, setTeamReviewNote] = useState("");
-
-  const evaluatePrompt = async () => {
-    if (!userPrompt.trim()) {
-      toast.error("Bitte gib einen verbesserten Prompt ein!");
-      return;
-    }
-
-    setIsEvaluating(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
-        body: {
-          userPrompt: userPrompt.trim(),
-          badPrompt: effectiveExercise.badPrompt,
-          context: effectiveExercise.context,
-          goodExample: effectiveExercise.goodExample,
-          improvementHints: effectiveExercise.improvementHints,
-          model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
-        },
-      });
-
-      if (error) throw error;
-      if (data?.error) {
-        toast.error(data.error);
-        return;
-      }
-
-      const result = data as EvaluationResult;
-      setEvaluation(result);
-
-      const score = [result.hasContext, result.isSpecific, result.hasConstraints].filter(Boolean).length;
-
-      if (score === 3) {
-        toast.success("Ausgezeichnet! Dein Prompt enthält alle wichtigen Elemente.");
-      } else if (score === 2) {
-        toast.info("Gut! Es fehlt noch ein Element für den perfekten Prompt.");
-      } else {
-        toast.error("Versuche, mehr Kontext und Details hinzuzufügen.");
-      }
-
-      onEvaluated?.(exercise.id, userPrompt, score, result.feedback);
-    } catch (e) {
-      console.error("Evaluation error:", e);
-      toast.error("Bewertung fehlgeschlagen. Bitte versuche es erneut.");
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
-
-  const askCoach = async () => {
-    const promptText = userPrompt.trim();
-    if (!promptText) {
-      toast.error("Bitte gib zuerst einen Prompt-Entwurf ein!");
-      return;
-    }
-
-    setIsCoaching(true);
-    setShowCoach(true);
-    setCoachSuggestion("");
-
-    const systemMsg: Msg = {
-      role: "system",
-      content: `Du bist ein Experte für Prompt-Engineering und ein freundlicher Coach. Der Nutzer versucht, einen schlechten Prompt zu verbessern.
-
-Kontext der Übung: ${effectiveExercise.context}
-Schlechter Original-Prompt: "${effectiveExercise.badPrompt}"
-Verbesserungshinweise: ${effectiveExercise.improvementHints.join(", ")}
-
-Deine Aufgabe:
-1. Analysiere den Prompt-Entwurf des Nutzers
-2. Identifiziere 2-3 konkrete Schwachstellen (Ambiguitäten, fehlender Kontext, fehlende Constraints)
-3. Stelle gezielte Rückfragen, die dem Nutzer helfen, den Prompt selbst zu verbessern
-4. Schlage am Ende einen optimierten Prompt vor, der alle Schwachstellen behebt
-
-Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar mit Überschriften.`
-    };
-
-    const userMsg: Msg = {
-      role: "user",
-      content: `Hier ist mein Prompt-Entwurf: "${promptText}"\n\nBitte analysiere ihn und hilf mir, ihn zu verbessern.`
-    };
-
-    let accumulated = "";
-    await streamChat({
-      messages: [systemMsg, userMsg],
-      model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
-      onDelta: (text) => {
-        accumulated += text;
-        setCoachSuggestion(accumulated);
-      },
-      onDone: () => {
-        setIsCoaching(false);
-      },
-      onError: (error) => {
-        setIsCoaching(false);
-        toast.error(error);
-      },
-    });
-  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -177,12 +68,14 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
 
   const resetExercise = () => {
     setUserPrompt("");
-    setEvaluation(null);
     setShowSolution(false);
     setShowHints(false);
-    setCoachSuggestion("");
-    setShowCoach(false);
+    reset();
   };
+
+  const score = evaluation
+    ? [evaluation.hasContext, evaluation.isSpecific, evaluation.hasConstraints].filter(Boolean).length
+    : 0;
 
   return (
     <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border relative">
@@ -220,9 +113,9 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
           className="min-h-[100px] mb-3"
           disabled={isEvaluating}
         />
-        
+
         <div className="flex gap-2 flex-wrap">
-          <Button onClick={evaluatePrompt} className="gap-2" disabled={isEvaluating}>
+          <Button onClick={() => evaluatePrompt(userPrompt)} className="gap-2" disabled={isEvaluating}>
             {isEvaluating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             {isEvaluating ? "Wird bewertet..." : "Prompt bewerten"}
           </Button>
@@ -236,7 +129,7 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
           </Button>
           <Button
             variant="outline"
-            onClick={askCoach}
+            onClick={() => askCoach(userPrompt)}
             className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
             disabled={isCoaching || isEvaluating}
           >
@@ -272,40 +165,22 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold">KI-Feedback:</div>
             <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
-              Score: {[evaluation.hasContext, evaluation.isSpecific, evaluation.hasConstraints].filter(Boolean).length}/3
+              Score: {score}/3
             </div>
           </div>
           <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-2">
-              {evaluation.hasContext ? (
-                <Check className="w-5 h-5 text-primary" />
-              ) : (
-                <X className="w-5 h-5 text-destructive" />
-              )}
-              <span className="text-sm">
-                Kontext: {evaluation.hasContext ? "Gut beschrieben" : "Fehlt oder zu vage"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {evaluation.isSpecific ? (
-                <Check className="w-5 h-5 text-primary" />
-              ) : (
-                <X className="w-5 h-5 text-destructive" />
-              )}
-              <span className="text-sm">
-                Spezifität: {evaluation.isSpecific ? "Ausreichend spezifisch" : "Zu allgemein"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {evaluation.hasConstraints ? (
-                <Check className="w-5 h-5 text-primary" />
-              ) : (
-                <X className="w-5 h-5 text-destructive" />
-              )}
-              <span className="text-sm">
-                Rahmenbedingungen: {evaluation.hasConstraints ? "Klar definiert" : "Nicht angegeben"}
-              </span>
-            </div>
+            {evaluationCriteria.map(({ key, label, pass, fail }) => (
+              <div key={key} className="flex items-center gap-2">
+                {evaluation[key] ? (
+                  <Check className="w-5 h-5 text-primary" />
+                ) : (
+                  <X className="w-5 h-5 text-destructive" />
+                )}
+                <span className="text-sm">
+                  {label}: {evaluation[key] ? pass : fail}
+                </span>
+              </div>
+            ))}
           </div>
           {evaluation.feedback && (
             <div className="bg-muted/50 rounded-lg p-3 text-sm text-foreground">

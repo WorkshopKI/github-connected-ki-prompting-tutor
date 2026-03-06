@@ -1,54 +1,21 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { streamChat, type Msg } from "@/services/llmService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot, Brain, Wrench, History, Wand2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
+import { LogIn, MessageSquare, GitCompare, Bot } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { ChatPlayground } from "@/components/playground/ChatPlayground";
-import { ACTABuilder } from "@/components/playground/ACTABuilder";
-import { ConversationHistory, type SavedConversation } from "@/components/playground/ConversationHistory";
-import { TechniquePanel } from "@/components/playground/TechniquePanel";
-import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
-import type { ACTAFields } from "@/components/playground/ACTATemplates";
-import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
-import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels, loadAIRouting } from "@/data/models";
+import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
+import { PlaygroundSidebar } from "@/components/playground/PlaygroundSidebar";
+import { useChat } from "@/hooks/useChat";
+import { useConversations } from "@/hooks/useConversations";
+import { loadAIRouting } from "@/data/models";
 import { promptLibrary } from "@/data/prompts";
-
-const LS_CONVERSATIONS = "playground_conversations";
-const LS_ACTIVE_ID = "playground_active_id";
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-function loadConversations(): SavedConversation[] {
-  try {
-    const raw = localStorage.getItem(LS_CONVERSATIONS);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveConversations(convs: SavedConversation[]) {
-  localStorage.setItem(LS_CONVERSATIONS, JSON.stringify(convs));
-}
-
-function generateTitle(messages: Msg[]): string {
-  const firstUser = messages.find((m) => m.role === "user");
-  if (!firstUser) return "Neuer Chat";
-  const text = firstUser.content.slice(0, 50);
-  return text.length < firstUser.content.length ? text + "…" : text;
-}
+import type { ACTAFields } from "@/components/playground/ACTATemplates";
+import type { AgentConfig } from "@/components/playground/AgentKnobs";
 
 const Playground = () => {
   const { isLoggedIn, isLoading, profile } = useAuthContext();
@@ -56,11 +23,7 @@ const Playground = () => {
   const [searchParams] = useSearchParams();
   const prefilledPrompt = searchParams.get("prompt") ?? undefined;
 
-  // --- Core chat state ---
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [streamingContent, setStreamingContent] = useState("");
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [systemPrompt, setSystemPrompt] = useState("");
+  // --- Model & routing state ---
   const [selectedModel, setSelectedModel] = useState(
     profile?.preferred_model ?? "google/gemini-3-flash-preview"
   );
@@ -70,407 +33,126 @@ const Playground = () => {
   const [aiTier, setAiTier] = useState<"internal" | "external">("external");
   const aiRouting = loadAIRouting();
   const [promptConfidentiality, setPromptConfidentiality] = useState<"open" | "internal" | "confidential">("open");
+  const [systemPrompt, setSystemPrompt] = useState("");
 
   const canUseExternal = promptConfidentiality !== "confidential" &&
     !(promptConfidentiality === "internal" && aiRouting.internalRouting === "internal-only");
 
+  // --- UI state ---
+  const [showBudgetDialog, setShowBudgetDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState("chat");
+  const [actaFields, setActaFields] = useState<ACTAFields>({ act: "", context: "", task: "", ausgabe: "" });
+  const [agentConfig, setAgentConfig] = useState<AgentConfig>({
+    habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
+  });
+
+  // --- Custom hooks ---
+  const chat = useChat({
+    systemPrompt,
+    selectedModel,
+    thinkingEnabled,
+    onBudgetExhausted: () => setShowBudgetDialog(true),
+  });
+
+  const convos = useConversations();
+
+  // --- AI tier routing ---
   useEffect(() => {
-    if (promptConfidentiality === "confidential") {
-      setAiTier("internal");
-    } else if (promptConfidentiality === "internal") {
+    if (promptConfidentiality === "confidential" || promptConfidentiality === "internal") {
       setAiTier("internal");
     } else {
       setAiTier(aiRouting.openRouting === "prefer-external" ? "external" : "internal");
     }
   }, [promptConfidentiality]);
 
+  // --- Prefilled prompt confidentiality ---
   useEffect(() => {
     if (prefilledPrompt) {
       const match = promptLibrary.find((p) => p.prompt === prefilledPrompt);
-      if (match?.confidentiality) {
-        setPromptConfidentiality(match.confidentiality);
-      }
+      if (match?.confidentiality) setPromptConfidentiality(match.confidentiality);
     }
   }, [prefilledPrompt]);
-
-  // --- Conversation management ---
-  const [conversations, setConversations] = useState<SavedConversation[]>(loadConversations);
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(
-    () => localStorage.getItem(LS_ACTIVE_ID)
-  );
-
-  // --- Sidebar state ---
-  const [actaFields, setActaFields] = useState<ACTAFields>({
-    act: "", context: "", task: "", ausgabe: "",
-  });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [agentConfig, setAgentConfig] = useState<AgentConfig>({
-    habitat: "",
-    hands: ["read", "write", "web"],
-    leash: 50,
-    proof: "sources",
-    task: "",
-  });
-
-  // --- UI state ---
-  const [showBudgetDialog, setShowBudgetDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState("chat");
-
-  // --- Refs ---
-  const accRef = useRef("");
-  const abortRef = useRef<AbortController | null>(null);
 
   // --- Restore active conversation on mount ---
   useEffect(() => {
     if (prefilledPrompt) return;
-    if (activeConversationId) {
-      const conv = conversations.find((c) => c.id === activeConversationId);
-      if (conv) {
-        setMessages(conv.messages);
-        setSystemPrompt(conv.systemPrompt);
-        setSelectedModel(conv.model);
-        return;
-      }
+    const restored = convos.restoreActiveConversation();
+    if (restored) {
+      chat.setMessages(restored.messages);
+      setSystemPrompt(restored.systemPrompt);
+      setSelectedModel(restored.model);
     }
-    // Migrate old single-history format
-    try {
-      const old = localStorage.getItem("playground_history");
-      if (old) {
-        const parsed = JSON.parse(old);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const migrated: SavedConversation = {
-            id: generateId(),
-            title: generateTitle(parsed),
-            messages: parsed,
-            systemPrompt: "",
-            model: "google/gemini-3-flash-preview",
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-          };
-          const updated = [migrated, ...conversations];
-          setConversations(updated);
-          saveConversations(updated);
-          setActiveConversationId(migrated.id);
-          setMessages(parsed);
-          localStorage.removeItem("playground_history");
-        }
-      }
-    } catch { /* ignore */ }
   }, []);
 
-  // Update selected model when profile loads
+  // --- Update model when profile loads ---
   useEffect(() => {
-    if (profile?.preferred_model) {
-      setSelectedModel(profile.preferred_model);
-    }
+    if (profile?.preferred_model) setSelectedModel(profile.preferred_model);
   }, [profile?.preferred_model]);
 
   // --- Persist conversation on message change ---
   useEffect(() => {
-    if (messages.length === 0 || isStreaming) return;
+    convos.persistMessages(chat.messages, systemPrompt, selectedModel, chat.isStreaming);
+  }, [chat.messages, chat.isStreaming]);
 
-    setConversations((prev) => {
-      let updated: SavedConversation[];
-      if (activeConversationId) {
-        updated = prev.map((c) =>
-          c.id === activeConversationId
-            ? { ...c, messages, systemPrompt, model: selectedModel, updatedAt: Date.now(), title: c.title === "Neuer Chat" ? generateTitle(messages) : c.title }
-            : c
-        );
-      } else {
-        const newConv: SavedConversation = {
-          id: generateId(),
-          title: generateTitle(messages),
-          messages,
-          systemPrompt,
-          model: selectedModel,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        };
-        updated = [newConv, ...prev];
-        setActiveConversationId(newConv.id);
-        localStorage.setItem(LS_ACTIVE_ID, newConv.id);
-      }
-      saveConversations(updated);
-      return updated;
-    });
-  }, [messages, isStreaming]);
-
-  // --- Persist active ID ---
-  useEffect(() => {
-    if (activeConversationId) {
-      localStorage.setItem(LS_ACTIVE_ID, activeConversationId);
-    } else {
-      localStorage.removeItem(LS_ACTIVE_ID);
-    }
-  }, [activeConversationId]);
-
-  // --- Streaming ---
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || isStreaming) return;
-
-      const userMsg: Msg = { role: "user", content };
-      const newMessages = [...messages, userMsg];
-      setMessages(newMessages);
-      setStreamingContent("");
-      setIsStreaming(true);
-      accRef.current = "";
-
-      const apiMessages: Msg[] = [];
-      if (systemPrompt.trim()) {
-        apiMessages.push({ role: "system", content: systemPrompt });
-      }
-      apiMessages.push(...newMessages.slice(-20));
-
-      abortRef.current = new AbortController();
-
-      await streamChat({
-        messages: apiMessages,
-        model: selectedModel,
-        reasoning: thinkingEnabled ? { effort: "high" } : undefined,
-        signal: abortRef.current.signal,
-        onDelta: (text) => {
-          accRef.current += text;
-          setStreamingContent(accRef.current);
-        },
-        onDone: () => {
-          const finalContent = accRef.current;
-          if (finalContent) {
-            setMessages((prev) => [
-              ...prev,
-              { role: "assistant", content: finalContent },
-            ]);
-          }
-          setStreamingContent("");
-          setIsStreaming(false);
-          abortRef.current = null;
-        },
-        onError: (error, status) => {
-          setIsStreaming(false);
-          setStreamingContent("");
-          abortRef.current = null;
-          if (status === 402 || error === "budget_exhausted") {
-            setShowBudgetDialog(true);
-          } else {
-            toast.error(error);
-          }
-        },
-      });
-    },
-    [messages, isStreaming, systemPrompt, selectedModel]
-  );
-
-  const handleStop = () => {
-    if (abortRef.current) {
-      abortRef.current.abort();
-      // Content accumulated so far gets saved via onDone
-    }
+  // --- Handlers ---
+  const handleThinkingChange = (checked: boolean) => {
+    setThinkingEnabled(checked);
+    localStorage.setItem("thinking_enabled", String(checked));
   };
 
-  // --- Conversation management ---
-  const handleClearChat = () => {
-    setMessages([]);
-    setStreamingContent("");
-    setActiveConversationId(null);
+  const handleSelectConversation = (conv: Parameters<typeof convos.selectConversation>[0]) => {
+    const data = convos.selectConversation(conv);
+    chat.setMessages(data.messages);
+    setSystemPrompt(data.systemPrompt);
+    setSelectedModel(data.model);
+    chat.setStreamingContent("");
   };
 
   const handleNewConversation = () => {
-    setMessages([]);
-    setStreamingContent("");
+    chat.setMessages([]);
+    chat.setStreamingContent("");
     setSystemPrompt("");
-    setActiveConversationId(null);
-  };
-
-  const handleSelectConversation = (conv: SavedConversation) => {
-    setMessages(conv.messages);
-    setSystemPrompt(conv.systemPrompt);
-    setSelectedModel(conv.model);
-    setActiveConversationId(conv.id);
-    setStreamingContent("");
+    convos.newConversation();
   };
 
   const handleDeleteConversation = (id: string) => {
-    setConversations((prev) => {
-      const updated = prev.filter((c) => c.id !== id);
-      saveConversations(updated);
-      return updated;
-    });
-    if (activeConversationId === id) {
-      setMessages([]);
-      setStreamingContent("");
-      setActiveConversationId(null);
+    const wasActive = convos.deleteConversation(id);
+    if (wasActive) {
+      chat.setMessages([]);
+      chat.setStreamingContent("");
     }
   };
 
-  const handleRenameConversation = (id: string, title: string) => {
-    setConversations((prev) => {
-      const updated = prev.map((c) => (c.id === id ? { ...c, title } : c));
-      saveConversations(updated);
-      return updated;
-    });
+  const handleClearChat = () => {
+    chat.setMessages([]);
+    chat.setStreamingContent("");
+    convos.clearActiveConversation();
   };
 
-  // --- Sidebar actions ---
-  const handleSendFromACTA = (assembledPrompt: string) => {
-    sendMessage(assembledPrompt);
-  };
-
-  const handleApplyTechnique = (promptTemplate: string) => {
-    sendMessage(promptTemplate);
-  };
-
-  const handleStartAgent = (assembledPrompt: string) => {
+  const handleStartAgent = (prompt: string) => {
     setActiveTab("chat");
-    sendMessage(assembledPrompt);
+    chat.sendMessage(prompt);
   };
 
-  // Get last user prompt for evaluation
-  const lastUserPrompt = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const lastUserPrompt = [...chat.messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
   if (isLoading) return null;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
-      <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="flex items-center h-14 px-4 max-w-7xl mx-auto">
-          {/* Left: Back + Title */}
-          <div className="flex items-center gap-3 mr-auto">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/")}
-              className="gap-1.5 text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Zurück</span>
-            </Button>
-            <div className="h-5 w-px bg-border" />
-            <h1 className="text-base font-bold tracking-tight">Prompt-Labor</h1>
-          </div>
-          {/* Right: Controls */}
-          <div className="flex items-center gap-2">
-            {/* Thinking toggle */}
-            <label className="flex items-center gap-1.5 cursor-pointer" title="Denkprozess aktivieren">
-              <Switch
-                id="thinking-toggle"
-                checked={thinkingEnabled}
-                onCheckedChange={(checked) => {
-                  setThinkingEnabled(checked);
-                  localStorage.setItem("thinking_enabled", String(checked));
-                }}
-              />
-              <span className="text-xs text-muted-foreground hidden md:flex items-center gap-1">
-                <Brain className="h-3.5 w-3.5" /> Denken
-              </span>
-            </label>
-            {/* Divider */}
-            <div className="h-5 w-px bg-border mx-1" />
-            {/* AI Tier toggle */}
-            <div className="flex rounded-lg border border-border overflow-hidden">
-              <button
-                onClick={() => setAiTier("internal")}
-                className={`px-2.5 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
-                  aiTier === "internal"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted/50"
-                }`}
-              >
-                🏢 <span className="hidden sm:inline">Intern</span>
-              </button>
-              <button
-                onClick={() => canUseExternal && setAiTier("external")}
-                disabled={!canUseExternal}
-                className={`px-2.5 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
-                  aiTier === "external" && canUseExternal
-                    ? "bg-primary/10 text-primary"
-                    : canUseExternal
-                    ? "text-muted-foreground hover:bg-muted/50"
-                    : "text-muted-foreground/30 cursor-not-allowed"
-                }`}
-                title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
-              >
-                ☁️ <span className="hidden sm:inline">Extern</span>
-              </button>
-            </div>
-            {/* Model selector */}
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-[180px] text-xs h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {aiTier === "internal" ? (
-                  <SelectGroup>
-                    <SelectLabel>🏢 Interne KI</SelectLabel>
-                    {aiRouting.internalModel ? (
-                      <SelectItem value={aiRouting.internalModel}>
-                        {aiRouting.internalModel}
-                      </SelectItem>
-                    ) : (
-                      <SelectItem value="internal-default" disabled>
-                        Nicht konfiguriert
-                      </SelectItem>
-                    )}
-                  </SelectGroup>
-                ) : (
-                  <>
-                    <SelectGroup>
-                      <SelectLabel>Standard</SelectLabel>
-                      {STANDARD_MODELS.map((m) => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Premium</SelectLabel>
-                      {PREMIUM_MODELS.map((m) => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Open Source</SelectLabel>
-                      {OPEN_SOURCE_MODELS.map((m) => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                    {(() => {
-                      const custom = getAllModels().filter((m) => m.isCustom);
-                      return custom.length > 0 ? (
-                        <>
-                          <SelectSeparator />
-                          <SelectGroup>
-                            <SelectLabel>Eigene</SelectLabel>
-                            {custom.map((m) => (
-                              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </>
-                      ) : null;
-                    })()}
-                  </>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        {/* Confidentiality warnings */}
-        {!canUseExternal && (
-          <div className="text-[11px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950 px-4 py-1.5 text-center">
-            🔒 Vertraulicher Prompt — nur interne KI zugelassen
-          </div>
-        )}
-        {canUseExternal && aiTier === "external" && promptConfidentiality === "internal" && aiRouting.warnOnExternal && (
-          <div className="text-[11px] text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-4 py-1.5 text-center">
-            ⚠ Stelle sicher, dass keine vertraulichen Daten im Prompt enthalten sind.
-          </div>
-        )}
-      </header>
+      <PlaygroundHeader
+        thinkingEnabled={thinkingEnabled}
+        onThinkingChange={handleThinkingChange}
+        aiTier={aiTier}
+        onAiTierChange={setAiTier}
+        canUseExternal={canUseExternal}
+        selectedModel={selectedModel}
+        onModelChange={setSelectedModel}
+        aiRouting={aiRouting}
+        promptConfidentiality={promptConfidentiality}
+      />
 
       <div className="px-4 py-4 max-w-7xl mx-auto">
-
-        {/* Auth guard */}
         {!isLoggedIn ? (
           <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
             <CardHeader>
@@ -491,172 +173,24 @@ const Playground = () => {
           </Card>
         ) : (
           <div className="grid lg:grid-cols-[300px_1fr] gap-4">
-            {/* Left sidebar - desktop */}
-            <aside className="hidden lg:block space-y-4">
-              <Accordion type="single" collapsible defaultValue="acta">
-                <AccordionItem value="history" className="rounded-lg border border-border bg-card">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <History className="w-4 h-4 text-primary" />
-                      <span className="font-semibold text-sm">Verlauf ({conversations.length})</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-3 pb-3">
-                    <ConversationHistory
-                      conversations={conversations}
-                      activeId={activeConversationId}
-                      onSelect={handleSelectConversation}
-                      onNew={handleNewConversation}
-                      onDelete={handleDeleteConversation}
-                      onRename={handleRenameConversation}
-                      bare
-                    />
-                  </AccordionContent>
-                </AccordionItem>
+            <PlaygroundSidebar
+              conversations={convos.conversations}
+              activeConversationId={convos.activeConversationId}
+              onSelectConversation={handleSelectConversation}
+              onNewConversation={handleNewConversation}
+              onDeleteConversation={handleDeleteConversation}
+              onRenameConversation={convos.renameConversation}
+              actaFields={actaFields}
+              onActaFieldsChange={setActaFields}
+              onSendFromACTA={chat.sendMessage}
+              onApplyTechnique={chat.sendMessage}
+              agentConfig={agentConfig}
+              onAgentConfigChange={setAgentConfig}
+              onStartAgent={handleStartAgent}
+              lastUserPrompt={lastUserPrompt}
+              selectedModel={selectedModel}
+            />
 
-                <AccordionItem value="acta" className="rounded-lg border border-border bg-card">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">ACTA-Baukasten</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ACTABuilder
-                      fields={actaFields}
-                      onFieldsChange={setActaFields}
-                      onSendToPlayground={handleSendFromACTA}
-                      bare
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="techniques" className="rounded-lg border border-border bg-card">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <Wand2 className="w-4 h-4 text-primary" />
-                      <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <TechniquePanel
-                      onApplyToChat={handleApplyTechnique}
-                      bare
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="agent" className="rounded-lg border border-border bg-card">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">Agenten-Modus</span>
-                      <span className="ml-2 text-xs bg-secondary px-2 py-0.5 rounded-full">Fortgeschritten</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <AgentKnobs
-                      config={agentConfig}
-                      onConfigChange={setAgentConfig}
-                      onStartAgent={handleStartAgent}
-                      bare
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-
-              {/* Prompt Evaluation */}
-              {lastUserPrompt && (
-                <div className="rounded-lg border border-border bg-card p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="font-semibold text-sm">Prompt-Qualität</span>
-                  </div>
-                  <PromptEvaluation prompt={lastUserPrompt} model={selectedModel} />
-                </div>
-              )}
-            </aside>
-
-            {/* Mobile sidebar toggle */}
-            <div className="lg:hidden fixed bottom-4 left-4 z-40">
-              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-                <SheetTrigger asChild>
-                  <Button size="icon" className="rounded-full shadow-lg h-12 w-12 bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Wrench className="h-5 w-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-80 overflow-y-auto">
-                  <SheetTitle className="text-lg font-bold mb-4">Werkzeuge</SheetTitle>
-                  <Accordion type="single" collapsible defaultValue="acta">
-                    <AccordionItem value="history">
-                      <AccordionTrigger className="hover:no-underline">
-                        <div className="flex items-center gap-2">
-                          <History className="w-4 h-4 text-primary" />
-                          <span className="font-semibold text-sm">Verlauf ({conversations.length})</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ConversationHistory
-                          conversations={conversations}
-                          activeId={activeConversationId}
-                          onSelect={(conv) => { handleSelectConversation(conv); setSidebarOpen(false); }}
-                          onNew={() => { handleNewConversation(); setSidebarOpen(false); }}
-                          onDelete={handleDeleteConversation}
-                          onRename={handleRenameConversation}
-                          bare
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="acta">
-                      <AccordionTrigger className="hover:no-underline">
-                        <span className="font-semibold text-sm">ACTA-Baukasten</span>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ACTABuilder
-                          fields={actaFields}
-                          onFieldsChange={setActaFields}
-                          onSendToPlayground={(p) => { handleSendFromACTA(p); setSidebarOpen(false); }}
-                          bare
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="techniques">
-                      <AccordionTrigger className="hover:no-underline">
-                        <div className="flex items-center gap-2">
-                          <Wand2 className="w-4 h-4 text-primary" />
-                          <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <TechniquePanel
-                          onApplyToChat={(p) => { handleApplyTechnique(p); setSidebarOpen(false); }}
-                          bare
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="agent">
-                      <AccordionTrigger className="hover:no-underline">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-sm">Agenten-Modus</span>
-                          <span className="ml-2 text-xs bg-secondary px-2 py-0.5 rounded-full">Fortgeschritten</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <AgentKnobs
-                          config={agentConfig}
-                          onConfigChange={setAgentConfig}
-                          onStartAgent={(p) => { handleStartAgent(p); setSidebarOpen(false); }}
-                          bare
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </SheetContent>
-              </Sheet>
-            </div>
-
-            {/* Main area with tabs */}
             <main className="min-h-[600px]">
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-4">
@@ -676,14 +210,14 @@ const Playground = () => {
 
                 <TabsContent value="chat" className="mt-0">
                   <ChatPlayground
-                    messages={messages}
-                    onSendMessage={sendMessage}
-                    isStreaming={isStreaming}
-                    streamingContent={streamingContent}
+                    messages={chat.messages}
+                    onSendMessage={chat.sendMessage}
+                    isStreaming={chat.isStreaming}
+                    streamingContent={chat.streamingContent}
                     systemPrompt={systemPrompt}
                     onSystemPromptChange={setSystemPrompt}
                     onClearChat={handleClearChat}
-                    onStop={handleStop}
+                    onStop={chat.handleStop}
                     initialPrompt={prefilledPrompt}
                   />
                 </TabsContent>

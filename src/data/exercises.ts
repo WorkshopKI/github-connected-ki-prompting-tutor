@@ -1,23 +1,6 @@
-export interface Exercise {
-  id: number;
-  level: number;
-  badPrompt: string;
-  context: string;
-  improvementHints: string[];
-  goodExample: string;
-  evaluationCriteria: {
-    hasContext: boolean;
-    isSpecific: boolean;
-    hasConstraints: boolean;
-  };
-  departmentVariants?: {
-    department: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
-    badPrompt: string;
-    context: string;
-    improvementHints: string[];
-    goodExample: string;
-  }[];
-}
+import type { Exercise } from "@/types";
+
+export type { Exercise } from "@/types";
 
 export const exercises: Exercise[] = [
   {
