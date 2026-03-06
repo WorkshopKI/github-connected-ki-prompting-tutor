@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SyncProvider } from "@/contexts/SyncContext";
+import { OrgProvider } from "@/contexts/OrgContext";
 import { GuestBanner } from "@/components/GuestBanner";
 import { AppShell } from "@/components/AppShell";
 import Dashboard from "./pages/Dashboard";
@@ -36,6 +37,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <SyncProvider>
+          <OrgProvider>
             <Routes>
               <Route path="/" element={<PlatformLayout><Dashboard /></PlatformLayout>} />
               <Route path="/library" element={<PlatformLayout><Library /></PlatformLayout>} />
@@ -50,6 +52,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+          </OrgProvider>
           </SyncProvider>
         </AuthProvider>
       </BrowserRouter>

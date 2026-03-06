@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { PromptItem } from "@/data/prompts";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 
 interface PromptDetailProps {
   prompt: PromptItem | null;
@@ -80,7 +81,10 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">{prompt.title}</DialogTitle>
+          <div className="flex items-center gap-2">
+            <DialogTitle className="text-xl">{prompt.title}</DialogTitle>
+            <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} />
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">

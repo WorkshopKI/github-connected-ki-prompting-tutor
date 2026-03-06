@@ -17,6 +17,9 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { promptLibrary } from "@/data/prompts";
 import { exercises } from "@/data/exercises";
+import { Badge } from "@/components/ui/badge";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { useOrgContext } from "@/contexts/OrgContext";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -28,6 +31,7 @@ function getGreeting(): string {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile } = useAuthContext();
+  const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { completedLessons, exercises: exerciseResults } = useSyncContext();
 
   const stats = useMemo(() => {
@@ -52,12 +56,18 @@ const Dashboard = () => {
   }, [completedLessons, exerciseResults]);
 
   const popularPrompts = useMemo(() => {
-    const official = promptLibrary.filter((p) => p.official);
-    if (official.length >= 5) return official.slice(0, 5);
-    const org = promptLibrary.filter((p) => p.level === "organisation");
-    if (org.length >= 5) return org.slice(0, 5);
-    return promptLibrary.slice(0, 5);
-  }, []);
+    let candidates = promptLibrary;
+    if (isDepartment) {
+      const deptPrompts = candidates.filter((p) => p.targetDepartment === scope);
+      const officialPrompts = candidates.filter((p) => p.official && p.targetDepartment !== scope);
+      candidates = [...deptPrompts, ...officialPrompts];
+    }
+    if (candidates.length < 5) {
+      const remaining = promptLibrary.filter((p) => !candidates.includes(p));
+      candidates = [...candidates, ...remaining];
+    }
+    return candidates.slice(0, 5);
+  }, [scope, isDepartment]);
 
   const actaProgress = useMemo(() => {
     const actaLessons = completedLessons.filter((id) =>
@@ -97,6 +107,7 @@ const Dashboard = () => {
           {getGreeting()}{displayName ? `, ${displayName}` : ""}
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
+          {isDepartment && <Badge className="bg-primary/10 text-primary text-xs mr-2">{scopeLabel}</Badge>}
           Dein Team hat {stats.totalPrompts} Prompts in der Library.
         </p>
       </div>
@@ -131,9 +142,12 @@ const Dashboard = () => {
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">
-                      {prompt.title}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium text-sm truncate">
+                        {prompt.title}
+                      </p>
+                      <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
+                    </div>
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                         {prompt.category}

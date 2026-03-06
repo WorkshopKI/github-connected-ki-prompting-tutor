@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { User, FileText, Target, Layout, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useOrgContext } from "@/contexts/OrgContext";
+import { actaExamples } from "@/data/actaExamples";
 
 const actaCards = [
   {
@@ -35,6 +37,14 @@ const actaCards = [
 
 export const ACTASection = () => {
   const [showExample, setShowExample] = useState(false);
+  const { scope, isDepartment } = useOrgContext();
+
+  const example = useMemo(() => {
+    if (isDepartment && actaExamples[scope]) {
+      return actaExamples[scope];
+    }
+    return actaExamples.default;
+  }, [scope, isDepartment]);
 
   return (
     <section className="mb-16">
@@ -133,7 +143,7 @@ export const ACTASection = () => {
               <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Act (Rolle)</p>
               <div className="bg-muted/50 rounded-md px-3 py-2">
                 <p className="text-xs text-foreground/80 font-mono leading-relaxed">
-                  Du bist ein erfahrener Social-Media-Manager mit Fokus auf LinkedIn.
+                  {example.act}
                 </p>
               </div>
             </div>
@@ -142,7 +152,7 @@ export const ACTASection = () => {
               <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Context (Hintergrund)</p>
               <div className="bg-muted/50 rounded-md px-3 py-2">
                 <p className="text-xs text-foreground/80 font-mono leading-relaxed">
-                  Unser Unternehmen ist ein B2B-SaaS-Startup für Projektmanagement. Wir haben gerade ein neues Feature für die automatisierte Zeiterfassung gelauncht. Zielgruppe sind Teamleiter und Projektmanager in mittelständischen Unternehmen.
+                  {example.context}
                 </p>
               </div>
             </div>
@@ -151,7 +161,7 @@ export const ACTASection = () => {
               <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Task (Aufgabe)</p>
               <div className="bg-muted/50 rounded-md px-3 py-2">
                 <p className="text-xs text-foreground/80 font-mono leading-relaxed">
-                  Erstelle einen LinkedIn-Post, der das neue Feature vorstellt und die Vorteile für Teamleiter hervorhebt.
+                  {example.task}
                 </p>
               </div>
             </div>
@@ -160,7 +170,7 @@ export const ACTASection = () => {
               <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Ausgabe (Format)</p>
               <div className="bg-muted/50 rounded-md px-3 py-2">
                 <p className="text-xs text-foreground/80 font-mono leading-relaxed">
-                  Der Post soll max. 150 Wörter haben, mit 3-5 Bulletpoints für die Key-Benefits und einem Call-to-Action am Ende.
+                  {example.output}
                 </p>
               </div>
             </div>

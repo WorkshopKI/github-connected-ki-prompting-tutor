@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { orgUseCases } from "@/data/orgUseCases";
+import { useOrgContext } from "@/contexts/OrgContext";
 
 const riskStyles = {
   niedrig: "bg-primary/10 text-primary",
@@ -13,11 +14,19 @@ const riskStyles = {
 };
 
 export const OrganizationUseCases = () => {
+  const { scope } = useOrgContext();
   const [query, setQuery] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState<string>("Alle");
+  const [departmentFilter, setDepartmentFilter] = useState<string>(() => {
+    if (scope === "legal") return "Legal";
+    if (scope === "hr") return "HR";
+    if (scope === "it") return "IT";
+    if (scope === "bauverfahren") return "Bauverfahren";
+    if (scope === "oeffentlichkeitsarbeit") return "Öffentlichkeitsarbeit";
+    return "Alle";
+  });
   const [riskFilter, setRiskFilter] = useState<string>("Alle");
 
-  const departments = ["Alle", "HR", "Vertrieb", "Support", "Produkt", "Legal"];
+  const departments = ["Alle", "HR", "Vertrieb", "Support", "Produkt", "Legal", "Öffentlichkeitsarbeit", "IT", "Bauverfahren"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
 
   const filtered = useMemo(

@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { promptLibrary } from "@/data/prompts";
 import type { PromptItem } from "@/data/prompts";
 import { PromptDetail } from "@/components/PromptDetail";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { useOrgContext } from "@/contexts/OrgContext";
 
 const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
@@ -124,6 +126,7 @@ const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
 
 export const PromptLibrary = () => {
   const navigate = useNavigate();
+  const { scope, isDepartment } = useOrgContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Alltag");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -134,6 +137,7 @@ export const PromptLibrary = () => {
   const [viewMode, setViewMode] = useState<string>("grid");
   const [sortByRating, setSortByRating] = useState(false);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [confFilter, setConfFilter] = useState<string>("all");
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -175,19 +179,34 @@ export const PromptLibrary = () => {
       const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
       const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
       const matchesVerified = !onlyVerified || prompt.official;
+      const matchesConf = confFilter === "all" || (prompt.confidentiality || "open") === confFilter;
       const matchesSelectedDepartments =
         selectedDepartments.length === 0 ||
         (prompt.department && selectedDepartments.includes(prompt.department));
 
-      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments;
+      const matchesDepartmentScope =
+        scope === "organisation" ? true :
+        scope === "privat" ? !prompt.targetDepartment :
+        isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope) :
+        true;
+
+      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments && matchesConf && matchesDepartmentScope;
     });
 
     if (sortByRating) {
       filtered = [...filtered].sort((a, b) => getStoredRating(b.title) - getStoredRating(a.title));
     }
 
+    if (isDepartment) {
+      filtered.sort((a, b) => {
+        const aMatch = a.targetDepartment === scope ? 0 : 1;
+        const bMatch = b.targetDepartment === scope ? 0 : 1;
+        return aMatch - bMatch;
+      });
+    }
+
     return filtered;
-  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments]);
+  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments, confFilter, scope, isDepartment]);
 
   const departments = ["Alle", "Support", "Vertrieb", "Legal"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
@@ -271,6 +290,16 @@ export const PromptLibrary = () => {
               <Switch checked={sortByRating} onCheckedChange={setSortByRating} />
               Nach Bewertung
             </label>
+            <select
+              value={confFilter}
+              onChange={(e) => setConfFilter(e.target.value)}
+              className="text-sm border rounded-md px-2 py-1.5 bg-background"
+            >
+              <option value="all">Alle KI-Stufen</option>
+              <option value="open">🟢 Offen</option>
+              <option value="internal">🟡 Intern</option>
+              <option value="confidential">🔴 Vertraulich</option>
+            </select>
           </div>
           <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)}>
             <ToggleGroupItem value="grid" aria-label="Grid"><LayoutGrid className="h-4 w-4" /></ToggleGroupItem>
@@ -324,6 +353,7 @@ export const PromptLibrary = () => {
                 <th className="text-left p-3 font-medium hidden md:table-cell">Abteilung</th>
                 <th className="text-left p-3 font-medium hidden sm:table-cell">Level</th>
                 <th className="text-left p-3 font-medium">Bewertung</th>
+                <th className="text-left p-3 font-medium hidden lg:table-cell">KI</th>
               </tr>
             </thead>
             <tbody>
@@ -347,6 +377,9 @@ export const PromptLibrary = () => {
                     <Badge variant="outline" className="text-[10px]">{prompt.level || "\u2014"}</Badge>
                   </td>
                   <td className="p-3"><InlineRating title={prompt.title} /></td>
+                  <td className="p-3 hidden lg:table-cell">
+                    <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -363,11 +396,14 @@ export const PromptLibrary = () => {
               {/* Zeile 1: Titel + Status-Badge */}
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h4 className="font-semibold text-sm">{prompt.title}</h4>
-                {prompt.official ? (
-                  <Badge className="bg-primary/10 text-primary text-xs shrink-0">Verifiziert</Badge>
-                ) : (
-                  <Badge variant="secondary" className="text-xs shrink-0">Entwurf</Badge>
-                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  {prompt.official ? (
+                    <Badge className="bg-primary/10 text-primary text-xs">Verifiziert</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="text-xs">Entwurf</Badge>
+                  )}
+                  <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
+                </div>
               </div>
               {/* Zeile 2: Kategorie + Level als Text */}
               <p className="text-[11px] text-muted-foreground mb-3">
