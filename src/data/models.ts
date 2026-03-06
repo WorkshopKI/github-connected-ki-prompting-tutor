@@ -5,6 +5,45 @@ export interface ModelOption {
   isPremium?: boolean;
   isOpenSource?: boolean;
   isCustom?: boolean;
+  tier?: "internal" | "external";
+}
+
+export interface AIRoutingConfig {
+  internalEndpoint: string;
+  internalModel: string;
+  externalProvider: string;
+  externalModel: string;
+  confidentialRouting: "internal-only" | "internal-with-approval";
+  internalRouting: "prefer-internal" | "internal-only";
+  openRouting: "prefer-external" | "prefer-internal";
+  warnOnExternal: boolean;
+  auditLog: boolean;
+}
+
+export const DEFAULT_AI_ROUTING: AIRoutingConfig = {
+  internalEndpoint: "",
+  internalModel: "",
+  externalProvider: "Externer Anbieter",
+  externalModel: "",
+  confidentialRouting: "internal-only",
+  internalRouting: "prefer-internal",
+  openRouting: "prefer-external",
+  warnOnExternal: true,
+  auditLog: true,
+};
+
+export function loadAIRouting(): AIRoutingConfig {
+  try {
+    const stored = localStorage.getItem("ai_routing_config");
+    if (!stored) return DEFAULT_AI_ROUTING;
+    return { ...DEFAULT_AI_ROUTING, ...JSON.parse(stored) };
+  } catch {
+    return DEFAULT_AI_ROUTING;
+  }
+}
+
+export function saveAIRouting(config: AIRoutingConfig) {
+  localStorage.setItem("ai_routing_config", JSON.stringify(config));
 }
 
 /**
@@ -12,9 +51,9 @@ export interface ModelOption {
  * Bei neuen Releases hier die Model-IDs aktualisieren.
  */
 export const STANDARD_MODELS: ModelOption[] = [
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true },
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6 (latest)", isLatest: true },
-  { value: "openai/gpt-5.2", label: "GPT-5.2 (latest)", isLatest: true },
+  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true, tier: "external" },
+  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6 (latest)", isLatest: true, tier: "external" },
+  { value: "openai/gpt-5.2", label: "GPT-5.2 (latest)", isLatest: true, tier: "external" },
 ];
 
 /**
@@ -22,21 +61,21 @@ export const STANDARD_MODELS: ModelOption[] = [
  * Bei neuen Releases hier die Model-IDs aktualisieren.
  */
 export const PREMIUM_MODELS: ModelOption[] = [
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6 (latest)", isPremium: true, isLatest: true },
-  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true },
+  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6 (latest)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true, tier: "external" },
 ];
 
 /**
  * Open-Source-Modelle — leistungsfähige Modelle mit offenen Gewichten.
  */
 export const OPEN_SOURCE_MODELS: ModelOption[] = [
-  { value: "mistralai/mistral-large-2512", label: "Mistral Large 3 (2512)", isOpenSource: true },
-  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B", isOpenSource: true },
-  { value: "google/gemma-3-27b-it", label: "Gemma 3 27B", isOpenSource: true },
-  { value: "mistralai/mistral-small-3.1-24b-instruct", label: "Mistral Small 3.1 24B", isOpenSource: true },
-  { value: "allenai/olmo-3.1-32b-think", label: "OLMo 3.1 32B Think", isOpenSource: true },
-  { value: "qwen/qwen3.5-122b-a10b", label: "Qwen 3.5 122B-A10B", isOpenSource: true },
-  { value: "qwen/qwen3.5-397b-a17b", label: "Qwen 3.5 397B-A17B", isOpenSource: true },
+  { value: "mistralai/mistral-large-2512", label: "Mistral Large 3 (2512)", isOpenSource: true, tier: "external" },
+  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B", isOpenSource: true, tier: "external" },
+  { value: "google/gemma-3-27b-it", label: "Gemma 3 27B", isOpenSource: true, tier: "external" },
+  { value: "mistralai/mistral-small-3.1-24b-instruct", label: "Mistral Small 3.1 24B", isOpenSource: true, tier: "external" },
+  { value: "allenai/olmo-3.1-32b-think", label: "OLMo 3.1 32B Think", isOpenSource: true, tier: "external" },
+  { value: "qwen/qwen3.5-122b-a10b", label: "Qwen 3.5 122B-A10B", isOpenSource: true, tier: "external" },
+  { value: "qwen/qwen3.5-397b-a17b", label: "Qwen 3.5 397B-A17B", isOpenSource: true, tier: "external" },
 ];
 
 export const DEFAULT_MODEL = "google/gemini-3-flash-preview";

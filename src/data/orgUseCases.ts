@@ -1,11 +1,13 @@
 export interface OrgUseCase {
   title: string;
-  department: "HR" | "Vertrieb" | "Support" | "Produkt" | "Legal";
+  department: "HR" | "Vertrieb" | "Support" | "Produkt" | "Legal" | "Öffentlichkeitsarbeit" | "IT" | "Bauverfahren";
   role: "Mitarbeitende" | "Teamlead" | "Admin";
   risk: "niedrig" | "mittel" | "hoch";
   goal: string;
   template: string;
   qualityCriteria: string[];
+  confidentiality: "open" | "internal" | "confidential";
+  targetDepartment?: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
 }
 
 export const orgUseCases: OrgUseCase[] = [
@@ -17,6 +19,8 @@ export const orgUseCases: OrgUseCase[] = [
     goal: "Ein strukturierter, fairer Leitfaden für Erstgespräche.",
     template: "Erstelle einen Interview-Leitfaden für die Rolle {{Rolle}}. Fokus: fachliche Kompetenzen, Kultur-Fit, Red Flags. Gib Fragen, Follow-ups und Bewertungsraster.",
     qualityCriteria: ["Fragen sind bias-arm", "Bewertungsraster vorhanden", "Max. 45 Minuten Ablauf"],
+    confidentiality: "internal",
+    targetDepartment: "hr",
   },
   {
     title: "Angebotsmail personalisieren",
@@ -26,6 +30,7 @@ export const orgUseCases: OrgUseCase[] = [
     goal: "Personalisierte Erstansprache mit klarem Nutzenversprechen.",
     template: "Formuliere eine Angebotsmail für {{Branche}}. Input: {{Pain Points}}, {{Produktnutzen}}, {{Call to Action}}. Ton: professionell, präzise, max. 150 Wörter.",
     qualityCriteria: ["Klarer CTA", "Personalisierung sichtbar", "Keine unbewiesenen Claims"],
+    confidentiality: "open",
   },
   {
     title: "Support-Antworten standardisieren",
@@ -35,6 +40,7 @@ export const orgUseCases: OrgUseCase[] = [
     goal: "Einheitliche Antwortqualität für wiederkehrende Tickets.",
     template: "Erzeuge 5 Antwortvorlagen für das Thema {{Ticket-Kategorie}}. Struktur: Verständnis zeigen, Lösungsschritte, Rückfrage, Abschluss. Sprache: freundlich, lösungsorientiert.",
     qualityCriteria: ["Empathischer Einstieg", "Schritt-für-Schritt-Lösung", "Klare Abschlussfrage"],
+    confidentiality: "internal",
   },
   {
     title: "Release-Zusammenfassung für Stakeholder",
@@ -44,6 +50,7 @@ export const orgUseCases: OrgUseCase[] = [
     goal: "Kompakte Release Notes mit Business-Relevanz.",
     template: "Fasse das Release {{Version}} zusammen. Teile in: Was neu ist, Nutzen für Kunden, Risiken, offene Punkte, nächste Schritte. Zielgruppe: Management.",
     qualityCriteria: ["Business Impact enthalten", "Risiken transparent", "Nächste Schritte konkret"],
+    confidentiality: "open",
   },
   {
     title: "Vertragsklauseln vorstrukturieren",
@@ -53,5 +60,7 @@ export const orgUseCases: OrgUseCase[] = [
     goal: "Erste Entwurfsstruktur mit Compliance-Hinweisen.",
     template: "Erstelle eine Struktur für einen {{Vertragstyp}} mit den Abschnitten: Laufzeit, Leistungsumfang, Haftung, Datenschutz, Kündigung. Markiere juristisch sensible Stellen explizit.",
     qualityCriteria: ["Keine Rechtsberatung behaupten", "Sensible Klauseln markiert", "Review-Hinweis an Legal"],
+    confidentiality: "confidential",
+    targetDepartment: "legal",
   },
 ];

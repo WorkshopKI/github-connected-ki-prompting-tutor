@@ -10,6 +10,13 @@ export interface Exercise {
     isSpecific: boolean;
     hasConstraints: boolean;
   };
+  departmentVariants?: {
+    department: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
+    badPrompt: string;
+    context: string;
+    improvementHints: string[];
+    goodExample: string;
+  }[];
 }
 
 export const exercises: Exercise[] = [
