@@ -10,9 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ArrowLeft, LogIn, MessageSquare, GitCompare, Sparkles, Bot, Brain, Wrench, History, Wand2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Navigation } from "@/components/Navigation";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { ChatPlayground } from "@/components/playground/ChatPlayground";
 import { ACTABuilder } from "@/components/playground/ACTABuilder";
@@ -334,25 +332,27 @@ const Playground = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="gap-1"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Zurück zur Plattform
-          </Button>
-
-          <h1 className="text-2xl font-bold">Prompt-Labor</h1>
-
-          <div className="ml-auto flex items-center gap-3">
-            <div className="flex items-center gap-1.5">
+      {/* Top bar */}
+      <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
+        <div className="flex items-center h-14 px-4 max-w-7xl mx-auto">
+          {/* Left: Back + Title */}
+          <div className="flex items-center gap-3 mr-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Zurück</span>
+            </Button>
+            <div className="h-5 w-px bg-border" />
+            <h1 className="text-base font-bold tracking-tight">Prompt-Labor</h1>
+          </div>
+          {/* Right: Controls */}
+          <div className="flex items-center gap-2">
+            {/* Thinking toggle */}
+            <label className="flex items-center gap-1.5 cursor-pointer" title="Denkprozess aktivieren">
               <Switch
                 id="thinking-toggle"
                 checked={thinkingEnabled}
@@ -361,112 +361,118 @@ const Playground = () => {
                   localStorage.setItem("thinking_enabled", String(checked));
                 }}
               />
-              <Label htmlFor="thinking-toggle" className="text-xs flex items-center gap-1 cursor-pointer" title="Erweiterte Denkfähigkeit aktivieren (Reasoning/Thinking)">
-                <Brain className="h-3.5 w-3.5" /> Denkprozess
-              </Label>
+              <span className="text-xs text-muted-foreground hidden md:flex items-center gap-1">
+                <Brain className="h-3.5 w-3.5" /> Denken
+              </span>
+            </label>
+            {/* Divider */}
+            <div className="h-5 w-px bg-border mx-1" />
+            {/* AI Tier toggle */}
+            <div className="flex rounded-lg border border-border overflow-hidden">
+              <button
+                onClick={() => setAiTier("internal")}
+                className={`px-2.5 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
+                  aiTier === "internal"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted/50"
+                }`}
+              >
+                🏢 <span className="hidden sm:inline">Intern</span>
+              </button>
+              <button
+                onClick={() => canUseExternal && setAiTier("external")}
+                disabled={!canUseExternal}
+                className={`px-2.5 py-1.5 text-xs font-medium transition-colors flex items-center gap-1 ${
+                  aiTier === "external" && canUseExternal
+                    ? "bg-primary/10 text-primary"
+                    : canUseExternal
+                    ? "text-muted-foreground hover:bg-muted/50"
+                    : "text-muted-foreground/30 cursor-not-allowed"
+                }`}
+                title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
+              >
+                ☁️ <span className="hidden sm:inline">Extern</span>
+              </button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="flex rounded-lg border border-border overflow-hidden">
-                <button
-                  onClick={() => setAiTier("internal")}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 ${
-                    aiTier === "internal"
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  🏢 Intern
-                </button>
-                <button
-                  onClick={() => canUseExternal && setAiTier("external")}
-                  disabled={!canUseExternal}
-                  className={`px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 ${
-                    aiTier === "external" && canUseExternal
-                      ? "bg-primary/10 text-primary"
-                      : canUseExternal
-                      ? "text-muted-foreground hover:bg-muted/50"
-                      : "text-muted-foreground/30 cursor-not-allowed"
-                  }`}
-                  title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
-                >
-                  ☁️ Extern
-                </button>
-              </div>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger className="w-[200px] text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {aiTier === "internal" ? (
+            {/* Model selector */}
+            <Select value={selectedModel} onValueChange={setSelectedModel}>
+              <SelectTrigger className="w-[180px] text-xs h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {aiTier === "internal" ? (
+                  <SelectGroup>
+                    <SelectLabel>🏢 Interne KI</SelectLabel>
+                    {aiRouting.internalModel ? (
+                      <SelectItem value={aiRouting.internalModel}>
+                        {aiRouting.internalModel}
+                      </SelectItem>
+                    ) : (
+                      <SelectItem value="internal-default" disabled>
+                        Nicht konfiguriert
+                      </SelectItem>
+                    )}
+                  </SelectGroup>
+                ) : (
+                  <>
                     <SelectGroup>
-                      <SelectLabel>🏢 Interne KI</SelectLabel>
-                      {aiRouting.internalModel ? (
-                        <SelectItem value={aiRouting.internalModel}>
-                          {aiRouting.internalModel}
-                        </SelectItem>
-                      ) : (
-                        <SelectItem value="internal-default" disabled>
-                          Nicht konfiguriert — siehe Einstellungen
-                        </SelectItem>
-                      )}
+                      <SelectLabel>Standard</SelectLabel>
+                      {STANDARD_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
                     </SelectGroup>
-                  ) : (
-                    <>
-                      <SelectGroup>
-                        <SelectLabel>☁️ Extern — Standard</SelectLabel>
-                        {STANDARD_MODELS.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      <SelectSeparator />
-                      <SelectGroup>
-                        <SelectLabel>☁️ Extern — Premium</SelectLabel>
-                        {PREMIUM_MODELS.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      <SelectSeparator />
-                      <SelectGroup>
-                        <SelectLabel>☁️ Extern — Open Source</SelectLabel>
-                        {OPEN_SOURCE_MODELS.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      {(() => {
-                        const custom = getAllModels().filter((m) => m.isCustom);
-                        return custom.length > 0 ? (
-                          <>
-                            <SelectSeparator />
-                            <SelectGroup>
-                              <SelectLabel>Eigene</SelectLabel>
-                              {custom.map((m) => (
-                                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </>
-                        ) : null;
-                      })()}
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Premium</SelectLabel>
+                      {PREMIUM_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>Open Source</SelectLabel>
+                      {OPEN_SOURCE_MODELS.map((m) => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectGroup>
+                    {(() => {
+                      const custom = getAllModels().filter((m) => m.isCustom);
+                      return custom.length > 0 ? (
+                        <>
+                          <SelectSeparator />
+                          <SelectGroup>
+                            <SelectLabel>Eigene</SelectLabel>
+                            {custom.map((m) => (
+                              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </>
+                      ) : null;
+                    })()}
+                  </>
+                )}
+              </SelectContent>
+            </Select>
           </div>
-          {!canUseExternal && (
-            <div className="text-[11px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-1.5 rounded-md">
-              🔒 Vertraulicher Prompt — nur interne KI zugelassen
-            </div>
-          )}
-          {aiTier === "external" && promptConfidentiality === "internal" && aiRouting.warnOnExternal && (
-            <div className="text-[11px] text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-3 py-1.5 rounded-md">
-              ⚠ Stelle sicher, dass keine vertraulichen Daten im Prompt enthalten sind.
-            </div>
-          )}
         </div>
+        {/* Confidentiality warnings */}
+        {!canUseExternal && (
+          <div className="text-[11px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950 px-4 py-1.5 text-center">
+            🔒 Vertraulicher Prompt — nur interne KI zugelassen
+          </div>
+        )}
+        {canUseExternal && aiTier === "external" && promptConfidentiality === "internal" && aiRouting.warnOnExternal && (
+          <div className="text-[11px] text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-4 py-1.5 text-center">
+            ⚠ Stelle sicher, dass keine vertraulichen Daten im Prompt enthalten sind.
+          </div>
+        )}
+      </header>
+
+      <div className="px-4 py-4 max-w-7xl mx-auto">
 
         {/* Auth guard */}
         {!isLoggedIn ? (
-          <Card className="max-w-md mx-auto mt-12">
+          <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LogIn className="w-5 h-5" />
@@ -484,11 +490,11 @@ const Playground = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid lg:grid-cols-[320px_1fr] gap-6">
+          <div className="grid lg:grid-cols-[300px_1fr] gap-4">
             {/* Left sidebar - desktop */}
             <aside className="hidden lg:block space-y-4">
               <Accordion type="single" collapsible defaultValue="acta">
-                <AccordionItem value="history" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                <AccordionItem value="history" className="rounded-lg border border-border bg-card">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <History className="w-4 h-4 text-primary" />
@@ -508,7 +514,7 @@ const Playground = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="acta" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                <AccordionItem value="acta" className="rounded-lg border border-border bg-card">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm">ACTA-Baukasten</span>
@@ -524,7 +530,7 @@ const Playground = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="techniques" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                <AccordionItem value="techniques" className="rounded-lg border border-border bg-card">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <Wand2 className="w-4 h-4 text-primary" />
@@ -539,7 +545,7 @@ const Playground = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="agent" className="bg-gradient-card rounded-xl border border-border shadow-lg">
+                <AccordionItem value="agent" className="rounded-lg border border-border bg-card">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-sm">Agenten-Modus</span>
@@ -559,7 +565,7 @@ const Playground = () => {
 
               {/* Prompt Evaluation */}
               {lastUserPrompt && (
-                <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-4">
+                <div className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="w-4 h-4 text-primary" />
                     <span className="font-semibold text-sm">Prompt-Qualität</span>
@@ -683,7 +689,7 @@ const Playground = () => {
                 </TabsContent>
 
                 <TabsContent value="agent" className="mt-0">
-                  <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-6">
+                  <div className="rounded-lg border border-border bg-card p-6">
                     <div className="flex items-center gap-2 mb-4">
                       <Bot className="w-5 h-5 text-primary" />
                       <h3 className="text-lg font-semibold">Agenten-Modus</h3>
@@ -718,7 +724,7 @@ const Playground = () => {
                 </TabsContent>
 
                 <TabsContent value="compare" className="mt-0">
-                  <div className="bg-gradient-card rounded-xl border border-border shadow-lg p-4">
+                  <div className="rounded-lg border border-border bg-card p-4">
                     <h3 className="text-sm font-semibold mb-3">Modell-Vergleich</h3>
                     <p className="text-xs text-muted-foreground mb-4">
                       Sende denselben Prompt an zwei verschiedene Modelle und vergleiche die Antworten.
