@@ -1,24 +1,7 @@
-export interface ModelOption {
-  value: string;
-  label: string;
-  isLatest?: boolean;
-  isPremium?: boolean;
-  isOpenSource?: boolean;
-  isCustom?: boolean;
-  tier?: "internal" | "external";
-}
+import type { ModelOption, AIRoutingConfig } from "@/types";
+import { loadFromStorage, loadArrayFromStorage, saveToStorage } from "@/lib/storage";
 
-export interface AIRoutingConfig {
-  internalEndpoint: string;
-  internalModel: string;
-  externalProvider: string;
-  externalModel: string;
-  confidentialRouting: "internal-only" | "internal-with-approval";
-  internalRouting: "prefer-internal" | "internal-only";
-  openRouting: "prefer-external" | "prefer-internal";
-  warnOnExternal: boolean;
-  auditLog: boolean;
-}
+export type { ModelOption, AIRoutingConfig } from "@/types";
 
 export const DEFAULT_AI_ROUTING: AIRoutingConfig = {
   internalEndpoint: "",
@@ -33,17 +16,11 @@ export const DEFAULT_AI_ROUTING: AIRoutingConfig = {
 };
 
 export function loadAIRouting(): AIRoutingConfig {
-  try {
-    const stored = localStorage.getItem("ai_routing_config");
-    if (!stored) return DEFAULT_AI_ROUTING;
-    return { ...DEFAULT_AI_ROUTING, ...JSON.parse(stored) };
-  } catch {
-    return DEFAULT_AI_ROUTING;
-  }
+  return loadFromStorage("ai_routing_config", DEFAULT_AI_ROUTING);
 }
 
 export function saveAIRouting(config: AIRoutingConfig) {
-  localStorage.setItem("ai_routing_config", JSON.stringify(config));
+  saveToStorage("ai_routing_config", config);
 }
 
 /**
@@ -83,16 +60,11 @@ export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
 const LS_CUSTOM_MODELS = "custom_openrouter_models";
 
 export function loadCustomModels(): ModelOption[] {
-  try {
-    const raw = localStorage.getItem(LS_CUSTOM_MODELS);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return loadArrayFromStorage<ModelOption>(LS_CUSTOM_MODELS);
 }
 
 export function saveCustomModels(models: ModelOption[]): void {
-  localStorage.setItem(LS_CUSTOM_MODELS, JSON.stringify(models));
+  saveToStorage(LS_CUSTOM_MODELS, models);
 }
 
 export function addCustomModel(modelId: string): ModelOption[] {

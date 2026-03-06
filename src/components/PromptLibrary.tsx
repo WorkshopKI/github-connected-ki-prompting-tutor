@@ -13,27 +13,21 @@ import type { PromptItem } from "@/data/prompts";
 import { PromptDetail } from "@/components/PromptDetail";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { loadFromStorage, saveToStorage } from "@/lib/storage";
 
 const BASE_CATEGORIES = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
+const LS_RATINGS_KEY = "prompt_ratings";
+
 function getStoredRating(title: string): number {
-  try {
-    const stored = localStorage.getItem("prompt_ratings");
-    if (!stored) return 0;
-    const ratings = JSON.parse(stored);
-    return ratings[title] || 0;
-  } catch {
-    return 0;
-  }
+  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  return ratings[title] || 0;
 }
 
 function storeRating(title: string, rating: number) {
-  try {
-    const stored = localStorage.getItem("prompt_ratings");
-    const ratings = stored ? JSON.parse(stored) : {};
-    ratings[title] = rating;
-    localStorage.setItem("prompt_ratings", JSON.stringify(ratings));
-  } catch { /* ignore */ }
+  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  ratings[title] = rating;
+  saveToStorage(LS_RATINGS_KEY, ratings);
 }
 
 function extractVariables(text: string): string[] {

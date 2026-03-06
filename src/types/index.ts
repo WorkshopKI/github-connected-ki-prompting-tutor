@@ -1,0 +1,151 @@
+/* ── Zentrale Typ-Definitionen ──
+ * Alle geteilten Typen an einem Ort, damit Coding-Agenten
+ * das Datenmodell schnell verstehen können.
+ */
+
+/* ── LLM / Chat ── */
+
+export type Msg = { role: "user" | "assistant" | "system"; content: string };
+
+export interface SavedConversation {
+  id: string;
+  title: string;
+  messages: Msg[];
+  systemPrompt: string;
+  model: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+/* ── Modelle & KI-Routing ── */
+
+export interface ModelOption {
+  value: string;
+  label: string;
+  isLatest?: boolean;
+  isPremium?: boolean;
+  isOpenSource?: boolean;
+  isCustom?: boolean;
+  tier?: "internal" | "external";
+}
+
+export interface AIRoutingConfig {
+  internalEndpoint: string;
+  internalModel: string;
+  externalProvider: string;
+  externalModel: string;
+  confidentialRouting: "internal-only" | "internal-with-approval";
+  internalRouting: "prefer-internal" | "internal-only";
+  openRouting: "prefer-external" | "prefer-internal";
+  warnOnExternal: boolean;
+  auditLog: boolean;
+}
+
+/* ── Organisation ── */
+
+export type OrgScope =
+  | "privat"
+  | "organisation"
+  | "legal"
+  | "oeffentlichkeitsarbeit"
+  | "hr"
+  | "it"
+  | "bauverfahren";
+
+/* ── Auth ── */
+
+export interface UserProfile {
+  id: string;
+  display_name: string | null;
+  auth_method: "email_otp" | "guest";
+  course_id: string | null;
+  is_admin: boolean;
+  preferred_model: string;
+}
+
+/* ── Sync / Fortschritt ── */
+
+export interface ExerciseResult {
+  exercise_id: number;
+  score: number;
+  feedback: string | null;
+  user_prompt: string;
+  completed_at: string;
+}
+
+export interface LocalProgress {
+  exercises: ExerciseResult[];
+  completedLessons: string[];
+  quizScores: Record<string, number>;
+  challengeCards: string[];
+  updatedAt: string;
+}
+
+export type SyncStatus = "idle" | "syncing" | "synced" | "error" | "offline";
+
+/* ── Übungen ── */
+
+export interface Exercise {
+  id: number;
+  level: number;
+  badPrompt: string;
+  context: string;
+  improvementHints: string[];
+  goodExample: string;
+  evaluationCriteria: {
+    hasContext: boolean;
+    isSpecific: boolean;
+    hasConstraints: boolean;
+  };
+  departmentVariants?: {
+    department: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
+    badPrompt: string;
+    context: string;
+    improvementHints: string[];
+    goodExample: string;
+  }[];
+}
+
+/* ── Prompts ── */
+
+export interface PromptConstraints {
+  musts: string[];
+  mustNots: string[];
+  escalationTriggers: string[];
+}
+
+export interface PromptItem {
+  category: string;
+  title: string;
+  prompt: string;
+  needsWeb?: boolean;
+  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint" | "organisation";
+  type?: "prompt" | "blueprint";
+  constraints?: PromptConstraints;
+  acceptanceCriteria?: string;
+  estimatedAgentTime?: string;
+  requiredTools?: string[];
+  department?: string;
+  riskLevel?: "niedrig" | "mittel" | "hoch";
+  official?: boolean;
+  confidentiality?: "open" | "internal" | "confidential";
+  confidentialityReason?: string;
+  targetDepartment?: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
+}
+
+/* ── Einstellungen ── */
+
+export interface PlatformSettings {
+  orgName: string;
+  language: string;
+  requireReview: boolean;
+  autoQualityScoring: boolean;
+  mandatoryOnboarding: boolean;
+}
+
+export interface ComplianceSettings {
+  detectSensitiveData: boolean;
+  reviewHighRisk: boolean;
+  auditLog: boolean;
+  approvedModelsOnly: boolean;
+}

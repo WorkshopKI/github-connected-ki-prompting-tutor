@@ -9,26 +9,10 @@ import {
 } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import type { ExerciseResult, LocalProgress, SyncStatus } from "@/types";
 
-/* ── Types ── */
-
-interface ExerciseResult {
-  exercise_id: number;
-  score: number;
-  feedback: string | null;
-  user_prompt: string;
-  completed_at: string;
-}
-
-interface LocalProgress {
-  exercises: ExerciseResult[];
-  completedLessons: string[];
-  quizScores: Record<string, number>;
-  challengeCards: string[];
-  updatedAt: string;
-}
-
-export type SyncStatus = "idle" | "syncing" | "synced" | "error" | "offline";
+export type { SyncStatus } from "@/types";
 
 interface SyncContextType {
   /* exercise / werkstatt */
@@ -76,18 +60,12 @@ function emptyProgress(): LocalProgress {
 }
 
 function loadLocal(): LocalProgress {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return emptyProgress();
-    return { ...emptyProgress(), ...JSON.parse(raw) };
-  } catch {
-    return emptyProgress();
-  }
+  return loadFromStorage(LS_KEY, emptyProgress());
 }
 
 function saveLocal(p: LocalProgress) {
   p.updatedAt = new Date().toISOString();
-  localStorage.setItem(LS_KEY, JSON.stringify(p));
+  saveToStorage(LS_KEY, p);
 }
 
 /* ── Merge logic ── */

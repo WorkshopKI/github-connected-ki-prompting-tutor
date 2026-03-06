@@ -1,28 +1,6 @@
+import type { PromptItem, PromptConstraints } from "@/types";
 
-export interface PromptConstraints {
-  musts: string[];
-  mustNots: string[];
-  escalationTriggers: string[];
-}
-
-export interface PromptItem {
-  category: string;
-  title: string;
-  prompt: string;
-  needsWeb?: boolean;
-  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint" | "organisation";
-  type?: "prompt" | "blueprint";
-  constraints?: PromptConstraints;
-  acceptanceCriteria?: string;
-  estimatedAgentTime?: string;
-  requiredTools?: string[];
-  department?: string;
-  riskLevel?: "niedrig" | "mittel" | "hoch";
-  official?: boolean;
-  confidentiality?: "open" | "internal" | "confidential";
-  confidentialityReason?: string;
-  targetDepartment?: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
-}
+export type { PromptItem, PromptConstraints } from "@/types";
 
 export const promptLibrary: PromptItem[] = [
   // Alltag - Rezepte & Kochen

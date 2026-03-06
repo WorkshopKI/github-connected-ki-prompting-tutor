@@ -1,13 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import type { OrgScope } from "@/types";
+import { loadStringFromStorage } from "@/lib/storage";
 
-export type OrgScope =
-  | "privat"
-  | "organisation"
-  | "legal"
-  | "oeffentlichkeitsarbeit"
-  | "hr"
-  | "it"
-  | "bauverfahren";
+export type { OrgScope } from "@/types";
 
 export const ORG_SCOPE_LABELS: Record<OrgScope, string> = {
   privat: "Privatgebrauch",
@@ -34,14 +29,9 @@ const OrgContext = createContext<OrgContextType | null>(null);
 const LS_KEY = "org_scope";
 
 export const OrgProvider = ({ children }: { children: ReactNode }) => {
-  const [scope, setScopeState] = useState<OrgScope>(() => {
-    try {
-      const stored = localStorage.getItem(LS_KEY);
-      return (stored as OrgScope) || "privat";
-    } catch {
-      return "privat";
-    }
-  });
+  const [scope, setScopeState] = useState<OrgScope>(
+    () => loadStringFromStorage(LS_KEY, "privat") as OrgScope
+  );
 
   const setScope = (s: OrgScope) => {
     setScopeState(s);
