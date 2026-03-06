@@ -17,6 +17,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { promptLibrary } from "@/data/prompts";
 import { exercises } from "@/data/exercises";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -131,9 +132,12 @@ const Dashboard = () => {
                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">
-                      {prompt.title}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium text-sm truncate">
+                        {prompt.title}
+                      </p>
+                      <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
+                    </div>
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                         {prompt.category}
