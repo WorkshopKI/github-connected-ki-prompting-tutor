@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { PromptDetail } from "@/components/PromptDetail";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 
-const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
+const BASE_CATEGORIES = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
 function getStoredRating(title: string): number {
   try {
@@ -126,9 +126,16 @@ const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
 
 export const PromptLibrary = () => {
   const navigate = useNavigate();
-  const { scope, isDepartment } = useOrgContext();
+  const { scope, isDepartment, scopeLabel } = useOrgContext();
+
+  const categories = useMemo(() => {
+    if (isDepartment) return ["Meine Abteilung", ...BASE_CATEGORIES];
+    if (scope === "organisation") return BASE_CATEGORIES;
+    return BASE_CATEGORIES.filter((c) => c !== "Organisation");
+  }, [scope, isDepartment]);
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Alltag");
+  const [selectedCategory, setSelectedCategory] = useState(isDepartment ? "Meine Abteilung" : "Alle");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState("Alle");
@@ -140,6 +147,10 @@ export const PromptLibrary = () => {
   const [confFilter, setConfFilter] = useState<string>("all");
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  useEffect(() => {
+    setSelectedCategory(isDepartment ? "Meine Abteilung" : "Alle");
+  }, [scope, isDepartment]);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -169,6 +180,7 @@ export const PromptLibrary = () => {
 
       const matchesCategory =
         selectedCategory === "Alle" ||
+        selectedCategory === "Meine Abteilung" ||
         (selectedCategory === "Alltag" && prompt.level === "alltag") ||
         (selectedCategory === "Beruf" && prompt.level === "beruf") ||
         (selectedCategory === "Websuche" && prompt.level === "websuche") ||
@@ -185,10 +197,12 @@ export const PromptLibrary = () => {
         (prompt.department && selectedDepartments.includes(prompt.department));
 
       const matchesDepartmentScope =
-        scope === "organisation" ? true :
-        scope === "privat" ? !prompt.targetDepartment :
-        isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope) :
-        true;
+        selectedCategory === "Meine Abteilung"
+          ? prompt.targetDepartment === scope
+          : scope === "organisation" ? true
+          : scope === "privat" ? !prompt.targetDepartment
+          : isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope)
+          : true;
 
       return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments && matchesConf && matchesDepartmentScope;
     });
@@ -258,8 +272,11 @@ export const PromptLibrary = () => {
               variant={selectedCategory === category ? "default" : "outline"}
               onClick={() => setSelectedCategory(category)}
               size="sm"
+              className={category === "Meine Abteilung" ? "gap-1.5" : ""}
             >
-              {category}
+              {category === "Meine Abteilung"
+                ? `⬡ ${scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")}`
+                : category}
             </Button>
           ))}
         </div>
