@@ -19,6 +19,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { promptLibrary } from "@/data/prompts";
 import { exercises } from "@/data/exercises";
+import { requiredModules, bonusModules } from "@/data/learningPath";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 
@@ -42,19 +43,14 @@ const Dashboard = () => {
     const completedExercises = exercises.filter((ex) =>
       exerciseResults.some((r) => r.exercise_id === ex.id && r.score > 0)
     );
-    const totalLessons = 8;
-    const onboardingPercent = Math.round(
-      (completedLessons.length / totalLessons) * 100
-    );
 
     return {
       totalPrompts: promptLibrary.length,
       departments: uniqueDepartments.size,
-      onboardingPercent,
       exercisesDone: completedExercises.length,
       exercisesTotal: exercises.length,
     };
-  }, [completedLessons, exerciseResults]);
+  }, [exerciseResults]);
 
   const popularPrompts = useMemo(() => {
     let candidates = promptLibrary;
@@ -70,24 +66,12 @@ const Dashboard = () => {
     return candidates.slice(0, 5);
   }, [scope, isDepartment]);
 
-  const actaProgress = useMemo(() => {
-    const actaLessons = completedLessons.filter((id) =>
-      id.startsWith("acta")
-    );
-    const advancedLessons = completedLessons.filter((id) =>
-      id.startsWith("advanced")
-    );
-    const completedEx = exercises.filter((ex) =>
-      exerciseResults.some((r) => r.exercise_id === ex.id && r.score > 0)
-    );
-    return {
-      acta: Math.min(actaLessons.length * 50, 100),
-      exercises: Math.round(
-        (completedEx.length / exercises.length) * 100
-      ),
-      advanced: Math.min(advancedLessons.length * 50, 100),
-    };
-  }, [completedLessons, exerciseResults]);
+  const onboardingProgress = useMemo(() => {
+    const requiredDone = requiredModules.filter((m) => completedLessons.includes(m.id)).length;
+    const bonusDone = bonusModules.filter((m) => completedLessons.includes(m.id)).length;
+    const requiredPercent = Math.round((requiredDone / requiredModules.length) * 100);
+    return { requiredPercent, requiredDone, bonusDone };
+  }, [completedLessons]);
 
   const displayName = profile?.display_name;
 
@@ -117,7 +101,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={BookOpen} label="Gesamt Prompts" value={stats.totalPrompts} />
         <StatCard icon={Building2} label="Abteilungen" value={stats.departments} />
-        <StatCard icon={GraduationCap} label="Onboarding" value={`${stats.onboardingPercent}%`} />
+        <StatCard icon={GraduationCap} label="Onboarding" value={`${onboardingProgress.requiredPercent}%`} />
         <StatCard icon={CheckCircle2} label="Übungen" value={`${stats.exercisesDone}/${stats.exercisesTotal}`} />
       </div>
 
@@ -215,34 +199,31 @@ const Dashboard = () => {
           {/* Progress */}
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>ACTA-Methode</span>
+                  <span>Kern-Onboarding</span>
                   <span className="text-muted-foreground">
-                    {actaProgress.acta}%
+                    {onboardingProgress.requiredDone}/{requiredModules.length}
                   </span>
                 </div>
-                <Progress value={actaProgress.acta} className="h-2" />
+                <Progress value={onboardingProgress.requiredPercent} className="h-2" />
               </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Übungen</span>
-                  <span className="text-muted-foreground">
-                    {actaProgress.exercises}%
-                  </span>
+              {onboardingProgress.bonusDone > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  + {onboardingProgress.bonusDone} Bonus-Module abgeschlossen
                 </div>
-                <Progress value={actaProgress.exercises} className="h-2" />
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Fortgeschrittene Techniken</span>
-                  <span className="text-muted-foreground">
-                    {actaProgress.advanced}%
-                  </span>
-                </div>
-                <Progress value={actaProgress.advanced} className="h-2" />
-              </div>
+              )}
+              {onboardingProgress.requiredPercent < 100 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={() => navigate("/onboarding")}
+                >
+                  Onboarding fortsetzen
+                </Button>
+              )}
             </div>
           </Card>
         </div>

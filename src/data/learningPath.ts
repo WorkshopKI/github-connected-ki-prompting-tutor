@@ -6,53 +6,42 @@ export interface LearningModule {
   type: "theorie" | "praxis" | "quiz" | "pruefung";
   component: string;
   prerequisites: string[];
+  isBonus?: boolean;
 }
 
-export const learningModules: LearningModule[] = [
+// Pflicht-Module: Der Kern-Onboarding-Pfad (~30 Min)
+export const requiredModules: LearningModule[] = [
   {
-    id: "grundlagen",
-    title: "Grundlagen: Was ist Prompting?",
-    description: "Einführung in die Welt der KI-Kommunikation",
-    duration: "10 Min",
+    id: "acta-einfuehrung",
+    title: "Einführung & ACTA-Methode",
+    description: "Warum Struktur wichtig ist und wie die ACTA-Methode funktioniert",
+    duration: "15 Min",
     type: "theorie",
-    component: "LevelCards",
+    component: "ACTAIntroduction",
     prerequisites: [],
   },
   {
-    id: "acta-methode",
-    title: "Die ACTA-Methode",
-    description: "Act, Context, Task, Ausgabe — systematisch prompten",
-    duration: "15 Min",
-    type: "theorie",
-    component: "ACTASection",
-    prerequisites: ["grundlagen"],
-  },
-  {
-    id: "acta-challenge",
-    title: "ACTA Quick Challenge",
-    description: "Teste dein Verständnis der ACTA-Methode",
-    duration: "5 Min",
-    type: "quiz",
-    component: "ACTAQuickChallenge",
-    prerequisites: ["acta-methode"],
-  },
-  {
     id: "erste-uebungen",
-    title: "Erste Prompt-Übungen",
-    description: "Verbessere schwache Prompts mit der ACTA-Methode",
-    duration: "20 Min",
+    title: "Üben: Dein erster guter Prompt",
+    description: "Verbessere schwache Prompts und bekomme KI-Feedback",
+    duration: "15 Min",
     type: "praxis",
-    component: "PracticeArea",
-    prerequisites: ["acta-challenge"],
+    component: "PracticeAreaCompact",
+    prerequisites: ["acta-einfuehrung"],
   },
+];
+
+// Bonus-Module: Vertiefung, unabhängig voneinander
+export const bonusModules: LearningModule[] = [
   {
-    id: "prompt-beispiele",
-    title: "Prompt-Beispiele erkunden",
-    description: "Lerne von Beispielen auf verschiedenen Komplexitätsstufen",
+    id: "prompting-stufen",
+    title: "Die 4 Prompting-Stufen",
+    description: "Von der einfachen Frage bis zum Agenten-Blueprint",
     duration: "10 Min",
     type: "theorie",
-    component: "PromptExamples",
+    component: "LevelCards",
     prerequisites: ["erste-uebungen"],
+    isBonus: true,
   },
   {
     id: "zerlegung",
@@ -61,7 +50,8 @@ export const learningModules: LearningModule[] = [
     duration: "15 Min",
     type: "praxis",
     component: "DecompositionAssistant",
-    prerequisites: ["prompt-beispiele"],
+    prerequisites: ["erste-uebungen"],
+    isBonus: true,
   },
   {
     id: "advanced",
@@ -70,15 +60,20 @@ export const learningModules: LearningModule[] = [
     duration: "25 Min",
     type: "theorie",
     component: "AdvancedPromptingSection",
-    prerequisites: ["zerlegung"],
+    prerequisites: ["erste-uebungen"],
+    isBonus: true,
   },
   {
     id: "ressourcen",
-    title: "Ressourcen & Best Practices",
-    description: "Weiterführende Materialien und Referenzen",
+    title: "Checklisten & Best Practices",
+    description: "Referenzmaterial zum Nachschlagen",
     duration: "10 Min",
     type: "theorie",
     component: "ResourcesSection",
-    prerequisites: ["advanced"],
+    prerequisites: ["erste-uebungen"],
+    isBonus: true,
   },
 ];
+
+// Alle Module zusammen (für Fortschrittsberechnung)
+export const learningModules: LearningModule[] = [...requiredModules, ...bonusModules];

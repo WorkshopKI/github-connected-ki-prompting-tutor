@@ -40,7 +40,7 @@ export const LevelCard = ({
         </div>
         <div className="flex-1">
           <div className="text-sm font-semibold text-muted-foreground mb-1">
-            Disziplin {level}
+            Stufe {level}
           </div>
           <h3 className="text-lg font-semibold mb-2">{title}</h3>
         </div>
