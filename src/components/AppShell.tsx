@@ -24,7 +24,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
@@ -37,16 +36,13 @@ import {
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Prompt Library", icon: BookOpen, path: "/library" },
+  { label: "Prompt-Labor", icon: Sparkles, path: "/playground" },
   { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
   { label: "Einstellungen", icon: Settings, path: "/settings" },
 ];
 
-const secondaryItems = [
-  { label: "Prompt-Labor", icon: Sparkles, path: "/playground" },
-];
-
 function getPageTitle(pathname: string): string {
-  const all = [...navItems, ...secondaryItems];
+  const all = navItems;
   const match = all.find((item) => item.path === pathname);
   if (match) return match.label;
   if (pathname === "/admin/teilnehmer") return "Teilnehmer-Verwaltung";
@@ -82,27 +78,6 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navItems.map((item) => (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton
-                      isActive={isActive(item.path)}
-                      tooltip={item.label}
-                      onClick={() => navigate(item.path)}
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          <SidebarSeparator />
-
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {secondaryItems.map((item) => (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton
                       isActive={isActive(item.path)}
