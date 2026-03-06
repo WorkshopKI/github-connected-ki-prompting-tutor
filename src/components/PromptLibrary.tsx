@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Copy, Check, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List } from "lucide-react";
+import { Copy, Check, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { promptLibrary } from "@/data/prompts";
@@ -142,6 +142,17 @@ export const PromptLibrary = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
+  const [tableSortBy, setTableSortBy] = useState<string>("title");
+  const [tableSortDir, setTableSortDir] = useState<"asc" | "desc">("asc");
+  const toggleTableSort = (col: string) => {
+    if (tableSortBy === col) {
+      setTableSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setTableSortBy(col);
+      setTableSortDir("asc");
+    }
+  };
+
   useEffect(() => {
     setSelectedCategory(isDepartment ? "Meine Abteilung" : "Alle");
   }, [scope, isDepartment]);
@@ -202,6 +213,28 @@ export const PromptLibrary = () => {
     return filtered;
   }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, confFilter, scope, isDepartment]);
 
+  const tableSortedPrompts = useMemo(() => {
+    if (viewMode !== "list") return filteredPrompts;
+    return [...filteredPrompts].sort((a, b) => {
+      let aVal = "";
+      let bVal = "";
+      switch (tableSortBy) {
+        case "title": aVal = a.title; bVal = b.title; break;
+        case "category": aVal = a.category; bVal = b.category; break;
+        case "department": aVal = a.targetDepartment || ""; bVal = b.targetDepartment || ""; break;
+        case "level": aVal = a.level || ""; bVal = b.level || ""; break;
+        case "confidentiality": aVal = a.confidentiality || "open"; bVal = b.confidentiality || "open"; break;
+        case "rating":
+          return tableSortDir === "asc"
+            ? getStoredRating(a.title) - getStoredRating(b.title)
+            : getStoredRating(b.title) - getStoredRating(a.title);
+        default: aVal = a.title; bVal = b.title;
+      }
+      const cmp = aVal.localeCompare(bVal, "de");
+      return tableSortDir === "asc" ? cmp : -cmp;
+    });
+  }, [filteredPrompts, tableSortBy, tableSortDir, viewMode]);
+
   const departments = ["Alle", "Support", "Vertrieb", "Legal"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
 
@@ -234,7 +267,7 @@ export const PromptLibrary = () => {
   return (
     <section>
       <div className="mb-6 space-y-4">
-        <div className="relative max-w-2xl mx-auto">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
           <Input
             type="text"
@@ -245,7 +278,7 @@ export const PromptLibrary = () => {
           />
         </div>
 
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <Button
               key={category}
@@ -291,7 +324,7 @@ export const PromptLibrary = () => {
 
         {selectedCategory === "Organisation" && (
           <div className="space-y-2">
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap gap-2">
               {departments.map((department) => (
                 <Button
                   key={department}
@@ -303,7 +336,7 @@ export const PromptLibrary = () => {
                 </Button>
               ))}
             </div>
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap gap-2">
               {riskLevels.map((risk) => (
                 <Button
                   key={risk}
@@ -319,7 +352,7 @@ export const PromptLibrary = () => {
         )}
       </div>
 
-      <div className="text-center mb-6">
+      <div className="mb-4">
         <p className="text-sm text-muted-foreground">
           {filteredPrompts.length} {filteredPrompts.length === 1 ? "Prompt" : "Prompts"} gefunden
         </p>
@@ -330,16 +363,29 @@ export const PromptLibrary = () => {
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
-                <th className="text-left p-3 font-medium">Titel</th>
-                <th className="text-left p-3 font-medium hidden md:table-cell">Kategorie</th>
-                <th className="text-left p-3 font-medium hidden md:table-cell">Abteilung</th>
-                <th className="text-left p-3 font-medium hidden sm:table-cell">Level</th>
-                <th className="text-left p-3 font-medium">Bewertung</th>
-                <th className="text-left p-3 font-medium hidden lg:table-cell">KI</th>
+                {[
+                  { key: "title", label: "Titel", className: "" },
+                  { key: "category", label: "Kategorie", className: "hidden md:table-cell" },
+                  { key: "department", label: "Abteilung", className: "hidden md:table-cell" },
+                  { key: "level", label: "Level", className: "hidden sm:table-cell" },
+                  { key: "rating", label: "Bewertung", className: "" },
+                  { key: "confidentiality", label: "KI", className: "hidden lg:table-cell" },
+                ].map((col) => (
+                  <th
+                    key={col.key}
+                    className={`text-left p-3 font-medium cursor-pointer hover:text-foreground select-none ${col.className}`}
+                    onClick={() => toggleTableSort(col.key)}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {col.label}
+                      <ArrowUpDown className={`h-3 w-3 ${tableSortBy === col.key ? "text-primary" : "text-muted-foreground/40"}`} />
+                    </span>
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {(showAll ? filteredPrompts : filteredPrompts.slice(0, 20)).map((prompt, index) => (
+              {(showAll ? tableSortedPrompts : tableSortedPrompts.slice(0, 20)).map((prompt, index) => (
                 <tr
                   key={index}
                   className="border-t border-border hover:bg-muted/30 cursor-pointer transition-colors"
