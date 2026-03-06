@@ -53,7 +53,6 @@ function getPageTitle(pathname: string): string {
   const match = all.find((item) => item.path === pathname);
   if (match) return match.label;
   if (pathname === "/settings") return "Einstellungen";
-  if (pathname === "/profil") return "Profil";
   if (pathname === "/admin/teilnehmer") return "Teilnehmer-Verwaltung";
   return "Seite";
 }

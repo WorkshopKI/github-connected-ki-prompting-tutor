@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SyncProvider } from "@/contexts/SyncContext";
 import { OrgProvider } from "@/contexts/OrgContext";
@@ -15,7 +15,6 @@ import Workspace from "./pages/Workspace";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import Profile from "./pages/Profile";
 import AdminParticipants from "./pages/AdminParticipants";
 import Playground from "./pages/Playground";
 import NotFound from "./pages/NotFound";
@@ -45,7 +44,7 @@ const App = () => (
               <Route path="/workspace" element={<PlatformLayout><Workspace /></PlatformLayout>} />
               <Route path="/analytics" element={<PlatformLayout><Analytics /></PlatformLayout>} />
               <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
-              <Route path="/profil" element={<PlatformLayout><Profile /></PlatformLayout>} />
+              <Route path="/profil" element={<Navigate to="/settings" replace />} />
               <Route path="/admin/teilnehmer" element={<PlatformLayout><AdminParticipants /></PlatformLayout>} />
               <Route path="/playground" element={<Playground />} />
               <Route path="/login" element={<Login />} />

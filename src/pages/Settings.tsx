@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { AlertTriangle, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 import { ThemePresetPicker } from "@/components/ThemePresetPicker";
 import { Separator } from "@/components/ui/separator";
 import { useOrgContext, ORG_SCOPE_LABELS, type OrgScope } from "@/contexts/OrgContext";
 import { loadAIRouting, saveAIRouting, type AIRoutingConfig } from "@/data/models";
+import { ProfileContent } from "@/pages/Profile";
 
 interface PlatformSettings {
   orgName: string;
@@ -86,7 +86,6 @@ const roles = [
 ];
 
 const Settings = () => {
-  const navigate = useNavigate();
   const { scope, setScope } = useOrgContext();
   const [platform, setPlatform] = useState<PlatformSettings>(() => loadSettings("platform_settings", defaultPlatform));
   const [compliance, setCompliance] = useState<ComplianceSettings>(() => loadSettings("compliance_settings", defaultCompliance));
@@ -109,18 +108,24 @@ const Settings = () => {
       <div>
         <h1 className="text-2xl font-bold">Einstellungen</h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Plattform-Konfiguration und Governance
+          Konto, Plattform-Konfiguration und Governance
         </p>
       </div>
 
-      <Tabs defaultValue="general" className="space-y-6">
+      <Tabs defaultValue="account" className="space-y-6">
         <TabsList>
+          <TabsTrigger value="account">Mein Konto</TabsTrigger>
           <TabsTrigger value="general">Allgemein</TabsTrigger>
           <TabsTrigger value="roles">Rollen & Rechte</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="ai">KI-Konfiguration</TabsTrigger>
           <TabsTrigger value="appearance">Darstellung</TabsTrigger>
         </TabsList>
+
+        {/* Account */}
+        <TabsContent value="account">
+          <ProfileContent />
+        </TabsContent>
 
         {/* General */}
         <TabsContent value="general" className="space-y-6">
@@ -214,11 +219,6 @@ const Settings = () => {
             </div>
           </Card>
 
-          <div className="pt-2">
-            <Button variant="link" className="gap-1.5 p-0" onClick={() => navigate("/profil")}>
-              Persönliche Einstellungen <ExternalLink className="w-3.5 h-3.5" /> Profil
-            </Button>
-          </div>
         </TabsContent>
 
         {/* Roles */}

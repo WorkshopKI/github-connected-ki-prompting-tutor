@@ -112,7 +112,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
               className="w-full gap-2"
               onClick={() => {
                 onOpenChange(false);
-                navigate("/profil");
+                navigate("/settings");
               }}
             >
               Alle Einstellungen
