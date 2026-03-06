@@ -106,7 +106,7 @@ const Settings = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Einstellungen</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Einstellungen</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Konto, Plattform-Konfiguration und Governance
         </p>
