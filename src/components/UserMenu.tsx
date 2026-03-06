@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { LogOut, User, Users, Mail, Coins } from "lucide-react";
+import { LogOut, Users, Mail, Coins, Settings } from "lucide-react";
 import { CreditsDialog } from "@/components/CreditsDialog";
 import {
   DropdownMenu,
@@ -64,9 +64,9 @@ export const UserMenu = () => {
             <Coins className="mr-2 h-4 w-4" />
             Credits
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/profil")}>
-            <User className="mr-2 h-4 w-4" />
-            Mein Profil
+          <DropdownMenuItem onClick={() => navigate("/settings")}>
+            <Settings className="mr-2 h-4 w-4" />
+            Einstellungen
           </DropdownMenuItem>
           {profile?.is_admin && (
             <DropdownMenuItem onClick={() => navigate("/admin/teilnehmer")}>

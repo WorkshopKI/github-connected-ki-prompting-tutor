@@ -20,7 +20,7 @@ export const GuestBanner = () => {
       <span className="text-foreground">
         Hinterlege eine E-Mail-Adresse für dauerhaften Zugriff auf deine Daten.{" "}
         <button
-          onClick={() => navigate("/profil")}
+          onClick={() => navigate("/settings")}
           className="text-primary font-medium hover:underline"
         >
           E-Mail hinterlegen →
