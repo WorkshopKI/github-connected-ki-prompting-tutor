@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, MessageSquare, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useOrgContext } from "@/contexts/OrgContext";
 import { streamChat, type Msg } from "@/services/llmService";
 
 interface Exercise {
@@ -19,6 +20,13 @@ interface Exercise {
     isSpecific: boolean;
     hasConstraints: boolean;
   };
+  departmentVariants?: {
+    department: string;
+    badPrompt: string;
+    context: string;
+    improvementHints: string[];
+    goodExample: string;
+  }[];
 }
 
 interface ExerciseCardProps {
@@ -36,6 +44,23 @@ interface EvaluationResult {
 
 export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardProps) => {
   const { profile } = useAuthContext();
+  const { scope, isDepartment } = useOrgContext();
+
+  const effectiveExercise = useMemo(() => {
+    if (isDepartment && exercise.departmentVariants) {
+      const variant = exercise.departmentVariants.find((v) => v.department === scope);
+      if (variant) {
+        return {
+          ...exercise,
+          badPrompt: variant.badPrompt,
+          context: variant.context,
+          improvementHints: variant.improvementHints,
+          goodExample: variant.goodExample,
+        };
+      }
+    }
+    return exercise;
+  }, [exercise, scope, isDepartment]);
   const [userPrompt, setUserPrompt] = useState("");
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -58,10 +83,10 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
         body: {
           userPrompt: userPrompt.trim(),
-          badPrompt: exercise.badPrompt,
-          context: exercise.context,
-          goodExample: exercise.goodExample,
-          improvementHints: exercise.improvementHints,
+          badPrompt: effectiveExercise.badPrompt,
+          context: effectiveExercise.context,
+          goodExample: effectiveExercise.goodExample,
+          improvementHints: effectiveExercise.improvementHints,
           model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
         },
       });
@@ -109,9 +134,9 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       role: "system",
       content: `Du bist ein Experte für Prompt-Engineering und ein freundlicher Coach. Der Nutzer versucht, einen schlechten Prompt zu verbessern.
 
-Kontext der Übung: ${exercise.context}
-Schlechter Original-Prompt: "${exercise.badPrompt}"
-Verbesserungshinweise: ${exercise.improvementHints.join(", ")}
+Kontext der Übung: ${effectiveExercise.context}
+Schlechter Original-Prompt: "${effectiveExercise.badPrompt}"
+Verbesserungshinweise: ${effectiveExercise.improvementHints.join(", ")}
 
 Deine Aufgabe:
 1. Analysiere den Prompt-Entwurf des Nutzers
@@ -173,14 +198,14 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
 
       <div className="mb-4">
         <div className="text-sm font-semibold text-muted-foreground mb-2">
-          {exercise.context}
+          {effectiveExercise.context}
         </div>
         <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
           <div className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2">
             <X className="w-4 h-4" />
             Schlechter Prompt
           </div>
-          <p className="text-foreground italic">"{exercise.badPrompt}"</p>
+          <p className="text-foreground italic">"{effectiveExercise.badPrompt}"</p>
         </div>
       </div>
 
@@ -232,7 +257,7 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
             💡 Verbesserungshinweise:
           </div>
           <ul className="space-y-1">
-            {exercise.improvementHints.map((hint, idx) => (
+            {effectiveExercise.improvementHints.map((hint, idx) => (
               <li key={idx} className="text-sm text-muted-foreground flex items-start gap-2">
                 <span className="text-accent-foreground">•</span>
                 <span>{hint}</span>
@@ -337,14 +362,14 @@ Antworte auf Deutsch, freundlich und konstruktiv. Formatiere deine Antwort klar 
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => copyToClipboard(exercise.goodExample)}
+              onClick={() => copyToClipboard(effectiveExercise.goodExample)}
               className="gap-2"
             >
               <Copy className="w-4 h-4" />
               Kopieren
             </Button>
           </div>
-          <p className="text-foreground italic">"{exercise.goodExample}"</p>
+          <p className="text-foreground italic">"{effectiveExercise.goodExample}"</p>
         </div>
       )}
     </div>
