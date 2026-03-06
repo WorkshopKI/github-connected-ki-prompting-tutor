@@ -13,6 +13,7 @@ import { Logo } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { SyncStatusIcon } from "@/components/SyncStatusIcon";
 import { ThemePresetPicker } from "@/components/ThemePresetPicker";
+import { useOrgContext } from "@/contexts/OrgContext";
 import {
   Sidebar,
   SidebarContent,
@@ -60,6 +61,7 @@ function getPageTitle(pathname: string): string {
 export const AppShell = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { scopeLabel, isDepartment } = useOrgContext();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -73,6 +75,11 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           >
             <Logo size="sm" variant="sidebar" />
           </button>
+          {isDepartment && (
+            <div className="text-[10px] text-sidebar-foreground/50 mt-1 ml-0.5 truncate">
+              {scopeLabel}
+            </div>
+          )}
         </SidebarHeader>
 
         <SidebarContent>

@@ -12,6 +12,7 @@ import { promptLibrary } from "@/data/prompts";
 import type { PromptItem } from "@/data/prompts";
 import { PromptDetail } from "@/components/PromptDetail";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { useOrgContext } from "@/contexts/OrgContext";
 
 const categories = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
@@ -125,6 +126,7 @@ const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
 
 export const PromptLibrary = () => {
   const navigate = useNavigate();
+  const { scope, isDepartment } = useOrgContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Alltag");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -182,15 +184,29 @@ export const PromptLibrary = () => {
         selectedDepartments.length === 0 ||
         (prompt.department && selectedDepartments.includes(prompt.department));
 
-      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments && matchesConf;
+      const matchesDepartmentScope =
+        scope === "organisation" ? true :
+        scope === "privat" ? !prompt.targetDepartment :
+        isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope) :
+        true;
+
+      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments && matchesConf && matchesDepartmentScope;
     });
 
     if (sortByRating) {
       filtered = [...filtered].sort((a, b) => getStoredRating(b.title) - getStoredRating(a.title));
     }
 
+    if (isDepartment) {
+      filtered.sort((a, b) => {
+        const aMatch = a.targetDepartment === scope ? 0 : 1;
+        const bMatch = b.targetDepartment === scope ? 0 : 1;
+        return aMatch - bMatch;
+      });
+    }
+
     return filtered;
-  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments, confFilter]);
+  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments, confFilter, scope, isDepartment]);
 
   const departments = ["Alle", "Support", "Vertrieb", "Legal"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
