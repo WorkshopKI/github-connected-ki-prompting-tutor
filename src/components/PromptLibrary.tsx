@@ -143,7 +143,7 @@ export const PromptLibrary = () => {
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [viewMode, setViewMode] = useState<string>("grid");
   const [sortByRating, setSortByRating] = useState(false);
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
   const [confFilter, setConfFilter] = useState<string>("all");
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -159,17 +159,6 @@ export const PromptLibrary = () => {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const allDepartments = useMemo(() => {
-    const deps = new Set<string>();
-    promptLibrary.forEach((p) => { if (p.department) deps.add(p.department); });
-    return Array.from(deps);
-  }, []);
-
-  const toggleDepartment = (dep: string) => {
-    setSelectedDepartments((prev) =>
-      prev.includes(dep) ? prev.filter((d) => d !== dep) : [...prev, dep]
-    );
-  };
 
   const filteredPrompts = useMemo(() => {
     let filtered = promptLibrary.filter((prompt) => {
@@ -192,9 +181,6 @@ export const PromptLibrary = () => {
       const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
       const matchesVerified = !onlyVerified || prompt.official;
       const matchesConf = confFilter === "all" || (prompt.confidentiality || "open") === confFilter;
-      const matchesSelectedDepartments =
-        selectedDepartments.length === 0 ||
-        (prompt.department && selectedDepartments.includes(prompt.department));
 
       const matchesDepartmentScope =
         selectedCategory === "Meine Abteilung"
@@ -204,7 +190,7 @@ export const PromptLibrary = () => {
           : isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope)
           : true;
 
-      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesSelectedDepartments && matchesConf && matchesDepartmentScope;
+      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesConf && matchesDepartmentScope;
     });
 
     if (sortByRating) {
@@ -220,7 +206,7 @@ export const PromptLibrary = () => {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, selectedDepartments, confFilter, scope, isDepartment]);
+  }, [searchQuery, selectedCategory, departmentFilter, riskFilter, onlyVerified, sortByRating, confFilter, scope, isDepartment]);
 
   const departments = ["Alle", "Support", "Vertrieb", "Legal"];
   const riskLevels = ["Alle", "niedrig", "mittel", "hoch"];
@@ -281,21 +267,6 @@ export const PromptLibrary = () => {
           ))}
         </div>
 
-        {allDepartments.length > 0 && (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {allDepartments.map((dep) => (
-              <Button
-                key={dep}
-                variant={selectedDepartments.includes(dep) ? "default" : "outline"}
-                onClick={() => toggleDepartment(dep)}
-                size="sm"
-                className="gap-1"
-              >
-                <Building2 className="w-3 h-3" /> {dep}
-              </Button>
-            ))}
-          </div>
-        )}
 
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
