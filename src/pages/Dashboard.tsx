@@ -214,7 +214,7 @@ const Dashboard = () => {
 
           {/* Progress */}
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
-            <h2 className="font-semibold text-base mb-4">Lernfortschritt</h2>
+            <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-sm mb-1">
@@ -236,7 +236,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <div className="flex justify-between text-sm mb-1">
-                  <span>Advanced Techniques</span>
+                  <span>Fortgeschrittene Techniken</span>
                   <span className="text-muted-foreground">
                     {actaProgress.advanced}%
                   </span>
