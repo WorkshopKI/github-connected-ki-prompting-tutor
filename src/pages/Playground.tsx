@@ -22,7 +22,8 @@ import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
-import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels } from "@/data/models";
+import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels, loadAIRouting } from "@/data/models";
+import { promptLibrary } from "@/data/prompts";
 
 const LS_CONVERSATIONS = "playground_conversations";
 const LS_ACTIVE_ID = "playground_active_id";
@@ -68,6 +69,31 @@ const Playground = () => {
   const [thinkingEnabled, setThinkingEnabled] = useState(
     () => localStorage.getItem("thinking_enabled") === "true"
   );
+  const [aiTier, setAiTier] = useState<"internal" | "external">("external");
+  const aiRouting = loadAIRouting();
+  const [promptConfidentiality, setPromptConfidentiality] = useState<"open" | "internal" | "confidential">("open");
+
+  const canUseExternal = promptConfidentiality !== "confidential" &&
+    !(promptConfidentiality === "internal" && aiRouting.internalRouting === "internal-only");
+
+  useEffect(() => {
+    if (promptConfidentiality === "confidential") {
+      setAiTier("internal");
+    } else if (promptConfidentiality === "internal") {
+      setAiTier("internal");
+    } else {
+      setAiTier(aiRouting.openRouting === "prefer-external" ? "external" : "internal");
+    }
+  }, [promptConfidentiality]);
+
+  useEffect(() => {
+    if (prefilledPrompt) {
+      const match = promptLibrary.find((p) => p.prompt === prefilledPrompt);
+      if (match?.confidentiality) {
+        setPromptConfidentiality(match.confidentiality);
+      }
+    }
+  }, [prefilledPrompt]);
 
   // --- Conversation management ---
   const [conversations, setConversations] = useState<SavedConversation[]>(loadConversations);
@@ -339,48 +365,103 @@ const Playground = () => {
                 <Brain className="h-3.5 w-3.5" /> Denkprozess
               </Label>
             </div>
-            <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-[220px] text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Standard</SelectLabel>
-                  {STANDARD_MODELS.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-                <SelectSeparator />
-                <SelectGroup>
-                  <SelectLabel>Premium</SelectLabel>
-                  {PREMIUM_MODELS.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-                <SelectSeparator />
-                <SelectGroup>
-                  <SelectLabel>Open Source</SelectLabel>
-                  {OPEN_SOURCE_MODELS.map((m) => (
-                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-                {(() => {
-                  const custom = getAllModels().filter((m) => m.isCustom);
-                  return custom.length > 0 ? (
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => setAiTier("internal")}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                    aiTier === "internal"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  🏢 Intern
+                </button>
+                <button
+                  onClick={() => canUseExternal && setAiTier("external")}
+                  disabled={!canUseExternal}
+                  className={`px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 ${
+                    aiTier === "external" && canUseExternal
+                      ? "bg-primary/10 text-primary"
+                      : canUseExternal
+                      ? "text-muted-foreground hover:bg-muted/50"
+                      : "text-muted-foreground/30 cursor-not-allowed"
+                  }`}
+                  title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
+                >
+                  ☁️ Extern
+                </button>
+              </div>
+              <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <SelectTrigger className="w-[200px] text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {aiTier === "internal" ? (
+                    <SelectGroup>
+                      <SelectLabel>🏢 Interne KI</SelectLabel>
+                      {aiRouting.internalModel ? (
+                        <SelectItem value={aiRouting.internalModel}>
+                          {aiRouting.internalModel}
+                        </SelectItem>
+                      ) : (
+                        <SelectItem value="internal-default" disabled>
+                          Nicht konfiguriert — siehe Einstellungen
+                        </SelectItem>
+                      )}
+                    </SelectGroup>
+                  ) : (
                     <>
-                      <SelectSeparator />
                       <SelectGroup>
-                        <SelectLabel>Eigene</SelectLabel>
-                        {custom.map((m) => (
+                        <SelectLabel>☁️ Extern — Standard</SelectLabel>
+                        {STANDARD_MODELS.map((m) => (
                           <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
                         ))}
                       </SelectGroup>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>☁️ Extern — Premium</SelectLabel>
+                        {PREMIUM_MODELS.map((m) => (
+                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>☁️ Extern — Open Source</SelectLabel>
+                        {OPEN_SOURCE_MODELS.map((m) => (
+                          <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                      {(() => {
+                        const custom = getAllModels().filter((m) => m.isCustom);
+                        return custom.length > 0 ? (
+                          <>
+                            <SelectSeparator />
+                            <SelectGroup>
+                              <SelectLabel>Eigene</SelectLabel>
+                              {custom.map((m) => (
+                                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </>
+                        ) : null;
+                      })()}
                     </>
-                  ) : null;
-                })()}
-              </SelectContent>
-            </Select>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+          {!canUseExternal && (
+            <div className="text-[11px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950 px-3 py-1.5 rounded-md">
+              🔒 Vertraulicher Prompt — nur interne KI zugelassen
+            </div>
+          )}
+          {aiTier === "external" && promptConfidentiality === "internal" && aiRouting.warnOnExternal && (
+            <div className="text-[11px] text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-3 py-1.5 rounded-md">
+              ⚠ Stelle sicher, dass keine vertraulichen Daten im Prompt enthalten sind.
+            </div>
+          )}
         </div>
 
         {/* Auth guard */}
