@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { BookOpen, CheckCircle2, Lock, Play, Sparkles, Brain, Search, Cpu } from "lucide-react";
+import { BookOpen, CheckCircle2, Play, Sparkles, Brain, Search, Cpu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";

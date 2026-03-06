@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...data,
         auth_method: data.auth_method as "email_otp" | "guest",
         is_admin: !!roleData,
-        preferred_model: (data as any).preferred_model ?? "google/gemini-3-flash-preview",
+        preferred_model: (data as Record<string, unknown>).preferred_model as string ?? "google/gemini-3-flash-preview",
       });
     }
   }, []);
