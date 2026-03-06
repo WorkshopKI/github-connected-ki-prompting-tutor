@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PromptLibrary } from "@/components/PromptLibrary";
@@ -9,6 +10,7 @@ import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
 
 const Library = () => {
+  const navigate = useNavigate();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
 
   const uniqueCategories = useMemo(() => {
@@ -34,7 +36,7 @@ const Library = () => {
             }
           </p>
         </div>
-        <Button>+ Neuer Prompt</Button>
+        <Button onClick={() => navigate("/playground")}>+ Neuer Prompt</Button>
       </div>
 
       <Tabs defaultValue="prompts">
