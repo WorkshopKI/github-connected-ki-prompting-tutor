@@ -194,8 +194,8 @@ Farben als HSL CSS Variables in `src/index.css`:
 - **Background:** Warmes Beige (`--background: 48 33% 97%`)
 - **Foreground:** Dunkles Braun (`--foreground: 48 20% 20%`)
 - **Sidebar:** Dunkles warmes Braun (`--sidebar: 30 15% 18%`)
-- **Sidebar Hover:** Dezente Aufhellung (`--sidebar-hover: 30 12% 24%`)
-- **Sidebar Accent:** Aktiver Zustand (`--sidebar-accent: 15 35% 35%`)
+- **Sidebar Hover:** `bg-primary/8` (Tailwind-Klasse, dezente Aufhellung)
+- **Sidebar Active:** `bg-primary/15 text-primary` (Tailwind-Klassen, klar sichtbar)
 
 **Badges — nur 3 Varianten:**
 - `bg-primary/10 text-primary` — Standard (z.B. Offen 🟢)
