@@ -80,9 +80,9 @@ All colors MUST be HSL.
 
     --sidebar-primary-foreground: 0 0% 100%;
 
-    --sidebar-accent: 30 15% 25%;
+    --sidebar-accent: 15 45% 30%;
 
-    --sidebar-accent-foreground: 40 20% 90%;
+    --sidebar-accent-foreground: 0 0% 100%;
 
     --sidebar-border: 30 10% 25%;
 
@@ -177,8 +177,8 @@ All colors MUST be HSL.
     --sidebar-foreground: 40 18% 80%;
     --sidebar-primary: 15 55% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 12% 20%;
-    --sidebar-accent-foreground: 40 18% 88%;
+    --sidebar-accent: 15 40% 28%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 30 8% 20%;
     --sidebar-ring: 15 55% 52%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
@@ -303,10 +303,10 @@ All colors MUST be HSL.
     --sidebar-foreground: 32 8% 80%;
     --sidebar-primary: 18 30% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 32 6% 18%;
-    --sidebar-accent-foreground: 32 8% 80%;
+    --sidebar-accent: 15 40% 28%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 32 6% 20%;
-    --sidebar-ring: 32 6% 35%;
+    --sidebar-ring: 15 55% 52%;
     --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   }
@@ -353,10 +353,10 @@ All colors MUST be HSL.
     --sidebar-foreground: 90 8% 80%;
     --sidebar-primary: 132 20% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 100 6% 16%;
-    --sidebar-accent-foreground: 90 8% 80%;
+    --sidebar-accent: 15 40% 28%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 95 6% 18%;
-    --sidebar-ring: 95 6% 32%;
+    --sidebar-ring: 15 55% 52%;
     --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   }
@@ -402,10 +402,10 @@ All colors MUST be HSL.
     --sidebar-foreground: 0 0% 78%;
     --sidebar-primary: 0 0% 62%;
     --sidebar-primary-foreground: 0 0% 10%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 78%;
+    --sidebar-accent: 15 40% 28%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 0 0% 30%;
+    --sidebar-ring: 15 55% 52%;
     --radius: 0.75rem;
     --font-heading: 'Sora', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Sora', ui-sans-serif, system-ui, sans-serif;
