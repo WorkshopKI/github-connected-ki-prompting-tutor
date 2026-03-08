@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Flame, CheckCircle2, Sparkles, Send } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { useDailyChallenge } from "@/hooks/useDailyChallenge";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { FlawExercise } from "@/components/FlawExercise";
+import { flawChallenges } from "@/data/flawChallenges";
 
 export const DailyChallengeCard = () => {
   const { challenge, isCompleted, markCompleted, streak, todayScore } = useDailyChallenge();
@@ -16,6 +18,18 @@ export const DailyChallengeCard = () => {
   const [userInput, setUserInput] = useState("");
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [result, setResult] = useState<{ score: number; feedback: string } | null>(null);
+
+  // Select a flaw challenge based on the date (deterministic)
+  const flawChallenge = useMemo(() => {
+    const dateNum = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
+    return flawChallenges[dateNum % flawChallenges.length];
+  }, []);
+
+  const handleFlawComplete = (score: number) => {
+    setResult({ score, feedback: `Du hast ${score}% der Fehler korrekt identifiziert.` });
+    markCompleted(score);
+    toast.success(`Fehler-Check: ${score}%`);
+  };
 
   const handleSubmit = async () => {
     if (!userInput.trim() || !isLoggedIn) return;
@@ -66,6 +80,13 @@ export const DailyChallengeCard = () => {
         <div className="flex items-center gap-2 text-primary">
           <CheckCircle2 className="w-5 h-5" />
           <span className="text-sm">Heute erledigt! Morgen gibt's eine neue Aufgabe.</span>
+        </div>
+      ) : challenge.type === "spot-the-flaw" ? (
+        <div className="space-y-3">
+          <Badge variant="outline" className="text-[10px] mb-2">
+            {challenge.category} · ~{challenge.estimatedMinutes} Min
+          </Badge>
+          <FlawExercise challenge={flawChallenge} onComplete={handleFlawComplete} />
         </div>
       ) : (
         <div className="space-y-3">
