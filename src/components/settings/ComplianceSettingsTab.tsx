@@ -4,6 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import type { ComplianceSettings } from "@/types";
 
 const defaultCompliance: ComplianceSettings = {
@@ -14,10 +15,10 @@ const defaultCompliance: ComplianceSettings = {
 };
 
 export function ComplianceSettingsTab() {
-  const [compliance, setCompliance] = useState<ComplianceSettings>(() => loadFromStorage("compliance_settings", defaultCompliance));
+  const [compliance, setCompliance] = useState<ComplianceSettings>(() => loadFromStorage(LS_KEYS.COMPLIANCE_SETTINGS, defaultCompliance));
 
   useEffect(() => {
-    saveToStorage("compliance_settings", compliance);
+    saveToStorage(LS_KEYS.COMPLIANCE_SETTINGS, compliance);
   }, [compliance]);
 
   return (

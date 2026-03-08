@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useOrgContext, ORG_SCOPE_LABELS } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import type { OrgScope, PlatformSettings } from "@/types";
 
 const defaultPlatform: PlatformSettings = {
@@ -17,10 +18,10 @@ const defaultPlatform: PlatformSettings = {
 
 export function GeneralSettings() {
   const { scope, setScope } = useOrgContext();
-  const [platform, setPlatform] = useState<PlatformSettings>(() => loadFromStorage("platform_settings", defaultPlatform));
+  const [platform, setPlatform] = useState<PlatformSettings>(() => loadFromStorage(LS_KEYS.PLATFORM_SETTINGS, defaultPlatform));
 
   useEffect(() => {
-    saveToStorage("platform_settings", platform);
+    saveToStorage(LS_KEYS.PLATFORM_SETTINGS, platform);
   }, [platform]);
 
   return (

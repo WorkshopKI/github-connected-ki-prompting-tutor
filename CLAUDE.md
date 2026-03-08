@@ -54,6 +54,7 @@ src/
 │   │   ├── ConversationHistory.tsx # Gesprächsverlauf
 │   │   ├── IterationNudge.tsx      # Verbesserungsvorschläge nach erster KI-Antwort
 │   │   ├── JudgePanel.tsx          # Judge-Bewertung durch Referenz-KI
+│   │   ├── PlaygroundContent.tsx   # Gemeinsamer Tab-Content (Desktop/Mobile)
 │   │   ├── PlaygroundHeader.tsx    # Playground Top-Bar
 │   │   ├── PlaygroundSidebar.tsx   # Playground linke Sidebar
 │   │   ├── PromptEvaluation.tsx    # Prompt-Bewertung
@@ -135,6 +136,7 @@ src/
 ├── services/
 │   └── llmService.ts               # streamChat() SSE Client + onThinking, saveUserKey()
 ├── lib/
+│   ├── constants.ts                # LS_KEYS, ROUTES, LEVEL_BADGE_COLORS, DEFAULT_MODEL
 │   ├── utils.ts                    # cn() Tailwind Class Merger
 │   ├── promptUtils.ts              # extractVariables() — zentralisiert
 │   ├── exportSkill.ts              # Markdown + Agent Skill (ZIP) Export
@@ -318,6 +320,39 @@ Edge function secrets (set in Supabase dashboard):
 - `@typescript-eslint/no-unused-vars` is disabled
 - TypeScript strict mode is off; `noImplicitAny: false`
 - Target: ES2020, JSX: react-jsx
+
+## Regeln für Coding-Agenten
+
+### Konstanten
+- **localStorage Keys:** Immer `LS_KEYS.*` aus `src/lib/constants.ts` verwenden, NIE strings hardcoden
+- **Route-Pfade:** Immer `ROUTES.*` aus `src/lib/constants.ts` verwenden
+- **Badge-Farben:** `LEVEL_BADGE_COLORS` aus constants oder `ConfidentialityBadge` Komponente nutzen
+- **Default-Modell:** `DEFAULT_MODEL` aus constants
+
+### Dateigrößen
+- Neue Komponenten sollten unter 250 Zeilen bleiben
+- Bei >250 Zeilen: Sub-Komponenten in gleichem Ordner extrahieren
+- Seiten delegieren Logik an Hooks, UI an Sub-Komponenten
+
+### Typen
+- Alle geteilten Typen in `src/types/index.ts`
+- Komponentenspezifische Props-Interfaces bleiben in der Komponentendatei
+
+### Utility-Funktionen
+- `extractVariables()` → `src/lib/promptUtils.ts`
+- `cn()` → `src/lib/utils.ts`
+- localStorage → `src/lib/storage.ts` (loadFromStorage, saveToStorage, etc.)
+- Export-Funktionen → `src/lib/exportSkill.ts`
+
+### Neue Seiten
+- In `src/pages/` anlegen, default export
+- In `App.tsx` als lazy import + Route hinzufügen
+- In AppShell wrappen (außer Login/Playground)
+
+### Neue Hooks
+- In `src/hooks/` anlegen
+- Rückgabewert als Interface dokumentieren
+- localStorage-Keys aus `LS_KEYS` importieren
 
 ## Notes
 

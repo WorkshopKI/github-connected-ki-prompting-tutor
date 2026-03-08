@@ -2,9 +2,8 @@ import { useMemo } from "react";
 import { dailyChallenges } from "@/data/dailyChallenges";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import type { DailyChallenge } from "@/types";
-
-const LS_KEY = "daily_challenge_history";
 
 interface ChallengeHistory {
   [dateKey: string]: { challengeId: string; completed: boolean; score?: number };
@@ -34,14 +33,14 @@ export function useDailyChallenge() {
     return selectChallenge(scope, pool);
   }, [scope, isDepartment]);
 
-  const history = loadFromStorage<ChallengeHistory>(LS_KEY, {});
+  const history = loadFromStorage<ChallengeHistory>(LS_KEYS.DAILY_CHALLENGE, {});
   const today = getDateKey();
   const todayEntry = history[today];
   const isCompleted = todayEntry?.completed === true;
 
   const markCompleted = (score?: number) => {
     const updated = { ...history, [today]: { challengeId: challenge.id, completed: true, score } };
-    saveToStorage(LS_KEY, updated);
+    saveToStorage(LS_KEYS.DAILY_CHALLENGE, updated);
   };
 
   const streak = useMemo(() => {

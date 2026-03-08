@@ -25,6 +25,7 @@ import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
+import { LEVEL_BADGE_COLORS } from "@/lib/constants";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -79,14 +80,7 @@ const Dashboard = () => {
 
   const displayName = profile?.display_name;
 
-  const levelBadgeColors: Record<string, string> = {
-    alltag: "bg-muted text-muted-foreground",
-    beruf: "bg-muted text-muted-foreground",
-    organisation: "bg-primary/10 text-primary",
-    blueprint: "bg-primary/10 text-primary",
-    research: "bg-muted text-muted-foreground",
-    websuche: "bg-muted text-muted-foreground",
-  };
+  const levelBadgeColors = LEVEL_BADGE_COLORS;
 
   return (
     <div className="space-y-8">

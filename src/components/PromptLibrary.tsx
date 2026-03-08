@@ -14,21 +14,20 @@ import { PromptDetail } from "@/components/PromptDetail";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import { extractVariables } from "@/lib/promptUtils";
 
 const BASE_CATEGORIES = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
-const LS_RATINGS_KEY = "prompt_ratings";
-
 function getStoredRating(title: string): number {
-  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  const ratings = loadFromStorage<Record<string, number>>(LS_KEYS.PROMPT_RATINGS, {});
   return ratings[title] || 0;
 }
 
 function storeRating(title: string, rating: number) {
-  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  const ratings = loadFromStorage<Record<string, number>>(LS_KEYS.PROMPT_RATINGS, {});
   ratings[title] = rating;
-  saveToStorage(LS_RATINGS_KEY, ratings);
+  saveToStorage(LS_KEYS.PROMPT_RATINGS, ratings);
 }
 
 const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {
