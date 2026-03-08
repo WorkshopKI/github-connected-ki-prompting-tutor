@@ -269,7 +269,7 @@ export function skillToTemplate(skill: SavedSkill): string {
     lines.push("```");
     let filled = skill.prompt;
     for (const [key, value] of filledVars) {
-      filled = filled.replaceAll(`{{${key}}}`, value);
+      filled = filled.split(`{{${key}}}`).join(value);
     }
     lines.push(filled);
     lines.push("```");

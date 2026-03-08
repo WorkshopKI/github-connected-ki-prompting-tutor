@@ -334,7 +334,7 @@ export const MySkills = () => {
                   onClick={() => {
                     let filled = editPrompt;
                     for (const [key, value] of Object.entries(editVariables)) {
-                      if (value.trim()) filled = filled.replaceAll(`{{${key}}}`, value);
+                      if (value.trim()) filled = filled.split(`{{${key}}}`).join(value);
                     }
                     const params = new URLSearchParams({
                       prompt: filled,
