@@ -11,6 +11,7 @@ export async function streamChat({
   reasoning,
   signal,
   onDelta,
+  onThinking,
   onDone,
   onError,
 }: {
@@ -19,6 +20,7 @@ export async function streamChat({
   reasoning?: { effort: string };
   signal?: AbortSignal;
   onDelta: (text: string) => void;
+  onThinking?: (text: string) => void;
   onDone: () => void;
   onError: (error: string, status?: number) => void;
 }) {
@@ -81,8 +83,12 @@ export async function streamChat({
         if (json === "[DONE]") { onDone(); return; }
         try {
           const parsed = JSON.parse(json);
-          const content = parsed.choices?.[0]?.delta?.content;
-          if (content) onDelta(content);
+          const delta = parsed.choices?.[0]?.delta;
+          if (delta) {
+            if (delta.content) onDelta(delta.content);
+            const thinking = delta.reasoning_content || delta.reasoning;
+            if (thinking && onThinking) onThinking(thinking);
+          }
         } catch {
           buf = line + "\n" + buf;
           break;
