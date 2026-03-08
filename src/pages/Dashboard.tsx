@@ -110,8 +110,8 @@ const Dashboard = () => {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Popular Prompts */}
-        <div className="lg:col-span-2">
+        {/* Popular Prompts + Tagesaufgabe */}
+        <div className="lg:col-span-2 space-y-6">
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-base">Beliebte Prompts</h2>
@@ -162,13 +162,13 @@ const Dashboard = () => {
               ))}
             </div>
           </Card>
+
+          {/* Tagesaufgabe */}
+          <DailyChallengeCard />
         </div>
 
         {/* Quick Actions */}
         <div className="space-y-4">
-          {/* Tagesaufgabe */}
-          <DailyChallengeCard />
-
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Schnellzugriff</h2>
             <div className="space-y-2">
