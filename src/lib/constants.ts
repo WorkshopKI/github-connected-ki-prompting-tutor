@@ -39,6 +39,7 @@ export const LS_KEYS = {
   STANDALONE_CHALLENGES: "standalone_challenges",
   STANDALONE_API_KEY: "standalone_api_key",
   STANDALONE_ENDPOINT: "standalone_endpoint",
+  PLAYGROUND_MODE: "playground_mode",
 } as const;
 
 /* ── Badge-Farben für Prompt-Level ── */

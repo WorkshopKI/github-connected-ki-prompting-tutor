@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSepa
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Brain } from "lucide-react";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels } from "@/data/models";
+import { cn } from "@/lib/utils";
 import type { AIRoutingConfig } from "@/types";
 
 interface PlaygroundHeaderProps {
@@ -16,6 +17,8 @@ interface PlaygroundHeaderProps {
   onModelChange: (model: string) => void;
   aiRouting: AIRoutingConfig;
   promptConfidentiality: "open" | "internal" | "confidential";
+  mode: "einsteiger" | "experte";
+  onModeChange: (mode: "einsteiger" | "experte") => void;
 }
 
 export function PlaygroundHeader({
@@ -28,6 +31,8 @@ export function PlaygroundHeader({
   onModelChange,
   aiRouting,
   promptConfidentiality,
+  mode,
+  onModeChange,
 }: PlaygroundHeaderProps) {
   const navigate = useNavigate();
 
@@ -47,6 +52,27 @@ export function PlaygroundHeader({
           </Button>
           <div className="h-5 w-px bg-border" />
           <h1 className="text-base font-bold tracking-tight">Prompt-Labor</h1>
+          {/* Mode toggle */}
+          <div className="flex bg-muted rounded-lg p-0.5">
+            <button
+              onClick={() => onModeChange("einsteiger")}
+              className={cn(
+                "px-3 py-1 rounded-md text-xs font-medium transition-colors",
+                mode === "einsteiger" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Einsteiger
+            </button>
+            <button
+              onClick={() => onModeChange("experte")}
+              className={cn(
+                "px-3 py-1 rounded-md text-xs font-medium transition-colors",
+                mode === "experte" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Experte
+            </button>
+          </div>
         </div>
         {/* Right: Controls */}
         <div className="flex items-center gap-2">

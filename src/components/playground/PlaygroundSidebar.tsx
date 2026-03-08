@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { History, Wand2, Sparkles, Wrench } from "lucide-react";
+import { History, Wand2, Sparkles, Wrench, Blocks, Bot, Scale, ChevronDown, ChevronUp } from "lucide-react";
 import { ConversationHistory } from "@/components/playground/ConversationHistory";
 import { ACTABuilder } from "@/components/playground/ACTABuilder";
 import { TechniquePanel } from "@/components/playground/TechniquePanel";
@@ -11,6 +11,7 @@ import { JudgePanel } from "@/components/playground/JudgePanel";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { SavedConversation, Msg } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface PlaygroundSidebarProps {
   conversations: SavedConversation[];
@@ -29,9 +30,37 @@ interface PlaygroundSidebarProps {
   lastUserPrompt: string;
   selectedModel: string;
   messages: Msg[];
+  mode?: "einsteiger" | "experte";
 }
 
-function SidebarAccordionContent({
+interface SectionProps {
+  icon: React.ReactNode;
+  label: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}
+
+function SidebarSection({ icon, label, defaultOpen = false, children }: SectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <div className="rounded-lg border border-border bg-card">
+        <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-lg transition-colors">
+          <div className="flex items-center gap-2">
+            {icon}
+            <span className="font-semibold text-sm">{label}</span>
+          </div>
+          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          {children}
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  );
+}
+
+function SidebarSections({
   conversations,
   activeConversationId,
   onSelectConversation,
@@ -45,77 +74,105 @@ function SidebarAccordionContent({
   agentConfig,
   onAgentConfigChange,
   onStartAgent,
-}: Omit<PlaygroundSidebarProps, "lastUserPrompt" | "selectedModel">) {
-  return (
-    <Accordion type="single" collapsible defaultValue="acta">
-      <AccordionItem value="history" className="rounded-lg border border-border bg-card">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <History className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm">Verlauf ({conversations.length})</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent className="px-3 pb-3">
-          <ConversationHistory
-            conversations={conversations}
-            activeId={activeConversationId}
-            onSelect={onSelectConversation}
-            onNew={onNewConversation}
-            onDelete={onDeleteConversation}
-            onRename={onRenameConversation}
-            bare
-          />
-        </AccordionContent>
-      </AccordionItem>
+  lastUserPrompt,
+  selectedModel,
+  messages,
+  mode = "experte",
+}: PlaygroundSidebarProps) {
+  const isExperte = mode === "experte";
+  const hasMessages = messages.length >= 2 && messages[messages.length - 1].role === "assistant";
+  const lastAssistantContent = hasMessages ? messages[messages.length - 1].content : "";
 
-      <AccordionItem value="acta" className="rounded-lg border border-border bg-card">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">ACTA-Baukasten</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent>
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto space-y-3">
+        {/* ACTA-Baukasten — always visible, default open */}
+        <SidebarSection
+          icon={<Blocks className="w-4 h-4 text-primary" />}
+          label="ACTA-Baukasten"
+          defaultOpen
+        >
           <ACTABuilder
             fields={actaFields}
             onFieldsChange={onActaFieldsChange}
             onSendToPlayground={onSendFromACTA}
             bare
           />
-        </AccordionContent>
-      </AccordionItem>
+        </SidebarSection>
 
-      <AccordionItem value="techniques" className="rounded-lg border border-border bg-card">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <Wand2 className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm">Fortgeschrittene Techniken</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent>
-          <TechniquePanel
-            onApplyToChat={onApplyTechnique}
-            bare
-          />
-        </AccordionContent>
-      </AccordionItem>
+        {/* Prompt-Check — only when lastUserPrompt exists */}
+        {lastUserPrompt && (
+          <SidebarSection
+            icon={<Sparkles className="w-4 h-4 text-primary" />}
+            label="Prompt-Check"
+          >
+            <div className="px-4 pb-4">
+              <PromptEvaluation prompt={lastUserPrompt} model={selectedModel} />
+            </div>
+          </SidebarSection>
+        )}
 
-      <AccordionItem value="agent" className="rounded-lg border border-border bg-card">
-        <AccordionTrigger className="px-4 py-3 hover:no-underline">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">Agenten-Modus</span>
-            <span className="ml-2 text-xs bg-secondary px-2 py-0.5 rounded-full">Fortgeschritten</span>
-          </div>
-        </AccordionTrigger>
-        <AccordionContent>
-          <AgentKnobs
-            config={agentConfig}
-            onConfigChange={onAgentConfigChange}
-            onStartAgent={onStartAgent}
-            bare
-          />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
+        {/* Experte-only sections */}
+        {isExperte && (
+          <>
+            <SidebarSection
+              icon={<Wand2 className="w-4 h-4 text-primary" />}
+              label="Erweiterte Techniken"
+            >
+              <TechniquePanel
+                onApplyToChat={onApplyTechnique}
+                bare
+              />
+            </SidebarSection>
+
+            <SidebarSection
+              icon={<Bot className="w-4 h-4 text-primary" />}
+              label="Agenten-Modus"
+            >
+              <AgentKnobs
+                config={agentConfig}
+                onConfigChange={onAgentConfigChange}
+                onStartAgent={onStartAgent}
+                bare
+              />
+            </SidebarSection>
+
+            {hasMessages && (
+              <SidebarSection
+                icon={<Scale className="w-4 h-4 text-primary" />}
+                label="KI-Bewertung"
+              >
+                <div className="px-4 pb-4">
+                  <JudgePanel
+                    prompt={lastUserPrompt}
+                    output={lastAssistantContent}
+                    model={selectedModel}
+                  />
+                </div>
+              </SidebarSection>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Fixed conversation history at bottom */}
+      <div className="mt-auto border-t border-border pt-3">
+        <div className="flex items-center gap-2 px-4 mb-2">
+          <History className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-sm">Meine Versuche</span>
+          <span className="text-xs text-muted-foreground">({conversations.length})</span>
+        </div>
+        <ConversationHistory
+          conversations={conversations}
+          activeId={activeConversationId}
+          onSelect={onSelectConversation}
+          onNew={onNewConversation}
+          onDelete={onDeleteConversation}
+          onRename={onRenameConversation}
+          bare
+        />
+      </div>
+    </div>
   );
 }
 
@@ -128,26 +185,8 @@ export function PlaygroundSidebar(props: PlaygroundSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden lg:block space-y-4 overflow-y-auto">
-        <SidebarAccordionContent {...props} />
-
-        {props.lastUserPrompt && (
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="font-semibold text-sm">Prompt-Qualität</span>
-            </div>
-            <PromptEvaluation prompt={props.lastUserPrompt} model={props.selectedModel} />
-          </div>
-        )}
-
-        {props.messages.length >= 2 && props.messages[props.messages.length - 1].role === "assistant" && (
-          <JudgePanel
-            prompt={props.lastUserPrompt}
-            output={props.messages[props.messages.length - 1].content}
-            model={props.selectedModel}
-          />
-        )}
+      <div className="hidden lg:flex flex-col h-full">
+        <SidebarSections {...props} />
       </div>
 
       {/* Mobile sidebar */}
@@ -160,7 +199,7 @@ export function PlaygroundSidebar(props: PlaygroundSidebarProps) {
           </SheetTrigger>
           <SheetContent side="left" className="w-80 overflow-y-auto">
             <SheetTitle className="text-lg font-bold mb-4">Werkzeuge</SheetTitle>
-            <SidebarAccordionContent
+            <SidebarSections
               {...props}
               onSelectConversation={wrapWithClose(props.onSelectConversation)}
               onNewConversation={wrapWithClose(props.onNewConversation)}

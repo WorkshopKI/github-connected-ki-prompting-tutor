@@ -127,7 +127,7 @@ Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"s
     <Card className="p-4 rounded-lg border border-border bg-card">
       <div className="flex items-center gap-2 mb-3">
         <Scale className="w-4 h-4 text-primary" />
-        <span className="font-semibold text-sm">Judge-Bewertung</span>
+        <span className="font-semibold text-sm">KI-Bewertung</span>
         <Badge variant="outline" className="text-[10px]">Referenz-KI</Badge>
       </div>
 
@@ -150,9 +150,9 @@ Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"s
             className="gap-1.5"
           >
             {isJudging ? (
-              <><Sparkles className="w-3.5 h-3.5 animate-spin" /> Bewertung läuft...</>
+              <><Sparkles className="w-3.5 h-3.5 animate-spin" /> Wird bewertet...</>
             ) : (
-              <><Scale className="w-3.5 h-3.5" /> Output bewerten</>
+              <><Scale className="w-3.5 h-3.5" /> Antwort bewerten lassen</>
             )}
           </Button>
         </div>
@@ -206,7 +206,7 @@ Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"s
           )}
 
           <Button variant="outline" size="sm" onClick={() => setResult(null)} className="text-xs">
-            Neu bewerten
+            Erneut prüfen
           </Button>
         </div>
       )}
