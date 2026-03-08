@@ -171,6 +171,16 @@ export const dailyChallenges: DailyChallenge[] = [
     estimatedMinutes: 10,
   },
 
+  // ── Test-Challenge (spot-the-flaw, temporär an Index 16 für heutiges Datum) ──
+  {
+    id: "dc-test-flaw",
+    title: "Fehler finden: Test-Challenge",
+    type: "spot-the-flaw",
+    category: "Output-Bewertung",
+    difficulty: 1,
+    prompt: "Prüfe einen KI-generierten Text auf typische Fehler.",
+    estimatedMinutes: 5,
+  },
   // ── prompt-improve (4 weitere, höhere Schwierigkeit) ──
   {
     id: "dc-017",
