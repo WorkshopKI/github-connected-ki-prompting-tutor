@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { useDailyChallenge } from "@/hooks/useDailyChallenge";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useOrgContext } from "@/contexts/OrgContext";
-import { supabase } from "@/integrations/supabase/client";
+import { hasApiKey } from "@/services/apiKeyService";
+import { evaluatePromptDirect } from "@/services/evaluationService";
 import { FlawExercise } from "@/components/FlawExercise";
 import { flawChallenges } from "@/data/flawChallenges";
 
@@ -44,16 +45,31 @@ export const DailyChallengeCard = () => {
     if (!userInput.trim() || !isLoggedIn) return;
     setIsEvaluating(true);
     try {
-      const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
-        body: {
-          original: challenge.badExample || challenge.prompt,
-          improved: userInput,
-          context: challenge.category,
-        },
-      });
-      if (error) throw error;
-      const score = data?.score ?? 0;
-      const feedback = data?.feedback ?? "Bewertung abgeschlossen.";
+      let score: number;
+      let feedback: string;
+
+      if (hasApiKey()) {
+        const directResult = await evaluatePromptDirect(
+          userInput,
+          challenge.badExample || challenge.prompt,
+          challenge.category,
+        );
+        score = directResult.score ?? 0;
+        feedback = directResult.feedback ?? "Bewertung abgeschlossen.";
+      } else {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
+          body: {
+            original: challenge.badExample || challenge.prompt,
+            improved: userInput,
+            context: challenge.category,
+          },
+        });
+        if (error) throw error;
+        score = data?.score ?? 0;
+        feedback = data?.feedback ?? "Bewertung abgeschlossen.";
+      }
+
       setResult({ score, feedback });
       markCompleted(score);
       toast.success(`Tagesaufgabe: ${score}%`);

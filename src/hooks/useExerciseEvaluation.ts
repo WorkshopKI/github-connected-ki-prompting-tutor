@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { streamChat } from "@/services/llmService";
+import { hasApiKey } from "@/services/apiKeyService";
+import { evaluatePromptDirect } from "@/services/evaluationService";
 import { DEFAULT_MODEL } from "@/data/models";
 import type { Msg, Exercise } from "@/types";
 
@@ -34,24 +35,42 @@ export function useExerciseEvaluation({ exercise, preferredModel, onEvaluated }:
     setIsEvaluating(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
-        body: {
-          userPrompt: userPrompt.trim(),
-          badPrompt: exercise.badPrompt,
-          context: exercise.context,
-          goodExample: exercise.goodExample,
-          improvementHints: exercise.improvementHints,
-          model: preferredModel ?? DEFAULT_MODEL,
-        },
-      });
+      let result: EvaluationResult;
 
-      if (error) throw error;
-      if (data?.error) {
-        toast.error(data.error);
-        return;
+      if (hasApiKey()) {
+        const directResult = await evaluatePromptDirect(
+          userPrompt.trim(),
+          exercise.badPrompt,
+          exercise.context,
+          preferredModel ?? DEFAULT_MODEL,
+        );
+        result = {
+          hasContext: (directResult.score ?? 0) >= 40,
+          isSpecific: (directResult.score ?? 0) >= 60,
+          hasConstraints: (directResult.score ?? 0) >= 80,
+          feedback: directResult.feedback,
+        };
+      } else {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
+          body: {
+            userPrompt: userPrompt.trim(),
+            badPrompt: exercise.badPrompt,
+            context: exercise.context,
+            goodExample: exercise.goodExample,
+            improvementHints: exercise.improvementHints,
+            model: preferredModel ?? DEFAULT_MODEL,
+          },
+        });
+
+        if (error) throw error;
+        if (data?.error) {
+          toast.error(data.error);
+          return;
+        }
+
+        result = data as EvaluationResult;
       }
-
-      const result = data as EvaluationResult;
       setEvaluation(result);
 
       const score = [result.hasContext, result.isSpecific, result.hasConstraints].filter(Boolean).length;

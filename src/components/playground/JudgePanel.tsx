@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import { hasApiKey, getApiKey, getEndpoint } from "@/services/apiKeyService";
+import { DEFAULT_MODEL } from "@/lib/constants";
 import { toast } from "sonner";
 
 interface JudgeResult {
@@ -43,34 +44,79 @@ export const JudgePanel = ({ prompt, output, model }: Props) => {
     if (!output.trim()) return;
     setIsJudging(true);
     try {
-      const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
-        body: {
-          mode: "judge-output",
-          prompt,
-          output,
-          model,
-          criteria: additionalCriteria || undefined,
-        },
-      });
-      if (error) {
-        // Extract error message from Supabase FunctionsHttpError
-        let message = "Judge-Bewertung fehlgeschlagen";
+      if (hasApiKey()) {
+        // ═══ Direct call to OpenRouter/Provider ═══
+        const apiKey = getApiKey();
+        const endpoint = getEndpoint();
+
+        const systemPrompt = `Du bist ein KI-Output-Bewerter. Bewerte den folgenden KI-Output anhand von 4 Dimensionen (0-100):
+- structure: Struktur & Format
+- completeness: Vollständigkeit
+- compliance: Compliance & Leitplanken
+- quality: Sprachliche Qualität
+${additionalCriteria ? `Zusätzliche Kriterien: ${additionalCriteria}` : ""}
+Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"score": <n>, "feedback": "..."}, "completeness": {"score": <n>, "feedback": "..."}, "compliance": {"score": <n>, "feedback": "..."}, "quality": {"score": <n>, "feedback": "..."}}, "issues": ["..."], "suggestion": "..."}`;
+
+        const resp = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+            "HTTP-Referer": window.location.origin,
+          },
+          body: JSON.stringify({
+            model: model || DEFAULT_MODEL,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: `Prompt: "${prompt}"\n\nOutput: "${output}"\n\nBewerte jetzt.` },
+            ],
+            temperature: 0.3,
+          }),
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err.error?.message || "Judge-Bewertung fehlgeschlagen");
+        }
+
+        const respData = await resp.json();
+        const text = respData.choices?.[0]?.message?.content || "";
         try {
-          const errorBody = await (error as { context?: Response }).context?.json?.();
-          if (errorBody?.error) message = errorBody.error;
-        } catch { /* use default message */ }
-        toast.error(message);
-        console.error("Judge error:", error);
-        return;
+          setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
+        } catch {
+          throw new Error("Ungültiges Antwortformat");
+        }
+      } else {
+        // ═══ Proxy via Edge Function ═══
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("evaluate-prompt", {
+          body: {
+            mode: "judge-output",
+            prompt,
+            output,
+            model,
+            criteria: additionalCriteria || undefined,
+          },
+        });
+        if (error) {
+          let message = "Judge-Bewertung fehlgeschlagen";
+          try {
+            const errorBody = await (error as { context?: Response }).context?.json?.();
+            if (errorBody?.error) message = errorBody.error;
+          } catch { /* use default message */ }
+          toast.error(message);
+          console.error("Judge error:", error);
+          return;
+        }
+        if (data?.error) {
+          toast.error(data.error);
+          console.error("Judge error:", data.error);
+          return;
+        }
+        setResult(data);
       }
-      if (data?.error) {
-        toast.error(data.error);
-        console.error("Judge error:", data.error);
-        return;
-      }
-      setResult(data);
     } catch (err) {
-      toast.error("Judge-Bewertung fehlgeschlagen");
+      toast.error(err instanceof Error ? err.message : "Judge-Bewertung fehlgeschlagen");
       console.error(err);
     } finally {
       setIsJudging(false);
