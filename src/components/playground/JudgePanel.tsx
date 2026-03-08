@@ -52,7 +52,22 @@ export const JudgePanel = ({ prompt, output, model }: Props) => {
           criteria: additionalCriteria || undefined,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Extract error message from Supabase FunctionsHttpError
+        let message = "Judge-Bewertung fehlgeschlagen";
+        try {
+          const errorBody = await (error as any).context?.json?.();
+          if (errorBody?.error) message = errorBody.error;
+        } catch { /* use default message */ }
+        toast.error(message);
+        console.error("Judge error:", error);
+        return;
+      }
+      if (data?.error) {
+        toast.error(data.error);
+        console.error("Judge error:", data.error);
+        return;
+      }
       setResult(data);
     } catch (err) {
       toast.error("Judge-Bewertung fehlgeschlagen");
