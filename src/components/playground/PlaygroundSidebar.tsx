@@ -128,7 +128,7 @@ export function PlaygroundSidebar(props: PlaygroundSidebarProps) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block space-y-4">
+      <div className="hidden lg:block space-y-4 overflow-y-auto">
         <SidebarAccordionContent {...props} />
 
         {props.lastUserPrompt && (
@@ -148,7 +148,7 @@ export function PlaygroundSidebar(props: PlaygroundSidebarProps) {
             model={props.selectedModel}
           />
         )}
-      </aside>
+      </div>
 
       {/* Mobile sidebar */}
       <div className="lg:hidden fixed bottom-4 left-4 z-40">
