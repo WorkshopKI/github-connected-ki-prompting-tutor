@@ -4,7 +4,8 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogIn, MessageSquare, GitCompare, Bot } from "lucide-react";
+import { LogIn, MessageSquare, GitCompare, Bot, Bookmark } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { ChatPlayground } from "@/components/playground/ChatPlayground";
 import { ComparisonView } from "@/components/playground/ComparisonView";
@@ -12,7 +13,7 @@ import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundSidebar } from "@/components/playground/PlaygroundSidebar";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
-import { loadAIRouting } from "@/data/models";
+import { loadAIRouting, getAllModels } from "@/data/models";
 import { promptLibrary } from "@/data/prompts";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { AgentConfig } from "@/components/playground/AgentKnobs";
@@ -22,6 +23,9 @@ const Playground = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const prefilledPrompt = searchParams.get("prompt") ?? undefined;
+  const skillId = searchParams.get("skillId");
+  const skillTitle = searchParams.get("skillTitle");
+  const requestedModel = searchParams.get("model");
 
   // --- Model & routing state ---
   const [selectedModel, setSelectedModel] = useState(
@@ -88,6 +92,16 @@ const Playground = () => {
   useEffect(() => {
     if (profile?.preferred_model) setSelectedModel(profile.preferred_model);
   }, [profile?.preferred_model]);
+
+  // --- Set requested model from skill URL param ---
+  useEffect(() => {
+    if (requestedModel) {
+      const allModels = getAllModels();
+      if (allModels.some((m) => m.value === requestedModel)) {
+        setSelectedModel(requestedModel);
+      }
+    }
+  }, [requestedModel]);
 
   // --- Persist conversation on message change ---
   useEffect(() => {
@@ -192,6 +206,17 @@ const Playground = () => {
             />
 
             <main className="min-h-[600px]">
+              {skillId && (
+                <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
+                  <Bookmark className="w-4 h-4 text-primary shrink-0" />
+                  <span>
+                    Skill testen: <strong>{skillTitle}</strong>
+                    {requestedModel && (
+                      <> · Ziel-Modell: <Badge variant="outline" className="text-[10px] ml-1">{requestedModel.split("/").pop()}</Badge></>
+                    )}
+                  </span>
+                </div>
+              )}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-4">
                   <TabsTrigger value="chat" className="gap-1.5">
