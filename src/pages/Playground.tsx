@@ -156,7 +156,7 @@ const Playground = () => {
   if (isLoading) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       <PlaygroundHeader
         thinkingEnabled={thinkingEnabled}
         onThinkingChange={handleThinkingChange}
@@ -169,7 +169,7 @@ const Playground = () => {
         promptConfidentiality={promptConfidentiality}
       />
 
-      <div className="px-4 py-4 max-w-[1380px] mx-auto">
+      <div className="px-4 py-4 max-w-[1380px] mx-auto flex-1 overflow-hidden">
         {!isLoggedIn ? (
           <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
             <CardHeader>
@@ -190,7 +190,7 @@ const Playground = () => {
           </Card>
         ) : (
           <>
-          <ResizablePanelGroup direction="horizontal" className="hidden lg:flex">
+          <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
             <ResizablePanel defaultSize={29} minSize={20} maxSize={40} className="pr-0">
               <PlaygroundSidebar
                 conversations={convos.conversations}
@@ -237,7 +237,7 @@ const Playground = () => {
           </ResizablePanelGroup>
 
           {/* Mobile layout (below lg) */}
-          <div className="lg:hidden">
+          <div className="lg:hidden h-full flex flex-col">
             <PlaygroundSidebar
               conversations={convos.conversations}
               activeConversationId={convos.activeConversationId}

@@ -47,7 +47,7 @@ export const PlaygroundContent = ({
   requestedModel,
   variant = "desktop",
 }: PlaygroundContentProps) => (
-  <main className="min-h-[600px]">
+  <main className="h-full flex flex-col min-h-0">
     {skillId && (
       <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
         <Bookmark className="w-4 h-4 text-primary shrink-0" />
@@ -59,7 +59,7 @@ export const PlaygroundContent = ({
         </span>
       </div>
     )}
-    <Tabs value={activeTab} onValueChange={onTabChange}>
+    <Tabs value={activeTab} onValueChange={onTabChange} className="flex-1 flex flex-col min-h-0">
       <TabsList className="mb-4">
         <TabsTrigger value="chat" className="gap-1.5">
           <MessageSquare className="w-3.5 h-3.5" />
@@ -75,7 +75,7 @@ export const PlaygroundContent = ({
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="chat" className="mt-0">
+      <TabsContent value="chat" className="mt-0 flex-1 min-h-0">
         <ChatPlayground
           messages={messages}
           onSendMessage={onSendMessage}
