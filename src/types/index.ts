@@ -133,6 +133,23 @@ export interface PromptItem {
   targetDepartment?: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
 }
 
+/* ── Skills ── */
+
+export interface SavedSkill {
+  id: string;
+  title: string;
+  prompt: string;
+  sourceTitle: string;
+  category: string;
+  notes: string;
+  variables: Record<string, string>;
+  confidentiality?: "open" | "internal" | "confidential";
+  targetDepartment?: string;
+  targetModel?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
 /* ── Einstellungen ── */
 
 export interface PlatformSettings {

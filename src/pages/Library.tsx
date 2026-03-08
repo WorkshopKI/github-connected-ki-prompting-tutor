@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PromptLibrary } from "@/components/PromptLibrary";
+import { MySkills } from "@/components/MySkills";
 import { OrganizationUseCases } from "@/components/OrganizationUseCases";
 import { TeamMembers } from "@/components/TeamMembers";
 import { PendingReviews } from "@/components/PendingReviews";
 import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useMySkills } from "@/hooks/useMySkills";
 
 const Library = () => {
   const navigate = useNavigate();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
+  const { skills } = useMySkills();
 
   const uniqueCategories = useMemo(() => {
     return new Set(promptLibrary.map((p) => p.category)).size;
@@ -42,6 +45,14 @@ const Library = () => {
       <Tabs defaultValue="prompts">
         <TabsList>
           <TabsTrigger value="prompts">Prompts</TabsTrigger>
+          <TabsTrigger value="skills" className="gap-1.5">
+            Meine Skills
+            {skills.length > 0 && (
+              <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">
+                {skills.length}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="usecases">Use Cases</TabsTrigger>
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="reviews">Reviews</TabsTrigger>
@@ -49,6 +60,10 @@ const Library = () => {
 
         <TabsContent value="prompts" className="mt-4">
           <PromptLibrary />
+        </TabsContent>
+
+        <TabsContent value="skills" className="mt-4">
+          <MySkills />
         </TabsContent>
 
         <TabsContent value="usecases" className="mt-4 space-y-8">
