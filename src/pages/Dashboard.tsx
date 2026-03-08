@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
+  Bookmark,
   Building2,
   GraduationCap,
   CheckCircle2,
@@ -22,6 +23,7 @@ import { exercises } from "@/data/exercises";
 import { requiredModules, bonusModules } from "@/data/learningPath";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useMySkills } from "@/hooks/useMySkills";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -35,6 +37,7 @@ const Dashboard = () => {
   const { profile } = useAuthContext();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { completedLessons, exercises: exerciseResults } = useSyncContext();
+  const { skills: mySkills } = useMySkills();
 
   const stats = useMemo(() => {
     const uniqueDepartments = new Set(
@@ -100,7 +103,7 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={BookOpen} label="Gesamt Prompts" value={stats.totalPrompts} />
-        <StatCard icon={Building2} label="Abteilungen" value={stats.departments} />
+        <StatCard icon={Bookmark} label="Meine Skills" value={mySkills.length} />
         <StatCard icon={GraduationCap} label="Onboarding" value={`${onboardingProgress.requiredPercent}%`} />
         <StatCard icon={CheckCircle2} label="Übungen" value={`${stats.exercisesDone}/${stats.exercisesTotal}`} />
       </div>

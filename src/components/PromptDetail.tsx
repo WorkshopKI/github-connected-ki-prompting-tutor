@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Copy, ExternalLink, Star, Shield, Clock, Wrench, Building2 } from "lucide-react";
+import { Copy, ExternalLink, Star, Shield, Clock, Wrench, Building2, Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import type { PromptItem } from "@/data/prompts";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { useMySkills } from "@/hooks/useMySkills";
 
 interface PromptDetailProps {
   prompt: PromptItem | null;
@@ -37,6 +38,7 @@ function storeRating(title: string, rating: number) {
 
 export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) => {
   const navigate = useNavigate();
+  const { saveSkill, createSkillFromPrompt } = useMySkills();
   const variables = useMemo(() => (prompt ? extractVariables(prompt.prompt) : []), [prompt]);
   const [variableValues, setVariableValues] = useState<Record<string, string>>({});
   const [rating, setRating] = useState(0);
@@ -45,6 +47,15 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
   if (!prompt) return null;
 
   const currentRating = rating || getStoredRating(prompt.title);
+
+  const handleSaveAsSkill = () => {
+    if (!prompt) return;
+    const skill = createSkillFromPrompt(prompt, variableValues);
+    saveSkill(skill);
+    toast.success("Als Skill gespeichert", {
+      description: "Du findest ihn unter Meine Skills in der Library.",
+    });
+  };
 
   const handleRate = (value: number) => {
     setRating(value);
@@ -213,8 +224,8 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
             >
               <ExternalLink className="w-4 h-4" /> Im Playground öffnen
             </Button>
-            <Button variant="outline" disabled className="gap-2">
-              Bearbeiten
+            <Button variant="outline" className="gap-2" onClick={handleSaveAsSkill}>
+              <Bookmark className="w-4 h-4" /> Als Skill speichern
             </Button>
           </div>
         </div>
