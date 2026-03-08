@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useDailyChallenge } from "@/hooks/useDailyChallenge";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { useOrgContext } from "@/contexts/OrgContext";
 import { supabase } from "@/integrations/supabase/client";
 import { FlawExercise } from "@/components/FlawExercise";
 import { flawChallenges } from "@/data/flawChallenges";
@@ -15,15 +16,23 @@ import { flawChallenges } from "@/data/flawChallenges";
 export const DailyChallengeCard = () => {
   const { challenge, isCompleted, markCompleted, streak, todayScore } = useDailyChallenge();
   const { isLoggedIn } = useAuthContext();
+  const { scope, isDepartment } = useOrgContext();
   const [userInput, setUserInput] = useState("");
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [result, setResult] = useState<{ score: number; feedback: string } | null>(null);
 
-  // Select a flaw challenge based on the date (deterministic)
+  // Select a flaw challenge based on date + department
   const flawChallenge = useMemo(() => {
     const dateNum = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
-    return flawChallenges[dateNum % flawChallenges.length];
-  }, []);
+    let pool = flawChallenges;
+    if (isDepartment) {
+      const deptPool = flawChallenges.filter(
+        (c) => c.department === scope || !c.department
+      );
+      if (deptPool.length > 0) pool = deptPool;
+    }
+    return pool[dateNum % pool.length];
+  }, [scope, isDepartment]);
 
   const handleFlawComplete = (score: number) => {
     setResult({ score, feedback: `Du hast ${score}% der Fehler korrekt identifiziert.` });
