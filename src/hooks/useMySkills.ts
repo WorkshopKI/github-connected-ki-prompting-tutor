@@ -1,20 +1,19 @@
 import { useState, useCallback } from "react";
 import { loadArrayFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import type { SavedSkill, PromptItem } from "@/types";
-
-const LS_KEY = "my_skills";
 
 export function useMySkills() {
   const [skills, setSkills] = useState<SavedSkill[]>(() =>
-    loadArrayFromStorage<SavedSkill>(LS_KEY)
+    loadArrayFromStorage<SavedSkill>(LS_KEYS.MY_SKILLS)
   );
 
   const refresh = useCallback(() => {
-    setSkills(loadArrayFromStorage<SavedSkill>(LS_KEY));
+    setSkills(loadArrayFromStorage<SavedSkill>(LS_KEYS.MY_SKILLS));
   }, []);
 
   const saveSkill = useCallback((skill: SavedSkill) => {
-    const current = loadArrayFromStorage<SavedSkill>(LS_KEY);
+    const current = loadArrayFromStorage<SavedSkill>(LS_KEYS.MY_SKILLS);
     const existing = current.findIndex((s) => s.id === skill.id);
     let updated: SavedSkill[];
     if (existing >= 0) {
@@ -22,15 +21,15 @@ export function useMySkills() {
     } else {
       updated = [skill, ...current];
     }
-    saveToStorage(LS_KEY, updated);
+    saveToStorage(LS_KEYS.MY_SKILLS, updated);
     setSkills(updated);
     return skill;
   }, []);
 
   const deleteSkill = useCallback((id: string) => {
-    const current = loadArrayFromStorage<SavedSkill>(LS_KEY);
+    const current = loadArrayFromStorage<SavedSkill>(LS_KEYS.MY_SKILLS);
     const updated = current.filter((s) => s.id !== id);
-    saveToStorage(LS_KEY, updated);
+    saveToStorage(LS_KEYS.MY_SKILLS, updated);
     setSkills(updated);
   }, []);
 

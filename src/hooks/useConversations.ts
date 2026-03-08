@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { loadArrayFromStorage, saveToStorage, removeFromStorage, loadStringFromStorage } from "@/lib/storage";
+import { loadArrayFromStorage, saveToStorage, removeFromStorage } from "@/lib/storage";
+import { LS_KEYS, DEFAULT_MODEL } from "@/lib/constants";
 import type { Msg, SavedConversation } from "@/types";
-
-const LS_CONVERSATIONS = "playground_conversations";
-const LS_ACTIVE_ID = "playground_active_id";
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -30,18 +28,18 @@ interface UseConversationsReturn {
 
 export function useConversations(): UseConversationsReturn {
   const [conversations, setConversations] = useState<SavedConversation[]>(
-    () => loadArrayFromStorage<SavedConversation>(LS_CONVERSATIONS)
+    () => loadArrayFromStorage<SavedConversation>(LS_KEYS.CONVERSATIONS)
   );
   const [activeConversationId, setActiveConversationId] = useState<string | null>(
-    () => localStorage.getItem(LS_ACTIVE_ID)
+    () => localStorage.getItem(LS_KEYS.ACTIVE_CONVERSATION)
   );
 
   // Persist active ID
   useEffect(() => {
     if (activeConversationId) {
-      localStorage.setItem(LS_ACTIVE_ID, activeConversationId);
+      localStorage.setItem(LS_KEYS.ACTIVE_CONVERSATION, activeConversationId);
     } else {
-      removeFromStorage(LS_ACTIVE_ID);
+      removeFromStorage(LS_KEYS.ACTIVE_CONVERSATION);
     }
   }, [activeConversationId]);
 
@@ -54,7 +52,7 @@ export function useConversations(): UseConversationsReturn {
     }
     // Migrate old single-history format
     try {
-      const old = localStorage.getItem("playground_history");
+      const old = localStorage.getItem(LS_KEYS.LEGACY_HISTORY);
       if (old) {
         const parsed = JSON.parse(old);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -63,16 +61,16 @@ export function useConversations(): UseConversationsReturn {
             title: generateTitle(parsed),
             messages: parsed,
             systemPrompt: "",
-            model: "google/gemini-3-flash-preview",
+            model: DEFAULT_MODEL,
             createdAt: Date.now(),
             updatedAt: Date.now(),
           };
           const updated = [migrated, ...conversations];
           setConversations(updated);
-          saveToStorage(LS_CONVERSATIONS, updated);
+          saveToStorage(LS_KEYS.CONVERSATIONS, updated);
           setActiveConversationId(migrated.id);
-          removeFromStorage("playground_history");
-          return { messages: parsed, systemPrompt: "", model: "google/gemini-3-flash-preview" };
+          removeFromStorage(LS_KEYS.LEGACY_HISTORY);
+          return { messages: parsed, systemPrompt: "", model: DEFAULT_MODEL };
         }
       }
     } catch { /* ignore */ }
@@ -103,9 +101,9 @@ export function useConversations(): UseConversationsReturn {
           };
           updated = [newConv, ...prev];
           setActiveConversationId(newConv.id);
-          localStorage.setItem(LS_ACTIVE_ID, newConv.id);
+          localStorage.setItem(LS_KEYS.ACTIVE_CONVERSATION, newConv.id);
         }
-        saveToStorage(LS_CONVERSATIONS, updated);
+        saveToStorage(LS_KEYS.CONVERSATIONS, updated);
         return updated;
       });
     },
@@ -124,7 +122,7 @@ export function useConversations(): UseConversationsReturn {
   const deleteConversation = useCallback((id: string): boolean => {
     setConversations((prev) => {
       const updated = prev.filter((c) => c.id !== id);
-      saveToStorage(LS_CONVERSATIONS, updated);
+      saveToStorage(LS_KEYS.CONVERSATIONS, updated);
       return updated;
     });
     const wasActive = activeConversationId === id;
@@ -135,7 +133,7 @@ export function useConversations(): UseConversationsReturn {
   const renameConversation = useCallback((id: string, title: string) => {
     setConversations((prev) => {
       const updated = prev.map((c) => (c.id === id ? { ...c, title } : c));
-      saveToStorage(LS_CONVERSATIONS, updated);
+      saveToStorage(LS_KEYS.CONVERSATIONS, updated);
       return updated;
     });
   }, []);

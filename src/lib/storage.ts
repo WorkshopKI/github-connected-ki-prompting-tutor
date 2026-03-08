@@ -15,10 +15,10 @@
  *   custom_openrouter_models           — Eigene OpenRouter-Modelle
  *
  * Benutzer-Daten:
- *   my_saved_skills                    — Gespeicherte Skills (SavedSkill[])
+ *   my_skills                          — Gespeicherte Skills (SavedSkill[])
  *   prompt_ratings                     — Stern-Bewertungen pro Prompt
  *   playground_conversations           — Chat-Verläufe im Prompt-Labor
- *   playground_active_conversation_id  — Aktive Conversation
+ *   playground_active_id               — Aktive Conversation
  *   daily_challenge_history            — Tagesaufgaben-Verlauf + Streak
  *   iteration_nudge_dismissed          — Nudge permanent ausgeblendet
  *   guest_banner_dismissed             — Gast-Banner ausgeblendet

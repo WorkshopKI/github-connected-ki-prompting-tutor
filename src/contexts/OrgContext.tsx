@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { OrgScope } from "@/types";
 import { loadStringFromStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 
 export type { OrgScope } from "@/types";
 
@@ -26,16 +27,14 @@ interface OrgContextType {
 
 const OrgContext = createContext<OrgContextType | null>(null);
 
-const LS_KEY = "org_scope";
-
 export const OrgProvider = ({ children }: { children: ReactNode }) => {
   const [scope, setScopeState] = useState<OrgScope>(
-    () => loadStringFromStorage(LS_KEY, "privat") as OrgScope
+    () => loadStringFromStorage(LS_KEYS.ORG_SCOPE, "privat") as OrgScope
   );
 
   const setScope = (s: OrgScope) => {
     setScopeState(s);
-    localStorage.setItem(LS_KEY, s);
+    localStorage.setItem(LS_KEYS.ORG_SCOPE, s);
   };
 
   const isDepartment = DEPARTMENTS.includes(scope);

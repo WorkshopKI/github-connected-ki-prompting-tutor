@@ -1,5 +1,6 @@
 import type { ModelOption, AIRoutingConfig } from "@/types";
 import { loadFromStorage, loadArrayFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 
 export type { ModelOption, AIRoutingConfig } from "@/types";
 
@@ -16,11 +17,11 @@ export const DEFAULT_AI_ROUTING: AIRoutingConfig = {
 };
 
 export function loadAIRouting(): AIRoutingConfig {
-  return loadFromStorage("ai_routing_config", DEFAULT_AI_ROUTING);
+  return loadFromStorage(LS_KEYS.AI_ROUTING, DEFAULT_AI_ROUTING);
 }
 
 export function saveAIRouting(config: AIRoutingConfig) {
-  saveToStorage("ai_routing_config", config);
+  saveToStorage(LS_KEYS.AI_ROUTING, config);
 }
 
 /**
@@ -55,9 +56,9 @@ export const OPEN_SOURCE_MODELS: ModelOption[] = [
   { value: "qwen/qwen3.5-397b-a17b", label: "Qwen 3.5 397B-A17B", isOpenSource: true, tier: "external" },
 ];
 
-export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+export { DEFAULT_MODEL } from "@/lib/constants";
 
-const LS_CUSTOM_MODELS = "custom_openrouter_models";
+const LS_CUSTOM_MODELS = LS_KEYS.CUSTOM_MODELS;
 
 export function loadCustomModels(): ModelOption[] {
   return loadArrayFromStorage<ModelOption>(LS_CUSTOM_MODELS);

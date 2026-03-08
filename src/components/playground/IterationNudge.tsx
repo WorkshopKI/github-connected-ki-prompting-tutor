@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
 import { Lightbulb, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const LS_KEY = "iteration_nudge_dismissed";
+import { LS_KEYS } from "@/lib/constants";
 
 const suggestions = [
   "Kürze die Einleitung auf maximal 2 Sätze.",
@@ -23,7 +22,7 @@ interface Props {
 export const IterationNudge = ({ turnCount, onSendSuggestion }: Props) => {
   const [dismissed, setDismissed] = useState(() => {
     try {
-      return localStorage.getItem(LS_KEY) === "true";
+      return localStorage.getItem(LS_KEYS.NUDGE_DISMISSED) === "true";
     } catch {
       return false;
     }
@@ -42,7 +41,7 @@ export const IterationNudge = ({ turnCount, onSendSuggestion }: Props) => {
   const handleDismissForever = () => {
     setDismissed(true);
     try {
-      localStorage.setItem(LS_KEY, "true");
+      localStorage.setItem(LS_KEYS.NUDGE_DISMISSED, "true");
     } catch {
       // ignore
     }

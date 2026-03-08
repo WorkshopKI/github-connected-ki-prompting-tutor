@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import type { PromptItem } from "@/data/prompts";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import { useMySkills } from "@/hooks/useMySkills";
 import { extractVariables } from "@/lib/promptUtils";
 
@@ -18,17 +19,15 @@ interface PromptDetailProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const LS_RATINGS_KEY = "prompt_ratings";
-
 function getStoredRating(title: string): number {
-  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  const ratings = loadFromStorage<Record<string, number>>(LS_KEYS.PROMPT_RATINGS, {});
   return ratings[title] || 0;
 }
 
 function storeRating(title: string, rating: number) {
-  const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
+  const ratings = loadFromStorage<Record<string, number>>(LS_KEYS.PROMPT_RATINGS, {});
   ratings[title] = rating;
-  saveToStorage(LS_RATINGS_KEY, ratings);
+  saveToStorage(LS_KEYS.PROMPT_RATINGS, ratings);
 }
 
 export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) => {

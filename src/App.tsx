@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,12 +11,13 @@ import { GuestBanner } from "@/components/GuestBanner";
 import { AppShell } from "@/components/AppShell";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
-import Onboarding from "./pages/Onboarding";
-import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import AdminParticipants from "./pages/AdminParticipants";
-import Playground from "./pages/Playground";
 import NotFound from "./pages/NotFound";
+
+const Playground = lazy(() => import("./pages/Playground"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Settings = lazy(() => import("./pages/Settings"));
+const AdminParticipants = lazy(() => import("./pages/AdminParticipants"));
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ const App = () => (
         <AuthProvider>
           <SyncProvider>
           <OrgProvider>
+            <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<PlatformLayout><Dashboard /></PlatformLayout>} />
               <Route path="/library" element={<PlatformLayout><Library /></PlatformLayout>} />
@@ -49,6 +52,7 @@ const App = () => (
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
           </OrgProvider>
           </SyncProvider>
         </AuthProvider>

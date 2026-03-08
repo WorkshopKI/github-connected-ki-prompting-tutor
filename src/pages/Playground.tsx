@@ -3,18 +3,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogIn, MessageSquare, GitCompare, Bot, Bookmark } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { LogIn } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
-import { ChatPlayground } from "@/components/playground/ChatPlayground";
-import { ComparisonView } from "@/components/playground/ComparisonView";
+import { PlaygroundContent } from "@/components/playground/PlaygroundContent";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundSidebar } from "@/components/playground/PlaygroundSidebar";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { loadAIRouting, getAllModels } from "@/data/models";
+import { LS_KEYS, DEFAULT_MODEL } from "@/lib/constants";
 import { promptLibrary } from "@/data/prompts";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { AgentConfig } from "@/components/playground/AgentKnobs";
@@ -30,10 +28,10 @@ const Playground = () => {
 
   // --- Model & routing state ---
   const [selectedModel, setSelectedModel] = useState(
-    profile?.preferred_model ?? "google/gemini-3-flash-preview"
+    profile?.preferred_model ?? DEFAULT_MODEL
   );
   const [thinkingEnabled, setThinkingEnabled] = useState(
-    () => localStorage.getItem("thinking_enabled") === "true"
+    () => localStorage.getItem(LS_KEYS.THINKING_ENABLED) === "true"
   );
   const [aiTier, setAiTier] = useState<"internal" | "external">("external");
   const aiRouting = loadAIRouting();
@@ -112,7 +110,7 @@ const Playground = () => {
   // --- Handlers ---
   const handleThinkingChange = (checked: boolean) => {
     setThinkingEnabled(checked);
-    localStorage.setItem("thinking_enabled", String(checked));
+    localStorage.setItem(LS_KEYS.THINKING_ENABLED, String(checked));
   };
 
   const handleSelectConversation = (conv: Parameters<typeof convos.selectConversation>[0]) => {
@@ -215,99 +213,26 @@ const Playground = () => {
             </ResizablePanel>
             <ResizableHandle withHandle className="mx-2" />
             <ResizablePanel defaultSize={71}>
-              <main className="min-h-[600px]">
-              {skillId && (
-                <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
-                  <Bookmark className="w-4 h-4 text-primary shrink-0" />
-                  <span>
-                    Skill testen: <strong>{skillTitle}</strong>
-                    {requestedModel && (
-                      <> · Ziel-Modell: <Badge variant="outline" className="text-[10px] ml-1">{requestedModel.split("/").pop()}</Badge></>
-                    )}
-                  </span>
-                </div>
-              )}
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="chat" className="gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    Chat
-                  </TabsTrigger>
-                  <TabsTrigger value="agent" className="gap-1.5">
-                    <Bot className="w-3.5 h-3.5" />
-                    Assistent
-                  </TabsTrigger>
-                  <TabsTrigger value="compare" className="gap-1.5">
-                    <GitCompare className="w-3.5 h-3.5" />
-                    Vergleich
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="chat" className="mt-0">
-                  <ChatPlayground
-                    messages={chat.messages}
-                    onSendMessage={chat.sendMessage}
-                    isStreaming={chat.isStreaming}
-                    streamingContent={chat.streamingContent}
-                    thinkingContent={chat.thinkingContent}
-                    thinkingEnabled={thinkingEnabled}
-                    systemPrompt={systemPrompt}
-                    onSystemPromptChange={setSystemPrompt}
-                    onClearChat={handleClearChat}
-                    onStop={chat.handleStop}
-                    initialPrompt={prefilledPrompt}
-                  />
-                </TabsContent>
-
-                <TabsContent value="agent" className="mt-0">
-                  <div className="rounded-lg border border-border bg-card p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Bot className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Agenten-Modus</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Konfiguriere einen autonomen KI-Assistenten mit den 4 Zuverlässigkeits-Reglern
-                      in der linken Seitenleiste. Definiere Arbeitsbereich, Werkzeuge, Autonomie-Grad
-                      und Erfolgsnachweise, um einen &quot;Worker&quot; zu instruieren wie einen Junior-Mitarbeiter.
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <div className="text-xs font-semibold text-primary mb-1">Habitat</div>
-                        <p className="text-xs text-muted-foreground">Wo darf der Agent arbeiten? Definiere erlaubte Datenquellen und Arbeitsbereiche.</p>
-                      </div>
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <div className="text-xs font-semibold text-primary mb-1">Hands</div>
-                        <p className="text-xs text-muted-foreground">Was darf der Agent tun? Wähle erlaubte Werkzeuge und Aktionen.</p>
-                      </div>
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <div className="text-xs font-semibold text-primary mb-1">Leash</div>
-                        <p className="text-xs text-muted-foreground">Wie autonom? Vom Schritt-für-Schritt bis zur vollen Selbstständigkeit.</p>
-                      </div>
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                        <div className="text-xs font-semibold text-primary mb-1">Proof</div>
-                        <p className="text-xs text-muted-foreground">Wie beweist er Erfolg? Quellenangaben, Logs oder Checklisten.</p>
-                      </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Nutze den &quot;Agenten-Modus&quot; in der Seitenleiste, um den Assistenten zu konfigurieren und zu starten.
-                    </p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="compare" className="mt-0">
-                  <div className="rounded-lg border border-border bg-card p-4">
-                    <h3 className="text-sm font-semibold mb-3">Modell-Vergleich</h3>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Sende denselben Prompt an zwei verschiedene Modelle und vergleiche die Antworten.
-                    </p>
-                    <ComparisonView
-                      systemPrompt={systemPrompt}
-                      onBudgetExhausted={() => setShowBudgetDialog(true)}
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </main>
+              <PlaygroundContent
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                messages={chat.messages}
+                onSendMessage={chat.sendMessage}
+                isStreaming={chat.isStreaming}
+                streamingContent={chat.streamingContent}
+                thinkingContent={chat.thinkingContent}
+                thinkingEnabled={thinkingEnabled}
+                systemPrompt={systemPrompt}
+                onSystemPromptChange={setSystemPrompt}
+                onClearChat={handleClearChat}
+                onStop={chat.handleStop}
+                onBudgetExhausted={() => setShowBudgetDialog(true)}
+                prefilledPrompt={prefilledPrompt}
+                skillId={skillId}
+                skillTitle={skillTitle}
+                requestedModel={requestedModel}
+                variant="desktop"
+              />
             </ResizablePanel>
           </ResizablePanelGroup>
 
@@ -331,77 +256,26 @@ const Playground = () => {
               selectedModel={selectedModel}
               messages={chat.messages}
             />
-            <main className="min-h-[600px]">
-              {skillId && (
-                <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
-                  <Bookmark className="w-4 h-4 text-primary shrink-0" />
-                  <span>
-                    Skill testen: <strong>{skillTitle}</strong>
-                    {requestedModel && (
-                      <> · Ziel-Modell: <Badge variant="outline" className="text-[10px] ml-1">{requestedModel.split("/").pop()}</Badge></>
-                    )}
-                  </span>
-                </div>
-              )}
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-4">
-                  <TabsTrigger value="chat" className="gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    Chat
-                  </TabsTrigger>
-                  <TabsTrigger value="agent" className="gap-1.5">
-                    <Bot className="w-3.5 h-3.5" />
-                    Assistent
-                  </TabsTrigger>
-                  <TabsTrigger value="compare" className="gap-1.5">
-                    <GitCompare className="w-3.5 h-3.5" />
-                    Vergleich
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="chat" className="mt-0">
-                  <ChatPlayground
-                    messages={chat.messages}
-                    onSendMessage={chat.sendMessage}
-                    isStreaming={chat.isStreaming}
-                    streamingContent={chat.streamingContent}
-                    thinkingContent={chat.thinkingContent}
-                    thinkingEnabled={thinkingEnabled}
-                    systemPrompt={systemPrompt}
-                    onSystemPromptChange={setSystemPrompt}
-                    onClearChat={handleClearChat}
-                    onStop={chat.handleStop}
-                    initialPrompt={prefilledPrompt}
-                  />
-                </TabsContent>
-
-                <TabsContent value="agent" className="mt-0">
-                  <div className="rounded-lg border border-border bg-card p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Bot className="w-5 h-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Agenten-Modus</h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Konfiguriere einen autonomen KI-Assistenten mit den 4 Zuverlässigkeits-Reglern
-                      in der linken Seitenleiste.
-                    </p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="compare" className="mt-0">
-                  <div className="rounded-lg border border-border bg-card p-4">
-                    <h3 className="text-sm font-semibold mb-3">Modell-Vergleich</h3>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Sende denselben Prompt an zwei verschiedene Modelle und vergleiche die Antworten.
-                    </p>
-                    <ComparisonView
-                      systemPrompt={systemPrompt}
-                      onBudgetExhausted={() => setShowBudgetDialog(true)}
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </main>
+            <PlaygroundContent
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              messages={chat.messages}
+              onSendMessage={chat.sendMessage}
+              isStreaming={chat.isStreaming}
+              streamingContent={chat.streamingContent}
+              thinkingContent={chat.thinkingContent}
+              thinkingEnabled={thinkingEnabled}
+              systemPrompt={systemPrompt}
+              onSystemPromptChange={setSystemPrompt}
+              onClearChat={handleClearChat}
+              onStop={chat.handleStop}
+              onBudgetExhausted={() => setShowBudgetDialog(true)}
+              prefilledPrompt={prefilledPrompt}
+              skillId={skillId}
+              skillTitle={skillTitle}
+              requestedModel={requestedModel}
+              variant="mobile"
+            />
           </div>
           </>
         )}

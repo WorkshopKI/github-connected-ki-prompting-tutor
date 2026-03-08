@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { X, Lightbulb } from "lucide-react";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { loadStringFromStorage, saveToStorage } from "@/lib/storage";
-
-const STORAGE_KEY = "guest_banner_dismissed";
+import { LS_KEYS } from "@/lib/constants";
 
 export const GuestBanner = () => {
   const { isLoggedIn, authMethod, profile } = useAuthContext();
   const navigate = useNavigate();
-  const [dismissed, setDismissed] = useState(() => loadStringFromStorage(STORAGE_KEY, "false") === "true");
+  const [dismissed, setDismissed] = useState(() => loadStringFromStorage(LS_KEYS.GUEST_BANNER_DISMISSED, "false") === "true");
 
   if (!isLoggedIn || authMethod !== "guest" || profile?.auth_method !== "guest" || dismissed) {
     return null;
@@ -28,7 +27,7 @@ export const GuestBanner = () => {
         </button>
       </span>
       <button
-        onClick={() => { setDismissed(true); saveToStorage(STORAGE_KEY, "true"); }}
+        onClick={() => { setDismissed(true); saveToStorage(LS_KEYS.GUEST_BANNER_DISMISSED, "true"); }}
         className="ml-2 text-muted-foreground hover:text-foreground shrink-0"
       >
         <X className="w-4 h-4" />
