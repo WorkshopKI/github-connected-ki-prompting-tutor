@@ -203,6 +203,7 @@ const Playground = () => {
               onStartAgent={handleStartAgent}
               lastUserPrompt={lastUserPrompt}
               selectedModel={selectedModel}
+              messages={chat.messages}
             />
 
             <main className="min-h-[600px]">
