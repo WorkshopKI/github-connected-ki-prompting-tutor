@@ -14,6 +14,7 @@ import { PracticeAreaCompact } from "@/components/PracticeAreaCompact";
 import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection";
 import { DecompositionAssistant } from "@/components/DecompositionAssistant";
 import { ResourcesSection } from "@/components/ResourcesSection";
+import { DataPrivacyIntro } from "@/components/DataPrivacyIntro";
 
 const LevelCardsWrapper = () => {
   const [activeLevel, setActiveLevel] = useState(1);
@@ -57,6 +58,7 @@ const componentMap: Record<string, React.ComponentType> = {
   DecompositionAssistant: DecompositionAssistant,
   AdvancedPromptingSection: AdvancedPromptingSection,
   ResourcesSection: ResourcesSection,
+  DataPrivacyIntro: DataPrivacyIntro,
 };
 
 const typeBadgeColors: Record<string, string> = {
