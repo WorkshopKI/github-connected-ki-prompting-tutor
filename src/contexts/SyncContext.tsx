@@ -14,7 +14,7 @@ import type { ExerciseResult, LocalProgress, SyncStatus } from "@/types";
 
 export type { SyncStatus } from "@/types";
 
-interface SyncContextType {
+export interface SyncContextType {
   /* exercise / werkstatt */
   exercises: ExerciseResult[];
   saveExercise: (exerciseId: number, userPrompt: string, score: number, feedback: string) => Promise<void>;
@@ -37,7 +37,7 @@ interface SyncContextType {
   lastSyncedAt: string | null;
 }
 
-const SyncContext = createContext<SyncContextType | null>(null);
+export const SyncContext = createContext<SyncContextType | null>(null);
 
 export const useSyncContext = () => {
   const ctx = useContext(SyncContext);
