@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bookmark, Copy, Download, Trash2, Pencil, X, Check, ExternalLink, FileText } from "lucide-react";
+import { Bookmark, Copy, Download, Trash2, Pencil, X, Check, ExternalLink, FileText, Cpu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useMySkills } from "@/hooks/useMySkills";
-import { skillToMarkdown, downloadMarkdown } from "@/lib/exportSkill";
+import { skillToMarkdown, downloadMarkdown, downloadAgentSkillZip, toSkillName } from "@/lib/exportSkill";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { SavedSkill } from "@/types";
 
 export const MySkills = () => {
@@ -60,6 +61,13 @@ export const MySkills = () => {
     }
     navigator.clipboard.writeText(filled);
     toast.success("Prompt kopiert");
+  };
+
+  const handleExportAgentSkill = async (skill: SavedSkill) => {
+    await downloadAgentSkillZip(skill);
+    toast.success("Agent Skill exportiert", {
+      description: `ZIP enthält ${toSkillName(skill.title)}/SKILL.md + references/TEMPLATE.md`,
+    });
   };
 
   const handleDelete = (skill: SavedSkill) => {
@@ -161,9 +169,29 @@ export const MySkills = () => {
               <Button variant="ghost" size="sm" className="gap-1 text-xs h-7" onClick={() => openEdit(skill)}>
                 <Pencil className="w-3 h-3" /> Bearbeiten
               </Button>
-              <Button variant="ghost" size="sm" className="gap-1 text-xs h-7" onClick={() => handleExport(skill)}>
-                <Download className="w-3 h-3" /> Export
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-1 text-xs h-7">
+                    <Download className="w-3 h-3" /> Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => handleExport(skill)} className="gap-2 text-xs">
+                    <FileText className="w-3.5 h-3.5" />
+                    <div>
+                      <div className="font-medium">Markdown</div>
+                      <div className="text-muted-foreground text-[10px]">Für Wiki, Confluence, SharePoint</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExportAgentSkill(skill)} className="gap-2 text-xs">
+                    <Cpu className="w-3.5 h-3.5" />
+                    <div>
+                      <div className="font-medium">Agent Skill</div>
+                      <div className="text-muted-foreground text-[10px]">Für Claude Code, KI-Agenten (agentskills.io)</div>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="ghost"
                 size="sm"
@@ -229,21 +257,27 @@ export const MySkills = () => {
                 <Button onClick={handleSaveEdit} className="gap-2">
                   <Check className="w-4 h-4" /> Speichern
                 </Button>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => {
-                    handleExport({
-                      ...editingSkill,
-                      title: editTitle,
-                      prompt: editPrompt,
-                      notes: editNotes,
-                      variables: editVariables,
-                    });
-                  }}
-                >
-                  <Download className="w-4 h-4" /> Als Markdown exportieren
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="gap-2">
+                      <Download className="w-4 h-4" /> Exportieren
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => {
+                      const current = { ...editingSkill!, title: editTitle, prompt: editPrompt, notes: editNotes, variables: editVariables };
+                      handleExport(current);
+                    }} className="gap-2 text-sm">
+                      <FileText className="w-4 h-4" /> Markdown
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      const current = { ...editingSkill!, title: editTitle, prompt: editPrompt, notes: editNotes, variables: editVariables };
+                      handleExportAgentSkill(current);
+                    }} className="gap-2 text-sm">
+                      <Cpu className="w-4 h-4" /> Agent Skill
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
                   variant="outline"
                   className="gap-2"
