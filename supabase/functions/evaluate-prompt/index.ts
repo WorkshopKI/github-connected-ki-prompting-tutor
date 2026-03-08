@@ -80,9 +80,23 @@ JSON-Format:
 
       const judgeData = await judgeResponse.json();
       const rawContent = judgeData.choices?.[0]?.message?.content || "";
+      if (!rawContent) {
+        console.error("Judge AI returned empty content:", JSON.stringify(judgeData));
+        return new Response(JSON.stringify({ error: "Die Referenz-KI hat keine Bewertung zurückgegeben. Bitte erneut versuchen." }), {
+          status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       // Strip markdown fences if present
       const cleaned = rawContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-      const parsed = JSON.parse(cleaned);
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (parseErr) {
+        console.error("Judge AI returned invalid JSON:", cleaned);
+        return new Response(JSON.stringify({ error: "Die Referenz-KI hat ein ungültiges Format zurückgegeben. Bitte erneut versuchen." }), {
+          status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       return new Response(JSON.stringify(parsed), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
