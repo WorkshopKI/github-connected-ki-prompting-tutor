@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bookmark, Copy, Download, Trash2, Pencil, X, Check, ExternalLink, FileText, Cpu } from "lucide-react";
+import { Bookmark, Copy, Download, Trash2, Pencil, X, Check, ExternalLink, FileText, Cpu, Beaker } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useMySkills } from "@/hooks/useMySkills";
 import { skillToMarkdown, downloadMarkdown, downloadAgentSkillZip, toSkillName } from "@/lib/exportSkill";
+import { STANDARD_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { SavedSkill } from "@/types";
 
@@ -22,6 +24,7 @@ export const MySkills = () => {
   const [editPrompt, setEditPrompt] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [editVariables, setEditVariables] = useState<Record<string, string>>({});
+  const [editTargetModel, setEditTargetModel] = useState("");
 
   const openEdit = (skill: SavedSkill) => {
     setEditingSkill(skill);
@@ -29,6 +32,7 @@ export const MySkills = () => {
     setEditPrompt(skill.prompt);
     setEditNotes(skill.notes);
     setEditVariables({ ...skill.variables });
+    setEditTargetModel(skill.targetModel || "");
   };
 
   const handleSaveEdit = () => {
@@ -39,6 +43,7 @@ export const MySkills = () => {
       prompt: editPrompt,
       notes: editNotes,
       variables: editVariables,
+      targetModel: editTargetModel || undefined,
       updatedAt: Date.now(),
     });
     setEditingSkill(null);
@@ -119,6 +124,11 @@ export const MySkills = () => {
                   {skill.confidentiality && (
                     <ConfidentialityBadge level={skill.confidentiality} compact />
                   )}
+                  {skill.targetModel && (
+                    <Badge variant="outline" className="text-[10px] gap-1">
+                      🎯 {skill.targetModel.split("/").pop()}
+                    </Badge>
+                  )}
                 </div>
               </div>
               {skill.sourceTitle !== skill.title && (
@@ -195,6 +205,26 @@ export const MySkills = () => {
               <Button
                 variant="ghost"
                 size="sm"
+                className="gap-1 text-xs h-7"
+                onClick={() => {
+                  let filled = skill.prompt;
+                  for (const [key, value] of Object.entries(skill.variables)) {
+                    if (value.trim()) filled = filled.replaceAll(`{{${key}}}`, value);
+                  }
+                  const params = new URLSearchParams({
+                    prompt: filled,
+                    skillId: skill.id,
+                    skillTitle: skill.title,
+                  });
+                  if (skill.targetModel) params.set("model", skill.targetModel);
+                  navigate(`/playground?${params.toString()}`);
+                }}
+              >
+                <Beaker className="w-3 h-3" /> Testen
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 className="gap-1 text-xs h-7 ml-auto text-muted-foreground hover:text-destructive"
                 onClick={() => handleDelete(skill)}
               >
@@ -253,6 +283,26 @@ export const MySkills = () => {
                   className="text-sm min-h-[80px]"
                 />
               </div>
+              <div>
+                <label className="text-sm font-medium block mb-1">Ziel-Modell (optional)</label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Für welches Modell ist dieser Skill optimiert?
+                </p>
+                <Select value={editTargetModel || "none"} onValueChange={(v) => setEditTargetModel(v === "none" ? "" : v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kein bestimmtes Modell" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Kein bestimmtes Modell</SelectItem>
+                    {STANDARD_MODELS.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                    {OPEN_SOURCE_MODELS.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex gap-2 pt-2 border-t border-border">
                 <Button onClick={handleSaveEdit} className="gap-2">
                   <Check className="w-4 h-4" /> Speichern
@@ -286,7 +336,13 @@ export const MySkills = () => {
                     for (const [key, value] of Object.entries(editVariables)) {
                       if (value.trim()) filled = filled.replaceAll(`{{${key}}}`, value);
                     }
-                    navigate(`/playground?prompt=${encodeURIComponent(filled)}`);
+                    const params = new URLSearchParams({
+                      prompt: filled,
+                      skillId: editingSkill!.id,
+                      skillTitle: editTitle,
+                    });
+                    if (editTargetModel) params.set("model", editTargetModel);
+                    navigate(`/playground?${params.toString()}`);
                     setEditingSkill(null);
                   }}
                 >
