@@ -64,6 +64,16 @@ export const bonusModules: LearningModule[] = [
     isBonus: true,
   },
   {
+    id: "datenschutz",
+    title: "Datenschutz & sichere KI-Nutzung",
+    description: "Sensible Daten erkennen und Vertraulichkeitsstufen verstehen",
+    duration: "10 Min",
+    type: "praxis",
+    component: "DataPrivacyIntro",
+    prerequisites: ["erste-uebungen"],
+    isBonus: true,
+  },
+  {
     id: "ressourcen",
     title: "Checklisten & Best Practices",
     description: "Referenzmaterial zum Nachschlagen",
