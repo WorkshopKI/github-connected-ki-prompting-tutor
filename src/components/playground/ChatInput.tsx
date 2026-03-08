@@ -54,16 +54,17 @@ export const ChatInput = ({ onSend, disabled, isStreaming, onStop, initialValue 
         disabled={disabled}
       />
       {isStreaming ? (
-        <Button
+        <button
           onClick={onStop}
-          variant="outline"
-          size="icon"
-          className="shrink-0 h-11 w-11 relative border-primary/30 hover:border-primary/60"
+          className="shrink-0 h-11 w-11 relative flex items-center justify-center rounded-md hover:bg-muted transition-colors"
           title="Stoppen"
         >
-          <span className="absolute inset-0 rounded-md border-2 border-primary/40 animate-pulse" />
-          <Square className="w-3.5 h-3.5 fill-primary/80 text-primary/80" />
-        </Button>
+          <svg className="absolute inset-0 w-full h-full animate-spin" viewBox="0 0 44 44">
+            <circle cx="22" cy="22" r="19" fill="none" strokeWidth="2" stroke="hsl(var(--primary) / 0.15)" />
+            <circle cx="22" cy="22" r="19" fill="none" strokeWidth="2.5" stroke="hsl(var(--primary))" strokeDasharray="30 90" strokeLinecap="round" />
+          </svg>
+          <Square className="w-3.5 h-3.5 fill-primary text-primary" />
+        </button>
       ) : (
         <Button
           onClick={handleSend}
