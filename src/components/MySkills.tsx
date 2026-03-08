@@ -209,7 +209,7 @@ export const MySkills = () => {
                 onClick={() => {
                   let filled = skill.prompt;
                   for (const [key, value] of Object.entries(skill.variables)) {
-                    if (value.trim()) filled = filled.replaceAll(`{{${key}}}`, value);
+                    if (value.trim()) filled = filled.split(`{{${key}}}`).join(value);
                   }
                   const params = new URLSearchParams({
                     prompt: filled,
