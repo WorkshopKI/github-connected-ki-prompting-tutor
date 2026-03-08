@@ -78,7 +78,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     : 0;
 
   return (
-    <div className="bg-gradient-card rounded-xl p-6 shadow-lg border border-border relative">
+    <div className="bg-gradient-card rounded-xl p-6 shadow-sm border border-border relative">
       {bestScore !== null && bestScore !== undefined && (
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
           bestScore === 3 ? "bg-primary/20 text-primary" :

@@ -56,7 +56,7 @@ export const JudgePanel = ({ prompt, output, model }: Props) => {
         // Extract error message from Supabase FunctionsHttpError
         let message = "Judge-Bewertung fehlgeschlagen";
         try {
-          const errorBody = await (error as any).context?.json?.();
+          const errorBody = await (error as { context?: Response }).context?.json?.();
           if (errorBody?.error) message = errorBody.error;
         } catch { /* use default message */ }
         toast.error(message);

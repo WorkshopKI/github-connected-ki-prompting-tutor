@@ -14,6 +14,7 @@ import { PromptDetail } from "@/components/PromptDetail";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { extractVariables } from "@/lib/promptUtils";
 
 const BASE_CATEGORIES = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
@@ -28,12 +29,6 @@ function storeRating(title: string, rating: number) {
   const ratings = loadFromStorage<Record<string, number>>(LS_RATINGS_KEY, {});
   ratings[title] = rating;
   saveToStorage(LS_RATINGS_KEY, ratings);
-}
-
-function extractVariables(text: string): string[] {
-  const matches = text.match(/\{\{(.+?)\}\}/g);
-  if (!matches) return [];
-  return [...new Set(matches.map((m) => m.replace(/\{\{|\}\}/g, "")))];
 }
 
 const BlueprintDetails = ({ prompt }: { prompt: PromptItem }) => {

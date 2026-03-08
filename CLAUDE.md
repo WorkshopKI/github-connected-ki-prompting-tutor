@@ -42,85 +42,127 @@ npm run preview    # Preview production build
 ```
 src/
 ├── components/
-│   ├── ui/                       # shadcn-ui Primitives (48 Komponenten)
-│   ├── playground/               # Playground Sub-Komponenten
-│   │   ├── ACTABuilder.tsx       # ACTA-Methode Builder
-│   │   ├── AgentKnobs.tsx        # Agent-Konfiguration
-│   │   ├── ChatInput.tsx         # Chat-Eingabefeld
-│   │   ├── ChatMessage.tsx       # Einzelne Chat-Nachricht
-│   │   ├── ChatPlayground.tsx    # Haupt-Chat-Bereich
-│   │   ├── ComparisonView.tsx    # Modell-Vergleich
+│   ├── ui/                         # shadcn-ui Primitives (48 Komponenten)
+│   ├── playground/                 # Playground Sub-Komponenten
+│   │   ├── ACTABuilder.tsx         # ACTA-Methode Builder
+│   │   ├── ACTATemplates.ts        # ACTA-Vorlagen
+│   │   ├── AgentKnobs.tsx          # Agent-Konfiguration
+│   │   ├── ChatInput.tsx           # Chat-Eingabefeld mit animiertem Stop-Button
+│   │   ├── ChatMessage.tsx         # Einzelne Chat-Nachricht
+│   │   ├── ChatPlayground.tsx      # Haupt-Chat-Bereich mit Lade-Indikator
+│   │   ├── ComparisonView.tsx      # Modell-Vergleich
 │   │   ├── ConversationHistory.tsx # Gesprächsverlauf
-│   │   ├── PromptEvaluation.tsx  # Prompt-Bewertung
-│   │   ├── SystemPromptEditor.tsx # System-Prompt Editor
-│   │   └── TechniquePanel.tsx    # Technik-Auswahl
-│   ├── AppShell.tsx              # Sidebar-Layout mit Navigation (5 Nav-Items)
-│   ├── AnalyticsSection.tsx      # Dashboard Analytics & Insights (Collapsible)
-│   ├── ConfidentialityBadge.tsx  # 🟢🟡🔴 Vertraulichkeits-Badges
-│   ├── StatCard.tsx              # Wiederverwendbare Statistik-Karte
-│   ├── PromptLibrary.tsx         # Prompt-Bibliothek mit Abteilungs-Tabs
-│   ├── PromptDetail.tsx          # Prompt-Detail-Modal
-│   ├── OrganizationUseCases.tsx  # Abteilungs-Use-Cases
-│   ├── TeamMembers.tsx           # Team-Mitglieder (Mock)
-│   ├── PendingReviews.tsx        # Review-Workflow (Mock)
-│   ├── Logo.tsx                  # Typografisches Logo mit sidebar-Variant
-│   ├── Navigation.tsx            # Alte Top-Navbar (NUR noch im Playground)
-│   ├── GuestBanner.tsx           # Banner für Gast-Registrierung
-│   ├── UserMenu.tsx              # Dropdown mit Profil/Admin/Logout
-│   ├── SyncStatusIcon.tsx        # Cloud-Sync Indikator
-│   ├── ThemePresetPicker.tsx     # Theme-Presets Auswahl
-│   ├── BudgetDialog.tsx          # LLM Budget Info
-│   ├── ExerciseCard.tsx          # Übungskarte mit LLM-Bewertung
-│   └── PracticeArea.tsx          # Übungs-Grid Container
+│   │   ├── IterationNudge.tsx      # Verbesserungsvorschläge nach erster KI-Antwort
+│   │   ├── JudgePanel.tsx          # Judge-Bewertung durch Referenz-KI
+│   │   ├── PlaygroundHeader.tsx    # Playground Top-Bar
+│   │   ├── PlaygroundSidebar.tsx   # Playground linke Sidebar
+│   │   ├── PromptEvaluation.tsx    # Prompt-Bewertung
+│   │   ├── SystemPromptEditor.tsx  # System-Prompt Editor
+│   │   ├── TechniquePanel.tsx      # Technik-Auswahl
+│   │   ├── TechniqueTemplates.ts   # Technik-Vorlagen
+│   │   └── ThinkingBlock.tsx       # Aufklappbarer Denkprozess-Block
+│   ├── settings/                   # Settings Sub-Komponenten
+│   │   ├── AIRoutingSettings.tsx   # KI-Konfiguration Tab
+│   │   ├── AppearanceSettings.tsx  # Darstellung Tab
+│   │   ├── ComplianceSettingsTab.tsx # Compliance Tab
+│   │   ├── GeneralSettings.tsx     # Allgemein Tab
+│   │   └── RolesSettings.tsx       # Rollen & Rechte Tab
+│   ├── ACTAIntroduction.tsx        # Kombiniertes Intro: Vorher/Nachher + ACTA + Quick Challenge
+│   ├── ACTAQuickChallenge.tsx      # Schnell-Challenge für ACTA-Methode
+│   ├── ACTASection.tsx             # ACTA-Methode Erklärung
+│   ├── AdvancedPromptingSection.tsx # Fortgeschrittene Techniken
+│   ├── AnalyticsSection.tsx        # Dashboard Analytics & Insights (Collapsible)
+│   ├── AppShell.tsx                # Sidebar-Layout mit Navigation (5 Nav-Items)
+│   ├── BudgetDialog.tsx            # LLM Budget Info
+│   ├── ConfidentialityBadge.tsx    # 🟢🟡🔴 Vertraulichkeits-Badges
+│   ├── CreditsDialog.tsx           # Credits/Impressum Dialog
+│   ├── DailyChallenge.tsx          # Tagesaufgabe auf dem Dashboard
+│   ├── DataPrivacyIntro.tsx        # Datenschutz-Bonus-Modul (3 Stufen + Redaction-Drills)
+│   ├── DecompositionAssistant.tsx  # Aufgaben-Zerlegung Assistent
+│   ├── ExerciseCard.tsx            # Übungskarte mit LLM-Bewertung
+│   ├── FlawExercise.tsx            # "Fehler finden" Übungstyp mit Checkboxen
+│   ├── Footer.tsx                  # Footer
+│   ├── GuestBanner.tsx             # Banner für Gast-Registrierung
+│   ├── LevelCard.tsx               # Level-Karte für Onboarding
+│   ├── Logo.tsx                    # Typografisches Logo mit sidebar-Variant
+│   ├── MySkills.tsx                # Persönliche Skill-Sammlung (speichern, bearbeiten, exportieren)
+│   ├── OrganizationUseCases.tsx    # Abteilungs-Use-Cases
+│   ├── PendingReviews.tsx          # Review-Workflow (Mock)
+│   ├── PracticeArea.tsx            # Übungs-Grid Container
+│   ├── PracticeAreaCompact.tsx     # Kompakte Version der Übungen für Onboarding
+│   ├── PromptDetail.tsx            # Prompt-Detail-Modal
+│   ├── PromptExamples.tsx          # Prompt-Beispiele
+│   ├── PromptLibrary.tsx           # Prompt-Bibliothek mit Abteilungs-Tabs
+│   ├── RedactionExercise.tsx       # Datenschutz-Übung: Sensible Daten erkennen
+│   ├── ResourcesSection.tsx        # Ressourcen & Links
+│   ├── StatCard.tsx                # Wiederverwendbare Statistik-Karte
+│   ├── SyncStatusIcon.tsx          # Cloud-Sync Indikator
+│   ├── TeamMembers.tsx             # Team-Mitglieder (Mock)
+│   ├── ThemePresetPicker.tsx       # Theme-Presets Auswahl
+│   ├── ThemeProvider.tsx           # Theme Provider
+│   ├── ThemeToggle.tsx             # Dark/Light Toggle
+│   ├── UserMenu.tsx                # Dropdown mit Profil/Admin/Logout
+│   └── themePresets.ts             # Theme-Preset Definitionen
 ├── contexts/
-│   ├── AuthContext.tsx            # Auth State, OTP Login, Guest Login, Session
-│   ├── SyncContext.tsx            # Progress Sync (localStorage ↔ Supabase)
-│   └── OrgContext.tsx             # Abteilungs-/Organisationskontext
+│   ├── AuthContext.tsx              # Auth State, OTP Login, Guest Login, Session
+│   ├── SyncContext.tsx              # Progress Sync (localStorage ↔ Supabase)
+│   └── OrgContext.tsx               # Abteilungs-/Organisationskontext
 ├── data/
-│   ├── prompts.ts                # 126+ Prompts mit targetDepartment + confidentiality
-│   ├── exercises.ts              # 8 Übungen mit departmentVariants
-│   ├── orgUseCases.ts            # 25 Use Cases mit Abteilungszuordnung
-│   ├── learningPath.ts           # 8 Lernmodule
-│   ├── models.ts                 # Modelle + AIRoutingConfig (Standard/Premium/OpenSource)
-│   ├── actaExamples.ts           # ACTA-Beispiele pro Abteilung
-│   └── decompositionExamples.ts  # Dekompositions-Beispiele
+│   ├── prompts.ts                  # 126+ Prompts mit targetDepartment + confidentiality
+│   ├── exercises.ts                # 8 Übungen mit departmentVariants
+│   ├── dailyChallenges.ts          # 25 Tagesaufgaben (prompt-improve, workflow, spot-the-flaw)
+│   ├── flawChallenges.ts           # 10 "Fehler finden" Challenges mit eingebauten Fehlern
+│   ├── redactionDrills.ts          # 10 Datenschutz-Übungen (sensible Daten erkennen)
+│   ├── orgUseCases.ts              # 25 Use Cases mit Abteilungszuordnung
+│   ├── learningPath.ts             # 2 Pflicht + 5 Bonus Onboarding-Module
+│   ├── models.ts                   # Modelle + AIRoutingConfig (Standard/Premium/OpenSource)
+│   ├── actaExamples.ts             # ACTA-Beispiele pro Abteilung
+│   └── decompositionExamples.ts    # Dekompositions-Beispiele
 ├── hooks/
-│   ├── useAuth.ts                # Auth Hook re-export
-│   ├── useExerciseProgress.ts    # Übungs-Fortschritt
-│   ├── useCustomModels.ts        # Custom OpenRouter Modelle
-│   ├── useScrollAnimation.ts     # Scroll-Animationen
-│   ├── use-mobile.tsx            # Mobile Breakpoint Detection
-│   └── use-toast.ts              # Toast Hook
+│   ├── useAuth.ts                  # Auth Hook re-export
+│   ├── useChat.ts                  # Chat-State + Streaming + Thinking
+│   ├── useConversations.ts         # Conversation-Management (localStorage)
+│   ├── useCustomModels.ts          # Custom OpenRouter Modelle
+│   ├── useDailyChallenge.ts        # Tagesaufgabe: Auswahl, History, Streak
+│   ├── useExerciseEvaluation.ts    # LLM-basierte Prompt-Bewertung
+│   ├── useExerciseProgress.ts      # Übungs-Fortschritt
+│   ├── useMySkills.ts              # CRUD für persönliche Skills (localStorage)
+│   ├── use-mobile.tsx              # Mobile Breakpoint Detection
+│   └── use-toast.ts                # Toast Hook
 ├── integrations/supabase/
-│   ├── client.ts                 # Supabase Client Init
-│   └── types.ts                  # Generierte DB Types
+│   ├── client.ts                   # Supabase Client Init
+│   └── types.ts                    # Generierte DB Types
 ├── services/
-│   └── llmService.ts             # streamChat() SSE Client, saveUserKey()
+│   └── llmService.ts               # streamChat() SSE Client + onThinking, saveUserKey()
+├── lib/
+│   ├── utils.ts                    # cn() Tailwind Class Merger
+│   ├── promptUtils.ts              # extractVariables() — zentralisiert
+│   ├── exportSkill.ts              # Markdown + Agent Skill (ZIP) Export
+│   └── storage.ts                  # Zentraler localStorage-Zugriff (Key-Registry im Header)
 ├── pages/
-│   ├── Dashboard.tsx             # Übersicht + Analytics (Collapsible)
-│   ├── Library.tsx               # Tabs: Prompts | Use Cases | Team | Reviews
-│   ├── Playground.tsx            # Chat mit Zwei-Stufen KI-Auswahl (eigenes Layout)
-│   ├── Onboarding.tsx            # Lernpfad mit 8 Modulen
-│   ├── Settings.tsx              # Tabs: Mein Konto | Allgemein | Rollen | Compliance | KI-Konfiguration | Darstellung
-│   ├── Profile.tsx               # Exportiert ProfileContent (eingebettet in Settings)
-│   ├── Login.tsx                 # Email OTP + Guest Code Login
-│   ├── AdminParticipants.tsx     # Admin: Kurs-/Teilnehmerverwaltung
-│   └── NotFound.tsx              # 404 Seite
-├── lib/utils.ts                  # Utility Functions (cn() Class Merger)
-├── App.tsx                       # Root: Router + Providers + PlatformLayout
-├── main.tsx                      # Entry Point mit ThemeProvider
-└── index.css                     # Globale Styles & CSS Variable Design System
+│   ├── Dashboard.tsx               # Übersicht + DailyChallenge + Analytics (Collapsible)
+│   ├── Library.tsx                 # Tabs: Prompts | Use Cases | Meine Skills | Team | Reviews
+│   ├── Playground.tsx              # Chat mit Zwei-Stufen KI-Auswahl (eigenes Layout)
+│   ├── Onboarding.tsx              # Lernpfad: 2 Pflicht + 5 Bonus Module
+│   ├── Settings.tsx                # Tabs: Mein Konto | Allgemein | Rollen | Compliance | KI-Konfiguration | Darstellung
+│   ├── Profile.tsx                 # Exportiert ProfileContent (eingebettet in Settings)
+│   ├── Login.tsx                   # Email OTP + Guest Code Login
+│   ├── AdminParticipants.tsx       # Admin: Kurs-/Teilnehmerverwaltung
+│   └── NotFound.tsx                # 404 Seite
+├── App.tsx                         # Root: Router + Providers + PlatformLayout
+├── main.tsx                        # Entry Point mit ThemeProvider
+└── index.css                       # Globale Styles & CSS Variable Design System
 
 supabase/
-├── config.toml                   # Supabase Projekt-Konfiguration
-├── migrations/                   # SQL Migrations (Schema, RLS, Triggers)
-└── functions/                    # Deno Edge Functions
-    ├── check-enrollment/         # Validiert Kurscode + Email-Whitelist
-    ├── evaluate-prompt/          # LLM-basierte Übungsbewertung (Tool Use)
-    ├── guest-login/              # Erstellt Guest Auth User
-    ├── llm-proxy/                # Streaming LLM Proxy (Budget + Key Management)
-    ├── save-user-key/            # Verschlüsselt Custom OpenRouter API Keys
-    └── auth-email-hook/          # Custom Email-Templates für Supabase Auth
+├── config.toml                     # Supabase Projekt-Konfiguration
+├── migrations/                     # SQL Migrations (Schema, RLS, Triggers)
+└── functions/                      # Deno Edge Functions
+    ├── check-enrollment/           # Validiert Kurscode + Email-Whitelist
+    ├── evaluate-prompt/            # LLM-basierte Übungsbewertung (Tool Use)
+    ├── guest-login/                # Erstellt Guest Auth User
+    ├── llm-proxy/                  # Streaming LLM Proxy (Budget + Key Management)
+    ├── save-user-key/              # Verschlüsselt Custom OpenRouter API Keys
+    └── auth-email-hook/            # Custom Email-Templates für Supabase Auth
 ```
 
 ## Architecture
@@ -152,6 +194,33 @@ supabase/
 - Dynamischer Abteilungs-Tab wenn Abteilung gewählt
 - 6 Level: `alltag`, `beruf`, `websuche`, `research`, `blueprint`, `organisation`
 - Felder: `category`, `title`, `prompt`, `level`, `type`, `constraints`, `targetDepartment`, `confidentiality`, `riskLevel`, `official`
+- `extractVariables()` zentralisiert in `src/lib/promptUtils.ts`
+
+### Meine Skills
+- User speichert Prompts als persönliche Skills (localStorage `my_saved_skills`)
+- Bearbeiten: Titel, Prompt-Text, Variablen, Notizen, Ziel-Modell
+- Export: Markdown (Wiki/Confluence) + Agent Skill ZIP (agentskills.io Format, via JSZip)
+- Erreichbar über Library Tab "Meine Skills"
+
+### Daily Challenge
+- Tagesaufgabe auf Dashboard mit 3 Typen: `prompt-improve`, `workflow`, `spot-the-flaw`
+- Deterministisch nach Datum (gleicher Tag = gleiche Aufgabe)
+- Abteilungsfilter aktiv
+- Streak-Tracking in localStorage
+
+### Onboarding
+- 2 Pflicht-Module: "Einführung & ACTA-Methode" + "Üben: Dein erster guter Prompt"
+- 5 Bonus-Module: Prompting-Stufen, Zerlegung, Fortgeschrittene Techniken, Datenschutz, Checklisten
+- Erfolgs-Meldung nach Pflicht-Abschluss
+- Alte Modul-IDs werden auf neue gemappt (Abwärtskompatibilität)
+
+### Prompt-Labor (Playground)
+- Zwei-Stufen KI-Auswahl (Intern/Extern) mit Vertraulichkeits-Routing
+- ThinkingBlock: Aufklappbarer Denkprozess (`reasoning_content` aus SSE-Stream)
+- Lade-Indikator: Bouncing-Dots zwischen Senden und erstem Token
+- IterationNudge: Vorschläge nach erster Antwort
+- JudgePanel: Referenz-KI bewertet Output (Sidebar)
+- Conversation-Management mit localStorage-Persistenz
 
 ### Settings
 - 6 Tabs: Mein Konto | Allgemein | Rollen & Rechte | Compliance | KI-Konfiguration | Darstellung
@@ -221,7 +290,6 @@ Farben als HSL CSS Variables in `src/index.css`:
 - **Alle Seiten** folgen dem Pattern: `<div className="space-y-6">` → Header → Content
 - **Seitentitel** immer: `text-2xl font-bold tracking-tight`
 - **Card-Stil** immer: `p-5 rounded-xl border border-border shadow-sm`
-- **Navigation.tsx** wird NUR im Playground verwendet — alle anderen Seiten nutzen AppShell
 - **Keine neuen npm-Dependencies** ohne Absprache
 - **Dark Mode** muss immer funktionieren
 - **Content ist auf Deutsch** (UI Labels, Prompts, Übungen, Fehlermeldungen)

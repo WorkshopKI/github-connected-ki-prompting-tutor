@@ -10,17 +10,12 @@ import type { PromptItem } from "@/data/prompts";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { useMySkills } from "@/hooks/useMySkills";
+import { extractVariables } from "@/lib/promptUtils";
 
 interface PromptDetailProps {
   prompt: PromptItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function extractVariables(text: string): string[] {
-  const matches = text.match(/\{\{(.+?)\}\}/g);
-  if (!matches) return [];
-  return [...new Set(matches.map((m) => m.replace(/\{\{|\}\}/g, "")))];
 }
 
 const LS_RATINGS_KEY = "prompt_ratings";
