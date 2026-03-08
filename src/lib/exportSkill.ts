@@ -43,7 +43,7 @@ export function skillToMarkdown(skill: SavedSkill): string {
   let filledPrompt = skill.prompt;
   for (const [key, value] of Object.entries(skill.variables)) {
     if (value.trim()) {
-      filledPrompt = filledPrompt.replaceAll(`{{${key}}}`, value);
+      filledPrompt = filledPrompt.split(`{{${key}}}`).join(value);
     }
   }
   lines.push(filledPrompt);
