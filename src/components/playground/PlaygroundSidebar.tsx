@@ -7,9 +7,10 @@ import { ConversationHistory } from "@/components/playground/ConversationHistory
 import { ACTABuilder } from "@/components/playground/ACTABuilder";
 import { TechniquePanel } from "@/components/playground/TechniquePanel";
 import { PromptEvaluation } from "@/components/playground/PromptEvaluation";
+import { JudgePanel } from "@/components/playground/JudgePanel";
 import { AgentKnobs, type AgentConfig } from "@/components/playground/AgentKnobs";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
-import type { SavedConversation } from "@/types";
+import type { SavedConversation, Msg } from "@/types";
 
 interface PlaygroundSidebarProps {
   conversations: SavedConversation[];
@@ -27,6 +28,7 @@ interface PlaygroundSidebarProps {
   onStartAgent: (prompt: string) => void;
   lastUserPrompt: string;
   selectedModel: string;
+  messages: Msg[];
 }
 
 function SidebarAccordionContent({
@@ -137,6 +139,14 @@ export function PlaygroundSidebar(props: PlaygroundSidebarProps) {
             </div>
             <PromptEvaluation prompt={props.lastUserPrompt} model={props.selectedModel} />
           </div>
+        )}
+
+        {props.messages.length >= 2 && props.messages[props.messages.length - 1].role === "assistant" && (
+          <JudgePanel
+            prompt={props.lastUserPrompt}
+            output={props.messages[props.messages.length - 1].content}
+            model={props.selectedModel}
+          />
         )}
       </aside>
 

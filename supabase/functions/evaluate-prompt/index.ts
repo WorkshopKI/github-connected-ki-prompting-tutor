@@ -15,7 +15,82 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const { userPrompt, badPrompt, context, goodExample, improvementHints, model } = await req.json();
+    const body = await req.json();
+
+    // --- Judge-Output Mode ---
+    if (body.mode === "judge-output") {
+      const { prompt, output, criteria, model } = body;
+      if (!prompt || !output) {
+        return new Response(
+          JSON.stringify({ error: "prompt and output are required" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const judgeSystem = `Du bist ein strenger aber fairer Qualitätsprüfer für KI-Outputs.
+Bewerte den folgenden Output anhand der gegebenen Kriterien.
+Antworte AUSSCHLIESSLICH mit einem JSON-Objekt (kein Markdown, kein Preamble).
+JSON-Format:
+{
+  "overallScore": <0-100>,
+  "dimensions": {
+    "structure": { "score": <0-100>, "feedback": "<1 Satz>" },
+    "completeness": { "score": <0-100>, "feedback": "<1 Satz>" },
+    "compliance": { "score": <0-100>, "feedback": "<1 Satz>" },
+    "quality": { "score": <0-100>, "feedback": "<1 Satz>" }
+  },
+  "issues": ["<Problem 1>", "<Problem 2>"],
+  "suggestion": "<1 konkreter Verbesserungstipp für den Prompt>"
+}`;
+
+      const judgeUser = `## Prompt der an die KI gesendet wurde:\n${prompt}\n\n## Output der KI (Modell: ${model || "unbekannt"}):\n${output}${criteria ? `\n\n## Zusätzliche Bewertungskriterien:\n${criteria}` : ""}\n\nBewerte jetzt.`;
+
+      const judgeResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: judgeSystem },
+            { role: "user", content: judgeUser },
+          ],
+        }),
+      });
+
+      if (!judgeResponse.ok) {
+        if (judgeResponse.status === 429) {
+          return new Response(JSON.stringify({ error: "Zu viele Anfragen. Bitte versuche es in einer Minute erneut." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (judgeResponse.status === 402) {
+          return new Response(JSON.stringify({ error: "AI-Kontingent erschöpft. Bitte später erneut versuchen." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const errText = await judgeResponse.text();
+        console.error("Judge AI gateway error:", judgeResponse.status, errText);
+        return new Response(JSON.stringify({ error: "Judge-Bewertung fehlgeschlagen" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const judgeData = await judgeResponse.json();
+      const rawContent = judgeData.choices?.[0]?.message?.content || "";
+      // Strip markdown fences if present
+      const cleaned = rawContent.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+
+      return new Response(JSON.stringify(parsed), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Original Prompt-Evaluation Mode ---
+    const { userPrompt, badPrompt, context, goodExample, improvementHints, model } = body;
     const selectedModel = model || "google/gemini-3-flash-preview";
 
     if (!userPrompt || !badPrompt) {
