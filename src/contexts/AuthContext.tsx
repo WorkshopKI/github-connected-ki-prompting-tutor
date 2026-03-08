@@ -5,7 +5,7 @@ import type { UserProfile } from "@/types";
 
 export type { UserProfile } from "@/types";
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   session: Session | null;
   profile: UserProfile | null;
@@ -14,7 +14,7 @@ interface AuthState {
   authMethod: "email_otp" | "guest" | null;
 }
 
-interface AuthContextType extends AuthState {
+export interface AuthContextType extends AuthState {
   signInWithOTP: (email: string, courseCode: string) => Promise<{ error?: string }>;
   verifyOTP: (email: string, token: string) => Promise<{ error?: string }>;
   signInWithGuestToken: (token: string) => Promise<{ error?: string }>;
@@ -23,7 +23,7 @@ interface AuthContextType extends AuthState {
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuthContext = () => {
   const ctx = useContext(AuthContext);

@@ -31,6 +31,14 @@ export const LS_KEYS = {
   COMPLIANCE_SETTINGS: "compliance_settings",
   PROGRESS: "user_progress_v2",
   LEGACY_HISTORY: "playground_history",
+  APP_MODE: "app_mode",
+  STANDALONE_PROFILE: "standalone_profile",
+  STANDALONE_EXERCISES: "standalone_exercises",
+  STANDALONE_LESSONS: "standalone_lessons",
+  STANDALONE_QUIZZES: "standalone_quizzes",
+  STANDALONE_CHALLENGES: "standalone_challenges",
+  STANDALONE_API_KEY: "standalone_api_key",
+  STANDALONE_ENDPOINT: "standalone_endpoint",
 } as const;
 
 /* ── Badge-Farben für Prompt-Level ── */
