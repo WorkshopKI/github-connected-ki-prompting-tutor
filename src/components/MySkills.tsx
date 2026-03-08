@@ -61,7 +61,7 @@ export const MySkills = () => {
     let filled = skill.prompt;
     for (const [key, value] of Object.entries(skill.variables)) {
       if (value.trim()) {
-        filled = filled.replaceAll(`{{${key}}}`, value);
+        filled = filled.split(`{{${key}}}`).join(value);
       }
     }
     navigator.clipboard.writeText(filled);
