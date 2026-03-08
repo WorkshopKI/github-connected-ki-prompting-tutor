@@ -31,7 +31,7 @@ export function saveAIRouting(config: AIRoutingConfig) {
 export const STANDARD_MODELS: ModelOption[] = [
   { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true, tier: "external" },
   { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6 (latest)", isLatest: true, tier: "external" },
-  { value: "openai/gpt-5.2", label: "GPT-5.2 (latest)", isLatest: true, tier: "external" },
+  { value: "openai/gpt-5.4", label: "GPT-5.4 (latest)", isLatest: true, tier: "external" },
 ];
 
 /**

@@ -189,7 +189,7 @@ supabase/
 - Playground wählt KI-Stufe (Intern/Extern) automatisch vor
 - Vertrauliche Prompts blockieren externe API
 - `AIRoutingConfig` in `src/data/models.ts` steuert Routing-Regeln
-- Modelle: Standard (Gemini 3 Flash, Sonnet 4.6, GPT-5.2), Premium (Opus 4.6, Gemini 3.1 Pro), Open Source (7 Modelle), Custom
+- Modelle: Standard (Gemini 3 Flash, Sonnet 4.6, GPT-5.4), Premium (Opus 4.6, Gemini 3.1 Pro), Open Source (7 Modelle), Custom
 
 ### Prompt Library
 - 126+ Prompts in `src/data/prompts.ts`, gefiltert nach Abteilung
