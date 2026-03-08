@@ -121,11 +121,13 @@ const Playground = () => {
     setSystemPrompt(data.systemPrompt);
     setSelectedModel(data.model);
     chat.setStreamingContent("");
+    chat.resetThinking();
   };
 
   const handleNewConversation = () => {
     chat.setMessages([]);
     chat.setStreamingContent("");
+    chat.resetThinking();
     setSystemPrompt("");
     convos.newConversation();
   };
@@ -135,12 +137,14 @@ const Playground = () => {
     if (wasActive) {
       chat.setMessages([]);
       chat.setStreamingContent("");
+      chat.resetThinking();
     }
   };
 
   const handleClearChat = () => {
     chat.setMessages([]);
     chat.setStreamingContent("");
+    chat.resetThinking();
     convos.clearActiveConversation();
   };
 
@@ -245,6 +249,8 @@ const Playground = () => {
                     onSendMessage={chat.sendMessage}
                     isStreaming={chat.isStreaming}
                     streamingContent={chat.streamingContent}
+                    thinkingContent={chat.thinkingContent}
+                    thinkingEnabled={thinkingEnabled}
                     systemPrompt={systemPrompt}
                     onSystemPromptChange={setSystemPrompt}
                     onClearChat={handleClearChat}
@@ -359,6 +365,8 @@ const Playground = () => {
                     onSendMessage={chat.sendMessage}
                     isStreaming={chat.isStreaming}
                     streamingContent={chat.streamingContent}
+                    thinkingContent={chat.thinkingContent}
+                    thinkingEnabled={thinkingEnabled}
                     systemPrompt={systemPrompt}
                     onSystemPromptChange={setSystemPrompt}
                     onClearChat={handleClearChat}

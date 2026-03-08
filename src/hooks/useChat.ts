@@ -15,17 +15,26 @@ interface UseChatReturn {
   setMessages: React.Dispatch<React.SetStateAction<Msg[]>>;
   streamingContent: string;
   setStreamingContent: React.Dispatch<React.SetStateAction<string>>;
+  thinkingContent: string;
   isStreaming: boolean;
   sendMessage: (content: string) => Promise<void>;
   handleStop: () => void;
+  resetThinking: () => void;
 }
 
 export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudgetExhausted }: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [streamingContent, setStreamingContent] = useState("");
+  const [thinkingContent, setThinkingContent] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const accRef = useRef("");
+  const thinkingRef = useRef("");
   const abortRef = useRef<AbortController | null>(null);
+
+  const resetThinking = useCallback(() => {
+    setThinkingContent("");
+    thinkingRef.current = "";
+  }, []);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -35,8 +44,10 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
       const newMessages = [...messages, userMsg];
       setMessages(newMessages);
       setStreamingContent("");
+      setThinkingContent("");
       setIsStreaming(true);
       accRef.current = "";
+      thinkingRef.current = "";
 
       const apiMessages: Msg[] = [];
       if (systemPrompt.trim()) {
@@ -55,6 +66,10 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
           accRef.current += text;
           setStreamingContent(accRef.current);
         },
+        onThinking: thinkingEnabled ? (text) => {
+          thinkingRef.current += text;
+          setThinkingContent(thinkingRef.current);
+        } : undefined,
         onDone: () => {
           const finalContent = accRef.current;
           if (finalContent) {
@@ -70,6 +85,7 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
         onError: (error, status) => {
           setIsStreaming(false);
           setStreamingContent("");
+          setThinkingContent("");
           abortRef.current = null;
           if (status === 402 || error === "budget_exhausted") {
             onBudgetExhausted();
@@ -93,8 +109,10 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
     setMessages,
     streamingContent,
     setStreamingContent,
+    thinkingContent,
     isStreaming,
     sendMessage,
     handleStop,
+    resetThinking,
   };
 }

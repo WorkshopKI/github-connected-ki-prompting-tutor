@@ -1,11 +1,12 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, Copy, Download } from "lucide-react";
+import { Trash2, Copy, Download, Bot, Brain } from "lucide-react";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
+import { ThinkingBlock } from "./ThinkingBlock";
 import type { Msg } from "@/services/llmService";
 
 export interface ChatPlaygroundProps {
@@ -13,6 +14,8 @@ export interface ChatPlaygroundProps {
   onSendMessage: (content: string) => void;
   isStreaming: boolean;
   streamingContent: string;
+  thinkingContent?: string;
+  thinkingEnabled?: boolean;
   systemPrompt: string;
   onSystemPromptChange: (value: string) => void;
   onClearChat: () => void;
@@ -25,6 +28,8 @@ export const ChatPlayground = ({
   onSendMessage,
   isStreaming,
   streamingContent,
+  thinkingContent = "",
+  thinkingEnabled = false,
   systemPrompt,
   onSystemPromptChange,
   onClearChat,
@@ -38,7 +43,7 @@ export const ChatPlayground = ({
     if (isAtBottomRef.current) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, streamingContent]);
+  }, [messages, streamingContent, thinkingContent]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
@@ -165,6 +170,38 @@ export const ChatPlayground = ({
           ) : null
         )}
 
+        {/* Thinking Block */}
+        {thinkingContent && (
+          <ThinkingBlock
+            content={thinkingContent}
+            isStreaming={isStreaming}
+          />
+        )}
+
+        {/* Lade-Indikator — zwischen Senden und erstem Token */}
+        {isStreaming && !streamingContent && (
+          <div className="flex items-start gap-3 px-4 py-3">
+            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+              {thinkingEnabled && thinkingContent ? (
+                <Brain className="w-4 h-4 text-primary/60 animate-pulse" />
+              ) : (
+                <Bot className="w-4 h-4 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex items-center gap-2 pt-1.5">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+              <span className="text-xs text-muted-foreground ml-1">
+                {thinkingEnabled ? "Denkt nach\u2026" : "Antwortet\u2026"}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Streaming Content */}
         {isStreaming && streamingContent && (
           <ChatMessage role="assistant" content={streamingContent} isStreaming />
         )}
