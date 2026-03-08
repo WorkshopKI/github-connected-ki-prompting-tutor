@@ -11,6 +11,7 @@ import { ChatPlayground } from "@/components/playground/ChatPlayground";
 import { ComparisonView } from "@/components/playground/ComparisonView";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundSidebar } from "@/components/playground/PlaygroundSidebar";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { loadAIRouting, getAllModels } from "@/data/models";
@@ -166,7 +167,7 @@ const Playground = () => {
         promptConfidentiality={promptConfidentiality}
       />
 
-      <div className="px-4 py-4 max-w-7xl mx-auto">
+      <div className="px-4 py-4 max-w-[1380px] mx-auto">
         {!isLoggedIn ? (
           <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
             <CardHeader>
@@ -186,27 +187,31 @@ const Playground = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid lg:grid-cols-[300px_1fr] gap-4">
-            <PlaygroundSidebar
-              conversations={convos.conversations}
-              activeConversationId={convos.activeConversationId}
-              onSelectConversation={handleSelectConversation}
-              onNewConversation={handleNewConversation}
-              onDeleteConversation={handleDeleteConversation}
-              onRenameConversation={convos.renameConversation}
-              actaFields={actaFields}
-              onActaFieldsChange={setActaFields}
-              onSendFromACTA={chat.sendMessage}
-              onApplyTechnique={chat.sendMessage}
-              agentConfig={agentConfig}
-              onAgentConfigChange={setAgentConfig}
-              onStartAgent={handleStartAgent}
-              lastUserPrompt={lastUserPrompt}
-              selectedModel={selectedModel}
-              messages={chat.messages}
-            />
-
-            <main className="min-h-[600px]">
+          <>
+          <ResizablePanelGroup direction="horizontal" className="hidden lg:flex">
+            <ResizablePanel defaultSize={29} minSize={20} maxSize={40} className="pr-0">
+              <PlaygroundSidebar
+                conversations={convos.conversations}
+                activeConversationId={convos.activeConversationId}
+                onSelectConversation={handleSelectConversation}
+                onNewConversation={handleNewConversation}
+                onDeleteConversation={handleDeleteConversation}
+                onRenameConversation={convos.renameConversation}
+                actaFields={actaFields}
+                onActaFieldsChange={setActaFields}
+                onSendFromACTA={chat.sendMessage}
+                onApplyTechnique={chat.sendMessage}
+                agentConfig={agentConfig}
+                onAgentConfigChange={setAgentConfig}
+                onStartAgent={handleStartAgent}
+                lastUserPrompt={lastUserPrompt}
+                selectedModel={selectedModel}
+                messages={chat.messages}
+              />
+            </ResizablePanel>
+            <ResizableHandle withHandle className="mx-2" />
+            <ResizablePanel defaultSize={71}>
+              <main className="min-h-[600px]">
               {skillId && (
                 <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
                   <Bookmark className="w-4 h-4 text-primary shrink-0" />
@@ -297,7 +302,100 @@ const Playground = () => {
                 </TabsContent>
               </Tabs>
             </main>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+
+          {/* Mobile layout (below lg) */}
+          <div className="lg:hidden">
+            <PlaygroundSidebar
+              conversations={convos.conversations}
+              activeConversationId={convos.activeConversationId}
+              onSelectConversation={handleSelectConversation}
+              onNewConversation={handleNewConversation}
+              onDeleteConversation={handleDeleteConversation}
+              onRenameConversation={convos.renameConversation}
+              actaFields={actaFields}
+              onActaFieldsChange={setActaFields}
+              onSendFromACTA={chat.sendMessage}
+              onApplyTechnique={chat.sendMessage}
+              agentConfig={agentConfig}
+              onAgentConfigChange={setAgentConfig}
+              onStartAgent={handleStartAgent}
+              lastUserPrompt={lastUserPrompt}
+              selectedModel={selectedModel}
+              messages={chat.messages}
+            />
+            <main className="min-h-[600px]">
+              {skillId && (
+                <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
+                  <Bookmark className="w-4 h-4 text-primary shrink-0" />
+                  <span>
+                    Skill testen: <strong>{skillTitle}</strong>
+                    {requestedModel && (
+                      <> · Ziel-Modell: <Badge variant="outline" className="text-[10px] ml-1">{requestedModel.split("/").pop()}</Badge></>
+                    )}
+                  </span>
+                </div>
+              )}
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="mb-4">
+                  <TabsTrigger value="chat" className="gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    Chat
+                  </TabsTrigger>
+                  <TabsTrigger value="agent" className="gap-1.5">
+                    <Bot className="w-3.5 h-3.5" />
+                    Assistent
+                  </TabsTrigger>
+                  <TabsTrigger value="compare" className="gap-1.5">
+                    <GitCompare className="w-3.5 h-3.5" />
+                    Vergleich
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="chat" className="mt-0">
+                  <ChatPlayground
+                    messages={chat.messages}
+                    onSendMessage={chat.sendMessage}
+                    isStreaming={chat.isStreaming}
+                    streamingContent={chat.streamingContent}
+                    systemPrompt={systemPrompt}
+                    onSystemPromptChange={setSystemPrompt}
+                    onClearChat={handleClearChat}
+                    onStop={chat.handleStop}
+                    initialPrompt={prefilledPrompt}
+                  />
+                </TabsContent>
+
+                <TabsContent value="agent" className="mt-0">
+                  <div className="rounded-lg border border-border bg-card p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Bot className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Agenten-Modus</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Konfiguriere einen autonomen KI-Assistenten mit den 4 Zuverlässigkeits-Reglern
+                      in der linken Seitenleiste.
+                    </p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="compare" className="mt-0">
+                  <div className="rounded-lg border border-border bg-card p-4">
+                    <h3 className="text-sm font-semibold mb-3">Modell-Vergleich</h3>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Sende denselben Prompt an zwei verschiedene Modelle und vergleiche die Antworten.
+                    </p>
+                    <ComparisonView
+                      systemPrompt={systemPrompt}
+                      onBudgetExhausted={() => setShowBudgetDialog(true)}
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </main>
           </div>
+          </>
         )}
       </div>
 
