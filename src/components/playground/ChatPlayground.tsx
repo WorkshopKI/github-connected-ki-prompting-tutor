@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
+import { IterationNudge } from "./IterationNudge";
 import type { Msg } from "@/services/llmService";
 
 export interface ChatPlaygroundProps {
@@ -85,6 +86,7 @@ export const ChatPlayground = ({
 
   const hasMessages = messages.length > 0 || isStreaming;
   const hasAssistantMessage = messages.some((m) => m.role === "assistant");
+  const turnCount = messages.filter((m) => m.role === "user").length;
 
   return (
     <div className="flex flex-col h-full bg-gradient-card rounded-xl border border-border shadow-lg">
@@ -169,6 +171,14 @@ export const ChatPlayground = ({
 
         <div ref={bottomRef} />
       </div>
+
+      {/* Iteration Nudge */}
+      {!isStreaming && turnCount > 0 && (
+        <IterationNudge
+          turnCount={turnCount}
+          onSendSuggestion={(text) => onSendMessage(text)}
+        />
+      )}
 
       {/* Input */}
       <div className="px-4 pb-4 pt-2 border-t border-border">
