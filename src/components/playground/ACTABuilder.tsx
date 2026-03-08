@@ -3,9 +3,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ACTA_TEMPLATES, type ACTAFields } from "./ACTATemplates";
 
@@ -112,12 +112,30 @@ export const ACTABuilder = ({
         );
       })}
 
-      <div className="space-y-1">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{filledCount}/4 Felder ausgefüllt</span>
-          <span>{filledCount === 4 ? "Vollständig!" : ""}</span>
-        </div>
-        <Progress value={filledCount * 25} className="h-1.5" />
+      <div className="flex items-center gap-1 mb-1">
+        {FIELD_CONFIG.map((field, i) => {
+          const filled = fields[field.key].trim().length > 10;
+          return (
+            <div key={field.key} className="flex items-center">
+              <div className={cn(
+                "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold transition-colors",
+                filled ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              )}>
+                {filled ? "✓" : i + 1}
+              </div>
+              <span className={cn(
+                "text-[10px] ml-1 font-medium",
+                filled ? "text-foreground" : "text-muted-foreground"
+              )}>
+                {field.key === "ausgabe" ? "Ausgabe" : field.key.charAt(0).toUpperCase() + field.key.slice(1)}
+              </span>
+              {i < 3 && <div className={cn(
+                "w-4 h-0.5 mx-1.5 transition-colors",
+                filled ? "bg-primary" : "bg-muted"
+              )} />}
+            </div>
+          );
+        })}
       </div>
 
       {hasContent && (
@@ -130,7 +148,7 @@ export const ACTABuilder = ({
       <div className="flex gap-2">
         <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
           <Send className="w-3 h-3 mr-1.5" />
-          Prompt zusammenbauen
+          → Prompt testen
         </Button>
         <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
           <Copy className="w-3 h-3 mr-1.5" />

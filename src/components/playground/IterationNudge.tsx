@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Lightbulb, X, ChevronRight } from "lucide-react";
+import { Lightbulb, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LS_KEYS } from "@/lib/constants";
 
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const IterationNudge = ({ turnCount, onSendSuggestion }: Props) => {
-  const [dismissed, setDismissed] = useState(() => {
+  const [dismissed] = useState(() => {
     try {
       return localStorage.getItem(LS_KEYS.NUDGE_DISMISSED) === "true";
     } catch {
@@ -38,53 +38,29 @@ export const IterationNudge = ({ turnCount, onSendSuggestion }: Props) => {
   // Nur nach der ersten Antwort zeigen (turnCount === 1)
   if (turnCount !== 1 || dismissed || !visible) return null;
 
-  const handleDismissForever = () => {
-    setDismissed(true);
-    try {
-      localStorage.setItem(LS_KEYS.NUDGE_DISMISSED, "true");
-    } catch {
-      // ignore
-    }
-  };
-
   return (
-    <div className="mx-4 mb-3 p-3 rounded-lg bg-primary/5 border border-primary/15 text-sm">
-      <div className="flex items-start gap-2">
-        <Lightbulb className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-        <div className="flex-1">
-          <p className="text-xs text-muted-foreground mb-2">
-            Die erste Antwort ist selten die beste. Versuche eine Iteration:
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {shown.map((s, i) => (
-              <Button
-                key={i}
-                variant="outline"
-                size="sm"
-                className="text-xs h-7 gap-1"
-                onClick={() => {
-                  onSendSuggestion(s);
-                  setVisible(false);
-                }}
-              >
-                <ChevronRight className="w-3 h-3" /> {s}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <button
-          onClick={() => setVisible(false)}
-          className="text-muted-foreground/50 hover:text-muted-foreground"
-          title="Ausblenden"
+    <div className="mx-4 mb-3 px-3 py-2 rounded-lg bg-primary/5 border border-primary/15 flex items-center gap-2 flex-wrap">
+      <Lightbulb className="w-3.5 h-3.5 text-primary shrink-0" />
+      <span className="text-[11px] text-muted-foreground font-medium">Iterieren:</span>
+      {shown.map((s, i) => (
+        <Button
+          key={i}
+          variant="outline"
+          size="sm"
+          className="text-[11px] h-6 gap-1 px-2"
+          onClick={() => {
+            onSendSuggestion(s);
+            setVisible(false);
+          }}
         >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
+          {s}
+        </Button>
+      ))}
       <button
-        onClick={handleDismissForever}
-        className="text-[10px] text-muted-foreground/40 hover:text-muted-foreground mt-1.5 ml-6"
+        onClick={() => setVisible(false)}
+        className="ml-auto text-muted-foreground/50 hover:text-muted-foreground shrink-0"
       >
-        Nicht mehr anzeigen
+        <X className="w-3 h-3" />
       </button>
     </div>
   );

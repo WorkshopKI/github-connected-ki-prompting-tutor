@@ -21,6 +21,7 @@ export interface ChatPlaygroundProps {
   onClearChat: () => void;
   onStop: () => void;
   initialPrompt?: string;
+  hideSystemPrompt?: boolean;
 }
 
 export const ChatPlayground = ({
@@ -35,6 +36,7 @@ export const ChatPlayground = ({
   onClearChat,
   onStop,
   initialPrompt,
+  hideSystemPrompt,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
@@ -96,9 +98,11 @@ export const ChatPlayground = ({
   return (
     <div className="flex flex-col h-full bg-gradient-card rounded-xl border border-border shadow-lg">
       {/* System Prompt */}
-      <div className="px-4 pt-4">
-        <SystemPromptEditor value={systemPrompt} onChange={onSystemPromptChange} />
-      </div>
+      {!hideSystemPrompt && (
+        <div className="px-4 pt-4">
+          <SystemPromptEditor value={systemPrompt} onChange={onSystemPromptChange} />
+        </div>
+      )}
 
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-4 py-2 border-b border-border">

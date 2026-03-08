@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, XCircle, Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export interface EvaluationResult {
   hasContext: boolean;
@@ -16,6 +16,30 @@ export interface EvaluationResult {
 export interface PromptEvaluationProps {
   prompt: string;
   model?: string;
+}
+
+function CriterionBar({ label, met }: { label: string; met: boolean }) {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
+        <span className={cn(
+          "text-[11px] font-semibold",
+          met ? "text-primary" : "text-red-600 dark:text-red-400"
+        )}>
+          {met ? "✓ Gut" : "✗ Fehlt"}
+        </span>
+      </div>
+      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-500",
+            met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]"
+          )}
+        />
+      </div>
+    </div>
+  );
 }
 
 export const PromptEvaluation = ({ prompt, model }: PromptEvaluationProps) => {
@@ -95,32 +119,32 @@ export const PromptEvaluation = ({ prompt, model }: PromptEvaluationProps) => {
         {loading ? (
           <>
             <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-            Bewerte Prompt...
+            Wird geprüft...
           </>
         ) : (
           <>
             <Sparkles className="w-3 h-3 mr-1" />
-            Prompt bewerten
+            Prompt prüfen
           </>
         )}
       </Button>
 
       {result && (
         <Card className="p-3 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold">Qualität:</span>
-            <Badge
-              variant={score === 3 ? "default" : "secondary"}
-              className="text-xs"
-            >
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-semibold">Prompt-Check</span>
+            <span className={cn(
+              "text-xs font-bold",
+              score === 3 ? "text-primary" : score >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+            )}>
               {score}/3
-            </Badge>
+            </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5">
-            <CriterionBadge label="Kontext" met={result.hasContext} />
-            <CriterionBadge label="Spezifik" met={result.isSpecific} />
-            <CriterionBadge label="Constraints" met={result.hasConstraints} />
+          <div className="space-y-2">
+            <CriterionBar label="Kontext" met={result.hasContext} />
+            <CriterionBar label="Spezifik" met={result.isSpecific} />
+            <CriterionBar label="Constraints" met={result.hasConstraints} />
           </div>
 
           <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -131,22 +155,3 @@ export const PromptEvaluation = ({ prompt, model }: PromptEvaluationProps) => {
     </div>
   );
 };
-
-function CriterionBadge({ label, met }: { label: string; met: boolean }) {
-  return (
-    <div
-      className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium ${
-        met
-          ? "bg-primary/10 text-primary"
-          : "bg-red-500/10 text-red-700 dark:text-red-400"
-      }`}
-    >
-      {met ? (
-        <CheckCircle className="w-3 h-3" />
-      ) : (
-        <XCircle className="w-3 h-3" />
-      )}
-      {label}
-    </div>
-  );
-}

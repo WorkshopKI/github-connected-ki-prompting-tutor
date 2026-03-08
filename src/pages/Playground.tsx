@@ -49,6 +49,16 @@ const Playground = () => {
     habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
   });
 
+  // --- Playground mode ---
+  const [playgroundMode, setPlaygroundMode] = useState<"einsteiger" | "experte">(() =>
+    (localStorage.getItem(LS_KEYS.PLAYGROUND_MODE) as "einsteiger" | "experte") ?? "einsteiger"
+  );
+
+  const handleModeChange = (mode: "einsteiger" | "experte") => {
+    setPlaygroundMode(mode);
+    localStorage.setItem(LS_KEYS.PLAYGROUND_MODE, mode);
+  };
+
   // --- Custom hooks ---
   const chat = useChat({
     systemPrompt,
@@ -167,6 +177,8 @@ const Playground = () => {
         onModelChange={setSelectedModel}
         aiRouting={aiRouting}
         promptConfidentiality={promptConfidentiality}
+        mode={playgroundMode}
+        onModeChange={handleModeChange}
       />
 
       <div className="px-4 py-4 max-w-[1380px] mx-auto flex-1 overflow-hidden">
@@ -209,6 +221,7 @@ const Playground = () => {
                 lastUserPrompt={lastUserPrompt}
                 selectedModel={selectedModel}
                 messages={chat.messages}
+                mode={playgroundMode}
               />
             </ResizablePanel>
             <ResizableHandle withHandle className="mx-2" />
@@ -232,6 +245,7 @@ const Playground = () => {
                 skillTitle={skillTitle}
                 requestedModel={requestedModel}
                 variant="desktop"
+                mode={playgroundMode}
               />
             </ResizablePanel>
           </ResizablePanelGroup>
@@ -255,6 +269,7 @@ const Playground = () => {
               lastUserPrompt={lastUserPrompt}
               selectedModel={selectedModel}
               messages={chat.messages}
+              mode={playgroundMode}
             />
             <PlaygroundContent
               activeTab={activeTab}
@@ -275,6 +290,7 @@ const Playground = () => {
               skillTitle={skillTitle}
               requestedModel={requestedModel}
               variant="mobile"
+              mode={playgroundMode}
             />
           </div>
           </>

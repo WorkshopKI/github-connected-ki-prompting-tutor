@@ -48,7 +48,7 @@ export const ChatInput = ({ onSend, disabled, isStreaming, onStop, initialValue 
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Nachricht eingeben... (Enter zum Senden, Shift+Enter für Zeilenumbruch)"
+        placeholder="Prompt eingeben... (Enter zum Senden, Shift+Enter für Zeilenumbruch)"
         className="min-h-[44px] max-h-[160px] resize-none"
         rows={1}
         disabled={disabled}

@@ -59,7 +59,7 @@ export const ConversationHistory = ({
     <div className={bare ? "space-y-2 px-3 pb-3" : "px-3 pb-3 space-y-2"}>
             <Button onClick={onNew} variant="outline" size="sm" className="w-full text-xs">
               <Plus className="w-3 h-3 mr-1" />
-              Neues Gespräch
+              Neuer Versuch
             </Button>
 
             <ScrollArea className="max-h-[250px]">
@@ -131,7 +131,7 @@ export const ConversationHistory = ({
 
                 {conversations.length === 0 && (
                   <p className="text-xs text-muted-foreground text-center py-3">
-                    Noch keine Gespräche gespeichert.
+                    Noch keine Versuche gespeichert.
                   </p>
                 )}
               </div>
@@ -147,7 +147,7 @@ export const ConversationHistory = ({
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
             <History className="w-4 h-4 text-primary" />
-            <span className="font-semibold text-sm">Verlauf</span>
+            <span className="font-semibold text-sm">Meine Versuche</span>
             <span className="text-xs text-muted-foreground">({conversations.length})</span>
           </div>
           {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
