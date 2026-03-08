@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
@@ -14,6 +13,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { toast } from "sonner";
 import { User, BookOpen, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud, LogOut } from "lucide-react";
 import { saveUserKey } from "@/services/llmService";
+import { setApiKey as setStandaloneKey } from "@/services/apiKeyService";
+import { useAppMode } from "@/contexts/AppModeContext";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
 
@@ -35,13 +36,16 @@ export const ProfileContent = () => {
   const [savingKey, setSavingKey] = useState(false);
   const { customModels, addCustomModel, removeCustomModel } = useCustomModels();
   const [newModelId, setNewModelId] = useState("");
+  const { isStandalone } = useAppMode();
 
   useEffect(() => {
-    if (!user) return;
-    supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle().then(({ data }) => {
-      if (data) setBudget(data);
+    if (!user || isStandalone) return;
+    import("@/integrations/supabase/client").then(({ supabase }) => {
+      supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+        if (data) setBudget(data);
+      });
     });
-  }, [user]);
+  }, [user, isStandalone]);
 
   useEffect(() => {
     if (profile?.preferred_model) setSelectedModel(profile.preferred_model);
@@ -50,22 +54,41 @@ export const ProfileContent = () => {
   const handleSaveModel = async () => {
     if (!user) return;
     setSavingModel(true);
-    const { error } = await supabase.from("user_profiles").update({ preferred_model: selectedModel, updated_at: new Date().toISOString() }).eq("id", user.id);
-    setSavingModel(false);
-    if (error) { toast.error("Fehler beim Speichern"); } else { toast.success("Modell gespeichert!"); await refreshProfile(); }
+    if (isStandalone) {
+      // In standalone mode, save model preference to localStorage
+      const { saveToStorage } = await import("@/lib/storage");
+      const { LS_KEYS } = await import("@/lib/constants");
+      const currentProfile = { ...profile, preferred_model: selectedModel };
+      saveToStorage(LS_KEYS.STANDALONE_PROFILE, currentProfile);
+      setSavingModel(false);
+      toast.success("Modell gespeichert!");
+    } else {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.from("user_profiles").update({ preferred_model: selectedModel, updated_at: new Date().toISOString() }).eq("id", user.id);
+      setSavingModel(false);
+      if (error) { toast.error("Fehler beim Speichern"); } else { toast.success("Modell gespeichert!"); await refreshProfile(); }
+    }
   };
 
   const handleSaveApiKey = async () => {
     if (!customApiKey.trim()) return;
     setSavingKey(true);
-    const result = await saveUserKey(customApiKey.trim());
-    setSavingKey(false);
-    if (result.error) { toast.error(result.error); } else {
-      toast.success("API-Key gespeichert!");
+    if (isStandalone) {
+      setStandaloneKey(customApiKey.trim());
+      setSavingKey(false);
+      toast.success("API-Key gespeichert");
       setCustomApiKey("");
-      if (user) {
-        const { data } = await supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle();
-        if (data) setBudget(data);
+    } else {
+      const result = await saveUserKey(customApiKey.trim());
+      setSavingKey(false);
+      if (result.error) { toast.error(result.error); } else {
+        toast.success("API-Key gespeichert!");
+        setCustomApiKey("");
+        if (user) {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data } = await supabase.from("user_api_keys").select("provisioned_key_budget, custom_key_active, active_key_source").eq("user_id", user.id).maybeSingle();
+          if (data) setBudget(data);
+        }
       }
     }
   };
@@ -95,15 +118,24 @@ export const ProfileContent = () => {
   const handleSaveName = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase
-      .from("user_profiles")
-      .update({ display_name: displayName, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
-    if (error) {
-      toast.error("Fehler beim Speichern");
-    } else {
+    if (isStandalone) {
+      const { saveToStorage } = await import("@/lib/storage");
+      const { LS_KEYS } = await import("@/lib/constants");
+      const currentProfile = { ...profile, display_name: displayName };
+      saveToStorage(LS_KEYS.STANDALONE_PROFILE, currentProfile);
       toast.success("Name gespeichert!");
-      await refreshProfile();
+    } else {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase
+        .from("user_profiles")
+        .update({ display_name: displayName, updated_at: new Date().toISOString() })
+        .eq("id", user.id);
+      if (error) {
+        toast.error("Fehler beim Speichern");
+      } else {
+        toast.success("Name gespeichert!");
+        await refreshProfile();
+      }
     }
     setSaving(false);
   };

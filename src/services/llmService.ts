@@ -1,5 +1,6 @@
-import { supabase } from "@/integrations/supabase/client";
 import type { Msg } from "@/types";
+import { hasApiKey, getApiKey, getEndpoint } from "./apiKeyService";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export type { Msg } from "@/types";
 
@@ -24,36 +25,76 @@ export async function streamChat({
   onDone: () => void;
   onError: (error: string, status?: number) => void;
 }) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    onError("Bitte melde dich an, um KI-Funktionen zu nutzen.");
-    return;
-  }
-
-  const body: Record<string, unknown> = { messages, model };
-  if (reasoning) body.reasoning = reasoning;
-
   let resp: Response;
   try {
-    resp = await fetch(PROXY_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      },
-      body: JSON.stringify(body),
-      signal,
-    });
+    if (hasApiKey()) {
+      // ═══ DIRECT MODE: Client → OpenRouter/Provider ═══
+      const apiKey = getApiKey();
+      const endpoint = getEndpoint();
+
+      const body: Record<string, unknown> = {
+        model: model || DEFAULT_MODEL,
+        messages,
+        stream: true,
+      };
+      if (reasoning) body.reasoning = reasoning;
+
+      resp = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": window.location.origin,
+          "X-Title": "Prompting Studio",
+        },
+        body: JSON.stringify(body),
+        signal,
+      });
+    } else {
+      // ═══ PROXY MODE: Client → Edge Function → OpenRouter ═══
+      let session;
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase.auth.getSession();
+        session = data.session;
+      } catch {
+        onError("Supabase nicht verfügbar. Bitte API-Key in den Einstellungen hinterlegen.");
+        return;
+      }
+
+      if (!session) {
+        onError("Bitte melde dich an oder hinterlege einen API-Key in den Einstellungen.");
+        return;
+      }
+
+      const body: Record<string, unknown> = { messages, model: model || DEFAULT_MODEL };
+      if (reasoning) body.reasoning = reasoning;
+
+      resp = await fetch(PROXY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify(body),
+        signal,
+      });
+    }
   } catch (e) {
-    if (signal?.aborted) { onDone(); return; }
+    if (signal?.aborted) {
+      onDone();
+      return;
+    }
     onError(e instanceof Error ? e.message : "Netzwerkfehler");
     return;
   }
 
   if (!resp.ok) {
-    const body = await resp.json().catch(() => ({ error: "Unbekannter Fehler" }));
-    onError(body.error ?? body.message ?? "LLM-Fehler", resp.status);
+    const errBody = await resp.json().catch(() => ({ error: "Unbekannter Fehler" }));
+    const errMsg =
+      errBody.error?.message || errBody.error || errBody.message || "LLM-Fehler";
+    onError(errMsg, resp.status);
     return;
   }
 
@@ -62,6 +103,7 @@ export async function streamChat({
     return;
   }
 
+  // ═══ SSE Parsing (identisch für beide Pfade) ═══
   const reader = resp.body.getReader();
   const decoder = new TextDecoder();
   let buf = "";
@@ -80,7 +122,10 @@ export async function streamChat({
         if (line.startsWith(":") || line.trim() === "") continue;
         if (!line.startsWith("data: ")) continue;
         const json = line.slice(6).trim();
-        if (json === "[DONE]") { onDone(); return; }
+        if (json === "[DONE]") {
+          onDone();
+          return;
+        }
         try {
           const parsed = JSON.parse(json);
           const delta = parsed.choices?.[0]?.delta;
@@ -96,36 +141,30 @@ export async function streamChat({
       }
     }
   } catch (e) {
-    if (signal?.aborted) { onDone(); return; }
+    if (signal?.aborted) {
+      onDone();
+      return;
+    }
     onError(e instanceof Error ? e.message : "Stream-Fehler");
     return;
   }
   onDone();
 }
 
-export async function saveUserKey(apiKey: string): Promise<{ success?: boolean; error?: string }> {
-  const { data, error } = await supabase.functions.invoke("save-user-key", {
-    body: { apiKey },
-  });
-  if (error) {
-    let msg = "Verbindungsfehler";
-    if (error instanceof Error) {
-      // FunctionsHttpError includes the server's response in context
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const context = (error as any).context;
-        if (context instanceof Response) {
-          const body = await context.json().catch(() => null);
-          msg = body?.error || error.message;
-        } else {
-          msg = error.message;
-        }
-      } catch {
-        msg = error.message;
-      }
+// ═══ Save User Key (nur Workshop-Modus) ═══
+export async function saveUserKey(
+  apiKey: string,
+): Promise<{ success?: boolean; error?: string }> {
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data, error } = await supabase.functions.invoke("save-user-key", {
+      body: { apiKey },
+    });
+    if (error) {
+      return { error: error.message || "Verbindungsfehler" };
     }
-    return { error: msg };
+    return data ?? { success: true };
+  } catch {
+    return { error: "Supabase nicht verfügbar" };
   }
-  if (data?.error) return { error: data.error };
-  return { success: true };
 }
