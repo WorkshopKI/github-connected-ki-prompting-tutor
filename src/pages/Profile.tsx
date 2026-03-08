@@ -13,7 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { toast } from "sonner";
 import { User, BookOpen, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud, LogOut } from "lucide-react";
 import { saveUserKey } from "@/services/llmService";
-import { setApiKey as setStandaloneKey } from "@/services/apiKeyService";
+import { setApiKey as setStandaloneKey, hasApiKey, clearApiKey } from "@/services/apiKeyService";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
@@ -272,14 +272,16 @@ export const ProfileContent = () => {
               <span className="text-muted-foreground">Anmeldeart:</span>
               <div className="mt-1">
                 <Badge variant={authMethod === "guest" ? "secondary" : "default"}>
-                  {authMethod === "guest" ? "Gast" : "E-Mail"}
+                  {isStandalone ? "Standalone" : authMethod === "guest" ? "Gast" : "E-Mail"}
                 </Badge>
               </div>
             </div>
-            <div>
-              <span className="text-muted-foreground">Sync-Status:</span>
-              <div className="mt-1 capitalize">{syncStatus}</div>
-            </div>
+            {!isStandalone && (
+              <div>
+                <span className="text-muted-foreground">Sync-Status:</span>
+                <div className="mt-1 capitalize">{syncStatus}</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -412,54 +414,99 @@ export const ProfileContent = () => {
           )}
         </div>
 
-        <div className="border-t border-border pt-4">
-          <h4 className="font-semibold text-xs text-muted-foreground mb-3 flex items-center gap-2">
-            <Wallet className="h-3.5 w-3.5" /> KI-Budget
-          </h4>
-          {budget ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Verbleibend</span>
-                <span className="font-semibold">${budget.provisioned_key_budget.toFixed(2)} / $5.00</span>
-              </div>
-              <Progress value={(budget.provisioned_key_budget / 5) * 100} className="h-2" />
+        {isStandalone ? (
+          <div className="border-t border-border pt-4">
+            <h4 className="font-semibold text-xs text-muted-foreground mb-3 flex items-center gap-2">
+              <Key className="h-3.5 w-3.5" /> API-Key
+            </h4>
+            {hasApiKey() ? (
               <div className="flex items-center gap-2">
-                {budget.active_key_source === "custom" ? (
-                  <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> OpenRouter (eigener Key)</Badge>
-                ) : (
-                  <Badge variant="secondary" className="gap-1"><Cloud className="h-3 w-3" /> Cloud AI (Standard)</Badge>
-                )}
+                <Badge className="bg-primary/10 text-primary gap-1">
+                  <Key className="w-3 h-3" /> Key hinterlegt
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground"
+                  onClick={() => { clearApiKey(); toast.success("API-Key entfernt"); window.location.reload(); }}
+                >
+                  Entfernen
+                </Button>
               </div>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Budget-Daten werden geladen…</p>
-          )}
-
-          <Accordion type="single" collapsible className="w-full mt-3">
-            <AccordionItem value="apikey">
-              <AccordionTrigger className="text-sm">
-                <span className="flex items-center gap-2"><Key className="h-4 w-4" /> Eigenen API-Key hinterlegen</span>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-4">
-                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-                  <li>Erstelle ein Konto bei{" "}
-                    <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">OpenRouter <ExternalLink className="h-3 w-3" /></a>
-                  </li>
-                  <li>Lade Guthaben auf (ab $5)</li>
-                  <li>Erstelle einen API-Key unter „Keys"</li>
-                  <li>Füge den Key hier ein:</li>
-                </ol>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  OpenRouter API-Key für KI-Funktionen (Prompt-Labor, Übungsbewertung).
+                </p>
                 <div className="flex gap-2">
-                  <Input type="password" placeholder="sk-or-..." value={customApiKey} onChange={(e) => setCustomApiKey(e.target.value)} className="flex-1" />
-                  <Button onClick={handleSaveApiKey} disabled={savingKey || !customApiKey.trim()}>
-                    {savingKey ? "Speichern…" : "Speichern"}
+                  <Input
+                    type="password"
+                    placeholder="sk-or-..."
+                    value={customApiKey}
+                    onChange={(e) => setCustomApiKey(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={!customApiKey.trim()}
+                    onClick={handleSaveApiKey}
+                  >
+                    Speichern
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Dein Key wird verschlüsselt gespeichert und nur serverseitig für KI-Anfragen verwendet.</p>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="border-t border-border pt-4">
+            <h4 className="font-semibold text-xs text-muted-foreground mb-3 flex items-center gap-2">
+              <Wallet className="h-3.5 w-3.5" /> KI-Budget
+            </h4>
+            {budget ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Verbleibend</span>
+                  <span className="font-semibold">${budget.provisioned_key_budget.toFixed(2)} / $5.00</span>
+                </div>
+                <Progress value={(budget.provisioned_key_budget / 5) * 100} className="h-2" />
+                <div className="flex items-center gap-2">
+                  {budget.active_key_source === "custom" ? (
+                    <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> OpenRouter (eigener Key)</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="gap-1"><Cloud className="h-3 w-3" /> Cloud AI (Standard)</Badge>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Budget-Daten werden geladen…</p>
+            )}
+
+            <Accordion type="single" collapsible className="w-full mt-3">
+              <AccordionItem value="apikey">
+                <AccordionTrigger className="text-sm">
+                  <span className="flex items-center gap-2"><Key className="h-4 w-4" /> Eigenen API-Key hinterlegen</span>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4">
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                    <li>Erstelle ein Konto bei{" "}
+                      <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer" className="text-primary underline inline-flex items-center gap-1">OpenRouter <ExternalLink className="h-3 w-3" /></a>
+                    </li>
+                    <li>Lade Guthaben auf (ab $5)</li>
+                    <li>Erstelle einen API-Key unter „Keys"</li>
+                    <li>Füge den Key hier ein:</li>
+                  </ol>
+                  <div className="flex gap-2">
+                    <Input type="password" placeholder="sk-or-..." value={customApiKey} onChange={(e) => setCustomApiKey(e.target.value)} className="flex-1" />
+                    <Button onClick={handleSaveApiKey} disabled={savingKey || !customApiKey.trim()}>
+                      {savingKey ? "Speichern…" : "Speichern"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Dein Key wird verschlüsselt gespeichert und nur serverseitig für KI-Anfragen verwendet.</p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        )}
       </Card>
 
       {/* Abmelden */}

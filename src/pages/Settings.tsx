@@ -5,8 +5,10 @@ import { RolesSettings } from "@/components/settings/RolesSettings";
 import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
 import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
 import { AppearanceSettings } from "@/components/settings/AppearanceSettings";
+import { useAppMode } from "@/contexts/AppModeContext";
 
 const Settings = () => {
+  const { isWorkshop } = useAppMode();
   return (
     <div className="space-y-8">
       <div>
@@ -20,8 +22,8 @@ const Settings = () => {
         <TabsList>
           <TabsTrigger value="account">Mein Konto</TabsTrigger>
           <TabsTrigger value="general">Allgemein</TabsTrigger>
-          <TabsTrigger value="roles">Rollen & Rechte</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          {isWorkshop && <TabsTrigger value="roles">Rollen & Rechte</TabsTrigger>}
+          {isWorkshop && <TabsTrigger value="compliance">Compliance</TabsTrigger>}
           <TabsTrigger value="ai">KI-Konfiguration</TabsTrigger>
           <TabsTrigger value="appearance">Darstellung</TabsTrigger>
         </TabsList>

@@ -9,12 +9,14 @@ import { TeamMembers } from "@/components/TeamMembers";
 import { PendingReviews } from "@/components/PendingReviews";
 import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
 
 const Library = () => {
   const navigate = useNavigate();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { skills } = useMySkills();
+  const { isWorkshop } = useAppMode();
 
   const uniqueCategories = useMemo(() => {
     return new Set(promptLibrary.map((p) => p.category)).size;
@@ -54,8 +56,8 @@ const Library = () => {
             )}
           </TabsTrigger>
           <TabsTrigger value="usecases">Use Cases</TabsTrigger>
-          <TabsTrigger value="team">Team</TabsTrigger>
-          <TabsTrigger value="reviews">Reviews</TabsTrigger>
+          {isWorkshop && <TabsTrigger value="team">Team</TabsTrigger>}
+          {isWorkshop && <TabsTrigger value="reviews">Reviews</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="prompts" className="mt-4">

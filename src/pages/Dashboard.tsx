@@ -23,6 +23,7 @@ import { exercises } from "@/data/exercises";
 import { requiredModules, bonusModules } from "@/data/learningPath";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
 import { LEVEL_BADGE_COLORS } from "@/lib/constants";
@@ -40,6 +41,7 @@ const Dashboard = () => {
   const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { completedLessons, exercises: exerciseResults } = useSyncContext();
   const { skills: mySkills } = useMySkills();
+  const { isWorkshop } = useAppMode();
 
   const stats = useMemo(() => {
     const uniqueDepartments = new Set(
@@ -187,13 +189,23 @@ const Dashboard = () => {
               >
                 <Sparkles className="h-4 w-4" /> Prompt-Labor öffnen
               </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                onClick={() => navigate("/library")}
-              >
-                <Users className="h-4 w-4" /> Use Cases
-              </Button>
+              {isWorkshop ? (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => navigate("/library")}
+                >
+                  <Users className="h-4 w-4" /> Use Cases
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => navigate("/library?tab=skills")}
+                >
+                  <Bookmark className="h-4 w-4" /> Meine Skills
+                </Button>
+              )}
             </div>
           </Card>
 

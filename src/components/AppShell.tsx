@@ -12,6 +12,7 @@ import { UserMenu } from "@/components/UserMenu";
 import { SyncStatusIcon } from "@/components/SyncStatusIcon";
 import { ThemePresetPicker } from "@/components/ThemePresetPicker";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useAppMode } from "@/contexts/AppModeContext";
 import {
   Sidebar,
   SidebarContent,
@@ -53,6 +54,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { scopeLabel, isDepartment } = useOrgContext();
+  const { isWorkshop } = useAppMode();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -98,7 +100,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           <div className="flex items-center justify-between">
             <UserMenu />
             <div className="flex items-center gap-2">
-              <SyncStatusIcon />
+              {isWorkshop && <SyncStatusIcon />}
               <ThemePresetPicker />
             </div>
           </div>

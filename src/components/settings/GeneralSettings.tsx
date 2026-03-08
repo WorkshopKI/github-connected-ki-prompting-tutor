@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useOrgContext, ORG_SCOPE_LABELS } from "@/contexts/OrgContext";
+import { useAppMode } from "@/contexts/AppModeContext";
+import { Button } from "@/components/ui/button";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
 import type { OrgScope, PlatformSettings } from "@/types";
@@ -18,6 +20,7 @@ const defaultPlatform: PlatformSettings = {
 
 export function GeneralSettings() {
   const { scope, setScope } = useOrgContext();
+  const { isWorkshop, isStandalone, setMode } = useAppMode();
   const [platform, setPlatform] = useState<PlatformSettings>(() => loadFromStorage(LS_KEYS.PLATFORM_SETTINGS, defaultPlatform));
 
   useEffect(() => {
@@ -27,6 +30,36 @@ export function GeneralSettings() {
   return (
     <div className="space-y-6">
       <Card className="p-5 rounded-xl border border-border shadow-sm space-y-4">
+        {/* App-Modus */}
+        <div className="pb-4 border-b border-border">
+          <label className="text-sm font-medium block mb-2">App-Modus</label>
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+            <div className="flex-1">
+              <span className="text-sm font-medium">
+                {isWorkshop ? "Workshop-Modus" : "Eigener API-Key"}
+              </span>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isWorkshop
+                  ? "Verbunden mit Workshop — Cloud-Sync aktiv"
+                  : "Standalone — alles lokal gespeichert"
+                }
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (confirm("Modus wechseln? Lokale Daten bleiben erhalten.")) {
+                  setMode(null);
+                  window.location.href = "/";
+                }
+              }}
+            >
+              Modus wechseln
+            </Button>
+          </div>
+        </div>
+
         <div>
           <label className="text-sm font-medium block mb-2">Mein Bereich</label>
           <p className="text-xs text-muted-foreground mb-3">
