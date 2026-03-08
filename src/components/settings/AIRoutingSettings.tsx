@@ -3,10 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { loadAIRouting, saveAIRouting } from "@/data/models";
+import { useAppMode } from "@/contexts/AppModeContext";
+import { getEndpoint, setEndpoint } from "@/services/apiKeyService";
 import type { AIRoutingConfig } from "@/types";
 
 export function AIRoutingSettings() {
   const [aiRouting, setAiRouting] = useState<AIRoutingConfig>(() => loadAIRouting());
+  const { isStandalone } = useAppMode();
 
   useEffect(() => {
     saveAIRouting(aiRouting);
@@ -136,6 +139,23 @@ export function AIRoutingSettings() {
           </label>
         </div>
       </Card>
+
+      {isStandalone && (
+        <Card className="p-5 rounded-xl border border-border shadow-sm space-y-3">
+          <h3 className="font-semibold text-base">API-Endpoint</h3>
+          <p className="text-xs text-muted-foreground">
+            Standard: OpenRouter. Für lokale Modelle (Ollama, LM Studio) die URL ändern.
+          </p>
+          <Input
+            placeholder="https://openrouter.ai/api/v1/chat/completions"
+            defaultValue={getEndpoint()}
+            onBlur={(e) => setEndpoint(e.target.value)}
+          />
+          <p className="text-[10px] text-muted-foreground">
+            Muss OpenAI-kompatibles Format unterstützen (/v1/chat/completions)
+          </p>
+        </Card>
+      )}
     </div>
   );
 }

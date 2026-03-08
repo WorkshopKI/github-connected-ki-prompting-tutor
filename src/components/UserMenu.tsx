@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { LogOut, Users, Mail, Coins, Settings } from "lucide-react";
+import { LogOut, Users, Mail, Coins, Settings, ArrowLeftRight } from "lucide-react";
 import { CreditsDialog } from "@/components/CreditsDialog";
+import { useAppMode } from "@/contexts/AppModeContext";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 
 export const UserMenu = () => {
   const { isLoggedIn, isLoading, profile, user, signOut } = useAuthContext();
+  const { isStandalone, setMode } = useAppMode();
   const navigate = useNavigate();
   const [creditsOpen, setCreditsOpen] = useState(false);
 
@@ -75,10 +77,22 @@ export const UserMenu = () => {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Abmelden
-          </DropdownMenuItem>
+          {isStandalone ? (
+            <DropdownMenuItem onClick={() => {
+              if (confirm("Modus wechseln? Lokale Daten bleiben erhalten.")) {
+                setMode(null);
+                window.location.href = "/";
+              }
+            }}>
+              <ArrowLeftRight className="mr-2 h-4 w-4" />
+              Modus wechseln
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem onClick={signOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Abmelden
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <CreditsDialog open={creditsOpen} onOpenChange={setCreditsOpen} />
