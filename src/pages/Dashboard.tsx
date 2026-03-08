@@ -24,6 +24,7 @@ import { requiredModules, bonusModules } from "@/data/learningPath";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useMySkills } from "@/hooks/useMySkills";
+import { DailyChallengeCard } from "@/components/DailyChallenge";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -165,6 +166,9 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="space-y-4">
+          {/* Tagesaufgabe */}
+          <DailyChallengeCard />
+
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Schnellzugriff</h2>
             <div className="space-y-2">

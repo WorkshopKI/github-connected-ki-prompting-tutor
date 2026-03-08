@@ -150,6 +150,20 @@ export interface SavedSkill {
   updatedAt: number;
 }
 
+/* ── Daily Challenges ── */
+
+export interface DailyChallenge {
+  id: string;
+  title: string;
+  type: "prompt-improve" | "spot-the-flaw" | "redaction" | "iteration" | "workflow";
+  category: string;
+  difficulty: 1 | 2 | 3;
+  prompt: string;
+  badExample?: string;
+  targetDepartment?: string;
+  estimatedMinutes: number;
+}
+
 /* ── Einstellungen ── */
 
 export interface PlatformSettings {
