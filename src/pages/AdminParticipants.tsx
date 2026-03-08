@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Copy, Plus, Users, Ticket, Mail, RefreshCw } from "lucide-react";
-import { Navigation } from "@/components/Navigation";
 
 interface Course {
   id: string;
@@ -182,11 +181,9 @@ const AdminParticipants = () => {
   if (!profile?.is_admin) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -197,7 +194,7 @@ const AdminParticipants = () => {
         </div>
 
         {/* Course selector */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4">
           <Select value={selectedCourse} onValueChange={setSelectedCourse}>
             <SelectTrigger className="w-64">
               <SelectValue placeholder="Kurs wählen" />
@@ -217,7 +214,7 @@ const AdminParticipants = () => {
 
         {/* Stats */}
         {currentCourse && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Teilnehmer</CardTitle>
@@ -249,7 +246,7 @@ const AdminParticipants = () => {
         )}
 
         {/* Invite actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
@@ -348,7 +345,6 @@ const AdminParticipants = () => {
             )}
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 };

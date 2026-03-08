@@ -15,6 +15,7 @@ import { skillToMarkdown, downloadMarkdown, downloadAgentSkillZip, toSkillName }
 import { STANDARD_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { SavedSkill } from "@/types";
+import { extractVariables } from "@/lib/promptUtils";
 
 export const MySkills = () => {
   const navigate = useNavigate();
@@ -78,12 +79,6 @@ export const MySkills = () => {
   const handleDelete = (skill: SavedSkill) => {
     deleteSkill(skill.id);
     toast.success("Skill gelöscht");
-  };
-
-  const extractVars = (text: string): string[] => {
-    const matches = text.match(/\{\{(.+?)\}\}/g);
-    if (!matches) return [];
-    return [...new Set(matches.map((m) => m.replace(/\{\{|\}\}/g, "")))];
   };
 
   if (skills.length === 0) {
@@ -256,11 +251,11 @@ export const MySkills = () => {
                 />
               </div>
               {/* Variablen dynamisch aus dem Prompt-Text */}
-              {extractVars(editPrompt).length > 0 && (
+              {extractVariables(editPrompt).length > 0 && (
                 <div>
                   <label className="text-sm font-medium block mb-2">Variablen ausfüllen</label>
                   <div className="space-y-2">
-                    {extractVars(editPrompt).map((v) => (
+                    {extractVariables(editPrompt).map((v) => (
                       <div key={v} className="flex items-center gap-2">
                         <Badge variant="outline" className="shrink-0 text-xs">{`{{${v}}}`}</Badge>
                         <Input

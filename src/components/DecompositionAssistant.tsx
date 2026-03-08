@@ -182,7 +182,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6 bg-gradient-card rounded-2xl shadow-lg p-8 md:p-12">
+      <div className="max-w-4xl mx-auto space-y-6 bg-gradient-card rounded-2xl shadow-sm p-8 md:p-12">
         <Card className="p-6">
           <label className="block text-sm font-semibold mb-2">
             Beschreibe dein Projekt

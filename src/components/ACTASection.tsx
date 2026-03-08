@@ -133,7 +133,7 @@ export const ACTASection = () => {
 
       {/* Collapsible practice example */}
       {showExample && (
-        <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-lg border border-border mt-4">
+        <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-sm border border-border mt-4">
           <h3 className="text-xl font-bold mb-4 text-center">
             ACTA in der Praxis – Vollständiges Beispiel
           </h3>
