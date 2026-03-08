@@ -164,6 +164,24 @@ export interface DailyChallenge {
   estimatedMinutes: number;
 }
 
+/* ── Flaw Challenges ── */
+
+export interface FlawChallenge {
+  id: string;
+  title: string;
+  department?: string;
+  context: string;
+  generatedOutput: string;
+  flaws: {
+    id: string;
+    type: "factual" | "logic" | "privacy" | "compliance" | "hallucination" | "missing";
+    description: string;
+    location: string;
+    severity: "kritisch" | "mittel" | "hinweis";
+  }[];
+  difficulty: 1 | 2 | 3;
+}
+
 /* ── Einstellungen ── */
 
 export interface PlatformSettings {
