@@ -203,7 +203,7 @@ const Playground = () => {
         ) : (
           <>
           <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
-            <ResizablePanel defaultSize={29} minSize={20} maxSize={40} className="pr-0">
+            <ResizablePanel defaultSize={33} minSize={20} maxSize={40} className="pr-0">
               <PlaygroundSidebar
                 conversations={convos.conversations}
                 activeConversationId={convos.activeConversationId}

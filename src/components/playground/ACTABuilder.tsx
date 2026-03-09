@@ -72,7 +72,7 @@ export const ACTABuilder = ({
   const content = (
     <div className="px-4 pb-4 space-y-4">
       <Select onValueChange={handleTemplateSelect}>
-        <SelectTrigger className="w-full text-sm">
+        <SelectTrigger className="w-full text-xs">
           <SelectValue placeholder="Vorlage auswählen..." />
         </SelectTrigger>
         <SelectContent>
@@ -105,7 +105,7 @@ export const ACTABuilder = ({
               value={value}
               onChange={(e) => updateField(field.key, e.target.value)}
               placeholder={field.placeholder}
-              className="text-sm min-h-[60px] resize-none"
+              className="text-xs min-h-[56px] resize-none"
               rows={2}
             />
           </div>

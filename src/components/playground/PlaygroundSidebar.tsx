@@ -85,7 +85,7 @@ function SidebarSections({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto space-y-3">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-3">
         {/* ACTA-Baukasten — always visible, default open */}
         <SidebarSection
           icon={<Blocks className="w-4 h-4 text-primary" />}
