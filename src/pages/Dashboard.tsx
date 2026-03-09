@@ -144,7 +144,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Schnellzugriff</h2>
             <div className="space-y-2">
@@ -190,7 +190,7 @@ const Dashboard = () => {
           </Card>
 
           {/* Progress */}
-          <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
+          <Card className="flex-1 p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
             <div className="space-y-3">
               <div>
