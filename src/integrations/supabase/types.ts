@@ -269,42 +269,6 @@ export type Database = {
         }
         Relationships: []
       }
-      api_usage_log: {
-        Row: {
-          id: string
-          user_id: string
-          model: string
-          prompt_tokens: number
-          completion_tokens: number
-          total_tokens: number
-          estimated_cost: number
-          request_type: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          model: string
-          prompt_tokens?: number
-          completion_tokens?: number
-          total_tokens?: number
-          estimated_cost?: number
-          request_type?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          model?: string
-          prompt_tokens?: number
-          completion_tokens?: number
-          total_tokens?: number
-          estimated_cost?: number
-          request_type?: string
-          created_at?: string
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           id: string
