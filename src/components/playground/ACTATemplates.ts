@@ -1,3 +1,7 @@
+import { promptLibrary } from "@/data/prompts";
+import type { PromptItem } from "@/types";
+import { splitPromptToACTA } from "@/lib/promptUtils";
+
 export interface ACTAFields {
   act: string;
   context: string;
@@ -8,6 +12,11 @@ export interface ACTAFields {
 export interface ACTATemplate {
   label: string;
   fields: ACTAFields;
+}
+
+export interface ACTATemplateGroup {
+  label: string;
+  templates: ACTATemplate[];
 }
 
 export const ACTA_TEMPLATES: ACTATemplate[] = [
@@ -67,3 +76,59 @@ export const ACTA_TEMPLATES: ACTATemplate[] = [
     },
   },
 ];
+
+function promptToTemplate(p: PromptItem): ACTATemplate {
+  if (p.actaFields) {
+    return {
+      label: p.title,
+      fields: {
+        act: p.actaFields.act || "",
+        context: p.actaFields.context || "",
+        task: p.actaFields.task || "",
+        ausgabe: p.actaFields.ausgabe || "",
+      },
+    };
+  }
+  return {
+    label: p.title,
+    fields: splitPromptToACTA(p.prompt, p.title),
+  };
+}
+
+/**
+ * Erstellt gruppierte ACTA-Vorlagen aus der Library.
+ * Priorisiert: Abteilungs-Prompts → Organisation → Top-Beispiele
+ */
+export function getLibraryTemplates(departmentScope?: string): ACTATemplateGroup[] {
+  const groups: ACTATemplateGroup[] = [];
+
+  // 1. Abteilungs-spezifische Prompts (wenn Scope gesetzt)
+  if (departmentScope && departmentScope !== "privat" && departmentScope !== "organisation") {
+    const deptPrompts = promptLibrary.filter(p => p.targetDepartment === departmentScope);
+    if (deptPrompts.length > 0) {
+      groups.push({
+        label: "Meine Abteilung",
+        templates: deptPrompts.slice(0, 8).map(promptToTemplate),
+      });
+    }
+  }
+
+  // 2. Organisations-Prompts (ohne die schon in Abt. gezeigten)
+  const orgPrompts = promptLibrary.filter(
+    p => p.level === "organisation" && p.targetDepartment !== departmentScope
+  );
+  if (orgPrompts.length > 0) {
+    groups.push({
+      label: "Organisation",
+      templates: orgPrompts.slice(0, 6).map(promptToTemplate),
+    });
+  }
+
+  // 3. Generische Beispiele (Fallback)
+  groups.push({
+    label: "Beispiele",
+    templates: ACTA_TEMPLATES,
+  });
+
+  return groups;
+}

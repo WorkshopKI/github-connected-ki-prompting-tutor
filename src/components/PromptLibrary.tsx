@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Copy, Check, Search, ExternalLink, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown } from "lucide-react";
+import { Copy, Check, Search, Sparkles, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { promptLibrary } from "@/data/prompts";
@@ -447,11 +447,11 @@ export const PromptLibrary = () => {
                     {copiedIndex === index ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
                   </button>
                   <button
-                    onClick={(e) => { e.stopPropagation(); navigate(`/playground?prompt=${encodeURIComponent(prompt.prompt)}`); }}
-                    className="p-1.5 rounded-md hover:bg-muted transition-colors"
-                    title="Im Playground \u00f6ffnen"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`); }}
+                    className="p-1.5 rounded-md hover:bg-primary/10 transition-colors group"
+                    title="Im Labor verfeinern"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Sparkles className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </button>
                 </div>
               </div>

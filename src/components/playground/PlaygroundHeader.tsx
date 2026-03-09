@@ -22,6 +22,7 @@ interface PlaygroundHeaderProps {
   promptConfidentiality: "open" | "internal" | "confidential";
   mode: "einsteiger" | "experte";
   onModeChange: (mode: "einsteiger" | "experte") => void;
+  sourceTitle?: string | null;
 }
 
 export function PlaygroundHeader({
@@ -36,6 +37,7 @@ export function PlaygroundHeader({
   promptConfidentiality,
   mode,
   onModeChange,
+  sourceTitle,
 }: PlaygroundHeaderProps) {
   const navigate = useNavigate();
 
@@ -55,6 +57,12 @@ export function PlaygroundHeader({
           </Button>
           <div className="h-5 w-px bg-border" />
           <h1 className="text-base font-bold tracking-tight">Prompt-Labor</h1>
+          {sourceTitle && (
+            <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+              <span className="mx-1.5 text-border">|</span>
+              Vorlage: {sourceTitle}
+            </span>
+          )}
           {/* Mode toggle */}
           <div className="flex bg-muted rounded-lg p-0.5">
             <button
