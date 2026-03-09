@@ -111,7 +111,7 @@ export const DailyChallengeCard = () => {
           <Badge variant="outline" className="text-[10px] mb-2">
             {challenge.category} · ~{challenge.estimatedMinutes} Min
           </Badge>
-          <FlawExercise challenge={flawChallenge} onComplete={handleFlawComplete} />
+          <FlawExercise challenge={flawChallenge} onComplete={handleFlawComplete} compact />
         </div>
       ) : (
         <div className="space-y-3">
