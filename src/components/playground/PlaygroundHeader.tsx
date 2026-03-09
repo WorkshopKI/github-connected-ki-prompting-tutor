@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Brain } from "lucide-react";
-import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels } from "@/data/models";
+import { ModelSelectGroups } from "./ModelSelect";
 import { cn } from "@/lib/utils";
 import type { AIRoutingConfig } from "@/types";
 
@@ -136,42 +136,7 @@ export function PlaygroundHeader({
                   )}
                 </SelectGroup>
               ) : (
-                <>
-                  <SelectGroup>
-                    <SelectLabel>Standard</SelectLabel>
-                    {STANDARD_MODELS.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                  <SelectSeparator />
-                  <SelectGroup>
-                    <SelectLabel>Premium</SelectLabel>
-                    {PREMIUM_MODELS.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                  <SelectSeparator />
-                  <SelectGroup>
-                    <SelectLabel>Open Source</SelectLabel>
-                    {OPEN_SOURCE_MODELS.map((m) => (
-                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                  {(() => {
-                    const custom = getAllModels().filter((m) => m.isCustom);
-                    return custom.length > 0 ? (
-                      <>
-                        <SelectSeparator />
-                        <SelectGroup>
-                          <SelectLabel>Eigene</SelectLabel>
-                          {custom.map((m) => (
-                            <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </>
-                    ) : null;
-                  })()}
-                </>
+                <ModelSelectGroups />
               )}
             </SelectContent>
           </Select>

@@ -194,7 +194,9 @@ export const ChatPlayground = ({
         </div>
       </div>
 
-      {/* Messages */}
+      {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat.
+           flex-1 + min-h-0 = füllt Resthöhe und erlaubt Schrumpfen.
+           scrollbarGutter: stable = verhindert horizontalen Layout-Shift. */}
       <div
         className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto"
         style={{ scrollbarGutter: "stable" }}

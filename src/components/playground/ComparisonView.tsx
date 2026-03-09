@@ -1,22 +1,14 @@
 import { useState, useRef, useCallback } from "react";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Send, Square, Bot, Loader2, Brain } from "lucide-react";
+import { Send, Square, Brain } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { streamChat, type Msg } from "@/services/llmService";
 import { toast } from "sonner";
-import { ChatMessage } from "./ChatMessage";
-import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS, getAllModels, getModelLabel } from "@/data/models";
-
-interface ComparisonResult {
-  model: string;
-  content: string;
-  isStreaming: boolean;
-}
+import { ComparisonColumn, type ComparisonResult } from "./ComparisonColumn";
+import { ModelSelect } from "./ModelSelect";
+import { getModelLabel } from "@/data/models";
 
 export interface ComparisonViewProps {
   systemPrompt: string;
@@ -127,91 +119,11 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Modell A</label>
-          <Select value={modelA} onValueChange={setModelA} disabled={isRunning}>
-            <SelectTrigger className="text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Standard</SelectLabel>
-                {STANDARD_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Premium</SelectLabel>
-                {PREMIUM_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Open Source</SelectLabel>
-                {OPEN_SOURCE_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              {(() => {
-                const custom = getAllModels().filter((m) => m.isCustom);
-                return custom.length > 0 ? (
-                  <>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Eigene</SelectLabel>
-                      {custom.map((m) => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </>
-                ) : null;
-              })()}
-            </SelectContent>
-          </Select>
+          <ModelSelect value={modelA} onValueChange={setModelA} disabled={isRunning} />
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Modell B</label>
-          <Select value={modelB} onValueChange={setModelB} disabled={isRunning}>
-            <SelectTrigger className="text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Standard</SelectLabel>
-                {STANDARD_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Premium</SelectLabel>
-                {PREMIUM_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectSeparator />
-              <SelectGroup>
-                <SelectLabel>Open Source</SelectLabel>
-                {OPEN_SOURCE_MODELS.map((m) => (
-                  <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                ))}
-              </SelectGroup>
-              {(() => {
-                const custom = getAllModels().filter((m) => m.isCustom);
-                return custom.length > 0 ? (
-                  <>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>Eigene</SelectLabel>
-                      {custom.map((m) => (
-                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </>
-                ) : null;
-              })()}
-            </SelectContent>
-          </Select>
+          <ModelSelect value={modelB} onValueChange={setModelB} disabled={isRunning} />
         </div>
       </div>
 
@@ -278,42 +190,3 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     </div>
   );
 };
-
-function ComparisonColumn({
-  label,
-  result,
-}: {
-  label: string;
-  result: ComparisonResult | null;
-}) {
-  return (
-    <Card className="p-3 space-y-2 min-h-[200px]">
-      <div className="flex items-center gap-2 pb-2 border-b border-border">
-        <Bot className="w-3 h-3 text-muted-foreground" />
-        <Badge variant="outline" className="text-[10px]">
-          {label}
-        </Badge>
-        {result?.isStreaming && (
-          <Loader2 className="w-3 h-3 animate-spin text-primary ml-auto" />
-        )}
-      </div>
-
-      {result ? (
-        result.content ? (
-          <ChatMessage
-            role="assistant"
-            content={result.content}
-            isStreaming={result.isStreaming}
-          />
-        ) : result.isStreaming ? (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground py-4">
-            <Loader2 className="w-3 h-3 animate-spin" />
-            Warte auf Antwort...
-          </div>
-        ) : (
-          <p className="text-xs text-muted-foreground py-4">Keine Antwort.</p>
-        )
-      ) : null}
-    </Card>
-  );
-}

@@ -165,6 +165,8 @@ const Playground = () => {
 
   if (isLoading) return null;
 
+  // ⚠️ LAYOUT-KETTE: h-screen + overflow-hidden verhindert Body-Scroll.
+  //    Playground hat eigene Scroll-Container in ChatPlayground und PlaygroundSidebar.
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       <PlaygroundHeader
@@ -181,6 +183,7 @@ const Playground = () => {
         onModeChange={handleModeChange}
       />
 
+      {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
       <div className="px-4 py-4 max-w-[1380px] mx-auto flex-1 overflow-hidden">
         {!isLoggedIn ? (
           <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">

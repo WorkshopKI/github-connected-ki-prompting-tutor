@@ -51,6 +51,7 @@ export const PlaygroundContent = ({
 }: PlaygroundContentProps) => {
   const isEinsteiger = mode === "einsteiger";
 
+  // ⚠️ min-h-0 + min-w-0: Erlaubt Flex-Children zu schrumpfen statt zu überlaufen
   return (
     <main className="h-full flex flex-col min-h-0 min-w-0">
       {skillId && (
