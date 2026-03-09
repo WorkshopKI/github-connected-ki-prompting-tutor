@@ -44,7 +44,7 @@ export const PracticeAreaCompact = () => {
       </div>
 
       <p className="text-xs text-muted-foreground text-center mt-6">
-        Weitere Übungen findest du nach dem Onboarding in der Prompt Library.
+        Weitere Übungen findest du nach dem Onboarding in der Prompt Sammlung.
       </p>
     </div>
   );

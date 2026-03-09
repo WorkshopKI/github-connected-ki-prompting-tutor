@@ -168,7 +168,7 @@ const Dashboard = () => {
                 className="w-full justify-start gap-2"
                 onClick={() => navigate("/playground")}
               >
-                <Sparkles className="h-4 w-4" /> Prompt-Labor öffnen
+                <Sparkles className="h-4 w-4" /> Prompt Werkstatt öffnen
               </Button>
               {isWorkshop ? (
                 <Button

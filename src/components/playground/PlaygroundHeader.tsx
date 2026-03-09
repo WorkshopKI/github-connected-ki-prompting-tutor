@@ -56,7 +56,7 @@ export function PlaygroundHeader({
             <span className="hidden sm:inline">Zurück</span>
           </Button>
           <div className="h-5 w-px bg-border" />
-          <h1 className="text-base font-bold tracking-tight">Prompt-Labor</h1>
+          <h1 className="text-base font-bold tracking-tight">Prompt Werkstatt</h1>
           {sourceTitle && (
             <span className="text-xs text-muted-foreground truncate max-w-[200px]">
               <span className="mx-1.5 text-border">|</span>
