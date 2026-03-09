@@ -1,13 +1,15 @@
+import { useMemo } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { ACTA_TEMPLATES, type ACTAFields } from "./ACTATemplates";
+import { getLibraryTemplates, type ACTAFields } from "./ACTATemplates";
+import { useOrgContext } from "@/contexts/OrgContext";
 
 export interface ACTABuilderProps {
   fields: ACTAFields;
@@ -42,6 +44,9 @@ export const ACTABuilder = ({
   onToggle,
   bare,
 }: ACTABuilderProps) => {
+  const { scope } = useOrgContext();
+  const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
+
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
   const assembled = assembleACTAPrompt(fields);
   const hasContent = assembled.trim().length > 0;
@@ -51,8 +56,10 @@ export const ACTABuilder = ({
   };
 
   const handleTemplateSelect = (value: string) => {
-    const idx = parseInt(value, 10);
-    const template = ACTA_TEMPLATES[idx];
+    const [groupLabel, idxStr] = value.split("::");
+    const idx = parseInt(idxStr, 10);
+    const group = templateGroups.find(g => g.label === groupLabel);
+    const template = group?.templates[idx];
     if (template) {
       onFieldsChange({ ...template.fields });
     }
@@ -73,13 +80,20 @@ export const ACTABuilder = ({
     <div className="px-4 pb-4 space-y-4">
       <Select onValueChange={handleTemplateSelect}>
         <SelectTrigger className="w-full text-xs">
-          <SelectValue placeholder="Vorlage auswählen..." />
+          <SelectValue placeholder="Vorlage aus Sammlung laden..." />
         </SelectTrigger>
         <SelectContent>
-          {ACTA_TEMPLATES.map((t, i) => (
-            <SelectItem key={i} value={String(i)}>
-              {t.label}
-            </SelectItem>
+          {templateGroups.map((group) => (
+            <SelectGroup key={group.label}>
+              <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {group.label}
+              </SelectLabel>
+              {group.templates.map((t, i) => (
+                <SelectItem key={`${group.label}-${i}`} value={`${group.label}::${i}`}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           ))}
         </SelectContent>
       </Select>

@@ -987,6 +987,12 @@ export const promptLibrary: PromptItem[] = [
     riskLevel: "mittel",
     confidentiality: "internal",
     confidentialityReason: "Pressemitteilungen vor Veröffentlichung sind intern",
+    actaFields: {
+      act: "ein erfahrener Pressesprecher einer öffentlichen Organisation",
+      context: "Anlass/Beschluss: {{Anlass/Beschluss}}. Die Pressemitteilung muss barrierefrei (B1), gendersensibel und sachlich-informativ sein.",
+      task: "Erstelle eine Pressemitteilung mit Headline (max. 10 Wörter), Lead-Absatz (Wer, Was, Wann, Wo), Platzhalter für Zitat [ZITAT LEITUNG], Hintergrund-Absatz und Kontaktdaten.",
+      ausgabe: "250–350 Wörter. Sachlich-informativ, barrierefrei (B1). [LEITUNG PRÜFEN] vor Veröffentlichung.",
+    },
   },
   {
     category: "Social Media",
@@ -996,6 +1002,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "open",
+    actaFields: {
+      act: "ein erfahrener Social-Media-Manager einer öffentlichen Organisation",
+      context: "Plattform: {{Plattform}}. Thema: {{Thema}}. Zielgruppe: {{Zielgruppe}}. Gendersensible Sprache, keine personenbezogenen Daten.",
+      task: "Erstelle einen Social-Media-Post mit 2–3 Hashtags und Alternativtext-Vorschlag für Bild. Keine verbindlichen Zusagen.",
+      ausgabe: "Zeichenlimit: {{Limit}}. Ton: sachlich-nahbar, barrierefrei.",
+    },
   },
   {
     category: "Bürgerinformation",
@@ -1005,6 +1017,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "open",
+    actaFields: {
+      act: "ein erfahrener Redakteur für Bürgerinformationen einer öffentlichen Verwaltung",
+      context: "Thema/Verfahren: {{Thema/Verfahren}}. Zielgruppe: Bürger:innen ohne Fachkenntnisse. Gendersensible Sprache, keine Fachbegriffe ohne Erklärung.",
+      task: "Erstelle eine Bürgerinformation als FAQ mit 5–8 Fragen und Antworten. Inkludiere Kontaktmöglichkeiten und nächste Schritte.",
+      ausgabe: "FAQ-Format, Sprachniveau B1 (einfache Sprache).",
+    },
   },
   {
     category: "Krisenkommunikation",
@@ -1015,6 +1033,12 @@ export const promptLibrary: PromptItem[] = [
     riskLevel: "hoch",
     confidentiality: "confidential",
     confidentialityReason: "Krisenrelevante Informationen vor Freigabe streng vertraulich",
+    actaFields: {
+      act: "ein erfahrener Krisenkommunikationsberater einer öffentlichen Organisation",
+      context: "Krisenereignis: {{Krisenereignis}}. NUR gesicherte Fakten verwenden. Keine Schuldzuweisungen, keine Spekulationen.",
+      task: "Erstelle eine erste Stellungnahme mit: 1) Was ist passiert (bestätigte Fakten), 2) Welche Maßnahmen wurden ergriffen, 3) Nächste Schritte, 4) Ansprechpartner.",
+      ausgabe: "Max. 200 Wörter. Ton: sachlich, empathisch, handlungsorientiert. [LEITUNG PRÜFEN] — MUSS vor Veröffentlichung freigegeben werden.",
+    },
   },
   {
     category: "Jahresbericht",
@@ -1024,6 +1048,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "internal",
+    actaFields: {
+      act: "ein erfahrener Redakteur für Jahresberichte öffentlicher Organisationen",
+      context: "Thema/Abteilung: {{Thema/Abteilung}}. Gendersensible Sprache, sachlich-positiv, ohne Übertreibungen.",
+      task: "Erstelle ein Kapitel mit Einleitung (3 Sätze), Highlights des Jahres (3–5 Bullet Points), Kennzahlen-Tabelle (Platzhalter), Ausblick auf kommendes Jahr.",
+      ausgabe: "400–600 Wörter. Sachlich-positiv, gendersensibel.",
+    },
   },
   {
     category: "Website",
@@ -1033,6 +1063,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "open",
+    actaFields: {
+      act: "ein erfahrener Web-Redakteur einer öffentlichen Organisation",
+      context: "Thema: {{Thema}}. Zielgruppe: Bürger:innen. Keine personenbezogenen Daten. Barrierefrei, gendersensibel.",
+      task: "Erstelle eine FAQ-Seite mit 8–10 Fragen und Antworten. Inkludiere Verlinkungen als Platzhalter [LINK: ...].",
+      ausgabe: "Jede Antwort max. 100 Wörter. Sprachniveau B1.",
+    },
   },
   {
     category: "Interner Newsletter",
@@ -1042,6 +1078,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "internal",
+    actaFields: {
+      act: "ein erfahrener Redakteur für interne Kommunikation",
+      context: "Thema: {{Thema}}. Zielgruppe: Mitarbeitende. Keine externen vertraulichen Informationen.",
+      task: "Erstelle einen internen Newsletter mit Begrüßung, Hauptnachricht, 2–3 Kurzmeldungen, Termine und Kontakt für Rückfragen.",
+      ausgabe: "Hauptnachricht max. 200 Wörter, Kurzmeldungen je 50 Wörter. Ton: informativ, wertschätzend, kollegial.",
+    },
   },
   {
     category: "Rede",
@@ -1051,6 +1093,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "mittel",
     confidentiality: "internal",
+    actaFields: {
+      act: "ein erfahrener Redenschreiber für öffentliche Anlässe",
+      context: "Anlass: {{Anlass}}. Redner:in/Funktion: {{Redner:in/Funktion}}. Dauer: {{Minuten}} Minuten. Ton: {{sachlich/motivierend/feierlich}}.",
+      task: "Erstelle einen Rede-Entwurf mit Begrüßung, Einleitung, 2–3 Kernbotschaften, Zusammenfassung, Ausblick/Appell. Platzhalter [PERSÖNLICH ERGÄNZEN] für Anekdoten.",
+      ausgabe: "Redetext für {{Minuten}} Minuten. [LEITUNG PRÜFEN] vor Verwendung.",
+    },
   },
   {
     category: "Barrierefreiheit",
@@ -1060,6 +1108,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "open",
+    actaFields: {
+      act: "ein Experte für Leichte Sprache und barrierefreie Kommunikation",
+      context: "Text oder Thema: {{Text oder Thema}}. Gendersensible Sprache.",
+      task: "Erstelle eine barrierefreie Zusammenfassung. Kurze Sätze (max. 12 Wörter), ein Gedanke pro Satz, keine Fremdwörter, keine Abkürzungen ohne Erklärung.",
+      ausgabe: "Überschrift + 5–8 kurze Absätze. Sprachniveau A2/B1 (Leichte Sprache).",
+    },
   },
   {
     category: "Social Media",
@@ -1069,6 +1123,12 @@ export const promptLibrary: PromptItem[] = [
     targetDepartment: "oeffentlichkeitsarbeit",
     riskLevel: "niedrig",
     confidentiality: "open",
+    actaFields: {
+      act: "ein erfahrener Community-Manager einer öffentlichen Organisation",
+      context: "Plattform: {{Plattform}}. Bürgeranfrage: '{{Anfrage-Text}}'. Keine verbindlichen Zusagen, keine Schuldzuweisungen.",
+      task: "Formuliere eine Antwort. Verweise auf offizielle Kontaktwege. Bei personenbezogenen Daten: Hinweis auf private Nachricht.",
+      ausgabe: "Max. 280 Zeichen. Ton: sachlich-nahbar, empathisch.",
+    },
   },
 
   // ═══ ABTEILUNG HR ═══

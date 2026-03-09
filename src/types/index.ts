@@ -131,6 +131,12 @@ export interface PromptItem {
   confidentiality?: "open" | "internal" | "confidential";
   confidentialityReason?: string;
   targetDepartment?: "legal" | "oeffentlichkeitsarbeit" | "hr" | "it" | "bauverfahren";
+  actaFields?: {
+    act?: string;
+    context?: string;
+    task?: string;
+    ausgabe?: string;
+  };
 }
 
 /* ── Skills ── */

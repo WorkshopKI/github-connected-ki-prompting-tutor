@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Copy, ExternalLink, Star, Shield, Clock, Wrench, Building2, Bookmark } from "lucide-react";
+import { Copy, Sparkles, Star, Shield, Clock, Wrench, Building2, Bookmark } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -208,11 +208,11 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
               variant="outline"
               className="gap-2"
               onClick={() => {
-                navigate(`/playground?prompt=${encodeURIComponent(getFilledPrompt())}`);
+                navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`);
                 onOpenChange(false);
               }}
             >
-              <ExternalLink className="w-4 h-4" /> Im Playground öffnen
+              <Sparkles className="w-4 h-4" /> Im Labor verfeinern
             </Button>
             <Button variant="outline" className="gap-2" onClick={handleSaveAsSkill}>
               <Bookmark className="w-4 h-4" /> Als Skill speichern
