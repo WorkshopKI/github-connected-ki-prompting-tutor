@@ -36,10 +36,9 @@ const Settings = () => {
 
         <TabsContent value="profil" className="space-y-6">
           {/* Kontoinformationen + KI-Einstellungen (aus Profile.tsx) */}
-          <ProfileContent />
-
-          {/* Mein Bereich — Abteilungswahl */}
-          <MeinBereichSection />
+          <ProfileContent>
+            <MeinBereichSection />
+          </ProfileContent>
         </TabsContent>
 
         {isWorkshop && (
