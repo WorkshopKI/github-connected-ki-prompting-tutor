@@ -153,7 +153,7 @@ export const FlawExercise = ({ challenge, onComplete, compact }: Props) => {
                 Enthält Fehler
               </Badge>
             </div>
-            <div className="text-sm leading-relaxed whitespace-pre-wrap font-mono max-h-[240px] overflow-y-auto">
+            <div className="text-sm leading-relaxed whitespace-pre-wrap font-mono">
               {challenge.generatedOutput}
             </div>
           </Card>
