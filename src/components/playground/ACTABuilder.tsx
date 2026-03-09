@@ -1,16 +1,17 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy } from "lucide-react";
+import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
 import { ContextExtensions, TaskExtensions, AusgabeExtensions } from "./ACTAExtensionsUI";
 import { useOrgContext } from "@/contexts/OrgContext";
+import { useACTAAssist } from "@/hooks/useACTAAssist";
 
 export interface ACTABuilderProps {
   fields: ACTAFields;
@@ -103,6 +104,10 @@ export const ACTABuilder = ({
     ext.reversePrompt ||
     ext.negatives.trim() !== "";
 
+  const { suggest, improve, isLoading: aiLoading } = useACTAAssist();
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [suggestInput, setSuggestInput] = useState("");
+
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
   const assembled = assembleACTAPrompt(fields);
   const hasContent = assembled.trim().length > 0;
@@ -153,6 +158,49 @@ export const ACTABuilder = ({
           ))}
         </SelectContent>
       </Select>
+
+      {isExperte && (
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowSuggest(!showSuggest)}
+            className="flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
+          >
+            <Wand2 className="w-3 h-3" />
+            KI: ACTA-Felder vorschlagen lassen
+          </button>
+          {showSuggest && (
+            <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 space-y-2">
+              <Textarea
+                value={suggestInput}
+                onChange={(e) => setSuggestInput(e.target.value)}
+                placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
+                className="text-[11px] min-h-[48px] resize-none"
+                rows={2}
+              />
+              <Button
+                size="sm"
+                className="w-full text-[11px] h-7"
+                disabled={!suggestInput.trim() || aiLoading}
+                onClick={async () => {
+                  const result = await suggest(suggestInput, selectedModel);
+                  if (result) {
+                    onFieldsChange(result);
+                    setShowSuggest(false);
+                    setSuggestInput("");
+                  }
+                }}
+              >
+                {aiLoading ? (
+                  <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
+                ) : (
+                  <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {FIELD_CONFIG.map((field) => {
         const Icon = field.icon;
@@ -223,6 +271,20 @@ export const ACTABuilder = ({
           <Send className="w-3 h-3 mr-1.5" />
           → Prompt testen
         </Button>
+        {isExperte && hasContent && (
+          <Button
+            onClick={async () => {
+              const result = await improve(fields, selectedModel);
+              if (result) onFieldsChange(result);
+            }}
+            disabled={aiLoading}
+            variant="outline"
+            size="sm"
+            title="KI verbessert deine ACTA-Felder"
+          >
+            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+          </Button>
+        )}
         <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
           <Copy className="w-3 h-3 mr-1.5" />
           Kopieren
