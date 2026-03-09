@@ -123,7 +123,8 @@ const Dashboard = () => {
               {popularPrompts.map((prompt, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
@@ -151,9 +152,9 @@ const Dashboard = () => {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-2"
-                onClick={() => navigate("/library")}
+                onClick={() => navigate("/playground")}
               >
-                <BookOpen className="h-4 w-4" /> Neuen Prompt erstellen
+                <Sparkles className="h-4 w-4" /> Neuen Prompt erstellen
               </Button>
               <Button
                 variant="outline"
@@ -167,7 +168,7 @@ const Dashboard = () => {
                 className="w-full justify-start gap-2"
                 onClick={() => navigate("/playground")}
               >
-                <Sparkles className="h-4 w-4" /> Prompt-Labor öffnen
+                <Sparkles className="h-4 w-4" /> Prompt Werkstatt öffnen
               </Button>
               {isWorkshop ? (
                 <Button

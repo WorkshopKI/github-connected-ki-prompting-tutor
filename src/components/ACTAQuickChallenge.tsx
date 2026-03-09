@@ -76,7 +76,7 @@ export const ACTAQuickChallenge = () => {
               window.location.href = `/playground?prompt=${encodeURIComponent(userInput)}`;
             }}
           >
-            Im Prompt-Labor testen
+            In Prompt Werkstatt testen
           </Button>
         )}
       </div>

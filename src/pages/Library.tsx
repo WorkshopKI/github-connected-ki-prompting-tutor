@@ -33,7 +33,7 @@ const Library = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Prompt Library</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Prompt Sammlung</h1>
           <p className="text-muted-foreground text-sm mt-1">
             {isDepartment
               ? `${deptPromptCount} ${shortLabel}-Prompts · ${promptLibrary.length} gesamt`

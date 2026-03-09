@@ -14,6 +14,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { loadAIRouting, getAllModels } from "@/data/models";
 import { LS_KEYS, DEFAULT_MODEL } from "@/lib/constants";
 import { promptLibrary } from "@/data/prompts";
+import { splitPromptToACTA } from "@/lib/promptUtils";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { AgentConfig } from "@/components/playground/AgentKnobs";
 
@@ -22,6 +23,7 @@ const Playground = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const prefilledPrompt = searchParams.get("prompt") ?? undefined;
+  const libraryTitle = searchParams.get("libraryTitle");
   const skillId = searchParams.get("skillId");
   const skillTitle = searchParams.get("skillTitle");
   const requestedModel = searchParams.get("model");
@@ -49,6 +51,7 @@ const Playground = () => {
   const [showBudgetDialog, setShowBudgetDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("chat");
   const [actaFields, setActaFields] = useState<ACTAFields>({ act: "", context: "", task: "", ausgabe: "" });
+  const [sourcePromptTitle, setSourcePromptTitle] = useState<string | null>(null);
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
     habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
   });
@@ -89,6 +92,30 @@ const Playground = () => {
       if (match?.confidentiality) setPromptConfidentiality(match.confidentiality);
     }
   }, [prefilledPrompt]);
+
+  // --- Library prompt → ACTA pre-fill ---
+  useEffect(() => {
+    if (!libraryTitle) return;
+    const match = promptLibrary.find(p => p.title === libraryTitle);
+    if (!match) return;
+
+    setSourcePromptTitle(match.title);
+
+    if (match.actaFields) {
+      setActaFields({
+        act: match.actaFields.act || "",
+        context: match.actaFields.context || "",
+        task: match.actaFields.task || "",
+        ausgabe: match.actaFields.ausgabe || "",
+      });
+    } else {
+      setActaFields(splitPromptToACTA(match.prompt, match.title));
+    }
+
+    if (match.confidentiality) {
+      setPromptConfidentiality(match.confidentiality);
+    }
+  }, [libraryTitle]);
 
   // --- Restore active conversation on mount ---
   useEffect(() => {
@@ -185,6 +212,7 @@ const Playground = () => {
         promptConfidentiality={promptConfidentiality}
         mode={playgroundMode}
         onModeChange={handleModeChange}
+        sourceTitle={sourcePromptTitle}
       />
 
       {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
@@ -197,7 +225,7 @@ const Playground = () => {
                 Anmeldung erforderlich
               </CardTitle>
               <CardDescription>
-                Melde dich an, um das Prompt-Labor zu nutzen und KI-Modelle
+                Melde dich an, um die Prompt Werkstatt zu nutzen und KI-Modelle
                 direkt auszuprobieren.
               </CardDescription>
             </CardHeader>

@@ -91,7 +91,7 @@ export const MySkills = () => {
           um deine persönliche Sammlung aufzubauen.
         </p>
         <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
-          Zur Prompt Library
+          Zur Prompt Sammlung
         </Button>
       </div>
     );
