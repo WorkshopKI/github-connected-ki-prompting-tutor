@@ -63,7 +63,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
       }
 
       // Usage stats
-      const { data: usageData } = await supabase
+      const { data: usageData } = await (supabase as any)
         .from("api_usage_log")
         .select("estimated_cost, total_tokens, created_at")
         .eq("user_id", user.id);

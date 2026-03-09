@@ -46,7 +46,7 @@ export const UsageOverview = ({ courseId }: Props) => {
 
       // 2. Lade Usage-Logs und API-Key-Budgets parallel
       const [usageResult, keysResult] = await Promise.all([
-        supabase
+        (supabase as any)
           .from("api_usage_log")
           .select("user_id, estimated_cost, total_tokens, created_at")
           .in("user_id", userIds),
