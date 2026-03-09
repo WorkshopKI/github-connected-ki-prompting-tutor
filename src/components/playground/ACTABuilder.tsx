@@ -119,8 +119,8 @@ export const ACTABuilder = ({
               value={value}
               onChange={(e) => updateField(field.key, e.target.value)}
               placeholder={field.placeholder}
-              className="text-xs min-h-[56px] resize-none"
-              rows={2}
+              className="text-xs min-h-[72px] resize-none"
+              rows={3}
             />
           </div>
         );
