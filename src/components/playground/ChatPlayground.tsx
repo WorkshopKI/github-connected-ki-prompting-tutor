@@ -96,7 +96,7 @@ export const ChatPlayground = ({
   const turnCount = messages.filter((m) => m.role === "user").length;
 
   return (
-    <div className="flex flex-col h-full bg-gradient-card rounded-xl border border-border shadow-lg">
+    <div className="flex flex-col h-full min-w-0 bg-gradient-card rounded-xl border border-border shadow-lg">
       {/* System Prompt */}
       {!hideSystemPrompt && (
         <div className="px-4 pt-4">

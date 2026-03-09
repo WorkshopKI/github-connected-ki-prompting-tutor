@@ -52,7 +52,7 @@ export const PlaygroundContent = ({
   const isEinsteiger = mode === "einsteiger";
 
   return (
-    <main className="h-full flex flex-col min-h-0">
+    <main className="h-full flex flex-col min-h-0 min-w-0">
       {skillId && (
         <div className="bg-primary/5 border border-primary/15 rounded-lg px-4 py-2 mb-3 flex items-center gap-2 text-sm">
           <Bookmark className="w-4 h-4 text-primary shrink-0" />
@@ -99,7 +99,7 @@ export const PlaygroundContent = ({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="chat" className="mt-0 flex-1 min-h-0">
+          <TabsContent value="chat" className="mt-0 flex-1 min-h-0 min-w-0">
             <ChatPlayground
               messages={messages}
               onSendMessage={onSendMessage}
