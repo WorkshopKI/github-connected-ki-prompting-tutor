@@ -101,7 +101,7 @@ export function PlaygroundHeader({
                 <label className="text-xs font-semibold text-muted-foreground">Modell</label>
                 <Select value={selectedModel} onValueChange={onModelChange}>
                   <SelectTrigger className="w-full text-xs h-8">
-                    <SelectValue />
+                    <SelectValue placeholder={getModelLabel(selectedModel)} />
                   </SelectTrigger>
                   <SelectContent>
                     {aiTier === "internal" ? (
