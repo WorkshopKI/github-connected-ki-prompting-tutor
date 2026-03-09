@@ -33,3 +33,22 @@ CREATE POLICY "Admins can read all usage"
 CREATE POLICY "Service role can insert usage"
   ON public.api_usage_log FOR INSERT
   WITH CHECK (true);
+
+-- ══════════════════════════════════════════════════════════════
+-- Admin: Budget pro User anpassen (user_api_keys)
+-- ══════════════════════════════════════════════════════════════
+
+-- Admins können alle API-Key-Einträge lesen
+CREATE POLICY "Admins can read all api keys"
+  ON public.user_api_keys FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+
+-- Admins können Budget für alle User anpassen
+CREATE POLICY "Admins can update api keys"
+  ON public.user_api_keys FOR UPDATE TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+
+-- Admins können API-Key-Einträge anlegen (z.B. Budget vorab setzen)
+CREATE POLICY "Admins can insert api keys"
+  ON public.user_api_keys FOR INSERT TO authenticated
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
