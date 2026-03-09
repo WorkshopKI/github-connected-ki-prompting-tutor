@@ -27,8 +27,12 @@ const Playground = () => {
   const requestedModel = searchParams.get("model");
 
   // --- Model & routing state ---
+  const allModels = getAllModels();
+  const validModel = (id: string | undefined | null): string =>
+    id && allModels.some((m) => m.value === id) ? id : DEFAULT_MODEL;
+
   const [selectedModel, setSelectedModel] = useState(
-    profile?.preferred_model ?? DEFAULT_MODEL
+    () => validModel(profile?.preferred_model)
   );
   const [thinkingEnabled, setThinkingEnabled] = useState(
     () => localStorage.getItem(LS_KEYS.THINKING_ENABLED) === "true"
@@ -93,13 +97,13 @@ const Playground = () => {
     if (restored) {
       chat.setMessages(restored.messages);
       setSystemPrompt(restored.systemPrompt);
-      setSelectedModel(restored.model);
+      setSelectedModel(validModel(restored.model));
     }
   }, []);
 
   // --- Update model when profile loads ---
   useEffect(() => {
-    if (profile?.preferred_model) setSelectedModel(profile.preferred_model);
+    if (profile?.preferred_model) setSelectedModel(validModel(profile.preferred_model));
   }, [profile?.preferred_model]);
 
   // --- Set requested model from skill URL param ---
@@ -127,7 +131,7 @@ const Playground = () => {
     const data = convos.selectConversation(conv);
     chat.setMessages(data.messages);
     setSystemPrompt(data.systemPrompt);
-    setSelectedModel(data.model);
+    setSelectedModel(validModel(data.model));
     chat.setStreamingContent("");
     chat.resetThinking();
   };
