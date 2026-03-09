@@ -48,7 +48,9 @@ src/
 │   │   ├── ACTATemplates.ts        # ACTA-Vorlagen
 │   │   ├── AgentKnobs.tsx          # Agent-Konfiguration
 │   │   ├── ChatInput.tsx           # Chat-Eingabefeld mit animiertem Stop-Button
-│   │   ├── ChatMessage.tsx         # Einzelne Chat-Nachricht
+│   │   ├── ChatMessage.tsx         # Einzelne Chat-Nachricht (PROSE_CLASSES Konstante)
+│   │   ├── ComparisonColumn.tsx   # Einzelne Spalte im Modell-Vergleich
+│   │   ├── ModelSelect.tsx        # Wiederverwendbarer Modell-Selector (alle Gruppen)
 │   │   ├── ChatPlayground.tsx      # Haupt-Chat-Bereich mit Lade-Indikator
 │   │   ├── ComparisonView.tsx      # Modell-Vergleich
 │   │   ├── ConversationHistory.tsx # Gesprächsverlauf
@@ -223,6 +225,10 @@ supabase/
 - IterationNudge: Vorschläge nach erster Antwort
 - JudgePanel: Referenz-KI bewertet Output (Sidebar)
 - Conversation-Management mit localStorage-Persistenz
+- **Geteilte Komponenten:** `ModelSelect.tsx` (Modell-Dropdown), `ComparisonColumn.tsx` (Vergleichsspalte)
+- **PROSE_CLASSES** Konstante in `ChatMessage.tsx` — Markdown-Styling nicht inline ändern!
+- **Layout-Kette:** `h-screen` → `flex-1 overflow-hidden` → `flex-col-layout` → `scroll-container`. Kommentare mit ⚠️ markieren kritische CSS-Stellen.
+- **CSS Utilities** in `src/index.css`: `scroll-container`, `flex-col-layout`, `flex-col-fill`, `truncate-safe` bündeln fehleranfällige Flex/Overflow-Kombinationen
 
 ### Settings
 - 6 Tabs: Mein Konto | Allgemein | Rollen & Rechte | Compliance | KI-Konfiguration | Darstellung

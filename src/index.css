@@ -217,6 +217,30 @@ All colors MUST be HSL.
   }
 }
 
+/* ── Playground Layout Utilities ──
+   Semantische Klassen für die verschachtelte Flex-Layout-Kette im Prompt-Labor.
+   Diese Klassen bündeln fehleranfällige CSS-Kombinationen unter sprechenden Namen,
+   damit KI-Agenten sie nicht versehentlich aufbrechen.
+*/
+@layer utilities {
+  /* Scroll-Container: nimmt flex-1 Platz, erlaubt Schrumpfen via min-h-0, scrollt vertikal */
+  .scroll-container {
+    @apply flex-1 min-h-0 overflow-y-auto;
+  }
+  /* Flex-Column-Layout das korrekt schrumpft (h-full + min-h-0 verhindert Overflow) */
+  .flex-col-layout {
+    @apply flex flex-col h-full min-h-0;
+  }
+  /* Flex-Column-Layout ohne feste Höhe — für Kinder die flex-1 nutzen */
+  .flex-col-fill {
+    @apply flex flex-col flex-1 min-h-0;
+  }
+  /* Verhindert horizontale Überläufe bei truncated Text in Flex-Containern */
+  .truncate-safe {
+    @apply min-w-0 truncate;
+  }
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
