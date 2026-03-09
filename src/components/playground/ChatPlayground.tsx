@@ -196,10 +196,9 @@ export const ChatPlayground = ({
 
       {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat.
            flex-1 + min-h-0 = füllt Resthöhe und erlaubt Schrumpfen.
-           scrollbarGutter: stable = verhindert horizontalen Layout-Shift. */}
+           scrollbar-thin = schmale Overlay-Scrollbar, kein Layout-Shift. */}
       <div
-        className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto"
-        style={{ scrollbarGutter: "stable" }}
+        className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto scrollbar-thin"
         onScroll={handleScroll}
       >
         {!hasMessages && (
@@ -261,7 +260,7 @@ export const ChatPlayground = ({
           <ChatMessage role="assistant" content={streamingContent} isStreaming />
         )}
 
-        <div ref={bottomRef} />
+        {hasMessages && <div ref={bottomRef} />}
       </div>
 
       {/* Iteration Nudge */}
