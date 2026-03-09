@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { BADGE_COLORS } from "@/lib/constants";
 
 type Level = "open" | "internal" | "confidential";
 
@@ -8,21 +9,21 @@ const config: Record<Level, { icon: string; label: string; labelShort: string; c
     icon: "🟢",
     label: "Offen",
     labelShort: "Offen",
-    className: "bg-primary/10 text-primary",
+    className: BADGE_COLORS.low,
     tooltip: "Externe Business-API erlaubt. Keine vertraulichen Daten.",
   },
   internal: {
     icon: "🟡",
     label: "Intern",
     labelShort: "Intern",
-    className: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
+    className: BADGE_COLORS.medium,
     tooltip: "Interne KI empfohlen. Externe API nur ohne sensible Daten.",
   },
   confidential: {
     icon: "🔴",
     label: "Vertraulich",
     labelShort: "Vertr.",
-    className: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+    className: BADGE_COLORS.high,
     tooltip: "NUR interne KI. Externe API blockiert.",
   },
 };

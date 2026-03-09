@@ -34,7 +34,7 @@ export function RolesSettings() {
   return (
     <div className="space-y-4">
       {roles.map((role) => (
-        <Card key={role.name} className="p-5 rounded-xl border border-border shadow-sm">
+        <Card key={role.name} className="card-section">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Badge className={role.color}>{role.name}</Badge>

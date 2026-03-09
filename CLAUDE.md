@@ -138,7 +138,7 @@ src/
 ├── services/
 │   └── llmService.ts               # streamChat() SSE Client + onThinking, saveUserKey()
 ├── lib/
-│   ├── constants.ts                # LS_KEYS, ROUTES, LEVEL_BADGE_COLORS, DEFAULT_MODEL
+│   ├── constants.ts                # LS_KEYS, ROUTES, BADGE_COLORS, PRIORITY_COLORS, RISK_COLORS, SEVERITY_COLORS, LEVEL_BADGE_COLORS, DEFAULT_MODEL
 │   ├── utils.ts                    # cn() Tailwind Class Merger
 │   ├── promptUtils.ts              # extractVariables() — zentralisiert
 │   ├── exportSkill.ts              # Markdown + Agent Skill (ZIP) Export
@@ -274,30 +274,36 @@ Farben als HSL CSS Variables in `src/index.css`:
 - **Sidebar Hover:** `bg-primary/8` (Tailwind-Klasse, dezente Aufhellung)
 - **Sidebar Active:** `bg-primary/15 text-primary` (Tailwind-Klassen, klar sichtbar)
 
-**Badges — nur 3 Varianten:**
-- `bg-primary/10 text-primary` — Standard (z.B. Offen 🟢)
-- `bg-amber-50 text-amber-800` / `dark:bg-amber-950 dark:text-amber-400` — Intern 🟡
-- `bg-red-50 text-red-700` / `dark:bg-red-950 dark:text-red-400` — Vertraulich 🔴
+**Badges — IMMER aus `BADGE_COLORS` importieren (`src/lib/constants.ts`):**
+```ts
+import { BADGE_COLORS, PRIORITY_COLORS, RISK_COLORS, SEVERITY_COLORS } from "@/lib/constants";
+// BADGE_COLORS.low     → 🟢 bg-primary/10 text-primary
+// BADGE_COLORS.medium  → 🟡 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400
+// BADGE_COLORS.high    → 🔴 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400
+// BADGE_COLORS.neutral → bg-muted text-muted-foreground
+// PRIORITY_COLORS      → { niedrig, mittel, hoch } → Badge-Farben
+// RISK_COLORS          → { niedrig, mittel, hoch, kritisch } → Badge-Farben
+// SEVERITY_COLORS      → { kritisch, mittel, hinweis } → Badge-Farben
+```
+NIEMALS die Tailwind-Strings manuell kopieren! Immer aus Constants importieren.
 
-**Vertraulichkeits-Badges (`ConfidentialityBadge.tsx`):**
-- 🟢 Offen (primary/10)
-- 🟡 Intern (amber-50)
-- 🔴 Vertraulich (red-50)
+**Vertraulichkeits-Badges:** `ConfidentialityBadge.tsx` Komponente nutzen (nutzt intern `BADGE_COLORS`).
 
 **Theme Presets:** muted-stone-contrast, muted-moss-light, silber
 
 **Einheitliche Komponenten:**
 - `StatCard` — Wiederverwendbar für alle Statistik-Karten
-- Card-Stil: `p-5 rounded-xl border border-border shadow-sm`
-- Seitentitel: `text-2xl font-bold tracking-tight`
+- Card-Stil: CSS-Klasse `card-section` verwenden (definiert in `src/index.css`)
+- Seitentitel: CSS-Klasse `page-title` verwenden (definiert in `src/index.css`)
 - Seiten-Layout: `<div className="space-y-6">` → Header → Content
 
 ## Wichtige Regeln für Claude Code
 
 - **KEINE off-theme Farben** (kein `blue-100`, `emerald-100`, `purple-100`, `cyan-100`). NUR Theme-Farben.
 - **Alle Seiten** folgen dem Pattern: `<div className="space-y-6">` → Header → Content
-- **Seitentitel** immer: `text-2xl font-bold tracking-tight`
-- **Card-Stil** immer: `p-5 rounded-xl border border-border shadow-sm`
+- **Seitentitel** immer: `className="page-title"` (NICHT `text-2xl font-bold tracking-tight` manuell)
+- **Card-Stil** immer: `className="card-section"` (NICHT `p-5 rounded-xl border border-border shadow-sm` manuell)
+- **Badge-Farben:** `BADGE_COLORS` / `PRIORITY_COLORS` / `RISK_COLORS` aus `@/lib/constants` importieren, KEINE raw amber/red Strings
 - **Keine neuen npm-Dependencies** ohne Absprache
 - **Dark Mode** muss immer funktionieren
 - **Content ist auf Deutsch** (UI Labels, Prompts, Übungen, Fehlermeldungen)
@@ -332,8 +338,17 @@ Edge function secrets (set in Supabase dashboard):
 ### Konstanten
 - **localStorage Keys:** Immer `LS_KEYS.*` aus `src/lib/constants.ts` verwenden, NIE strings hardcoden
 - **Route-Pfade:** Immer `ROUTES.*` aus `src/lib/constants.ts` verwenden
-- **Badge-Farben:** `LEVEL_BADGE_COLORS` aus constants oder `ConfidentialityBadge` Komponente nutzen
+- **Badge-Farben:** `BADGE_COLORS.*` / `PRIORITY_COLORS` / `RISK_COLORS` / `SEVERITY_COLORS` aus constants importieren. `LEVEL_BADGE_COLORS` für Prompt-Level-Badges. `ConfidentialityBadge` Komponente für Vertraulichkeits-Anzeige. NIEMALS raw Tailwind-Badge-Strings (`bg-amber-50 text-amber-800 ...`) manuell schreiben!
 - **Default-Modell:** `DEFAULT_MODEL` aus constants
+
+### CSS-Utilities (in `src/index.css`, NICHT aufbrechen!)
+- `scroll-container` — flex-1 + min-h-0 + overflow-y-auto
+- `flex-col-layout` — flex + flex-col + h-full + min-h-0
+- `flex-col-fill` — flex + flex-col + flex-1 + min-h-0
+- `truncate-safe` — min-w-0 + truncate
+- `card-section` — p-5 + rounded-xl + border + border-border + shadow-sm
+- `playground-root` — h-screen + flex-col + overflow-hidden + bg-background
+- `page-title` — text-2xl + font-bold + tracking-tight
 
 ### Dateigrößen
 - Neue Komponenten sollten unter 250 Zeilen bleiben

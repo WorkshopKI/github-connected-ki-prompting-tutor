@@ -17,7 +17,7 @@ export function AIRoutingSettings() {
 
   return (
     <div className="space-y-6">
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-5">
+      <Card className="card-section space-y-5">
         <h3 className="font-semibold text-base">KI-Endpunkte</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <div className="p-4 rounded-lg bg-muted/50 space-y-3">
@@ -73,7 +73,7 @@ export function AIRoutingSettings() {
         </div>
       </Card>
 
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-4">
+      <Card className="card-section space-y-4">
         <h3 className="font-semibold text-base">Routing-Regeln</h3>
         {[
           {
@@ -141,7 +141,7 @@ export function AIRoutingSettings() {
       </Card>
 
       {isStandalone && (
-        <Card className="p-5 rounded-xl border border-border shadow-sm space-y-3">
+        <Card className="card-section space-y-3">
           <h3 className="font-semibold text-base">API-Endpoint</h3>
           <p className="text-xs text-muted-foreground">
             Standard: OpenRouter. Für lokale Modelle (Ollama, LM Studio) die URL ändern.

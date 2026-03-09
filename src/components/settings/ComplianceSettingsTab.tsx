@@ -30,7 +30,7 @@ export function ComplianceSettingsTab() {
         </AlertDescription>
       </Alert>
 
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-3">
+      <Card className="card-section space-y-3">
         <label className="flex items-center justify-between">
           <span className="text-sm">Sensible Daten in Prompts automatisch erkennen</span>
           <Switch

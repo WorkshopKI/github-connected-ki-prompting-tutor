@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FlawChallenge } from "@/types";
+import { SEVERITY_COLORS, BADGE_COLORS } from "@/lib/constants";
 
 interface Props {
   challenge: FlawChallenge;
@@ -62,13 +63,7 @@ export const FlawExercise = ({ challenge, onComplete }: Props) => {
     onComplete?.(score);
   };
 
-  const severityClass = (severity: string) => {
-    switch (severity) {
-      case "kritisch": return "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400";
-      case "mittel": return "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
+  const severityClass = (severity: string) => SEVERITY_COLORS[severity] || SEVERITY_COLORS.hinweis;
 
   return (
     <div className="space-y-4">
@@ -78,7 +73,7 @@ export const FlawExercise = ({ challenge, onComplete }: Props) => {
       <Card className="p-4 bg-muted/30 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
           <Badge variant="outline" className="text-[10px]">KI-Output</Badge>
-          <Badge className="bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400 text-[10px]">
+          <Badge className={`${BADGE_COLORS.medium} text-[10px]`}>
             Enthält Fehler
           </Badge>
         </div>

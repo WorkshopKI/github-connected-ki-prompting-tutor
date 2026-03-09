@@ -239,6 +239,20 @@ All colors MUST be HSL.
   .truncate-safe {
     @apply min-w-0 truncate;
   }
+  /* Standard-Card: einheitlicher Card-Stil für alle Seiten.
+     ⚠️ Immer verwenden statt p-5 rounded-xl ... manuell zu schreiben! */
+  .card-section {
+    @apply p-5 rounded-xl border border-border shadow-sm;
+  }
+  /* Playground-Root: Vollbild-Container ohne Body-Scroll.
+     ⚠️ Nur für Playground.tsx verwenden! */
+  .playground-root {
+    @apply h-screen flex flex-col overflow-hidden bg-background;
+  }
+  /* Seiten-Titel: einheitlicher Titel für alle Seiten */
+  .page-title {
+    @apply text-2xl font-bold tracking-tight;
+  }
 }
 
 /* Schmale Overlay-Scrollbar — nimmt keinen Layout-Platz ein, verhindert Breitensprünge */

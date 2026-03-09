@@ -22,6 +22,7 @@ import {
 import { StatCard } from "@/components/StatCard";
 import { promptLibrary } from "@/data/prompts";
 import { learningModules } from "@/data/learningPath";
+import { BADGE_COLORS } from "@/lib/constants";
 
 interface AnalyticsSectionProps {
   completedLessons: string[];
@@ -138,7 +139,7 @@ export const AnalyticsSection = ({ completedLessons }: AnalyticsSectionProps) =>
         </div>
 
         {/* Category Chart */}
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
+        <Card className="card-section">
           <h3 className="font-semibold text-sm mb-4">Prompts nach Kategorie</h3>
           <div className="space-y-3">
             {categoryGroups.map((group) => (
@@ -166,7 +167,7 @@ export const AnalyticsSection = ({ completedLessons }: AnalyticsSectionProps) =>
         </Card>
 
         {/* Department Table */}
-        <Card className="p-5 rounded-xl border border-border shadow-sm">
+        <Card className="card-section">
           <h3 className="font-semibold text-sm mb-4">Prompts nach Abteilung & Risiko</h3>
           <div className="overflow-x-auto">
             <Table>
@@ -186,9 +187,9 @@ export const AnalyticsSection = ({ completedLessons }: AnalyticsSectionProps) =>
                     <TableCell className="font-medium">{dep.name}</TableCell>
                     <TableCell>{dep.total}</TableCell>
                     <TableCell>{dep.verified}</TableCell>
-                    <TableCell>{dep.high > 0 ? <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400">{dep.high}</Badge> : "—"}</TableCell>
-                    <TableCell>{dep.medium > 0 ? <Badge className="bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400">{dep.medium}</Badge> : "—"}</TableCell>
-                    <TableCell>{dep.low > 0 ? <Badge className="bg-primary/10 text-primary">{dep.low}</Badge> : "—"}</TableCell>
+                    <TableCell>{dep.high > 0 ? <Badge className={BADGE_COLORS.high}>{dep.high}</Badge> : "—"}</TableCell>
+                    <TableCell>{dep.medium > 0 ? <Badge className={BADGE_COLORS.medium}>{dep.medium}</Badge> : "—"}</TableCell>
+                    <TableCell>{dep.low > 0 ? <Badge className={BADGE_COLORS.low}>{dep.low}</Badge> : "—"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -221,7 +222,7 @@ export const AnalyticsSection = ({ completedLessons }: AnalyticsSectionProps) =>
             <h4 className="font-semibold text-xs text-muted-foreground mb-2">Abteilungs-Abdeckung</h4>
             <div className="flex flex-wrap gap-1">
               {allDepartments.covered.map((dep) => (
-                <Badge key={dep} className="bg-primary/10 text-primary text-[10px]">{dep}</Badge>
+                <Badge key={dep} className={`${BADGE_COLORS.low} text-[10px]`}>{dep}</Badge>
               ))}
               {allDepartments.missing.map((dep) => (
                 <Badge key={dep} variant="outline" className="text-muted-foreground text-[10px]">{dep}</Badge>
