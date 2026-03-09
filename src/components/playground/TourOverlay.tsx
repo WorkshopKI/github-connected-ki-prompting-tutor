@@ -34,12 +34,22 @@ export function TourOverlay({
   const [targetRect, setTargetRect] = useState<Rect | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
+  // Elevate the target element above the overlay so it stays interactive
   useEffect(() => {
-    const el = document.querySelector(`[data-tour="${step.target}"]`);
+    const el = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
     if (!el) {
       onNext();
       return;
     }
+
+    // Save original styles and elevate
+    const origPosition = el.style.position;
+    const origZIndex = el.style.zIndex;
+    const computed = window.getComputedStyle(el);
+    if (computed.position === "static") {
+      el.style.position = "relative";
+    }
+    el.style.zIndex = "102";
 
     const measure = () => {
       const rect = el.getBoundingClientRect();
@@ -57,6 +67,9 @@ export function TourOverlay({
     window.addEventListener("resize", measure);
 
     return () => {
+      // Restore original styles
+      el.style.position = origPosition;
+      el.style.zIndex = origZIndex;
       window.removeEventListener("resize", measure);
       clearTimeout(timer);
     };

@@ -168,7 +168,7 @@ export const ACTABuilder = ({
         <SelectTrigger className="w-full text-xs">
           <SelectValue placeholder="Vorlage aus Sammlung laden..." />
         </SelectTrigger>
-        <SelectContent className="max-h-[280px]">
+        <SelectContent className="max-h-[280px] z-[120]">
           {templateGroups.map((group) => (
             <SelectGroup key={group.label}>
               <SelectLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">
