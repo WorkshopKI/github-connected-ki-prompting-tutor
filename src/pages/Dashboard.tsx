@@ -107,7 +107,7 @@ const Dashboard = () => {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Popular Prompts + Tagesaufgabe */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
+          <Card className="p-5 pb-10 bg-card rounded-xl border border-border shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-base">Beliebte Prompts</h2>
               <Button
@@ -190,7 +190,7 @@ const Dashboard = () => {
           </Card>
 
           {/* Progress */}
-          <Card className="flex-1 p-5 bg-card rounded-xl border border-border shadow-sm">
+          <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
             <h2 className="font-semibold text-base mb-4">Onboarding-Fortschritt</h2>
             <div className="space-y-3">
               <div>
