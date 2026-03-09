@@ -12,6 +12,7 @@ import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtens
 import { ContextExtensions, TaskExtensions, AusgabeExtensions } from "./ACTAExtensionsUI";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useACTAAssist } from "@/hooks/useACTAAssist";
+import { extractVariables } from "@/lib/promptUtils";
 
 export interface ACTABuilderProps {
   fields: ACTAFields;
@@ -31,7 +32,17 @@ const FIELD_CONFIG = [
   { key: "ausgabe" as const, label: "Ausgabe (Format)", icon: Layout, placeholder: "Wie soll das Ergebnis aussehen? (Länge, Struktur, Sprache...)" },
 ];
 
-function assembleACTAPrompt(fields: ACTAFields): string {
+function replaceVariables(text: string, values: Record<string, string>): string {
+  let result = text;
+  for (const [key, val] of Object.entries(values)) {
+    if (val.trim()) {
+      result = result.replace(new RegExp(`\\{\\{${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\}\\}`, "g"), val.trim());
+    }
+  }
+  return result;
+}
+
+function assembleACTAPrompt(fields: ACTAFields, varValues?: Record<string, string>): string {
   const ext = fields.extensions;
   const innerParts: string[] = [];
 
@@ -71,11 +82,17 @@ function assembleACTAPrompt(fields: ACTAFields): string {
   const innerPrompt = innerParts.join("\n");
 
   // Reverse Prompting Hülle
+  let finalPrompt: string;
   if (ext?.reversePrompt) {
-    return `Du bist ein Experte für Prompt-Design.\n\nSchritt 1: Lies die folgende Aufgabenbeschreibung und entwirf den bestmöglichen Prompt dafür. Berücksichtige fehlende Details, das optimale Output-Format und die effektivste Denkstrategie.\n\nAufgabenbeschreibung:\n---\n${innerPrompt}\n---\n\nSchritt 2: Zeige den von dir entworfenen Prompt.\n\nSchritt 3: Führe deinen entworfenen Prompt aus und liefere das Ergebnis.`;
+    finalPrompt = `Du bist ein Experte für Prompt-Design.\n\nSchritt 1: Lies die folgende Aufgabenbeschreibung und entwirf den bestmöglichen Prompt dafür. Berücksichtige fehlende Details, das optimale Output-Format und die effektivste Denkstrategie.\n\nAufgabenbeschreibung:\n---\n${innerPrompt}\n---\n\nSchritt 2: Zeige den von dir entworfenen Prompt.\n\nSchritt 3: Führe deinen entworfenen Prompt aus und liefere das Ergebnis.`;
+  } else {
+    finalPrompt = innerPrompt;
   }
 
-  return innerPrompt;
+  if (varValues) {
+    finalPrompt = replaceVariables(finalPrompt, varValues);
+  }
+  return finalPrompt;
 }
 
 export const ACTABuilder = ({
@@ -104,12 +121,18 @@ export const ACTABuilder = ({
     ext.reversePrompt ||
     ext.negatives.trim() !== "";
 
-  const { suggest, improve, isLoading: aiLoading } = useACTAAssist();
+  const { suggest, improve, fillVariables, isLoading: aiLoading } = useACTAAssist();
   const [showSuggest, setShowSuggest] = useState(false);
   const [suggestInput, setSuggestInput] = useState("");
 
+  // Variablen-Erkennung
+  const allFieldsText = `${fields.act} ${fields.context} ${fields.task} ${fields.ausgabe}`;
+  const variables = useMemo(() => extractVariables(allFieldsText), [allFieldsText]);
+  const [variableValues, setVariableValues] = useState<Record<string, string>>({});
+  const hasUnfilledVars = variables.length > 0 && variables.some(v => !variableValues[v]?.trim());
+
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
-  const assembled = assembleACTAPrompt(fields);
+  const assembled = assembleACTAPrompt(fields, variableValues);
   const hasContent = assembled.trim().length > 0;
 
   const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
@@ -123,6 +146,7 @@ export const ACTABuilder = ({
     const template = group?.templates[idx];
     if (template) {
       onFieldsChange({ ...template.fields });
+      setVariableValues({});
     }
   };
 
@@ -186,6 +210,7 @@ export const ACTABuilder = ({
                   const result = await suggest(suggestInput, selectedModel);
                   if (result) {
                     onFieldsChange(result);
+                    setVariableValues({});
                     setShowSuggest(false);
                     setSuggestInput("");
                   }
@@ -233,6 +258,55 @@ export const ACTABuilder = ({
         );
       })}
 
+      {variables.length > 0 && (
+        <div className="bg-muted/30 border border-border rounded-lg p-3 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold text-muted-foreground">
+              Angaben ausfüllen ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length})
+            </p>
+            {hasUnfilledVars && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[10px] h-6 gap-1 text-primary"
+                disabled={aiLoading}
+                onClick={async () => {
+                  const result = await fillVariables(
+                    variables.filter(v => !variableValues[v]?.trim()),
+                    fields,
+                    selectedModel,
+                  );
+                  if (result) {
+                    setVariableValues(prev => ({ ...prev, ...result }));
+                  }
+                }}
+              >
+                {aiLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <Wand2 className="w-3 h-3" />
+                )}
+                Beispielwerte
+              </Button>
+            )}
+          </div>
+          {variables.map((v) => (
+            <div key={v} className="flex items-center gap-2">
+              <Badge variant="outline" className="text-[10px] shrink-0 font-mono">
+                {v}
+              </Badge>
+              <input
+                type="text"
+                value={variableValues[v] || ""}
+                onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
+                placeholder={`z.B. ...`}
+                className="flex-1 h-7 text-[11px] px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-center gap-1 mb-1">
         {FIELD_CONFIG.map((field, i) => {
           const filled = fields[field.key].trim().length > 10;
@@ -262,6 +336,11 @@ export const ACTABuilder = ({
       {hasContent && (
         <Card className="p-3 bg-background/50">
           <p className="text-xs font-medium text-muted-foreground mb-1">Vorschau:</p>
+          {hasUnfilledVars && (
+            <p className="text-[10px] text-amber-600 dark:text-amber-400 mb-1.5">
+              {variables.filter(v => !variableValues[v]?.trim()).length} Angabe{variables.filter(v => !variableValues[v]?.trim()).length > 1 ? "n" : ""} noch offen
+            </p>
+          )}
           <p className="text-xs whitespace-pre-wrap leading-relaxed">{assembled}</p>
         </Card>
       )}
@@ -275,7 +354,7 @@ export const ACTABuilder = ({
           <Button
             onClick={async () => {
               const result = await improve(fields, selectedModel);
-              if (result) onFieldsChange(result);
+              if (result) { onFieldsChange(result); setVariableValues({}); }
             }}
             disabled={aiLoading}
             variant="outline"
