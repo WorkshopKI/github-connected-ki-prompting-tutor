@@ -5,7 +5,9 @@ export function AppearanceSettings() {
   return (
     <div className="space-y-6">
       <Card className="card-section">
-        <h3 className="font-semibold mb-4">Theme</h3>
+        <h3 className="font-semibold text-sm flex items-center gap-2 mb-4">
+          🎨 Darstellung
+        </h3>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">Aktuelles Theme wählen:</span>
           <ThemePresetPicker />
