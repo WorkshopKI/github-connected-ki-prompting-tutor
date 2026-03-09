@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Brain, Settings2 } from "lucide-react";
+import { ArrowLeft, Brain, Settings } from "lucide-react";
 import { ModelSelectGroups } from "./ModelSelect";
 import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
@@ -90,7 +90,7 @@ export function PlaygroundHeader({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="icon" className="h-8 w-8">
-                <Settings2 className="h-4 w-4" />
+                <Settings className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-72">
