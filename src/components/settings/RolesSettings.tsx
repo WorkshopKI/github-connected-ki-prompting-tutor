@@ -33,6 +33,9 @@ const roles = [
 export function RolesSettings() {
   return (
     <div className="space-y-4">
+      <h3 className="font-semibold text-sm flex items-center gap-2 mb-2">
+        👥 Rollen & Rechte
+      </h3>
       {roles.map((role) => (
         <Card key={role.name} className="card-section">
           <div className="flex items-center justify-between mb-3">

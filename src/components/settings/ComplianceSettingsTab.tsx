@@ -23,6 +23,9 @@ export function ComplianceSettingsTab() {
 
   return (
     <div className="space-y-6">
+      <h3 className="font-semibold text-sm flex items-center gap-2">
+        🛡️ Sicherheit & Compliance
+      </h3>
       <Alert variant="destructive" className="border-amber-200 bg-amber-50 text-amber-800">
         <AlertTriangle className="h-4 w-4 text-primary" />
         <AlertDescription>

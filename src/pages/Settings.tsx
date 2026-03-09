@@ -1,14 +1,17 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { User, Building2 } from "lucide-react";
 import { ProfileContent } from "@/pages/Profile";
-import { GeneralSettings } from "@/components/settings/GeneralSettings";
-import { RolesSettings } from "@/components/settings/RolesSettings";
-import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
-import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
+import { MeinBereichSection } from "@/components/settings/MeinBereichSection";
 import { AppearanceSettings } from "@/components/settings/AppearanceSettings";
+import { GeneralSettings } from "@/components/settings/GeneralSettings";
+import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
+import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
+import { RolesSettings } from "@/components/settings/RolesSettings";
 import { useAppMode } from "@/contexts/AppModeContext";
 
 const Settings = () => {
   const { isWorkshop } = useAppMode();
+
   return (
     <div className="space-y-8">
       <div>
@@ -18,39 +21,50 @@ const Settings = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="account" className="space-y-6">
+      <Tabs defaultValue="profil" className="space-y-6">
         <TabsList>
-          <TabsTrigger value="account">Mein Konto</TabsTrigger>
-          <TabsTrigger value="general">Allgemein</TabsTrigger>
-          {isWorkshop && <TabsTrigger value="roles">Rollen & Rechte</TabsTrigger>}
-          {isWorkshop && <TabsTrigger value="compliance">Compliance</TabsTrigger>}
-          <TabsTrigger value="ai">KI-Konfiguration</TabsTrigger>
-          <TabsTrigger value="appearance">Darstellung</TabsTrigger>
+          <TabsTrigger value="profil" className="gap-1.5">
+            <User className="w-3.5 h-3.5" />
+            Mein Profil
+          </TabsTrigger>
+          {isWorkshop && (
+            <TabsTrigger value="organisation" className="gap-1.5">
+              <Building2 className="w-3.5 h-3.5" />
+              Organisation
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="account">
+        <TabsContent value="profil" className="space-y-6">
+          {/* Kontoinformationen + KI-Einstellungen (aus Profile.tsx) */}
           <ProfileContent />
+
+          {/* Mein Bereich — Abteilungswahl */}
+          <div className="max-w-2xl">
+            <MeinBereichSection />
+          </div>
+
+          {/* Darstellung — Theme */}
+          <div className="max-w-2xl">
+            <AppearanceSettings />
+          </div>
         </TabsContent>
 
-        <TabsContent value="general" className="space-y-6">
-          <GeneralSettings />
-        </TabsContent>
+        {isWorkshop && (
+          <TabsContent value="organisation" className="space-y-6">
+            {/* Allgemein — Org-Name, Sprache, Toggles */}
+            <GeneralSettings />
 
-        <TabsContent value="roles" className="space-y-4">
-          <RolesSettings />
-        </TabsContent>
+            {/* KI-Konfiguration — Endpunkte + Routing */}
+            <AIRoutingSettings />
 
-        <TabsContent value="compliance" className="space-y-6">
-          <ComplianceSettingsTab />
-        </TabsContent>
+            {/* Sicherheit & Compliance */}
+            <ComplianceSettingsTab />
 
-        <TabsContent value="ai" className="space-y-6">
-          <AIRoutingSettings />
-        </TabsContent>
-
-        <TabsContent value="appearance" className="space-y-6">
-          <AppearanceSettings />
-        </TabsContent>
+            {/* Rollen & Rechte */}
+            <RolesSettings />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

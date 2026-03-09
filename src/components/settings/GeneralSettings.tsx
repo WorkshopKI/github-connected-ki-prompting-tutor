@@ -2,13 +2,9 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { useOrgContext, ORG_SCOPE_LABELS } from "@/contexts/OrgContext";
-import { useAppMode } from "@/contexts/AppModeContext";
-import { Button } from "@/components/ui/button";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
-import type { OrgScope, PlatformSettings } from "@/types";
+import type { PlatformSettings } from "@/types";
 
 const defaultPlatform: PlatformSettings = {
   orgName: "Meine Organisation",
@@ -19,8 +15,6 @@ const defaultPlatform: PlatformSettings = {
 };
 
 export function GeneralSettings() {
-  const { scope, setScope } = useOrgContext();
-  const { isWorkshop, isStandalone, setMode } = useAppMode();
   const [platform, setPlatform] = useState<PlatformSettings>(() => loadFromStorage(LS_KEYS.PLATFORM_SETTINGS, defaultPlatform));
 
   useEffect(() => {
@@ -30,79 +24,12 @@ export function GeneralSettings() {
   return (
     <div className="space-y-6">
       <Card className="card-section space-y-4">
-        {/* App-Modus */}
-        <div className="pb-4 border-b border-border">
-          <label className="text-sm font-medium block mb-2">App-Modus</label>
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-            <div className="flex-1">
-              <span className="text-sm font-medium">
-                {isWorkshop ? "Workshop-Modus" : "Eigener API-Key"}
-              </span>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {isWorkshop
-                  ? "Verbunden mit Workshop — Cloud-Sync aktiv"
-                  : "Standalone — alles lokal gespeichert"
-                }
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (confirm("Modus wechseln? Lokale Daten bleiben erhalten.")) {
-                  setMode(null);
-                  window.location.href = "/";
-                }
-              }}
-            >
-              Modus wechseln
-            </Button>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium block mb-2">Mein Bereich</label>
-          <p className="text-xs text-muted-foreground mb-3">
-            Bestimmt welche Prompts, Beispiele und Use Cases dir angezeigt werden.
-          </p>
-          <div className="space-y-1.5">
-            {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
-              <label
-                key={key}
-                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                  scope === key
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:bg-muted/50"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="orgScope"
-                  value={key}
-                  checked={scope === key}
-                  onChange={() => setScope(key)}
-                  className="sr-only"
-                />
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                  scope === key ? "border-primary" : "border-muted-foreground/30"
-                }`}>
-                  {scope === key && <div className="w-2 h-2 rounded-full bg-primary" />}
-                </div>
-                <div>
-                  <span className="text-sm font-medium">{label}</span>
-                  {key === "privat" && (
-                    <p className="text-xs text-muted-foreground">Allgemeine Prompts für den Alltag</p>
-                  )}
-                  {key === "organisation" && (
-                    <p className="text-xs text-muted-foreground">Alle Abteilungen, Überblick für Admins</p>
-                  )}
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <Separator />
+        <h3 className="font-semibold text-sm flex items-center gap-2">
+          ⚙️ Plattform
+        </h3>
+        <p className="text-xs text-muted-foreground -mt-2">
+          Organisation, Sprache und Workflow-Regeln
+        </p>
 
         <div>
           <label className="text-sm font-medium block mb-1">Organisationsname</label>
