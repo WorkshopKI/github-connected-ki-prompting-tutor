@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
@@ -101,7 +101,7 @@ export function PlaygroundHeader({
                 <label className="text-xs font-semibold text-muted-foreground">Modell</label>
                 <Select value={selectedModel} onValueChange={onModelChange}>
                   <SelectTrigger className="w-full text-xs h-8">
-                    <SelectValue placeholder={getModelLabel(selectedModel)} />
+                    <span className="truncate">{getModelLabel(selectedModel)}</span>
                   </SelectTrigger>
                   <SelectContent>
                     {aiTier === "internal" ? (
