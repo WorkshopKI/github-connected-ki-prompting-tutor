@@ -13,7 +13,7 @@ export function MeinBereichSection() {
       <p className="text-xs text-muted-foreground -mt-2">
         Bestimmt welche Prompts, Beispiele und Use Cases dir angezeigt werden.
       </p>
-      <div className="space-y-1.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
         {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
           <label
             key={key}

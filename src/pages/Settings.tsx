@@ -2,7 +2,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building2 } from "lucide-react";
 import { ProfileContent } from "@/pages/Profile";
 import { MeinBereichSection } from "@/components/settings/MeinBereichSection";
-import { AppearanceSettings } from "@/components/settings/AppearanceSettings";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
 import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
 import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
@@ -40,14 +39,7 @@ const Settings = () => {
           <ProfileContent />
 
           {/* Mein Bereich — Abteilungswahl */}
-          <div className="max-w-2xl">
-            <MeinBereichSection />
-          </div>
-
-          {/* Darstellung — Theme */}
-          <div className="max-w-2xl">
-            <AppearanceSettings />
-          </div>
+          <MeinBereichSection />
         </TabsContent>
 
         {isWorkshop && (
