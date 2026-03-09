@@ -13,11 +13,18 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Coins, Cloud, Key, ArrowRight, Bot } from "lucide-react";
+import { Coins, Key, ArrowRight, Bot, BarChart3, Zap } from "lucide-react";
 
 export interface CreditsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+interface UsageStats {
+  totalRequests: number;
+  totalTokens: number;
+  totalCost: number;
+  requestsToday: number;
 }
 
 export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
@@ -28,25 +35,59 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
     custom_key_active: boolean;
     active_key_source: string;
   } | null>(null);
+  const [maxBudget, setMaxBudget] = useState(5.0);
+  const [usage, setUsage] = useState<UsageStats | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!open || !user) return;
     setLoading(true);
-    supabase
-      .from("user_api_keys")
-      .select("provisioned_key_budget, custom_key_active, active_key_source")
-      .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setBudget(data);
-        setLoading(false);
-      });
-  }, [open, user]);
+
+    const loadData = async () => {
+      // Budget info
+      const { data: keyData } = await supabase
+        .from("user_api_keys")
+        .select("provisioned_key_budget, custom_key_active, active_key_source")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (keyData) setBudget(keyData);
+
+      // Max budget from course
+      if (profile?.course_id) {
+        const { data: course } = await supabase
+          .from("courses")
+          .select("default_key_budget")
+          .eq("id", profile.course_id)
+          .maybeSingle();
+        if (course?.default_key_budget) setMaxBudget(Number(course.default_key_budget));
+      }
+
+      // Usage stats
+      const { data: usageData } = await supabase
+        .from("api_usage_log")
+        .select("estimated_cost, total_tokens, created_at")
+        .eq("user_id", user.id);
+
+      if (usageData) {
+        const today = new Date().toISOString().slice(0, 10);
+        const stats: UsageStats = {
+          totalRequests: usageData.length,
+          totalTokens: usageData.reduce((sum, r) => sum + (r.total_tokens ?? 0), 0),
+          totalCost: usageData.reduce((sum, r) => sum + Number(r.estimated_cost ?? 0), 0),
+          requestsToday: usageData.filter((r) => r.created_at?.startsWith(today)).length,
+        };
+        setUsage(stats);
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
+  }, [open, user, profile?.course_id]);
 
   const isCustom = budget?.active_key_source === "custom";
   const budgetValue = budget?.provisioned_key_budget ?? 0;
-  const budgetPercent = Math.min((budgetValue / 5) * 100, 100);
+  const budgetPercent = Math.min((budgetValue / maxBudget) * 100, 100);
   const currentModel = profile?.preferred_model ?? "google/gemini-3-flash-preview";
 
   return (
@@ -55,10 +96,10 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Coins className="h-5 w-5 text-primary" />
-            KI-Credits
+            KI-Credits & Verbrauch
           </DialogTitle>
           <DialogDescription>
-            Dein aktuelles KI-Kontingent und aktive Quelle.
+            Dein KI-Kontingent und bisheriger Verbrauch.
           </DialogDescription>
         </DialogHeader>
 
@@ -67,15 +108,47 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
         ) : budget ? (
           <div className="space-y-4">
             {/* Budget */}
-            <div>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <span className="text-muted-foreground">Verbleibend</span>
-                <span className="font-semibold">
-                  ${budgetValue.toFixed(2)} / $5.00
-                </span>
+            {!isCustom && (
+              <div>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-muted-foreground">Verbleibendes Budget</span>
+                  <span className="font-semibold">
+                    ${budgetValue.toFixed(2)} / ${maxBudget.toFixed(2)}
+                  </span>
+                </div>
+                <Progress value={budgetPercent} className="h-2" />
               </div>
-              <Progress value={budgetPercent} className="h-2" />
-            </div>
+            )}
+
+            {/* Usage Stats */}
+            {usage && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-lg border border-border p-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <BarChart3 className="h-3 w-3" />
+                    Anfragen
+                  </div>
+                  <p className="text-lg font-semibold">{usage.totalRequests}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {usage.requestsToday} heute
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Zap className="h-3 w-3" />
+                    Tokens
+                  </div>
+                  <p className="text-lg font-semibold">
+                    {usage.totalTokens > 1000
+                      ? `${(usage.totalTokens / 1000).toFixed(1)}k`
+                      : usage.totalTokens}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ~${usage.totalCost.toFixed(3)} Kosten
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* KI-Quelle */}
             <div>
@@ -88,8 +161,8 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
                   </Badge>
                 ) : (
                   <Badge variant="secondary" className="gap-1.5">
-                    <Cloud className="h-3 w-3" />
-                    Cloud AI (Standard)
+                    <Coins className="h-3 w-3" />
+                    Workshop-Budget
                   </Badge>
                 )}
               </div>
@@ -106,7 +179,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
               </div>
             </div>
 
-            {/* Link zur Profil-Seite */}
+            {/* Link zur Settings-Seite */}
             <Button
               variant="outline"
               className="w-full gap-2"
