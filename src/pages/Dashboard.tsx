@@ -159,8 +159,6 @@ const Dashboard = () => {
             </div>
           </Card>
 
-          {/* Tagesaufgabe */}
-          <DailyChallengeCard />
         </div>
 
         {/* Quick Actions */}
@@ -241,6 +239,9 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      {/* Tagesaufgabe — volle Breite */}
+      <DailyChallengeCard />
 
       {/* Analytics Section — collapsible */}
       <AnalyticsSection completedLessons={completedLessons} />
