@@ -10,8 +10,9 @@ const corsHeaders = {
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
 /* ── Usage-Logging Helper (fire-and-forget, kein Budget-Abzug) ── */
+// deno-lint-ignore no-explicit-any
 async function logUsage(
-  admin: ReturnType<typeof createClient>,
+  admin: any,
   userId: string,
   model: string,
   usage: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } | undefined,
