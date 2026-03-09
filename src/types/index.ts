@@ -136,6 +136,15 @@ export interface PromptItem {
     context?: string;
     task?: string;
     ausgabe?: string;
+    extensions?: {
+      examples: string[];
+      rules: string;
+      reasoning: string;
+      verification: boolean;
+      verificationNote: string;
+      reversePrompt: boolean;
+      negatives: string;
+    };
   };
 }
 
