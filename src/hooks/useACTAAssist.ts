@@ -7,6 +7,7 @@ import { EMPTY_EXTENSIONS } from "@/components/playground/ACTATemplates";
 export interface UseACTAAssistReturn {
   suggest: (description: string, model?: string) => Promise<ACTAFields | null>;
   improve: (fields: ACTAFields, model?: string) => Promise<ACTAFields | null>;
+  fillVariables: (variableNames: string[], fields: ACTAFields, model?: string) => Promise<Record<string, string> | null>;
   isLoading: boolean;
 }
 
@@ -70,6 +71,18 @@ Verbesserungsprinzipien:
 - extensions.negatives: Typische KI-Fehler als Negativ-Constraints ergänzen
 - NICHT den Inhalt komplett umschreiben — verbessern und ergänzen
 - Alle Texte auf Deutsch`;
+
+const FILL_VARIABLES_SYSTEM = `Du bist ein Prompt-Engineering-Assistent. Der Benutzer hat eine Vorlage mit Platzhaltern. Fülle die Platzhalter mit realistischen, konkreten Beispielwerten aus.
+Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Backticks, kein Preamble).
+Jeder Key ist ein Platzhalter-Name, jeder Value ein realistischer Beispielwert auf Deutsch.
+Beispiel:
+Eingabe: Platzhalter: Anlass/Beschluss, Redner:in/Funktion
+Kontext: Pressemitteilung einer kommunalen Verwaltung
+Antwort: {"Anlass/Beschluss": "Eröffnung des neuen digitalen Bürgerservice-Portals am 15. März 2026", "Redner:in/Funktion": "Oberbürgermeisterin Dr. Maria Schmidt"}
+Regeln:
+- Werte müssen realistisch und konkret sein (keine generischen Platzhalter wie "Name" oder "Datum")
+- Werte sollen zum Kontext der Vorlage passen
+- Alle Werte auf Deutsch`;
 
 function parseACTAResponse(text: string): ACTAFields | null {
   try {
@@ -162,5 +175,42 @@ export function useACTAAssist(): UseACTAAssistReturn {
     }
   }, []);
 
-  return { suggest, improve, isLoading };
+  const fillVariables = useCallback(async (
+    variableNames: string[],
+    fields: ACTAFields,
+    model?: string,
+  ): Promise<Record<string, string> | null> => {
+    if (variableNames.length === 0) return null;
+    setIsLoading(true);
+    try {
+      const contextHint = [fields.act, fields.task].filter(Boolean).join(". ");
+      const text = await complete({
+        messages: [
+          { role: "system", content: FILL_VARIABLES_SYSTEM },
+          { role: "user", content: `Platzhalter: ${variableNames.join(", ")}\nKontext: ${contextHint || "Allgemein"}` },
+        ],
+        model,
+        temperature: 0.6,
+      });
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      const result: Record<string, string> = {};
+      for (const name of variableNames) {
+        if (parsed[name]) result[name] = parsed[name];
+      }
+      if (Object.keys(result).length === 0) {
+        toast.error("KI konnte keine Beispielwerte generieren.");
+        return null;
+      }
+      toast.success(`${Object.keys(result).length} Beispielwert${Object.keys(result).length > 1 ? "e" : ""} eingesetzt!`);
+      return result;
+    } catch (e) {
+      handleError(e);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { suggest, improve, fillVariables, isLoading };
 }
