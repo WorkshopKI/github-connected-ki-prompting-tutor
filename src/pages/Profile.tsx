@@ -11,7 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
-import { User, BookOpen, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud, LogOut } from "lucide-react";
+import { User, Mail, Save, Bot, Wallet, Key, ExternalLink, Plus, X, Cloud, LogOut } from "lucide-react";
 import { saveUserKey } from "@/services/llmService";
 import { setApiKey as setStandaloneKey, hasApiKey, clearApiKey } from "@/services/apiKeyService";
 import { useAppMode } from "@/contexts/AppModeContext";
@@ -188,7 +188,7 @@ export const ProfileContent = () => {
     : 0;
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       {/* Guest upgrade banner */}
       {authMethod === "guest" && (
         <Card className="p-5 rounded-xl border-primary/30 bg-primary/5 space-y-3">
@@ -250,71 +250,60 @@ export const ProfileContent = () => {
         </Card>
       )}
 
-      {/* Card 1: Kontoinformationen */}
-      <Card className="card-section space-y-4">
-        <h3 className="font-semibold text-sm flex items-center gap-2">
-          <User className="h-4 w-4" /> Kontoinformationen
-        </h3>
-
-        <div>
-          <label className="text-sm font-medium text-muted-foreground mb-1 block">Anzeigename</label>
-          <div className="flex gap-2">
-            <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
-            <Button variant="outline" onClick={handleSaveName} disabled={saving}>
-              <Save className="h-4 w-4 mr-1" /> {saving ? "…" : "Speichern"}
-            </Button>
-          </div>
-        </div>
-
-        <div className="border-t border-border pt-4">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Anmeldeart:</span>
-              <div className="mt-1">
-                <Badge variant={authMethod === "guest" ? "secondary" : "default"}>
-                  {isStandalone ? "Standalone" : authMethod === "guest" ? "Gast" : "E-Mail"}
-                </Badge>
-              </div>
-            </div>
-            {!isStandalone && (
-              <div>
-                <span className="text-muted-foreground">Sync-Status:</span>
-                <div className="mt-1 capitalize">{syncStatus}</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="border-t border-border pt-4">
-          <h4 className="font-semibold text-xs text-muted-foreground mb-3">Fortschritt</h4>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-primary">{Object.keys(bestScores).length}</div>
-              <div className="text-xs text-muted-foreground">Übungen</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">{completedLessons.length}</div>
-              <div className="text-xs text-muted-foreground">Lektionen</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-primary">{challengeCards.length}</div>
-              <div className="text-xs text-muted-foreground">Challenges</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        {/* Card 1: Kontoinformationen */}
+        <Card className="card-section space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              <User className="h-4 w-4" /> Konto
+            </h3>
+            <div className="flex items-center gap-2">
+              <Badge variant={authMethod === "guest" ? "secondary" : "default"} className="text-[10px]">
+                {isStandalone ? "Standalone" : authMethod === "guest" ? "Gast" : "E-Mail"}
+              </Badge>
+              {!isStandalone && (
+                <Badge variant="secondary" className="text-[10px] capitalize">{syncStatus}</Badge>
+              )}
             </div>
           </div>
-          {avgScore > 0 && (
-            <div className="mt-3 text-center">
-              <div className="flex items-center justify-center gap-2">
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Durchschnittliche Bewertung:</span>
-                <span className="font-bold text-primary">{avgScore}%</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
 
-      {/* Card 2: KI & Modell */}
-      <Card className="card-section space-y-4">
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-1 block">Anzeigename</label>
+            <div className="flex gap-2">
+              <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+              <Button variant="outline" onClick={handleSaveName} disabled={saving}>
+                <Save className="h-4 w-4 mr-1" /> {saving ? "…" : "Speichern"}
+              </Button>
+            </div>
+          </div>
+
+          <div className="border-t border-border pt-3">
+            <div className="flex items-center gap-4 flex-wrap">
+              <span className="text-xs font-semibold text-muted-foreground">Fortschritt</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-base font-bold text-primary">{Object.keys(bestScores).length}</span>
+                <span className="text-[10px] text-muted-foreground">Übungen</span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-base font-bold text-primary">{completedLessons.length}</span>
+                <span className="text-[10px] text-muted-foreground">Lektionen</span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-base font-bold text-primary">{challengeCards.length}</span>
+                <span className="text-[10px] text-muted-foreground">Challenges</span>
+              </div>
+              {avgScore > 0 && (
+                <div className="flex items-baseline gap-1 ml-auto">
+                  <span className="text-[10px] text-muted-foreground">Ø Bewertung</span>
+                  <span className="text-base font-bold text-primary">{avgScore}%</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        {/* Card 2: KI & Modell */}
+        <Card className="card-section space-y-4">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Bot className="h-4 w-4" /> KI-Einstellungen
         </h3>
@@ -507,7 +496,8 @@ export const ProfileContent = () => {
             </Accordion>
           </div>
         )}
-      </Card>
+        </Card>
+      </div>
 
       {/* Abmelden */}
       <div className="flex justify-end">
