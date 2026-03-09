@@ -95,7 +95,7 @@ export function PlaygroundHeader({
               className="text-xs h-8 gap-1.5 hidden sm:flex"
             >
               <span className="text-primary">▷</span>
-              Neu hier? Tour starten
+              Neu hier ? Tour starten
             </Button>
           )}
         </div>
