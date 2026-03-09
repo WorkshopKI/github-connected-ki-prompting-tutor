@@ -114,6 +114,7 @@ function promptToTemplate(p: PromptItem): ACTATemplate {
         context: p.actaFields.context || "",
         task: p.actaFields.task || "",
         ausgabe: p.actaFields.ausgabe || "",
+        extensions: p.actaFields.extensions ? { ...p.actaFields.extensions } : undefined,
       },
     };
   }
