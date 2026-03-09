@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Copy, Check, Search, Sparkles, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown } from "lucide-react";
+import { Copy, Check, Search, Sparkles, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown, SlidersHorizontal, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { promptLibrary } from "@/data/prompts";
@@ -133,8 +135,20 @@ export const PromptLibrary = () => {
   const [sortByRating, setSortByRating] = useState(false);
 
   const [confFilter, setConfFilter] = useState<string>("all");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  const primaryCategories = useMemo(() => {
+    const primary = ["Alle", "Alltag", "Beruf", "Organisation"];
+    if (isDepartment) return ["Meine Abteilung", ...primary];
+    if (scope === "organisation") return primary;
+    return primary.filter(c => c !== "Organisation");
+  }, [scope, isDepartment]);
+
+  const secondaryCategories = useMemo(() => {
+    return ["Websuche", "Deep Research", "Blueprints"];
+  }, []);
 
   const [tableSortBy, setTableSortBy] = useState<string>("title");
   const [tableSortDir, setTableSortDir] = useState<"asc" | "desc">("asc");
@@ -260,94 +274,175 @@ export const PromptLibrary = () => {
 
   return (
     <section>
-      <div className="mb-6 space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-          <Input
-            type="text"
-            placeholder="Suche nach Prompts, Kategorien oder Themen..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+      <div className="mb-5 space-y-3">
+        {/* Zeile 1: Suche (aufklappbar) + Filter-Popover */}
+        <div className="flex items-center gap-2">
+          {searchOpen ? (
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                type="text"
+                placeholder="Suche nach Prompts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-9 text-sm"
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSearchOpen(true)}
+              className="gap-1.5 text-muted-foreground"
+            >
+              <Search className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Suche</span>
+            </Button>
+          )}
+
+          {!searchOpen && <div className="flex-1" />}
+
+          {/* Filter-Popover */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Filter</span>
+                {(onlyVerified || sortByRating || confFilter !== "all") && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-64 space-y-4">
+              <h4 className="text-sm font-semibold">Filter & Sortierung</h4>
+              <label className="flex items-center justify-between">
+                <span className="text-xs">Nur verifizierte</span>
+                <Switch checked={onlyVerified} onCheckedChange={setOnlyVerified} />
+              </label>
+              <label className="flex items-center justify-between">
+                <span className="text-xs">Nach Bewertung sortieren</span>
+                <Switch checked={sortByRating} onCheckedChange={setSortByRating} />
+              </label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">KI-Stufe</label>
+                <select
+                  value={confFilter}
+                  onChange={(e) => setConfFilter(e.target.value)}
+                  className="w-full text-xs border rounded-md px-2 py-1.5 bg-background"
+                >
+                  <option value="all">Alle</option>
+                  <option value="open">🟢 Offen</option>
+                  <option value="internal">🟡 Intern</option>
+                  <option value="confidential">🔴 Vertraulich</option>
+                </select>
+              </div>
+              {selectedCategory === "Organisation" && (
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Abteilung</label>
+                    <div className="flex flex-wrap gap-1">
+                      {departments.map((dept) => (
+                        <Button
+                          key={dept}
+                          variant={departmentFilter === dept ? "default" : "outline"}
+                          size="sm"
+                          className="text-[10px] h-6 px-2"
+                          onClick={() => setDepartmentFilter(dept)}
+                        >
+                          {dept}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">Risiko</label>
+                    <div className="flex flex-wrap gap-1">
+                      {riskLevels.map((risk) => (
+                        <Button
+                          key={risk}
+                          variant={riskFilter === risk ? "default" : "outline"}
+                          size="sm"
+                          className="text-[10px] h-6 px-2"
+                          onClick={() => setRiskFilter(risk)}
+                        >
+                          {risk}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Ansicht</label>
+                <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)} className="justify-start">
+                  <ToggleGroupItem value="grid" aria-label="Grid" className="h-7 w-7"><LayoutGrid className="h-3.5 w-3.5" /></ToggleGroupItem>
+                  <ToggleGroupItem value="list" aria-label="List" className="h-7 w-7"><List className="h-3.5 w-3.5" /></ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
+        {/* Zeile 2: Kategorie-Pills (komprimiert) */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {primaryCategories.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               onClick={() => setSelectedCategory(category)}
               size="sm"
-              className={category === "Meine Abteilung" ? "gap-1.5" : ""}
+              className="h-7 text-xs"
             >
               {category === "Meine Abteilung"
                 ? `⬡ ${scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")}`
                 : category}
             </Button>
           ))}
+
+          {/* "Mehr" Dropdown für sekundäre Kategorien */}
+          {secondaryCategories.length > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={secondaryCategories.includes(selectedCategory) ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                >
+                  {secondaryCategories.includes(selectedCategory) ? selectedCategory : "Mehr"}
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-auto p-1.5">
+                {secondaryCategories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={cn(
+                      "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                      selectedCategory === cat
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    )}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
 
-
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 text-sm">
-              <Switch checked={onlyVerified} onCheckedChange={setOnlyVerified} />
-              Nur verifizierte
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Switch checked={sortByRating} onCheckedChange={setSortByRating} />
-              Nach Bewertung
-            </label>
-            <select
-              value={confFilter}
-              onChange={(e) => setConfFilter(e.target.value)}
-              className="text-sm border rounded-md px-2 py-1.5 bg-background"
-            >
-              <option value="all">Alle KI-Stufen</option>
-              <option value="open">🟢 Offen</option>
-              <option value="internal">🟡 Intern</option>
-              <option value="confidential">🔴 Vertraulich</option>
-            </select>
-          </div>
-          <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v)}>
-            <ToggleGroupItem value="grid" aria-label="Grid"><LayoutGrid className="h-4 w-4" /></ToggleGroupItem>
-            <ToggleGroupItem value="list" aria-label="List"><List className="h-4 w-4" /></ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-
-        {selectedCategory === "Organisation" && (
-          <div className="space-y-2">
-            <div className="flex flex-wrap gap-2">
-              {departments.map((department) => (
-                <Button
-                  key={department}
-                  variant={departmentFilter === department ? "default" : "outline"}
-                  onClick={() => setDepartmentFilter(department)}
-                  size="sm"
-                >
-                  <Building2 className="w-3.5 h-3.5 mr-1" /> {department}
-                </Button>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {riskLevels.map((risk) => (
-                <Button
-                  key={risk}
-                  variant={riskFilter === risk ? "default" : "outline"}
-                  onClick={() => setRiskFilter(risk)}
-                  size="sm"
-                >
-                  <AlertTriangle className="w-3.5 h-3.5 mr-1" /> Risiko: {risk}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <p className="text-sm text-muted-foreground">
+        {/* Zeile 3: Ergebnis-Counter */}
+        <p className="text-xs text-muted-foreground">
           {filteredPrompts.length} {filteredPrompts.length === 1 ? "Prompt" : "Prompts"} gefunden
         </p>
       </div>
