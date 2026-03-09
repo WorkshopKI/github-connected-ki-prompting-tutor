@@ -163,6 +163,7 @@ export const ACTABuilder = ({
 
   const content = (
     <div className="px-4 pb-4 space-y-4">
+      <div data-tour="acta-template-select">
       <Select onValueChange={handleTemplateSelect}>
         <SelectTrigger className="w-full text-xs">
           <SelectValue placeholder="Vorlage aus Sammlung laden..." />
@@ -182,9 +183,10 @@ export const ACTABuilder = ({
           ))}
         </SelectContent>
       </Select>
+      </div>
 
       {isExperte && (
-        <div className="space-y-2">
+        <div data-tour="acta-ki-suggest" className="space-y-2">
           <button
             type="button"
             onClick={() => setShowSuggest(!showSuggest)}
@@ -227,6 +229,7 @@ export const ACTABuilder = ({
         </div>
       )}
 
+      <div data-tour="acta-fields" className="space-y-4">
       {FIELD_CONFIG.map((field) => {
         const Icon = field.icon;
         const value = fields[field.key];
@@ -257,9 +260,10 @@ export const ACTABuilder = ({
           </div>
         );
       })}
+      </div>
 
       {variables.length > 0 && (
-        <div className="bg-muted/30 border border-border rounded-lg p-3 space-y-2.5">
+        <div data-tour="acta-variables" className="bg-muted/30 border border-border rounded-lg p-3 space-y-2.5">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-semibold text-muted-foreground">
               Angaben ausfüllen ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length})
@@ -334,7 +338,7 @@ export const ACTABuilder = ({
       </div>
 
       {hasContent && (
-        <Card className="p-3 bg-background/50">
+        <Card data-tour="acta-preview" className="p-3 bg-background/50">
           <p className="text-xs font-medium text-muted-foreground mb-1">Vorschau:</p>
           {hasUnfilledVars && (
             <p className="text-[10px] text-amber-600 dark:text-amber-400 mb-1.5">
@@ -345,7 +349,7 @@ export const ACTABuilder = ({
         </Card>
       )}
 
-      <div className="flex gap-2">
+      <div data-tour="acta-send" className="flex gap-2">
         <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
           <Send className="w-3 h-3 mr-1.5" />
           → Prompt testen

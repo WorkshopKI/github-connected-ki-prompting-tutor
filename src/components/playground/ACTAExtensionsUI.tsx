@@ -147,10 +147,10 @@ interface ACTAExtensionsProps {
 /** Erweiterungen unter dem Context-Feld */
 export function ContextExtensions({ extensions, onChange }: ACTAExtensionsProps) {
   return (
-    <>
+    <div data-tour="acta-extensions">
       <ExamplesExtension examples={extensions.examples} onChange={(examples) => onChange({ ...extensions, examples })} />
       <RulesExtension rules={extensions.rules} onChange={(rules) => onChange({ ...extensions, rules })} />
-    </>
+    </div>
   );
 }
 

@@ -67,7 +67,7 @@ export const PlaygroundContent = ({
       )}
 
       {isEinsteiger ? (
-        <div className="flex-1 min-h-0">
+        <div data-tour="chat-area" className="flex-1 min-h-0">
           <ChatPlayground
             messages={messages}
             onSendMessage={onSendMessage}
@@ -84,7 +84,7 @@ export const PlaygroundContent = ({
           />
         </div>
       ) : (
-        <Tabs value={activeTab} onValueChange={onTabChange} className="flex-1 flex flex-col min-h-0">
+        <Tabs data-tour="chat-area" value={activeTab} onValueChange={onTabChange} className="flex-1 flex flex-col min-h-0">
           <TabsList className="mb-4">
             <TabsTrigger value="chat" className="gap-1.5">
               <MessageSquare className="w-3.5 h-3.5" />
