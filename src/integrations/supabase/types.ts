@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_usage_log: {
+        Row: {
+          completion_tokens: number
+          created_at: string
+          estimated_cost: number
+          id: string
+          model: string
+          prompt_tokens: number
+          request_type: string
+          total_tokens: number
+          user_id: string
+        }
+        Insert: {
+          completion_tokens?: number
+          created_at?: string
+          estimated_cost?: number
+          id?: string
+          model?: string
+          prompt_tokens?: number
+          request_type?: string
+          total_tokens?: number
+          user_id: string
+        }
+        Update: {
+          completion_tokens?: number
+          created_at?: string
+          estimated_cost?: number
+          id?: string
+          model?: string
+          prompt_tokens?: number
+          request_type?: string
+          total_tokens?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           created_at: string
