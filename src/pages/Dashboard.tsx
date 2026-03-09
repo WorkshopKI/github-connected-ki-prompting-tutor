@@ -66,11 +66,11 @@ const Dashboard = () => {
       const officialPrompts = candidates.filter((p) => p.official && p.targetDepartment !== scope);
       candidates = [...deptPrompts, ...officialPrompts];
     }
-    if (candidates.length < 5) {
+    if (candidates.length < 8) {
       const remaining = promptLibrary.filter((p) => !candidates.includes(p));
       candidates = [...candidates, ...remaining];
     }
-    return candidates.slice(0, 5);
+    return candidates.slice(0, 8);
   }, [scope, isDepartment]);
 
   const onboardingProgress = useMemo(() => {
