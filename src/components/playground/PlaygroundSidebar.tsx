@@ -36,11 +36,12 @@ interface PlaygroundSidebarProps {
 interface SectionProps {
   icon: React.ReactNode;
   label: string;
+  badge?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
 }
 
-function SidebarSection({ icon, label, defaultOpen = false, children }: SectionProps) {
+function SidebarSection({ icon, label, badge, defaultOpen = false, children }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -49,6 +50,7 @@ function SidebarSection({ icon, label, defaultOpen = false, children }: SectionP
           <div className="flex items-center gap-2">
             {icon}
             <span className="font-semibold text-sm">{label}</span>
+            {badge}
           </div>
           {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
@@ -156,24 +158,23 @@ function SidebarSections({
             </SidebarSection>
           </>
         )}
-      </div>
 
-      {/* Fixed conversation history at bottom */}
-      <div className="mt-auto border-t border-border pt-3">
-        <div className="flex items-center gap-2 px-4 mb-2">
-          <History className="w-4 h-4 text-primary" />
-          <span className="font-semibold text-sm">Meine Versuche</span>
-          <span className="text-xs text-muted-foreground">({conversations.length})</span>
-        </div>
-        <ConversationHistory
-          conversations={conversations}
-          activeId={activeConversationId}
-          onSelect={onSelectConversation}
-          onNew={onNewConversation}
-          onDelete={onDeleteConversation}
-          onRename={onRenameConversation}
-          bare
-        />
+        {/* Meine Versuche — collapsible, default closed for more ACTA space */}
+        <SidebarSection
+          icon={<History className="w-4 h-4 text-primary" />}
+          label="Meine Versuche"
+          badge={<span className="text-xs text-muted-foreground">({conversations.length})</span>}
+        >
+          <ConversationHistory
+            conversations={conversations}
+            activeId={activeConversationId}
+            onSelect={onSelectConversation}
+            onNew={onNewConversation}
+            onDelete={onDeleteConversation}
+            onRename={onRenameConversation}
+            bare
+          />
+        </SidebarSection>
       </div>
     </div>
   );
