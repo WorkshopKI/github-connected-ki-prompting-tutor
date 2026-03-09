@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,9 @@ import { promptLibrary } from "@/data/prompts";
 import { splitPromptToACTA } from "@/lib/promptUtils";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { AgentConfig } from "@/components/playground/AgentKnobs";
+import { useTour } from "@/hooks/useTour";
+import { getStepsForMode } from "@/components/playground/tourSteps";
+import { TourOverlay } from "@/components/playground/TourOverlay";
 
 const Playground = () => {
   const { isLoggedIn, isLoading, profile } = useAuthContext();
@@ -65,6 +68,17 @@ const Playground = () => {
     setPlaygroundMode(mode);
     localStorage.setItem(LS_KEYS.PLAYGROUND_MODE, mode);
   };
+
+  // --- Guided tour ---
+  const tourSteps = useMemo(() => getStepsForMode(playgroundMode), [playgroundMode]);
+  const tour = useTour(tourSteps.length);
+
+  useEffect(() => {
+    if (!tour.hasCompleted && isLoggedIn && !isLoading) {
+      const timer = setTimeout(() => tour.start(), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn, isLoading]);
 
   // --- Custom hooks ---
   const chat = useChat({
@@ -213,6 +227,7 @@ const Playground = () => {
         mode={playgroundMode}
         onModeChange={handleModeChange}
         sourceTitle={sourcePromptTitle}
+        onStartTour={tour.start}
       />
 
       {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
@@ -333,6 +348,17 @@ const Playground = () => {
       </div>
 
       <BudgetDialog open={showBudgetDialog} onOpenChange={setShowBudgetDialog} />
+
+      {tour.isActive && tour.activeStep !== null && tourSteps[tour.activeStep] && (
+        <TourOverlay
+          step={tourSteps[tour.activeStep]}
+          stepIndex={tour.activeStep}
+          totalSteps={tourSteps.length}
+          onNext={tour.next}
+          onPrev={tour.prev}
+          onFinish={tour.finish}
+        />
+      )}
     </div>
   );
 };

@@ -23,6 +23,7 @@ interface PlaygroundHeaderProps {
   mode: "einsteiger" | "experte";
   onModeChange: (mode: "einsteiger" | "experte") => void;
   sourceTitle?: string | null;
+  onStartTour?: () => void;
 }
 
 export function PlaygroundHeader({
@@ -38,6 +39,7 @@ export function PlaygroundHeader({
   mode,
   onModeChange,
   sourceTitle,
+  onStartTour,
 }: PlaygroundHeaderProps) {
   const navigate = useNavigate();
 
@@ -84,6 +86,18 @@ export function PlaygroundHeader({
               Experte
             </button>
           </div>
+
+          {onStartTour && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onStartTour}
+              className="text-xs h-8 gap-1.5 hidden sm:flex"
+            >
+              <span className="text-primary">▷</span>
+              Tour starten
+            </Button>
+          )}
         </div>
 
         {/* Right: Model badge (Experte only) + Settings Popover */}
