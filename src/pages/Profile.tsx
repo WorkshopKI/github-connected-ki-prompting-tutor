@@ -18,7 +18,7 @@ import { useAppMode } from "@/contexts/AppModeContext";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
 
-export const ProfileContent = () => {
+export const ProfileContent = ({ children }: { children?: React.ReactNode }) => {
   const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile, signOut } = useAuthContext();
   const { exercises, completedLessons, challengeCards, syncStatus } = useSyncContext();
   const navigate = useNavigate();
@@ -251,7 +251,8 @@ export const ProfileContent = () => {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        {/* Card 1: Kontoinformationen */}
+        {/* Linke Spalte: Konto + children (MeinBereich) + Abmelden */}
+        <div className="space-y-4">
         <Card className="card-section space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm flex items-center gap-2">
@@ -301,6 +302,13 @@ export const ProfileContent = () => {
             </div>
           </div>
         </Card>
+        {children}
+        <div className="flex justify-end">
+          <Button variant="ghost" className="text-muted-foreground gap-2" onClick={() => signOut()}>
+            <LogOut className="h-4 w-4" /> Abmelden
+          </Button>
+        </div>
+        </div>
 
         {/* Card 2: KI & Modell */}
         <Card className="card-section space-y-4">
@@ -497,13 +505,6 @@ export const ProfileContent = () => {
           </div>
         )}
         </Card>
-      </div>
-
-      {/* Abmelden */}
-      <div className="flex justify-end">
-        <Button variant="ghost" className="text-muted-foreground gap-2" onClick={() => signOut()}>
-          <LogOut className="h-4 w-4" /> Abmelden
-        </Button>
       </div>
     </div>
   );
