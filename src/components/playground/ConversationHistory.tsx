@@ -105,8 +105,8 @@ export const ConversationHistory = ({
                       </div>
                     ) : (
                       <>
-                        <span className="truncate flex-1">{conv.title}</span>
-                        <div className="hidden group-hover:flex items-center gap-0.5 shrink-0">
+                        <span className="truncate flex-1" title={conv.title}>{conv.title}</span>
+                        <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="ghost"
                             size="icon"

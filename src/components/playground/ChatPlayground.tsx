@@ -196,7 +196,8 @@ export const ChatPlayground = ({
 
       {/* Messages */}
       <div
-        className={`flex-1 px-4 py-4 space-y-4 min-h-0 ${hasMessages ? "overflow-y-auto" : "overflow-hidden"}`}
+        className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto"
+        style={{ scrollbarGutter: "stable" }}
         onScroll={handleScroll}
       >
         {!hasMessages && (
