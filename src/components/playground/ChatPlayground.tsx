@@ -118,7 +118,7 @@ export const ChatPlayground = ({
   const exportAsMarkdown = () => {
     if (messages.length === 0) return;
     const lines: string[] = [
-      "# Prompt-Labor-Gespräch",
+      "# Prompt-Werkstatt-Gespräch",
       "",
       `*Exportiert am ${new Date().toLocaleDateString("de-DE")}*`,
       "",

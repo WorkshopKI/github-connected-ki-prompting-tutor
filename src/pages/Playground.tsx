@@ -225,7 +225,7 @@ const Playground = () => {
                 Anmeldung erforderlich
               </CardTitle>
               <CardDescription>
-                Melde dich an, um das Prompt-Labor zu nutzen und KI-Modelle
+                Melde dich an, um die Prompt Werkstatt zu nutzen und KI-Modelle
                 direkt auszuprobieren.
               </CardDescription>
             </CardHeader>

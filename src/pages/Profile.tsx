@@ -433,7 +433,7 @@ export const ProfileContent = ({ children }: { children?: React.ReactNode }) => 
             ) : (
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  OpenRouter API-Key für KI-Funktionen (Prompt-Labor, Übungsbewertung).
+                  OpenRouter API-Key für KI-Funktionen (Prompt Werkstatt, Übungsbewertung).
                 </p>
                 <div className="flex gap-2">
                   <Input

@@ -263,16 +263,16 @@ const Onboarding = () => {
           <h3 className="text-lg font-bold mb-2">Onboarding abgeschlossen!</h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
             Du kennst die ACTA-Methode und hast deine ersten Prompts verbessert.
-            Du bist bereit für die Prompt Library und das Prompt-Labor.
+            Du bist bereit für die Prompt Sammlung und die Prompt Werkstatt.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Button onClick={() => navigate("/library")} className="gap-2">
               <BookOpen className="w-4 h-4" />
-              Prompt Library öffnen
+              Prompt Sammlung öffnen
             </Button>
             <Button variant="outline" onClick={() => navigate("/playground")} className="gap-2">
               <Sparkles className="w-4 h-4" />
-              Prompt-Labor starten
+              Prompt Werkstatt starten
             </Button>
           </div>
         </Card>

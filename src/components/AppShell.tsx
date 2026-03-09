@@ -36,8 +36,8 @@ import {
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Prompt Library", icon: BookOpen, path: "/library" },
-  { label: "Prompt-Labor", icon: Sparkles, path: "/playground" },
+  { label: "Prompt Sammlung", icon: BookOpen, path: "/library" },
+  { label: "Prompt Werkstatt", icon: Sparkles, path: "/playground" },
   { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
   { label: "Einstellungen", icon: Settings, path: "/settings" },
 ];
