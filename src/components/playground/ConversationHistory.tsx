@@ -14,6 +14,7 @@ import {
   X,
   History,
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { SavedConversation } from "@/types";
 
 export type { SavedConversation } from "@/types";
@@ -67,7 +68,7 @@ export const ConversationHistory = ({
                 {sorted.map((conv) => (
                   <div
                     key={conv.id}
-                    className={`group flex items-center gap-1.5 px-2 py-1.5 rounded-md cursor-pointer text-xs transition-colors ${
+                    className={`group flex items-center gap-1.5 px-2 py-1.5 rounded-md cursor-pointer text-xs transition-colors min-w-0 ${
                       activeId === conv.id
                         ? "bg-primary/10 text-foreground"
                         : "hover:bg-accent text-muted-foreground"
@@ -105,7 +106,16 @@ export const ConversationHistory = ({
                       </div>
                     ) : (
                       <>
-                        <span className="truncate flex-1" title={conv.title}>{conv.title}</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="truncate flex-1 min-w-0">
+                              {conv.title}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs">
+                            {conv.messages.find(m => m.role === "user")?.content || conv.title}
+                          </TooltipContent>
+                        </Tooltip>
                         <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button
                             variant="ghost"
