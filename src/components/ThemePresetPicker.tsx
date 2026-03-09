@@ -68,7 +68,6 @@ export const ThemePresetPicker = () => {
             {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
             {dark ? "Hell" : "Dunkel"}
           </span>
-          {dark && <Check className="h-4 w-4 text-primary" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
