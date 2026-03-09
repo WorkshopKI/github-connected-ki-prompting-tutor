@@ -26,7 +26,7 @@ import { useOrgContext } from "@/contexts/OrgContext";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
-import { LEVEL_BADGE_COLORS } from "@/lib/constants";
+
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -82,7 +82,6 @@ const Dashboard = () => {
 
   const displayName = profile?.display_name;
 
-  const levelBadgeColors = LEVEL_BADGE_COLORS;
 
   return (
     <div className="space-y-8">
@@ -120,38 +119,21 @@ const Dashboard = () => {
                 Alle anzeigen <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-1">
               {popularPrompts.map((prompt, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="font-medium text-sm truncate">
                         {prompt.title}
                       </p>
-                      <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 mt-1">
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
                         {prompt.category}
                       </span>
-                      {prompt.department && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                          {prompt.department}
-                        </span>
-                      )}
-                      {prompt.level && (
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded ${
-                            levelBadgeColors[prompt.level] ||
-                            "bg-muted text-muted-foreground"
-                          }`}
-                        >
-                          {prompt.level}
-                        </span>
-                      )}
+                      <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
                     </div>
                   </div>
                 </div>
