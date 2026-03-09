@@ -82,7 +82,7 @@ export function PlaygroundHeader({
         <div className="flex items-center gap-2">
           {mode === "experte" && (
             <span className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/8 text-xs font-medium text-foreground">
-              {aiTier === "internal" ? "🏢" : "☁️"}
+              {aiTier === "internal" ? "🏢 Interne KI · " : "☁️ Externe KI · "}
               {getModelLabel(selectedModel)}
             </span>
           )}
@@ -143,37 +143,34 @@ export function PlaygroundHeader({
 
               <Separator className="my-3" />
 
-              {/* Sektion 3: KI-Stufe (Intern/Extern) */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">KI-Stufe</label>
-                <div className="flex rounded-lg border border-border overflow-hidden">
-                  <button
-                    onClick={() => onAiTierChange("internal")}
-                    className={cn(
-                      "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1",
-                      aiTier === "internal"
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    🏢 Intern
-                  </button>
-                  <button
-                    onClick={() => canUseExternal && onAiTierChange("external")}
-                    disabled={!canUseExternal}
-                    className={cn(
-                      "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1",
-                      aiTier === "external" && canUseExternal
-                        ? "bg-primary/10 text-primary"
-                        : canUseExternal
-                        ? "text-muted-foreground hover:bg-muted/50"
-                        : "text-muted-foreground/30 cursor-not-allowed"
-                    )}
-                    title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
-                  >
-                    ☁️ Extern
-                  </button>
-                </div>
+              {/* Sektion 3: Interne / Externe KI */}
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => onAiTierChange("internal")}
+                  className={cn(
+                    "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1",
+                    aiTier === "internal"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  🏢 Interne KI
+                </button>
+                <button
+                  onClick={() => canUseExternal && onAiTierChange("external")}
+                  disabled={!canUseExternal}
+                  className={cn(
+                    "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1",
+                    aiTier === "external" && canUseExternal
+                      ? "bg-primary text-primary-foreground"
+                      : canUseExternal
+                      ? "text-muted-foreground hover:bg-muted/50"
+                      : "text-muted-foreground/30 cursor-not-allowed"
+                  )}
+                  title={!canUseExternal ? "Für vertrauliche Inhalte nicht verfügbar" : "Externe Business-API"}
+                >
+                  ☁️ Externe KI
+                </button>
               </div>
 
               <Separator className="my-3" />
