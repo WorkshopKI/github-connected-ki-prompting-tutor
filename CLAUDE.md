@@ -64,6 +64,8 @@ src/
 │   │   ├── TechniquePanel.tsx      # Technik-Auswahl
 │   │   ├── TechniqueTemplates.ts   # Technik-Vorlagen
 │   │   └── ThinkingBlock.tsx       # Aufklappbarer Denkprozess-Block
+│   ├── admin/                      # Admin Sub-Komponenten
+│   │   └── UsageOverview.tsx       # API-Verbrauch pro Teilnehmer (Kosten, Tokens, Budget-Mgmt)
 │   ├── settings/                   # Settings Sub-Komponenten
 │   │   ├── AIRoutingSettings.tsx   # KI-Konfiguration Tab
 │   │   ├── AppearanceSettings.tsx  # Darstellung Tab
@@ -151,7 +153,7 @@ src/
 │   ├── Settings.tsx                # Tabs: Mein Konto | Allgemein | Rollen | Compliance | KI-Konfiguration | Darstellung
 │   ├── Profile.tsx                 # Exportiert ProfileContent (eingebettet in Settings)
 │   ├── Login.tsx                   # Email OTP + Guest Code Login
-│   ├── AdminParticipants.tsx       # Admin: Kurs-/Teilnehmerverwaltung
+│   ├── AdminParticipants.tsx       # Admin: Kurs-/Teilnehmerverwaltung + API-Verbrauch Tab
 │   └── NotFound.tsx                # 404 Seite
 ├── App.tsx                         # Root: Router + Providers + PlatformLayout
 ├── main.tsx                        # Entry Point mit ThemeProvider
@@ -249,8 +251,10 @@ supabase/
 
 ### LLM Integration
 - **Evaluate Prompt:** `evaluate-prompt` Edge Function nutzt LLM Tool Calling für Scoring
-- **Streaming Chat:** `llm-proxy` Edge Function proxied zu OpenRouter oder Lovable AI Gateway (SSE)
-- **Key Sources:** Provisioned (Lovable Gateway, $5 Budget/User) oder Custom OpenRouter Key (AES-256-GCM verschlüsselt)
+- **Streaming Chat:** `llm-proxy` Edge Function proxied zu OpenRouter (SSE). Nutzt `OPENROUTER_API_KEY` für Provisioned-Zugang.
+- **Usage Tracking:** `llm-proxy` loggt jeden Request in `api_usage_log` (Tokens, geschätzte Kosten). Admin-Dashboard (`UsageOverview`) zeigt aggregierte Statistiken pro Teilnehmer.
+- **Key Sources:** Provisioned (OpenRouter via `OPENROUTER_API_KEY`, Budget/User) oder Custom OpenRouter Key (AES-256-GCM verschlüsselt)
+- **Budget Management:** Admins können Budget pro User oder Bulk für alle Teilnehmer setzen (via `UsageOverview`)
 - **Model Selection:** User wählt Modell auf Settings-Seite (Default: `google/gemini-3-flash-preview`)
 
 ### Database Schema (Supabase/Postgres)
@@ -261,7 +265,8 @@ supabase/
 - `guest_tokens` — Temporäre Gast-Zugangscodes mit Ablauf
 - `user_progress` — Synchronisierter Fortschritt (Lessons, Quizzes, Challenges, Werkstatt)
 - `user_projects` — User ML Projekt-Daten (Pipeline Config, Models, Evaluation)
-- `user_api_keys` — Provisioned Budget + verschlüsselte Custom OpenRouter Keys
+- `user_api_keys` — Provisioned Budget + verschlüsselte Custom OpenRouter Keys. Admin RBAC: Admins können alle Keys lesen/schreiben.
+- `api_usage_log` — Token-/Kosten-Tracking pro LLM-Request (user_id, model, prompt_tokens, completion_tokens, total_tokens, estimated_cost, request_type). Insert via Service Role aus `llm-proxy`. RLS: User sehen eigene Logs, Admins sehen alle.
 - Alle Tabellen haben RLS aktiviert. Admin-Checks nutzen `has_role()` Security Definer Function.
 
 ## Design System
@@ -321,9 +326,9 @@ Frontend (in `.env`, prefixed `VITE_`):
 - `VITE_SUPABASE_PUBLISHABLE_KEY` — Supabase anon key
 - `VITE_SUPABASE_PROJECT_ID` — Project ID
 
-Edge function secrets (set in Supabase dashboard):
+Edge function secrets (set via Lovable, kein separates Supabase Dashboard):
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` — auto-provided
-- `LOVABLE_API_KEY` — Lovable AI Gateway key (for provisioned LLM access)
+- `OPENROUTER_API_KEY` — OpenRouter API Key für Provisioned LLM-Zugang (ersetzt `LOVABLE_API_KEY`)
 - `ENCRYPTION_KEY` — 256-bit hex key for AES-GCM encryption of custom API keys
 
 ## Linting & TypeScript
