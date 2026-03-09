@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2, Copy, Download, Bot, Brain } from "lucide-react";
 import { toast } from "sonner";
@@ -7,7 +7,51 @@ import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
+import { useOrgContext } from "@/contexts/OrgContext";
+import type { OrgScope } from "@/types";
 import type { Msg } from "@/services/llmService";
+
+interface Suggestion {
+  title: string;
+  prompt: string;
+}
+
+const GENERAL_SUGGESTIONS: Suggestion[] = [
+  { title: "Text erstellen", prompt: "Schreibe einen professionellen LinkedIn-Post über künstliche Intelligenz im Mittelstand." },
+  { title: "Analysieren", prompt: "Vergleiche die Vor- und Nachteile von Remote-Arbeit für ein Team mit 15 Personen." },
+  { title: "Ideen sammeln", prompt: "Generiere 10 kreative Marketingideen für ein nachhaltiges Mode-Label mit Budget unter 5.000 Euro." },
+  { title: "Strukturieren", prompt: "Erstelle eine Checkliste für die Einführung eines neuen CRM-Systems in einem KMU." },
+  { title: "E-Mail formulieren", prompt: "Formuliere eine professionelle Antwort auf eine Kundenbeschwerde wegen verspäteter Lieferung." },
+  { title: "Zusammenfassen", prompt: "Fasse einen 10-seitigen Quartalsbericht auf die 5 wichtigsten Erkenntnisse und Handlungsempfehlungen zusammen." },
+];
+
+const DEPARTMENT_SUGGESTIONS: Partial<Record<OrgScope, Suggestion[]>> = {
+  legal: [
+    { title: "Vertragsklauseln prüfen", prompt: "Prüfe die folgenden Vertragsklauseln auf potenzielle Risiken und schlage Alternativformulierungen vor. [JURIST:IN PRÜFEN]" },
+    { title: "DSGVO-Checkliste", prompt: "Erstelle eine DSGVO-Prüfcheckliste für die Einführung eines neuen Cloud-Dienstes mit Bezug auf Art. 28 und Art. 32 DSGVO." },
+    { title: "Rechtliche Stellungnahme", prompt: "Entwirf eine Gliederung für eine rechtliche Stellungnahme zum Thema Haftung bei KI-generierten Inhalten. [JURIST:IN PRÜFEN]" },
+  ],
+  oeffentlichkeitsarbeit: [
+    { title: "Pressemitteilung", prompt: "Erstelle eine Pressemitteilung im Format Headline – Lead – Zitat – Hintergrund für die Eröffnung eines neuen Bürgerservice-Zentrums." },
+    { title: "Social-Media-Post", prompt: "Schreibe einen barrierefreien Social-Media-Post für eine kommunale Informationskampagne zum Thema Digitalisierung." },
+    { title: "Bürgerinformation", prompt: "Verfasse eine verständliche Bürgerinformation (Sprachniveau B1) zu geänderten Öffnungszeiten als FAQ-Format." },
+  ],
+  hr: [
+    { title: "Stellenausschreibung", prompt: "Erstelle eine AGG-konforme Stellenausschreibung für eine Projektmanager-Position mit Fokus auf Diversität und Benefits." },
+    { title: "Interview-Leitfaden", prompt: "Erstelle einen strukturierten Interview-Leitfaden nach der STAR-Methode für eine Teamleiter-Position mit Bewertungsskala 1–5." },
+    { title: "Fortbildungsplan", prompt: "Erstelle einen Quartals-Fortbildungsplan für eine Abteilung mit 20 Mitarbeitenden, inklusive Pflichtschulungen und optionaler Weiterbildung." },
+  ],
+  it: [
+    { title: "Störungsmeldung", prompt: "Strukturiere eine IT-Störungsmeldung mit Severity-Level (P1–P4), Symptombeschreibung, Auswirkung und nächsten Schritten." },
+    { title: "Anforderungsdokument", prompt: "Erstelle ein Anforderungsdokument mit 10 User Stories inkl. Akzeptanzkriterien und MoSCoW-Priorisierung für ein internes Ticketsystem." },
+    { title: "Migrationsleitfaden", prompt: "Erstelle einen Migrationsleitfaden für den Umzug eines On-Premise-Systems in die Cloud, inkl. Phasenplan und Rollback-Strategie." },
+  ],
+  bauverfahren: [
+    { title: "Baugenehmigung prüfen", prompt: "Erstelle eine Prüfcheckliste für einen Baugenehmigungsantrag nach der jeweiligen Landesbauordnung mit allen erforderlichen Unterlagen." },
+    { title: "Ausschreibungstext", prompt: "Entwirf einen Ausschreibungstext für Tiefbauarbeiten mit technischen Anforderungen, Eignungskriterien und Zuschlagskriterien." },
+    { title: "Projektstatusbericht", prompt: "Erstelle eine Vorlage für einen Projektstatusbericht eines Bauvorhabens mit Meilensteinen, Kostenübersicht und Risikobewertung." },
+  ],
+};
 
 export interface ChatPlaygroundProps {
   messages: Msg[];
@@ -40,6 +84,15 @@ export const ChatPlayground = ({
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
+  const { scope, isDepartment } = useOrgContext();
+
+  const suggestions = useMemo(() => {
+    const deptCards = isDepartment ? (DEPARTMENT_SUGGESTIONS[scope] ?? []) : [];
+    if (deptCards.length > 0) {
+      return [...deptCards, ...GENERAL_SUGGESTIONS.slice(0, 3)];
+    }
+    return GENERAL_SUGGESTIONS;
+  }, [scope, isDepartment]);
 
   useEffect(() => {
     if (isAtBottomRef.current) {
@@ -148,13 +201,8 @@ export const ChatPlayground = ({
       >
         {!hasMessages && (
           <div className="flex items-center justify-center h-full">
-            <div className="grid grid-cols-2 gap-3 max-w-md w-full">
-              {[
-                { title: "Text erstellen", prompt: "Schreibe einen professionellen LinkedIn-Post über künstliche Intelligenz im Mittelstand." },
-                { title: "Analysieren", prompt: "Vergleiche die Vor- und Nachteile von Remote-Arbeit für ein Team mit 15 Personen." },
-                { title: "Ideen sammeln", prompt: "Generiere 10 kreative Marketingideen für ein nachhaltiges Mode-Label mit Budget unter 5000 Euro." },
-                { title: "Strukturieren", prompt: "Erstelle eine Checkliste für die Einführung eines neuen CRM-Systems in einem KMU." },
-              ].map((s) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-2xl w-full">
+              {suggestions.map((s) => (
                 <button
                   key={s.title}
                   onClick={() => onSendMessage(s.prompt)}
