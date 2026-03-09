@@ -38,7 +38,7 @@ export function PlaygroundHeader({
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
-      <div className="flex items-center h-14 px-4 max-w-7xl mx-auto">
+      <div className="flex items-center h-14 px-4 max-w-[1380px] mx-auto">
         {/* Left: Back + Title */}
         <div className="flex items-center gap-3 mr-auto">
           <Button
