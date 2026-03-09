@@ -168,7 +168,7 @@ const Playground = () => {
   // ⚠️ LAYOUT-KETTE: h-screen + overflow-hidden verhindert Body-Scroll.
   //    Playground hat eigene Scroll-Container in ChatPlayground und PlaygroundSidebar.
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-background">
+    <div className="playground-root">
       <PlaygroundHeader
         thinkingEnabled={thinkingEnabled}
         onThinkingChange={handleThinkingChange}

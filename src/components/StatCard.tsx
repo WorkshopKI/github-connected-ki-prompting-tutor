@@ -8,7 +8,7 @@ interface StatCardProps {
 }
 
 export const StatCard = ({ icon: Icon, label, value }: StatCardProps) => (
-  <Card className="p-5 rounded-xl border border-border shadow-sm relative overflow-hidden">
+  <Card className="card-section relative overflow-hidden">
     <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary/30" />
     <div className="flex items-center gap-3">
       <div className="p-2 rounded-lg bg-primary/8">

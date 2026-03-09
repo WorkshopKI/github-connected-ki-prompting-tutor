@@ -29,7 +29,7 @@ export function GeneralSettings() {
 
   return (
     <div className="space-y-6">
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-4">
+      <Card className="card-section space-y-4">
         {/* App-Modus */}
         <div className="pb-4 border-b border-border">
           <label className="text-sm font-medium block mb-2">App-Modus</label>

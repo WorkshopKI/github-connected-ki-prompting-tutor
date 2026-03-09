@@ -6,12 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { orgUseCases } from "@/data/orgUseCases";
 import { useOrgContext } from "@/contexts/OrgContext";
-
-const riskStyles = {
-  niedrig: "bg-primary/10 text-primary",
-  mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
-};
+import { RISK_COLORS } from "@/lib/constants";
 
 export const OrganizationUseCases = () => {
   const { scope } = useOrgContext();
@@ -102,7 +97,7 @@ export const OrganizationUseCases = () => {
                 <h3 className="font-semibold text-base mb-1">{useCase.title}</h3>
                 <p className="text-sm text-muted-foreground">{useCase.goal}</p>
               </div>
-              <span className={`text-xs px-2 py-1 rounded-full font-medium ${riskStyles[useCase.risk]}`}>
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${RISK_COLORS[useCase.risk]}`}>
                 {useCase.risk}
               </span>
             </div>

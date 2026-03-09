@@ -42,14 +42,52 @@ export const LS_KEYS = {
   PLAYGROUND_MODE: "playground_mode",
 } as const;
 
+/* ── Semantische Badge-Farben (3-Stufen) ──
+ * Verwende diese Konstanten überall wo niedrig/mittel/hoch oder offen/intern/vertraulich
+ * Badge-Farben benötigt werden. NICHT die Tailwind-Strings manuell kopieren!
+ * Enthält jeweils korrekte dark:-Varianten.
+ */
+export const BADGE_COLORS = {
+  /** 🟢 Niedrig / Offen / Primary */
+  low: "bg-primary/10 text-primary",
+  /** 🟡 Mittel / Intern — amber mit dark:-Variante */
+  medium: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
+  /** 🔴 Hoch / Vertraulich / Kritisch — red mit dark:-Variante */
+  high: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+  /** Neutral / Niedrig — muted */
+  neutral: "bg-muted text-muted-foreground",
+} as const;
+
+/** Mapping für deutsche Prioritäts-Labels → Badge-Farben */
+export const PRIORITY_COLORS: Record<string, string> = {
+  niedrig: BADGE_COLORS.neutral,
+  mittel: BADGE_COLORS.medium,
+  hoch: BADGE_COLORS.high,
+};
+
+/** Mapping für deutsche Risiko-Labels → Badge-Farben */
+export const RISK_COLORS: Record<string, string> = {
+  niedrig: BADGE_COLORS.low,
+  mittel: BADGE_COLORS.medium,
+  hoch: BADGE_COLORS.high,
+  kritisch: BADGE_COLORS.high,
+};
+
+/** Mapping für Severity-Labels → Badge-Farben */
+export const SEVERITY_COLORS: Record<string, string> = {
+  kritisch: BADGE_COLORS.high,
+  mittel: BADGE_COLORS.medium,
+  hinweis: BADGE_COLORS.neutral,
+};
+
 /* ── Badge-Farben für Prompt-Level ── */
 export const LEVEL_BADGE_COLORS: Record<string, string> = {
-  alltag: "bg-primary/10 text-primary",
-  beruf: "bg-primary/10 text-primary",
-  websuche: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  research: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  blueprint: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
-  organisation: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+  alltag: BADGE_COLORS.low,
+  beruf: BADGE_COLORS.low,
+  websuche: BADGE_COLORS.medium,
+  research: BADGE_COLORS.medium,
+  blueprint: BADGE_COLORS.high,
+  organisation: BADGE_COLORS.high,
 };
 
 /* ── Default-Modell ── */

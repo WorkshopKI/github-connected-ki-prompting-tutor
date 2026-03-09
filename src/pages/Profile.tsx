@@ -251,7 +251,7 @@ export const ProfileContent = () => {
       )}
 
       {/* Card 1: Kontoinformationen */}
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-4">
+      <Card className="card-section space-y-4">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <User className="h-4 w-4" /> Kontoinformationen
         </h3>
@@ -314,7 +314,7 @@ export const ProfileContent = () => {
       </Card>
 
       {/* Card 2: KI & Modell */}
-      <Card className="p-5 rounded-xl border border-border shadow-sm space-y-4">
+      <Card className="card-section space-y-4">
         <h3 className="font-semibold text-sm flex items-center gap-2">
           <Bot className="h-4 w-4" /> KI-Einstellungen
         </h3>

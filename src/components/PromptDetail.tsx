@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { PromptItem } from "@/data/prompts";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { RISK_COLORS } from "@/lib/constants";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
 import { useMySkills } from "@/hooks/useMySkills";
@@ -70,11 +71,6 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
     toast.success("Prompt kopiert!");
   };
 
-  const riskColors: Record<string, string> = {
-    niedrig: "bg-primary/10 text-primary",
-    mittel: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-    hoch: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,7 +93,7 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
               </Badge>
             )}
             {prompt.riskLevel && (
-              <span className={`text-xs px-2 py-1 rounded-full font-medium ${riskColors[prompt.riskLevel] || ""}`}>
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${RISK_COLORS[prompt.riskLevel] || ""}`}>
                 Risiko: {prompt.riskLevel}
               </span>
             )}
