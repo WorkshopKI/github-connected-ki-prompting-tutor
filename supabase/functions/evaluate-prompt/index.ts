@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,14 +7,68 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+
+/* ── Usage-Logging Helper (fire-and-forget, kein Budget-Abzug) ── */
+async function logUsage(
+  admin: ReturnType<typeof createClient>,
+  userId: string,
+  model: string,
+  usage: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } | undefined,
+  requestType: string,
+) {
+  try {
+    const promptTokens = usage?.prompt_tokens ?? 0;
+    const completionTokens = usage?.completion_tokens ?? 0;
+    const totalTokens = usage?.total_tokens ?? (promptTokens + completionTokens);
+    // Grobe Kostenschätzung: Gemini Flash ist günstig
+    const cost = (promptTokens * 0.10 + completionTokens * 0.40) / 1_000_000;
+
+    await admin.from("api_usage_log").insert({
+      user_id: userId,
+      model,
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+      total_tokens: totalTokens,
+      estimated_cost: cost,
+      request_type: requestType,
+    });
+  } catch (e) {
+    console.error("Usage logging error:", e);
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+    if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY is not configured");
+
+    /* ── Auth (optional — für Usage-Logging) ── */
+    const authHeader = req.headers.get("Authorization");
+    let userId: string | null = null;
+
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const supabase = createClient(
+          Deno.env.get("SUPABASE_URL")!,
+          Deno.env.get("SUPABASE_ANON_KEY")!,
+          { global: { headers: { Authorization: authHeader } } },
+        );
+        const { data: { user } } = await supabase.auth.getUser();
+        userId = user?.id ?? null;
+      } catch {
+        // Auth fehlgeschlagen — kein Usage-Logging, aber Request weiter verarbeiten
+      }
+    }
+
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
     const body = await req.json();
 
@@ -45,14 +100,17 @@ JSON-Format:
 
       const judgeUser = `## Prompt der an die KI gesendet wurde:\n${prompt}\n\n## Output der KI (Modell: ${model || "unbekannt"}):\n${output}${criteria ? `\n\n## Zusätzliche Bewertungskriterien:\n${criteria}` : ""}\n\nBewerte jetzt.`;
 
-      const judgeResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const judgeModel = "google/gemini-3-flash-preview";
+      const judgeResponse = await fetch(OPENROUTER_ENDPOINT, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
+          "HTTP-Referer": "https://prompting.studio",
+          "X-Title": "Prompting Studio",
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: judgeModel,
           messages: [
             { role: "system", content: judgeSystem },
             { role: "user", content: judgeUser },
@@ -72,13 +130,19 @@ JSON-Format:
           });
         }
         const errText = await judgeResponse.text();
-        console.error("Judge AI gateway error:", judgeResponse.status, errText);
+        console.error("Judge AI error:", judgeResponse.status, errText);
         return new Response(JSON.stringify({ error: "Judge-Bewertung fehlgeschlagen" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
       const judgeData = await judgeResponse.json();
+
+      // Log usage (kein Budget-Abzug)
+      if (userId) {
+        logUsage(admin, userId, judgeModel, judgeData.usage, "judge");
+      }
+
       const rawContent = judgeData.choices?.[0]?.message?.content || "";
       if (!rawContent) {
         console.error("Judge AI returned empty content:", JSON.stringify(judgeData));
@@ -128,11 +192,13 @@ Bewerte den verbesserten Prompt des Benutzers anhand von drei Kriterien:
 
 Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(OPENROUTER_ENDPOINT, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://prompting.studio",
+        "X-Title": "Prompting Studio",
       },
       body: JSON.stringify({
         model: selectedModel,
@@ -178,7 +244,7 @@ Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
         });
       }
       const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
+      console.error("AI error:", response.status, text);
       return new Response(JSON.stringify({ error: "AI-Bewertung fehlgeschlagen" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -186,6 +252,12 @@ Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
     }
 
     const data = await response.json();
+
+    // Log usage (kein Budget-Abzug)
+    if (userId) {
+      logUsage(admin, userId, selectedModel, data.usage, "evaluation");
+    }
+
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
 
     if (!toolCall?.function?.arguments) {

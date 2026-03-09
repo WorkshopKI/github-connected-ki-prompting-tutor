@@ -7,6 +7,30 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+
+/* ── Grobe Kosten-Schätzung pro 1M Tokens (input/output) ── */
+const MODEL_COSTS: Record<string, { input: number; output: number }> = {
+  "google/gemini-3-flash-preview":     { input: 0.10, output: 0.40 },
+  "anthropic/claude-sonnet-4.6":       { input: 3.00, output: 15.00 },
+  "openai/gpt-5.4":                    { input: 2.50, output: 10.00 },
+  "anthropic/claude-opus-4.6":         { input: 15.00, output: 75.00 },
+  "google/gemini-3.1-pro-preview":     { input: 1.25, output: 5.00 },
+  "mistralai/mistral-large-2512":      { input: 2.00, output: 6.00 },
+  "openai/gpt-oss-120b":              { input: 1.00, output: 3.00 },
+  "google/gemma-3-27b-it":            { input: 0.10, output: 0.20 },
+  "mistralai/mistral-small-3.1-24b":  { input: 0.10, output: 0.30 },
+  "allenai/olmo-3.1-32b-think":       { input: 0.10, output: 0.20 },
+  "qwen/qwen-3.5-122b-a10b":         { input: 0.15, output: 0.60 },
+  "qwen/qwen-3.5-397b-a17b":         { input: 0.30, output: 1.20 },
+};
+const DEFAULT_COST = { input: 1.00, output: 4.00 }; // konservativer Fallback
+
+function estimateCost(model: string, promptTokens: number, completionTokens: number): number {
+  const costs = MODEL_COSTS[model] ?? DEFAULT_COST;
+  return (promptTokens * costs.input + completionTokens * costs.output) / 1_000_000;
+}
+
 function jsonRes(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -59,17 +83,35 @@ serve(async (req) => {
       .eq("user_id", userId)
       .maybeSingle();
 
-    // If no key row exists, create one with defaults
+    // If no key row exists, create one with course-specific budget
     if (!keyRow) {
-      await admin.from("user_api_keys").insert({ user_id: userId });
+      const { data: profileData } = await admin
+        .from("user_profiles")
+        .select("course_id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      let defaultBudget = 5.0;
+      if (profileData?.course_id) {
+        const { data: course } = await admin
+          .from("courses")
+          .select("default_key_budget")
+          .eq("id", profileData.course_id)
+          .maybeSingle();
+        if (course?.default_key_budget) defaultBudget = Number(course.default_key_budget);
+      }
+
+      await admin.from("user_api_keys").insert({
+        user_id: userId,
+        provisioned_key_budget: defaultBudget,
+      });
     }
 
     const activeSource = keyRow?.active_key_source ?? "provisioned";
     const budget = keyRow?.provisioned_key_budget ?? 5.0;
 
-    /* ── Determine which key + endpoint to use ── */
+    /* ── Determine which key to use ── */
     let apiKey: string;
-    let endpoint: string;
     let isCustomKey = false;
 
     if (activeSource === "custom" && keyRow?.custom_key_active && keyRow?.custom_key_encrypted) {
@@ -84,22 +126,20 @@ serve(async (req) => {
       } catch {
         return jsonRes({ error: "Eigener API-Key konnte nicht entschlüsselt werden." }, 400);
       }
-      endpoint = "https://openrouter.ai/api/v1/chat/completions";
       isCustomKey = true;
     } else {
-      // Provisioned: use Lovable AI gateway
+      // Provisioned: use central OpenRouter key
       if (budget <= 0) {
         return jsonRes({
           error: "budget_exhausted",
           message: "Dein KI-Budget ist aufgebraucht. Hinterlege einen eigenen API-Key, um weiterzumachen.",
         }, 402);
       }
-      apiKey = Deno.env.get("LOVABLE_API_KEY")!;
-      if (!apiKey) return jsonRes({ error: "LOVABLE_API_KEY not configured" }, 500);
-      endpoint = "https://ai.gateway.lovable.dev/v1/chat/completions";
+      apiKey = Deno.env.get("OPENROUTER_API_KEY")!;
+      if (!apiKey) return jsonRes({ error: "OPENROUTER_API_KEY not configured" }, 500);
     }
 
-    /* ── Call LLM ── */
+    /* ── Call LLM (always OpenRouter) ── */
     const llmModel = model || "google/gemini-3-flash-preview";
     const llmBody: Record<string, unknown> = {
       model: llmModel,
@@ -109,11 +149,13 @@ serve(async (req) => {
     if (reasoning && typeof reasoning === "object") {
       llmBody.reasoning = reasoning;
     }
-    const response = await fetch(endpoint, {
+    const response = await fetch(OPENROUTER_ENDPOINT, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://prompting.studio",
+        "X-Title": "Prompting Studio",
       },
       body: JSON.stringify(llmBody),
     });
@@ -130,20 +172,77 @@ serve(async (req) => {
       return jsonRes({ error: "LLM-Anfrage fehlgeschlagen" }, 500);
     }
 
-    /* ── Deduct budget (provisioned only, rough estimate per request) ── */
-    if (!isCustomKey && keyRow) {
-      const cost = 0.01; // rough per-request cost
-      await admin
-        .from("user_api_keys")
-        .update({
-          provisioned_key_budget: Math.max(0, budget - cost),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("user_id", userId);
-    }
+    /* ── Stream response with usage capture via TransformStream ── */
+    let lastDataChunk = "";
+    const decoder = new TextDecoder();
 
-    /* ── Stream response back ── */
-    return new Response(response.body, {
+    const transform = new TransformStream({
+      transform(chunk, controller) {
+        controller.enqueue(chunk);
+        // Parse SSE chunks to capture the last data line (contains usage)
+        const text = decoder.decode(chunk, { stream: true });
+        const lines = text.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const payload = line.slice(6).trim();
+            if (payload && payload !== "[DONE]") {
+              lastDataChunk = payload;
+            }
+          }
+        }
+      },
+    });
+
+    // Pipe upstream response through transform, log usage after completion
+    const pipePromise = response.body!.pipeTo(transform.writable);
+    pipePromise.then(async () => {
+      try {
+        let promptTokens = 0;
+        let completionTokens = 0;
+        let totalTokens = 0;
+
+        if (lastDataChunk) {
+          const parsed = JSON.parse(lastDataChunk);
+          const usage = parsed.usage;
+          if (usage) {
+            promptTokens = usage.prompt_tokens ?? 0;
+            completionTokens = usage.completion_tokens ?? 0;
+            totalTokens = usage.total_tokens ?? (promptTokens + completionTokens);
+          }
+        }
+
+        const cost = estimateCost(llmModel, promptTokens, completionTokens);
+
+        // Log usage to api_usage_log
+        await admin.from("api_usage_log").insert({
+          user_id: userId,
+          model: llmModel,
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: totalTokens,
+          estimated_cost: cost,
+          request_type: "chat",
+        });
+
+        // Deduct budget (provisioned key only)
+        if (!isCustomKey && keyRow) {
+          const newBudget = Math.max(0, budget - cost);
+          await admin
+            .from("user_api_keys")
+            .update({
+              provisioned_key_budget: newBudget,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("user_id", userId);
+        }
+      } catch (e) {
+        console.error("Usage logging error:", e);
+      }
+    }).catch((e) => {
+      console.error("Stream pipe error:", e);
+    });
+
+    return new Response(transform.readable, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {

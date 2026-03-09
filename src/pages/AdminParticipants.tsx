@@ -13,7 +13,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Copy, Plus, Users, Ticket, Mail, RefreshCw } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UsageOverview } from "@/components/admin/UsageOverview";
+import { ArrowLeft, Copy, Plus, Users, Ticket, Mail, RefreshCw, BarChart3 } from "lucide-react";
 
 interface Course {
   id: string;
@@ -212,139 +214,157 @@ const AdminParticipants = () => {
           </Button>
         </div>
 
-        {/* Stats */}
-        {currentCourse && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Teilnehmer</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {participants.filter((p) => p.status === "active" || p.status === "registered").length}
-                  <span className="text-sm font-normal text-muted-foreground"> / {currentCourse.max_participants}</span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Einladungen</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{participants.filter((p) => p.status === "invited").length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Budget pro User</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">${currentCourse.default_key_budget.toFixed(2)}</div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        {/* Tabs: Teilnehmer | Verbrauch */}
+        <Tabs defaultValue="participants">
+          <TabsList>
+            <TabsTrigger value="participants" className="gap-1.5">
+              <Users className="h-4 w-4" /> Teilnehmer
+            </TabsTrigger>
+            <TabsTrigger value="usage" className="gap-1.5">
+              <BarChart3 className="h-4 w-4" /> Verbrauch
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Invite actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Mail className="h-4 w-4" /> Per E-Mail einladen
-              </CardTitle>
-              <CardDescription>E-Mail-Adresse zur Whitelist hinzufügen</CardDescription>
-            </CardHeader>
-            <CardContent className="flex gap-2">
-              <Input
-                placeholder="student@example.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleInviteEmail()}
-              />
-              <Button onClick={handleInviteEmail} disabled={!inviteEmail.trim()}>
-                <Plus className="h-4 w-4 mr-1" /> Einladen
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Ticket className="h-4 w-4" /> Gast-Code erstellen
-              </CardTitle>
-              <CardDescription>Temporärer Zugang ohne E-Mail</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Anzeigename"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleCreateGuest()}
-                />
-                <Button onClick={handleCreateGuest} disabled={!guestName.trim()}>
-                  <Plus className="h-4 w-4 mr-1" /> Erstellen
-                </Button>
+          <TabsContent value="participants" className="space-y-4 mt-4">
+            {/* Stats */}
+            {currentCourse && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Teilnehmer</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {participants.filter((p) => p.status === "active" || p.status === "registered").length}
+                      <span className="text-sm font-normal text-muted-foreground"> / {currentCourse.max_participants}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Einladungen</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{participants.filter((p) => p.status === "invited").length}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Budget pro User</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">${currentCourse.default_key_budget.toFixed(2)}</div>
+                  </CardContent>
+                </Card>
               </div>
-              {newGuestCode && (
-                <div className="flex items-center gap-2 p-2 bg-accent rounded-md">
-                  <code className="font-mono text-sm font-bold text-primary flex-1">{newGuestCode}</code>
-                  <Button variant="ghost" size="icon" onClick={() => copyCode(newGuestCode)}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Participants table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" /> Teilnehmer
-              <Badge variant="outline" className="ml-2">{participants.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">Laden…</p>
-            ) : participants.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                Noch keine Teilnehmer. Lade jemanden ein!
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Typ</TableHead>
-                    <TableHead>Kennung</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Eingeladen am</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {participants.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell>
-                        {p.type === "email" ? (
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Ticket className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">{p.identifier}</TableCell>
-                      <TableCell>{statusBadge(p.status)}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(p.created_at).toLocaleDateString("de-DE")}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
             )}
-          </CardContent>
-        </Card>
+
+            {/* Invite actions */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="h-4 w-4" /> Per E-Mail einladen
+                  </CardTitle>
+                  <CardDescription>E-Mail-Adresse zur Whitelist hinzufügen</CardDescription>
+                </CardHeader>
+                <CardContent className="flex gap-2">
+                  <Input
+                    placeholder="student@example.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleInviteEmail()}
+                  />
+                  <Button onClick={handleInviteEmail} disabled={!inviteEmail.trim()}>
+                    <Plus className="h-4 w-4 mr-1" /> Einladen
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Ticket className="h-4 w-4" /> Gast-Code erstellen
+                  </CardTitle>
+                  <CardDescription>Temporärer Zugang ohne E-Mail</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Anzeigename"
+                      value={guestName}
+                      onChange={(e) => setGuestName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleCreateGuest()}
+                    />
+                    <Button onClick={handleCreateGuest} disabled={!guestName.trim()}>
+                      <Plus className="h-4 w-4 mr-1" /> Erstellen
+                    </Button>
+                  </div>
+                  {newGuestCode && (
+                    <div className="flex items-center gap-2 p-2 bg-accent rounded-md">
+                      <code className="font-mono text-sm font-bold text-primary flex-1">{newGuestCode}</code>
+                      <Button variant="ghost" size="icon" onClick={() => copyCode(newGuestCode)}>
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Participants table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" /> Teilnehmer
+                  <Badge variant="outline" className="ml-2">{participants.length}</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">Laden…</p>
+                ) : participants.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    Noch keine Teilnehmer. Lade jemanden ein!
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Typ</TableHead>
+                        <TableHead>Kennung</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Eingeladen am</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {participants.map((p) => (
+                        <TableRow key={p.id}>
+                          <TableCell>
+                            {p.type === "email" ? (
+                              <Mail className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Ticket className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">{p.identifier}</TableCell>
+                          <TableCell>{statusBadge(p.status)}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {new Date(p.created_at).toLocaleDateString("de-DE")}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="usage" className="mt-4">
+            {selectedCourse && <UsageOverview courseId={selectedCourse} />}
+          </TabsContent>
+        </Tabs>
     </div>
   );
 };
