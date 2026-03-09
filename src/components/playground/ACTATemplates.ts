@@ -2,11 +2,39 @@ import { promptLibrary } from "@/data/prompts";
 import type { PromptItem } from "@/types";
 import { splitPromptToACTA } from "@/lib/promptUtils";
 
+export interface ACTAExtensions {
+  /** Few-Shot Beispiele — jeder String ein Beispiel */
+  examples: string[];
+  /** Explizite Regeln, Verbote, Einschränkungen */
+  rules: string;
+  /** Reasoning-Strategie: "" | "step-by-step" | "pros-cons" | "perspectives" | "tree-of-thought" */
+  reasoning: string;
+  /** Selbstprüfung aktiviert? */
+  verification: boolean;
+  /** Optionale Prüfanweisung für die KI */
+  verificationNote: string;
+  /** Reverse Prompting: KI entwirft zuerst den optimalen Prompt */
+  reversePrompt: boolean;
+  /** Negativ-Constraints: Was die KI NICHT tun soll */
+  negatives: string;
+}
+
+export const EMPTY_EXTENSIONS: ACTAExtensions = {
+  examples: [],
+  rules: "",
+  reasoning: "",
+  verification: false,
+  verificationNote: "",
+  reversePrompt: false,
+  negatives: "",
+};
+
 export interface ACTAFields {
   act: string;
   context: string;
   task: string;
   ausgabe: string;
+  extensions?: ACTAExtensions;
 }
 
 export interface ACTATemplate {

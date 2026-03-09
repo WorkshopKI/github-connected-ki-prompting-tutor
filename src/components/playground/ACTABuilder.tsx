@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { getLibraryTemplates, type ACTAFields } from "./ACTATemplates";
+import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
+import { ContextExtensions, TaskExtensions, AusgabeExtensions } from "./ACTAExtensionsUI";
 import { useOrgContext } from "@/contexts/OrgContext";
 
 export interface ACTABuilderProps {
@@ -18,6 +19,8 @@ export interface ACTABuilderProps {
   isOpen?: boolean;
   onToggle?: () => void;
   bare?: boolean;
+  mode?: "einsteiger" | "experte";
+  selectedModel?: string;
 }
 
 const FIELD_CONFIG = [
@@ -28,12 +31,50 @@ const FIELD_CONFIG = [
 ];
 
 function assembleACTAPrompt(fields: ACTAFields): string {
-  const parts: string[] = [];
-  if (fields.act.trim()) parts.push(`Du bist ${fields.act.trim()}.`);
-  if (fields.context.trim()) parts.push(`\nKontext: ${fields.context.trim()}`);
-  if (fields.task.trim()) parts.push(`\nAufgabe: ${fields.task.trim()}`);
-  if (fields.ausgabe.trim()) parts.push(`\nAusgabeformat: ${fields.ausgabe.trim()}`);
-  return parts.join("\n");
+  const ext = fields.extensions;
+  const innerParts: string[] = [];
+
+  // Act
+  if (fields.act.trim()) innerParts.push(`Du bist ${fields.act.trim()}.`);
+
+  // Context + Extensions
+  if (fields.context.trim()) innerParts.push(`\nKontext: ${fields.context.trim()}`);
+  if (ext?.examples && ext.examples.filter(e => e.trim()).length > 0) {
+    const exList = ext.examples.filter(e => e.trim()).map((e, i) => `Beispiel ${i + 1}: ${e.trim()}`).join("\n");
+    innerParts.push(`\nBeispiele zur Orientierung:\n${exList}`);
+  }
+  if (ext?.rules?.trim()) innerParts.push(`\nWichtige Regeln:\n${ext.rules.trim()}`);
+
+  // Task + Extensions
+  if (fields.task.trim()) innerParts.push(`\nAufgabe: ${fields.task.trim()}`);
+  if (ext?.reasoning && ext.reasoning !== "none") {
+    const map: Record<string, string> = {
+      "step-by-step": "Gehe Schritt für Schritt vor und erkläre jeden Denkschritt.",
+      "pros-cons": "Analysiere zunächst Vor- und Nachteile, bevor du zu einer Empfehlung kommst.",
+      "perspectives": "Betrachte die Aufgabe aus mindestens 3 verschiedenen Perspektiven, bevor du zu einem Ergebnis kommst.",
+      "tree-of-thought": "Entwickle mehrere mögliche Lösungswege parallel, bewerte jeden, und verfolge den vielversprechendsten weiter.",
+    };
+    if (map[ext.reasoning]) innerParts.push(`\nDenkweise: ${map[ext.reasoning]}`);
+  }
+  if (ext?.verification) {
+    innerParts.push(ext.verificationNote?.trim()
+      ? `\nSelbstprüfung: ${ext.verificationNote.trim()}`
+      : `\nSelbstprüfung: Überprüfe deine Antwort auf Vollständigkeit, Korrektheit und mögliche Schwachstellen. Korrigiere identifizierte Probleme.`
+    );
+  }
+
+  // Ausgabe + Extensions
+  if (fields.ausgabe.trim()) innerParts.push(`\nAusgabeformat: ${fields.ausgabe.trim()}`);
+  if (ext?.negatives?.trim()) innerParts.push(`\nWICHTIG — NICHT:\n${ext.negatives.trim()}`);
+
+  const innerPrompt = innerParts.join("\n");
+
+  // Reverse Prompting Hülle
+  if (ext?.reversePrompt) {
+    return `Du bist ein Experte für Prompt-Design.\n\nSchritt 1: Lies die folgende Aufgabenbeschreibung und entwirf den bestmöglichen Prompt dafür. Berücksichtige fehlende Details, das optimale Output-Format und die effektivste Denkstrategie.\n\nAufgabenbeschreibung:\n---\n${innerPrompt}\n---\n\nSchritt 2: Zeige den von dir entworfenen Prompt.\n\nSchritt 3: Führe deinen entworfenen Prompt aus und liefere das Ergebnis.`;
+  }
+
+  return innerPrompt;
 }
 
 export const ACTABuilder = ({
@@ -43,15 +84,30 @@ export const ACTABuilder = ({
   isOpen,
   onToggle,
   bare,
+  mode,
+  selectedModel,
 }: ACTABuilderProps) => {
   const { scope } = useOrgContext();
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
+
+  const isExperte = mode === "experte";
+  const ext = fields.extensions ?? EMPTY_EXTENSIONS;
+  const updateExtensions = (updated: ACTAExtensions) => {
+    onFieldsChange({ ...fields, extensions: updated });
+  };
+  const hasActiveExtensions =
+    ext.examples.some(e => e.trim()) ||
+    ext.rules.trim() !== "" ||
+    (ext.reasoning !== "" && ext.reasoning !== "none") ||
+    ext.verification ||
+    ext.reversePrompt ||
+    ext.negatives.trim() !== "";
 
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
   const assembled = assembleACTAPrompt(fields);
   const hasContent = assembled.trim().length > 0;
 
-  const updateField = (key: keyof ACTAFields, value: string) => {
+  const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
     onFieldsChange({ ...fields, [key]: value });
   };
 
@@ -122,6 +178,9 @@ export const ACTABuilder = ({
               className="text-xs min-h-[72px] resize-none"
               rows={3}
             />
+            {isExperte && field.key === "context" && <ContextExtensions extensions={ext} onChange={updateExtensions} />}
+            {isExperte && field.key === "task" && <TaskExtensions extensions={ext} onChange={updateExtensions} />}
+            {isExperte && field.key === "ausgabe" && <AusgabeExtensions extensions={ext} onChange={updateExtensions} />}
           </div>
         );
       })}
@@ -181,7 +240,7 @@ export const ACTABuilder = ({
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">ACTA-Baukasten</span>
             <Badge variant="secondary" className="text-xs">
-              {filledCount}/4
+              {filledCount}/4{hasActiveExtensions ? " +" : ""}
             </Badge>
           </div>
           {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}

@@ -98,6 +98,8 @@ function SidebarSections({
             onFieldsChange={onActaFieldsChange}
             onSendToPlayground={onSendFromACTA}
             bare
+            mode={mode}
+            selectedModel={selectedModel}
           />
         </SidebarSection>
 
@@ -116,16 +118,6 @@ function SidebarSections({
         {/* Experte-only sections */}
         {isExperte && (
           <>
-            <SidebarSection
-              icon={<Wand2 className="w-4 h-4 text-primary" />}
-              label="Erweiterte Techniken"
-            >
-              <TechniquePanel
-                onApplyToChat={onApplyTechnique}
-                bare
-              />
-            </SidebarSection>
-
             <SidebarSection
               icon={<Bot className="w-4 h-4 text-primary" />}
               label="Agenten-Modus"
@@ -152,6 +144,16 @@ function SidebarSections({
                 </div>
               </SidebarSection>
             )}
+
+            <SidebarSection
+              icon={<Wand2 className="w-4 h-4 text-muted-foreground" />}
+              label="Technik-Vorlagen"
+            >
+              <TechniquePanel
+                onApplyToChat={onApplyTechnique}
+                bare
+              />
+            </SidebarSection>
           </>
         )}
       </div>
