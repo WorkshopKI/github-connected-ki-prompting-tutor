@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { CheckCircle2, Play, Sparkles, Brain, Search, Cpu, PartyPopper, BookOpen, Beaker } from "lucide-react";
+import { CheckCircle2, Play, PartyPopper, BookOpen, Beaker, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,58 +7,18 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { requiredModules, bonusModules, learningModules } from "@/data/learningPath";
-import { LevelCard } from "@/components/LevelCard";
-import { PromptExamples } from "@/components/PromptExamples";
 import { ACTAIntroduction } from "@/components/ACTAIntroduction";
 import { PracticeAreaCompact } from "@/components/PracticeAreaCompact";
-import { AdvancedPromptingSection } from "@/components/AdvancedPromptingSection";
-import { DecompositionAssistant } from "@/components/DecompositionAssistant";
-import { ResourcesSection } from "@/components/ResourcesSection";
+import { AdvancedTechniquesModule } from "@/components/AdvancedTechniquesModule";
 import { DataPrivacyIntro } from "@/components/DataPrivacyIntro";
-
-const LevelCardsWrapper = () => {
-  const [activeLevel, setActiveLevel] = useState(1);
-  return (
-    <div>
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <LevelCard
-          level={1} icon={Sparkles} title="Fragen"
-          description="Präzise Fragen für direkte Antworten"
-          examples={["Rezepte", "Reiseplanung", "Geschenkideen"]}
-          isActive={activeLevel === 1} onClick={() => setActiveLevel(1)}
-        />
-        <LevelCard
-          level={2} icon={Brain} title="Gestalten"
-          description="Die Informationsumgebung für die KI formen"
-          examples={["System-Prompts", "Konventionen", "Wissensbasis"]}
-          isActive={activeLevel === 2} onClick={() => setActiveLevel(2)}
-        />
-        <LevelCard
-          level={3} icon={Search} title="Steuern"
-          description="Ziele, Werte und Entscheidungsregeln kodieren"
-          examples={["Werte-Hierarchien", "Entscheidungsregeln", "Eskalation"]}
-          isActive={activeLevel === 3} onClick={() => setActiveLevel(3)}
-        />
-        <LevelCard
-          level={4} icon={Cpu} title="Spezifizieren"
-          description="Wasserdichte Blueprints für autonome Aufgaben"
-          examples={["Agenten-Specs", "Blueprints", "Abnahmekriterien"]}
-          isActive={activeLevel === 4} onClick={() => setActiveLevel(4)}
-        />
-      </div>
-      <PromptExamples level={activeLevel} />
-    </div>
-  );
-};
+import { WorkflowBuilderModule } from "@/components/WorkflowBuilderModule";
 
 const componentMap: Record<string, React.ComponentType> = {
   ACTAIntroduction: ACTAIntroduction,
   PracticeAreaCompact: PracticeAreaCompact,
-  LevelCards: LevelCardsWrapper,
-  DecompositionAssistant: DecompositionAssistant,
-  AdvancedPromptingSection: AdvancedPromptingSection,
-  ResourcesSection: ResourcesSection,
+  AdvancedTechniquesModule: AdvancedTechniquesModule,
   DataPrivacyIntro: DataPrivacyIntro,
+  WorkflowBuilderModule: WorkflowBuilderModule,
 };
 
 const typeBadgeColors: Record<string, string> = {
@@ -101,6 +61,22 @@ const Onboarding = () => {
         effectiveLessons.push("prompting-stufen");
       }
     }
+
+    // Alte Bonus-Module auf neue mappen
+    // "advanced" (alte Fortgeschrittene Techniken) → "techniken-anwenden"
+    if (completedLessons.includes("advanced")) {
+      if (!effectiveLessons.includes("techniken-anwenden")) {
+        effectiveLessons.push("techniken-anwenden");
+      }
+    }
+    // "zerlegung" (alte Aufgaben-Zerlegung) → "workflows-bauen"
+    if (completedLessons.includes("zerlegung")) {
+      if (!effectiveLessons.includes("workflows-bauen")) {
+        effectiveLessons.push("workflows-bauen");
+      }
+    }
+    // "prompting-stufen" und "ressourcen" haben keine Nachfolger —
+    // sie zählen einfach nicht mehr, aber bestehende Einträge stören nicht.
 
     const statuses: Record<string, "completed" | "available" | "locked"> = {};
     for (const mod of learningModules) {
