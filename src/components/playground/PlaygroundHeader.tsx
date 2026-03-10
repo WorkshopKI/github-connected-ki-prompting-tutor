@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LS_KEYS } from "@/lib/constants";
 import type { AIRoutingConfig } from "@/types";
 
 interface PlaygroundHeaderProps {
@@ -24,6 +25,7 @@ export function PlaygroundHeader({
   aiRouting,
 }: PlaygroundHeaderProps) {
   const navigate = useNavigate();
+  const tourCompleted = localStorage.getItem(LS_KEYS.TOUR_COMPLETED) === "true";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
@@ -69,7 +71,14 @@ export function PlaygroundHeader({
               onClick={onStartTour}
               className="text-xs h-8 gap-1.5 hidden sm:flex"
             >
-              <span className="text-primary">▷</span> Tour starten
+              <span className="text-primary">▷</span>
+              Neu hier? So geht's
+              {!tourCompleted && (
+                <span className="relative flex h-2 w-2 ml-0.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+              )}
             </Button>
           )}
         </div>
