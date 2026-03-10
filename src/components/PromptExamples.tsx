@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, Globe } from "lucide-react";
+import { Copy, Check, Globe, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface PromptExample {
@@ -110,6 +111,7 @@ interface PromptExamplesProps {
 }
 
 export const PromptExamples = ({ level }: PromptExamplesProps) => {
+  const navigate = useNavigate();
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const examples = allExamples[level as keyof typeof allExamples] || level1Examples;
@@ -152,18 +154,30 @@ export const PromptExamples = ({ level }: PromptExamplesProps) => {
                 </p>
               </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 h-7 w-7"
-                onClick={() => copyToClipboard(example.prompt, index)}
-              >
-                {copiedIndex === index ? (
-                  <Check className="w-3.5 h-3.5 text-primary animate-scale-in" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </Button>
+              <div className="flex flex-col gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => copyToClipboard(example.prompt, index)}
+                  title="Kopieren"
+                >
+                  {copiedIndex === index ? (
+                    <Check className="w-3.5 h-3.5 text-primary animate-scale-in" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => navigate(`/playground?prompt=${encodeURIComponent(example.prompt)}`)}
+                  title="In der Werkstatt ausprobieren"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-muted-foreground hover:text-primary transition-colors" />
+                </Button>
+              </div>
             </div>
           </Card>
         ))}

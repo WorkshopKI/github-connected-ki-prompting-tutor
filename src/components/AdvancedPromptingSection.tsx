@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Shield, Target, Brain, Zap, Users, Lightbulb, ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Shield, Target, Brain, Zap, Users, Lightbulb, ChevronDown, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
@@ -108,31 +110,45 @@ const principles = [
   { num: 4, title: "Simuliere menschliche Prozesse", text: "Debatten, verschiedene Perspektiven und Unsicherheitsstufen führen zu besseren Ergebnissen." }
 ];
 
-const MethodDetail = ({ method }: { method: typeof techniques[0]["methods"][0] }) => (
-  <div className="space-y-3">
-    <h4 className="text-base font-bold text-foreground">{method.name}</h4>
-    <p className="text-sm text-muted-foreground leading-relaxed">{method.description}</p>
+const MethodDetail = ({ method }: { method: typeof techniques[0]["methods"][0] }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="space-y-3">
+      <h4 className="text-base font-bold text-foreground">{method.name}</h4>
+      <p className="text-sm text-muted-foreground leading-relaxed">{method.description}</p>
 
-    <div className="bg-muted/50 rounded-lg p-4">
-      <div className="text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">
-        Beispiel-Prompt
+      <div className="bg-muted/50 rounded-lg p-4">
+        <div className="text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">
+          Beispiel-Prompt
+        </div>
+        <p className="text-xs text-foreground/80 font-mono leading-relaxed">
+          {method.example}
+        </p>
       </div>
-      <p className="text-xs text-foreground/80 font-mono leading-relaxed">
-        {method.example}
-      </p>
-    </div>
 
-    <div className="flex items-start gap-2 text-sm">
-      <Zap className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-      <p className="text-muted-foreground">
-        <span className="font-semibold text-foreground">Wann verwenden?</span>{" "}
-        {method.use}
-      </p>
+      <div className="flex items-start gap-2 text-sm">
+        <Zap className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+        <p className="text-muted-foreground">
+          <span className="font-semibold text-foreground">Wann verwenden?</span>{" "}
+          {method.use}
+        </p>
+      </div>
+
+      <Button
+        variant="outline"
+        size="sm"
+        className="text-xs gap-1.5 mt-2"
+        onClick={() => navigate(`/playground?prompt=${encodeURIComponent(method.example)}`)}
+      >
+        <Sparkles className="w-3 h-3" />
+        In der Werkstatt testen
+      </Button>
     </div>
-  </div>
-);
+  );
+};
 
 export const AdvancedPromptingSection = () => {
+  const navigate = useNavigate();
   const [activeId, setActiveId] = useState(techniques[0].id);
   const activeTechnique = techniques.find(t => t.id === activeId)!;
 
@@ -218,6 +234,15 @@ export const AdvancedPromptingSection = () => {
                     <p className="text-xs text-muted-foreground mt-2">
                       <span className="font-semibold">Wann verwenden?</span> {method.use}
                     </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs gap-1.5 mt-2"
+                      onClick={() => navigate(`/playground?prompt=${encodeURIComponent(method.example)}`)}
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      In der Werkstatt testen
+                    </Button>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
