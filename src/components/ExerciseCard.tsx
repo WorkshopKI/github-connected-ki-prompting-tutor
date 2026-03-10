@@ -78,7 +78,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     : 0;
 
   return (
-    <div className="bg-gradient-card rounded-xl p-6 shadow-sm border border-border relative">
+    <div className="bg-gradient-card rounded-xl p-4 shadow-sm border border-border relative">
       {bestScore !== null && bestScore !== undefined && (
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
           bestScore === 3 ? "bg-primary/20 text-primary" :
@@ -89,11 +89,11 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
         </div>
       )}
 
-      <div className="mb-4">
+      <div className="mb-3">
         <div className="text-sm font-semibold text-muted-foreground mb-2">
           {effectiveExercise.context}
         </div>
-        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
           <div className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2">
             <X className="w-4 h-4" />
             Schlechter Prompt
@@ -102,42 +102,40 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
         </div>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
-          Dein verbesserter Prompt:
-        </label>
+      <div className="mb-3">
         <Textarea
           value={userPrompt}
           onChange={(e) => setUserPrompt(e.target.value)}
           placeholder="Schreibe hier deinen verbesserten Prompt..."
-          className="min-h-[100px] mb-3"
+          className="min-h-[68px] mb-2"
           disabled={isEvaluating}
         />
 
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={() => evaluatePrompt(userPrompt)} className="gap-2" disabled={isEvaluating}>
-            {isEvaluating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+        <div className="flex gap-1.5 flex-wrap">
+          <Button size="sm" onClick={() => evaluatePrompt(userPrompt)} className="gap-1.5" disabled={isEvaluating}>
+            {isEvaluating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
             {isEvaluating ? "Wird bewertet..." : "Prompt bewerten"}
           </Button>
-          <Button variant="outline" onClick={() => setShowHints(!showHints)} className="gap-2">
-            {showHints ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            {showHints ? "Hinweise ausblenden" : "Hinweise anzeigen"}
+          <Button size="sm" variant="outline" onClick={() => setShowHints(!showHints)} className="gap-1.5">
+            {showHints ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            Hinweise
           </Button>
-          <Button variant="outline" onClick={() => setShowSolution(!showSolution)} className="gap-2">
-            {showSolution ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            {showSolution ? "Lösung ausblenden" : "Musterlösung anzeigen"}
+          <Button size="sm" variant="outline" onClick={() => setShowSolution(!showSolution)} className="gap-1.5">
+            {showSolution ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            Musterlösung
           </Button>
           <Button
+            size="sm"
             variant="outline"
             onClick={() => askCoach(userPrompt)}
-            className="gap-2 border-primary/30 text-primary hover:bg-primary/10"
+            className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
             disabled={isCoaching || isEvaluating}
           >
-            {isCoaching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            {isCoaching ? "Coach denkt..." : "KI-Coach fragen"}
+            {isCoaching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            {isCoaching ? "Coach..." : "KI-Coach"}
           </Button>
           {(evaluation || userPrompt) && (
-            <Button variant="ghost" onClick={resetExercise}>
+            <Button size="sm" variant="ghost" onClick={resetExercise}>
               Zurücksetzen
             </Button>
           )}
@@ -145,7 +143,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       </div>
 
       {showHints && (
-        <div className="mb-4 bg-accent/10 border border-accent/20 rounded-lg p-4">
+        <div className="mb-3 bg-accent/10 border border-accent/20 rounded-lg p-4">
           <div className="text-sm font-semibold text-accent-foreground mb-2">
             💡 Verbesserungshinweise:
           </div>
@@ -161,7 +159,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       )}
 
       {evaluation && (
-        <div className="mb-4 bg-background/50 border border-border rounded-lg p-4">
+        <div className="mb-3 bg-background/50 border border-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold">KI-Feedback:</div>
             <div className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary">
@@ -191,7 +189,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       )}
 
       {evaluation && (
-        <div className="mb-4 border border-border/80 rounded-lg p-4 bg-muted/20">
+        <div className="mb-3 border border-border/80 rounded-lg p-4 bg-muted/20">
           <div className="text-sm font-semibold mb-2 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-primary" /> Team-Review (optional)
           </div>
@@ -205,7 +203,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
       )}
 
       {showCoach && coachSuggestion && (
-        <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg p-4">
+        <div className="mb-3 bg-primary/5 border border-primary/20 rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold text-primary flex items-center gap-2">
               <Sparkles className="w-4 h-4" />

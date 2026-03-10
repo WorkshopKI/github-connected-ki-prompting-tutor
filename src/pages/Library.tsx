@@ -10,6 +10,8 @@ import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Library = () => {
@@ -42,8 +44,9 @@ const Library = () => {
         <Button onClick={() => navigate("/playground")}>+ Neuer Prompt</Button>
       </div>
 
-      {/* Sections-Navigation als dezente Inline-Links */}
+      {/* Sections-Navigation */}
       <div className="flex items-center gap-1 text-sm border-b border-border pb-2">
+        {/* Prompts */}
         <button
           onClick={() => setActiveSection("prompts")}
           className={cn(
@@ -55,6 +58,19 @@ const Library = () => {
         >
           Prompts
         </button>
+        {/* Use Cases (jetzt zweiter Platz) */}
+        <button
+          onClick={() => setActiveSection("usecases")}
+          className={cn(
+            "px-3 py-1.5 rounded-md font-medium transition-colors",
+            activeSection === "usecases"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          )}
+        >
+          Use Cases
+        </button>
+        {/* Meine Skills (jetzt dritter Platz) */}
         <button
           onClick={() => setActiveSection("skills")}
           className={cn(
@@ -71,42 +87,43 @@ const Library = () => {
             </span>
           )}
         </button>
-        <button
-          onClick={() => setActiveSection("usecases")}
-          className={cn(
-            "px-3 py-1.5 rounded-md font-medium transition-colors",
-            activeSection === "usecases"
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          )}
-        >
-          Use Cases
-        </button>
+        {/* Mehr ▾ — Team + Reviews (nur Workshop) */}
         {isWorkshop && (
-          <>
-            <button
-              onClick={() => setActiveSection("team")}
-              className={cn(
-                "px-3 py-1.5 rounded-md font-medium transition-colors",
-                activeSection === "team"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Team
-            </button>
-            <button
-              onClick={() => setActiveSection("reviews")}
-              className={cn(
-                "px-3 py-1.5 rounded-md font-medium transition-colors",
-                activeSection === "reviews"
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Reviews
-            </button>
-          </>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  "px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1",
+                  activeSection === "team" || activeSection === "reviews"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                {activeSection === "team" ? "Team" : activeSection === "reviews" ? "Reviews" : "Mehr"}
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-auto p-1.5">
+              <button
+                onClick={() => setActiveSection("team")}
+                className={cn(
+                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                  activeSection === "team" ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                )}
+              >
+                Team
+              </button>
+              <button
+                onClick={() => setActiveSection("reviews")}
+                className={cn(
+                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                  activeSection === "reviews" ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                )}
+              >
+                Reviews
+              </button>
+            </PopoverContent>
+          </Popover>
         )}
       </div>
 
