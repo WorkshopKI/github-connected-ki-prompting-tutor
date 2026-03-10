@@ -86,6 +86,16 @@ export const PromptBrowser = ({
       {/* Header + Search */}
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         <div className="flex items-center gap-1.5">
+          <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
+            <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 font-semibold shrink-0 w-[9.5rem]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
+                <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="relative flex-1 min-w-0">
             <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -96,16 +106,6 @@ export const PromptBrowser = ({
               className="w-full h-7 text-[11px] pl-6 pr-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
-          <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
-            <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 font-semibold shrink-0 w-auto max-w-[5.5rem]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
-                <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
         {/* Tab Segmented Control */}
         <div className="flex rounded-md border border-border overflow-hidden">
