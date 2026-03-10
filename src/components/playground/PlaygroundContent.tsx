@@ -1,15 +1,23 @@
 import { useState } from "react";
-import { Download, Copy, Trash2, Sparkles, Scale, Bookmark } from "lucide-react";
+import { Download, Copy, Trash2, Sparkles, Scale, Bookmark, Settings, Brain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ChatPlayground } from "./ChatPlayground";
 import { ComparisonSplitView } from "./ComparisonSplitView";
 import { PromptEvaluation } from "./PromptEvaluation";
 import { JudgePanel } from "./JudgePanel";
+import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
+import { ModelSelectGroups } from "./ModelSelect";
+import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
 import type { Msg } from "@/services/llmService";
+import type { AIRoutingConfig } from "@/types";
 
 export interface PlaygroundContentProps {
   messages: Msg[];
@@ -29,7 +37,18 @@ export interface PlaygroundContentProps {
   requestedModel?: string | null;
   mode?: "einsteiger" | "experte";
   lastUserPrompt?: string;
-  selectedModel?: string;
+  // KI-Controls (moved from header)
+  selectedModel: string;
+  onModelChange: (model: string) => void;
+  onThinkingChange: (enabled: boolean) => void;
+  aiTier: "internal" | "external";
+  onAiTierChange: (tier: "internal" | "external") => void;
+  canUseExternal: boolean;
+  aiRouting: AIRoutingConfig;
+  // Agent
+  agentConfig: AgentConfig;
+  onAgentConfigChange: (config: AgentConfig) => void;
+  onStartAgent: (prompt: string) => void;
 }
 
 export const PlaygroundContent = ({
@@ -51,9 +70,19 @@ export const PlaygroundContent = ({
   mode = "experte",
   lastUserPrompt,
   selectedModel,
+  onModelChange,
+  onThinkingChange,
+  aiTier,
+  onAiTierChange,
+  canUseExternal,
+  aiRouting,
+  agentConfig,
+  onAgentConfigChange,
+  onStartAgent,
 }: PlaygroundContentProps) => {
   const isExperte = mode === "experte";
   const [chatMode, setChatMode] = useState<"chat" | "compare">("chat");
+  const [agentEnabled, setAgentEnabled] = useState(false);
 
   const lastAssistantContent =
     messages.length >= 2 && messages[messages.length - 1].role === "assistant"
@@ -82,13 +111,13 @@ export const PlaygroundContent = ({
         </div>
       )}
 
-      {/* Icon-only Toolbar + contextual Power-Buttons */}
+      {/* ═══ TOOLBAR — Icon-only + kontextuelle Buttons ═══ */}
       <div className="flex items-center px-3 py-1.5 border-b border-border gap-1">
         <span className="text-xs font-semibold text-foreground mr-1">
           {chatMode === "compare" ? "Vergleich" : "Chat"}
         </span>
 
-        {/* Prompt-Check Popover — nur Experte + Chat-Modus + Prompt vorhanden */}
+        {/* Prompt-Check — nur Experte + Chat + Prompt vorhanden */}
         {isExperte && lastUserPrompt && chatMode === "chat" && (
           <Popover>
             <PopoverTrigger asChild>
@@ -102,8 +131,8 @@ export const PlaygroundContent = ({
           </Popover>
         )}
 
-        {/* KI-Bewertung Popover — nur Experte + Chat-Modus + Antwort vorhanden */}
-        {isExperte && hasAssistantResponse && chatMode === "chat" && (
+        {/* KI-Bewertung — nur Experte + Chat + Antwort vorhanden */}
+        {isExperte && hasAssistantResponse && chatMode === "chat" && lastUserPrompt && (
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground">
@@ -111,7 +140,7 @@ export const PlaygroundContent = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-[400px] max-h-[500px] overflow-y-auto p-4">
-              <JudgePanel prompt={lastUserPrompt || ""} output={lastAssistantContent} model={selectedModel || ""} />
+              <JudgePanel prompt={lastUserPrompt} output={lastAssistantContent} model={selectedModel || ""} />
             </PopoverContent>
           </Popover>
         )}
@@ -136,7 +165,7 @@ export const PlaygroundContent = ({
         </Button>
       </div>
 
-      {/* System-Prompt aufklappbar — nur Experte, nur Chat-Modus */}
+      {/* System-Prompt — nur Experte, Chat-Modus */}
       {isExperte && chatMode === "chat" && (
         <details className="border-b border-border">
           <summary className="text-[10px] text-muted-foreground px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors">
@@ -154,7 +183,7 @@ export const PlaygroundContent = ({
         </details>
       )}
 
-      {/* ═══ CONTENT — Normal-Chat oder Split-Vergleich ═══ */}
+      {/* ═══ CONTENT — Chat oder Vergleich ═══ */}
       {chatMode === "compare" ? (
         <ComparisonSplitView
           systemPrompt={systemPrompt}
@@ -182,35 +211,146 @@ export const PlaygroundContent = ({
         </div>
       )}
 
-      {/* ═══ MODUS-TOGGLE — nur Experte, unter dem Chat ═══ */}
-      {isExperte && chatMode !== "compare" && (
-        <div className="border-t border-border px-3 pt-1.5 pb-0.5">
-          <div className="flex items-center gap-2">
-            <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
-              <button
-                onClick={() => setChatMode("chat")}
-                className={cn(
-                  "px-2.5 py-1 rounded text-[10px] font-medium transition-colors",
-                  chatMode === "chat"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground"
-                )}
-              >
-                💬 Chat
-              </button>
-              <button
-                onClick={() => setChatMode("compare")}
-                className={cn(
-                  "px-2.5 py-1 rounded text-[10px] font-medium transition-colors",
-                  chatMode === "compare"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground"
-                )}
-              >
-                ⚖ Vergleich
-              </button>
-            </div>
+      {/* ═══ KI-CONTROLS BAR — über dem Input, nur Experte ═══ */}
+      {isExperte && (
+        <div className="border-t border-border px-3 py-1.5 flex items-center gap-2">
+          {/* Modus-Switch */}
+          <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
+            <button
+              onClick={() => setChatMode("chat")}
+              className={cn(
+                "px-2 py-0.5 rounded text-[10px] font-medium transition-colors",
+                chatMode === "chat" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              💬 Chat
+            </button>
+            <button
+              onClick={() => setChatMode("compare")}
+              className={cn(
+                "px-2 py-0.5 rounded text-[10px] font-medium transition-colors",
+                chatMode === "compare" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              ⚖ Vergleich
+            </button>
           </div>
+
+          <div className="flex-1" />
+
+          {/* Model badge + dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted text-[10px] font-medium text-foreground transition-colors">
+                {aiTier === "internal" ? "🏢" : "☁️"} {getModelLabel(selectedModel)}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-64 p-3 space-y-3">
+              <h4 className="text-xs font-semibold">Modell</h4>
+              <Select value={selectedModel} onValueChange={onModelChange}>
+                <SelectTrigger className="w-full text-xs h-8">
+                  <span className="truncate">{getModelLabel(selectedModel)}</span>
+                </SelectTrigger>
+                <SelectContent>
+                  {aiTier === "internal" ? (
+                    <SelectGroup>
+                      <SelectLabel>🏢 Interne KI</SelectLabel>
+                      {aiRouting.internalModel ? (
+                        <SelectItem value={aiRouting.internalModel}>
+                          {aiRouting.internalModel}
+                        </SelectItem>
+                      ) : (
+                        <SelectItem value="internal-default" disabled>
+                          Nicht konfiguriert
+                        </SelectItem>
+                      )}
+                    </SelectGroup>
+                  ) : (
+                    <ModelSelectGroups />
+                  )}
+                </SelectContent>
+              </Select>
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => onAiTierChange("internal")}
+                  className={cn(
+                    "flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
+                    aiTier === "internal"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted/50"
+                  )}
+                >
+                  🏢 Intern
+                </button>
+                <button
+                  onClick={() => canUseExternal && onAiTierChange("external")}
+                  disabled={!canUseExternal}
+                  className={cn(
+                    "flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
+                    aiTier === "external" && canUseExternal
+                      ? "bg-primary text-primary-foreground"
+                      : canUseExternal
+                        ? "text-muted-foreground hover:bg-muted/50"
+                        : "text-muted-foreground/30 cursor-not-allowed"
+                  )}
+                >
+                  ☁️ Extern
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Thinking toggle chip */}
+          <button
+            onClick={() => onThinkingChange(!thinkingEnabled)}
+            className={cn(
+              "text-[10px] px-2 py-0.5 rounded-full border font-medium transition-colors flex items-center gap-1",
+              thinkingEnabled
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "border-border text-muted-foreground hover:border-primary/30"
+            )}
+          >
+            <Brain className="w-3 h-3" />
+            {thinkingEnabled ? "Denken an" : "Denken"}
+          </button>
+
+          {/* Settings Popover — Agent toggle + session settings */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <Settings className="w-3.5 h-3.5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-56 p-3 space-y-3">
+              <h4 className="text-xs font-semibold">Einstellungen</h4>
+              <label className="flex items-center justify-between">
+                <span className="text-[11px]">🤖 Agenten-Modus</span>
+                <Switch checked={agentEnabled} onCheckedChange={setAgentEnabled} />
+              </label>
+              {agentEnabled && (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="w-full text-[11px] h-7 gap-1">
+                      🤖 Agent konfigurieren
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[380px] sm:w-[420px] overflow-y-auto">
+                    <SheetTitle className="text-base font-bold mb-4">🤖 Agenten-Modus</SheetTitle>
+                    <AgentKnobs
+                      config={agentConfig}
+                      onConfigChange={onAgentConfigChange}
+                      onStartAgent={onStartAgent}
+                      bare
+                    />
+                  </SheetContent>
+                </Sheet>
+              )}
+              <Separator />
+              <p className="text-[10px] text-muted-foreground">
+                Einstellungen gelten für diese Session.
+              </p>
+            </PopoverContent>
+          </Popover>
         </div>
       )}
     </main>
