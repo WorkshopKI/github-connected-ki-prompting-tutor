@@ -54,7 +54,6 @@ const Playground = () => {
 
   // --- UI state ---
   const [showBudgetDialog, setShowBudgetDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState("chat");
   const [actaFields, setActaFields] = useState<ACTAFields>({ act: "", context: "", task: "", ausgabe: "" });
   const [sourcePromptTitle, setSourcePromptTitle] = useState<string | null>(null);
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
@@ -204,7 +203,6 @@ const Playground = () => {
   };
 
   const handleStartAgent = (prompt: string) => {
-    setActiveTab("chat");
     chat.sendMessage(prompt);
   };
 
@@ -312,8 +310,6 @@ const Playground = () => {
                 {/* Chat */}
                 <div className="flex-1 min-h-0 px-4 py-2">
                   <PlaygroundContent
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
                     messages={chat.messages}
                     onSendMessage={chat.sendMessage}
                     isStreaming={chat.isStreaming}
@@ -329,7 +325,6 @@ const Playground = () => {
                     skillId={skillId}
                     skillTitle={skillTitle}
                     requestedModel={requestedModel}
-                    variant="desktop"
                     mode={playgroundMode}
                     lastUserPrompt={lastUserPrompt}
                     selectedModel={selectedModel}
@@ -354,8 +349,6 @@ const Playground = () => {
               {/* Chat */}
               <div className="flex-1 min-h-0 px-4 py-2">
                 <PlaygroundContent
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
                   messages={chat.messages}
                   onSendMessage={chat.sendMessage}
                   isStreaming={chat.isStreaming}
@@ -371,7 +364,6 @@ const Playground = () => {
                   skillId={skillId}
                   skillTitle={skillTitle}
                   requestedModel={requestedModel}
-                  variant="mobile"
                   mode={playgroundMode}
                   lastUserPrompt={lastUserPrompt}
                   selectedModel={selectedModel}
