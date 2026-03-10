@@ -234,22 +234,13 @@ const Playground = () => {
   return (
     <div className="playground-root">
       <PlaygroundHeader
-        thinkingEnabled={thinkingEnabled}
-        onThinkingChange={handleThinkingChange}
-        aiTier={aiTier}
-        onAiTierChange={setAiTier}
-        canUseExternal={canUseExternal}
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-        aiRouting={aiRouting}
-        promptConfidentiality={promptConfidentiality}
         mode={playgroundMode}
         onModeChange={handleModeChange}
-        sourceTitle={sourcePromptTitle}
         onStartTour={tour.start}
-        onStartAgent={handleStartAgent}
-        agentConfig={agentConfig}
-        onAgentConfigChange={setAgentConfig}
+        canUseExternal={canUseExternal}
+        promptConfidentiality={promptConfidentiality}
+        aiTier={aiTier}
+        aiRouting={aiRouting}
       />
 
       {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
@@ -316,6 +307,7 @@ const Playground = () => {
                     streamingContent={chat.streamingContent}
                     thinkingContent={chat.thinkingContent}
                     thinkingEnabled={thinkingEnabled}
+                    onThinkingChange={handleThinkingChange}
                     systemPrompt={systemPrompt}
                     onSystemPromptChange={setSystemPrompt}
                     onClearChat={handleClearChat}
@@ -328,6 +320,14 @@ const Playground = () => {
                     mode={playgroundMode}
                     lastUserPrompt={lastUserPrompt}
                     selectedModel={selectedModel}
+                    onModelChange={setSelectedModel}
+                    aiTier={aiTier}
+                    onAiTierChange={setAiTier}
+                    canUseExternal={canUseExternal}
+                    aiRouting={aiRouting}
+                    agentConfig={agentConfig}
+                    onAgentConfigChange={setAgentConfig}
+                    onStartAgent={handleStartAgent}
                   />
                 </div>
               </ResizablePanel>
