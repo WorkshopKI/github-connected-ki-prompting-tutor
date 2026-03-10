@@ -241,7 +241,7 @@ export const ACTABuilder = ({
                 <button
                   type="button"
                   onClick={() => setShowSuggest(!showSuggest)}
-                  className="text-[11px] font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
+                  className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
                 >
                   <Wand2 className="w-3 h-3" /> KI: ACTA-Felder vorschlagen lassen
                 </button>
@@ -251,12 +251,12 @@ export const ACTABuilder = ({
                       value={suggestInput}
                       onChange={(e) => setSuggestInput(e.target.value)}
                       placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
-                      className="text-[11px] min-h-[48px] resize-none"
+                      className="text-xs min-h-[48px] resize-none"
                       rows={2}
                     />
                     <Button
                       size="sm"
-                      className="w-full text-[11px] h-7"
+                      className="w-full text-xs h-7"
                       disabled={!suggestInput.trim() || aiLoading}
                       onClick={async () => {
                         const result = await suggest(suggestInput, selectedModel);
@@ -283,14 +283,14 @@ export const ACTABuilder = ({
             <div data-tour="acta-fields" className="grid grid-cols-4 gap-2">
               {FIELD_CONFIG.map((field) => (
                 <div key={field.key}>
-                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">
                     {field.label.split(" (")[0]}
                   </label>
                   <Textarea
                     value={fields[field.key]}
                     onChange={(e) => updateField(field.key, e.target.value)}
                     placeholder={field.placeholder}
-                    className="text-[11px] min-h-[52px] resize-y"
+                    className="text-xs min-h-[52px] resize-y"
                     rows={3}
                   />
                 </div>
@@ -301,14 +301,14 @@ export const ACTABuilder = ({
             {variables.length > 0 && (
               <div data-tour="acta-variables" className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-muted-foreground">
+                  <span className="text-[11px] font-semibold text-muted-foreground">
                     Angaben ausfüllen ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length})
                   </span>
                   {hasUnfilledVars && (
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-[10px] h-6 gap-1 text-primary"
+                      className="text-xs h-6 gap-1 text-primary"
                       disabled={aiLoading}
                       onClick={async () => {
                         const result = await fillVariables(
@@ -333,13 +333,13 @@ export const ACTABuilder = ({
                 <div className="grid grid-cols-2 gap-2">
                   {variables.map((v) => (
                     <div key={v} className="flex items-center gap-1.5">
-                      <Badge variant="outline" className="text-[9px] shrink-0 font-mono">{v}</Badge>
+                      <Badge variant="outline" className="text-[11px] shrink-0 font-mono">{v}</Badge>
                       <input
                         type="text"
                         value={variableValues[v] || ""}
                         onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
                         placeholder="z.B. ..."
-                        className="flex-1 h-7 text-[11px] px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+                        className="flex-1 h-7 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
                       />
                     </div>
                   ))}
@@ -359,7 +359,7 @@ export const ACTABuilder = ({
                         key={chip.key}
                         onClick={() => handleChipClick(chip)}
                         className={cn(
-                          "text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium",
+                          "text-xs px-2 py-0.5 rounded-full border transition-colors font-medium",
                           active
                             ? "bg-primary/10 border-primary/30 text-primary"
                             : "border-border text-muted-foreground hover:border-primary/30"
@@ -375,7 +375,7 @@ export const ACTABuilder = ({
 
               {/* Action Buttons */}
               <div className="flex gap-1.5 shrink-0" data-tour="acta-send">
-                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-[11px] h-7 gap-1">
+                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-xs h-7 gap-1">
                   <Send className="w-3 h-3" /> Prompt testen
                 </Button>
                 {isExperte && hasContent && (
@@ -402,7 +402,7 @@ export const ACTABuilder = ({
             {/* Active Chip Input Area */}
             {isExperte && activeChip === "examples" && (
               <div className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
-                <p className="text-[10px] text-muted-foreground">Zeige der KI 1–3 Beispiele (Few-Shot):</p>
+                <p className="text-[11px] text-muted-foreground">Zeige der KI 1–3 Beispiele (Few-Shot):</p>
                 {ext.examples.map((ex, i) => (
                   <div key={i} className="flex gap-1.5 items-start">
                     <Textarea
@@ -412,7 +412,7 @@ export const ACTABuilder = ({
                         updateExtensions({ ...ext, examples: updated });
                       }}
                       placeholder={`Beispiel ${i + 1}...`}
-                      className="text-[11px] min-h-[40px] resize-none flex-1"
+                      className="text-xs min-h-[40px] resize-none flex-1"
                       rows={2}
                     />
                     <Button
@@ -429,7 +429,7 @@ export const ACTABuilder = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-[10px] h-6 w-full"
+                    className="text-xs h-6 w-full"
                     onClick={() => updateExtensions({ ...ext, examples: [...ext.examples, ""] })}
                   >
                     + Beispiel hinzufügen
@@ -443,7 +443,7 @@ export const ACTABuilder = ({
                 value={ext.rules}
                 onChange={(e) => updateExtensions({ ...ext, rules: e.target.value })}
                 placeholder="Wichtige Regeln und Einschränkungen..."
-                className="text-[11px]"
+                className="text-xs"
                 rows={2}
               />
             )}
@@ -452,7 +452,7 @@ export const ACTABuilder = ({
               <select
                 value={ext.reasoning || ""}
                 onChange={(e) => updateExtensions({ ...ext, reasoning: e.target.value })}
-                className="text-[11px] border border-border rounded-md px-2 py-1.5 bg-background w-full focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="text-xs border border-border rounded-md px-2 py-1.5 bg-background w-full focus:outline-none focus:ring-1 focus:ring-primary/50"
               >
                 {REASONING_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -465,7 +465,7 @@ export const ACTABuilder = ({
                 value={ext.negatives}
                 onChange={(e) => updateExtensions({ ...ext, negatives: e.target.value })}
                 placeholder="Was die KI NICHT tun soll..."
-                className="text-[11px]"
+                className="text-xs"
                 rows={2}
               />
             )}
@@ -505,7 +505,7 @@ export const ACTABuilder = ({
           <button
             type="button"
             onClick={() => setShowSuggest(!showSuggest)}
-            className="flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             <Wand2 className="w-3 h-3" />
             KI: ACTA-Felder vorschlagen lassen
@@ -516,12 +516,12 @@ export const ACTABuilder = ({
                 value={suggestInput}
                 onChange={(e) => setSuggestInput(e.target.value)}
                 placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
-                className="text-[11px] min-h-[48px] resize-none"
+                className="text-xs min-h-[48px] resize-none"
                 rows={2}
               />
               <Button
                 size="sm"
-                className="w-full text-[11px] h-7"
+                className="w-full text-xs h-7"
                 disabled={!suggestInput.trim() || aiLoading}
                 onClick={async () => {
                   const result = await suggest(suggestInput, selectedModel);
@@ -587,7 +587,7 @@ export const ACTABuilder = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[10px] h-6 gap-1 text-primary"
+                className="text-xs h-6 gap-1 text-primary"
                 disabled={aiLoading}
                 onClick={async () => {
                   const result = await fillVariables(
@@ -611,7 +611,7 @@ export const ACTABuilder = ({
           </div>
           {variables.map((v) => (
             <div key={v} className="flex items-center gap-2">
-              <Badge variant="outline" className="text-[10px] shrink-0 font-mono">
+              <Badge variant="outline" className="text-[11px] shrink-0 font-mono">
                 {v}
               </Badge>
               <input
@@ -619,7 +619,7 @@ export const ACTABuilder = ({
                 value={variableValues[v] || ""}
                 onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
                 placeholder={`z.B. ...`}
-                className="flex-1 h-7 text-[11px] px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+                className="flex-1 h-7 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
               />
             </div>
           ))}
