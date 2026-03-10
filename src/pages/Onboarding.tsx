@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { requiredModules, bonusModules, learningModules } from "@/data/learningPath";
 import { ACTAIntroduction } from "@/components/ACTAIntroduction";
@@ -39,6 +40,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { completedLessons, markLessonComplete } = useSyncContext();
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [challengeAnswers, setChallengeAnswers] = useState<Record<string, string>>({});
 
   const moduleStatuses = useMemo(() => {
     // Abwärtskompatibilität: Alte Modul-IDs auf neue mappen
@@ -165,17 +167,53 @@ const Onboarding = () => {
           <div className="mt-2 p-6 rounded-xl border border-border bg-muted/20">
             <Component />
             {status !== "completed" && (
-              <div className="mt-6 pt-4 border-t border-border flex justify-end">
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    markLessonComplete(mod.id);
-                  }}
-                  className="gap-2"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Modul abschließen
-                </Button>
+              <div className="mt-6 pt-4 border-t border-border space-y-4">
+                {mod.challenge ? (
+                  <div className="bg-primary/5 border border-primary/15 rounded-lg p-4 space-y-3">
+                    <p className="text-sm font-medium">{mod.challenge.question}</p>
+                    <Textarea
+                      value={challengeAnswers[mod.id] || ""}
+                      onChange={(e) => setChallengeAnswers(prev => ({ ...prev, [mod.id]: e.target.value }))}
+                      placeholder={mod.challenge.placeholder}
+                      className="text-xs min-h-[72px] resize-none"
+                      rows={3}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground">
+                        {(challengeAnswers[mod.id] || "").length < mod.challenge.minLength
+                          ? `Noch mindestens ${mod.challenge.minLength - (challengeAnswers[mod.id] || "").length} Zeichen`
+                          : "✓ Ausreichend"
+                        }
+                      </span>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markLessonComplete(mod.id);
+                        }}
+                        disabled={(challengeAnswers[mod.id] || "").length < mod.challenge.minLength}
+                        className="gap-2"
+                        size="sm"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        Modul abschließen
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markLessonComplete(mod.id);
+                      }}
+                      className="gap-2"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Modul abschließen
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
             {status === "completed" && (
