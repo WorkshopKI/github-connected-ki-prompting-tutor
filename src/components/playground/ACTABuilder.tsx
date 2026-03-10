@@ -23,6 +23,8 @@ export interface ACTABuilderProps {
   bare?: boolean;
   mode?: "einsteiger" | "experte";
   selectedModel?: string;
+  layout?: "vertical" | "horizontal";
+  sourceTitle?: string | null;
 }
 
 const FIELD_CONFIG = [
@@ -95,6 +97,23 @@ function assembleACTAPrompt(fields: ACTAFields, varValues?: Record<string, strin
   return finalPrompt;
 }
 
+const EXTENSION_CHIPS = [
+  { key: "examples" as const, label: "Few-Shot", type: "array" as const },
+  { key: "rules" as const, label: "Regeln", type: "string" as const },
+  { key: "reasoning" as const, label: "Denkweise", type: "select" as const },
+  { key: "verification" as const, label: "Selbstprfg.", type: "boolean" as const },
+  { key: "reversePrompt" as const, label: "Reverse", type: "boolean" as const },
+  { key: "negatives" as const, label: "Negativ", type: "string" as const },
+];
+
+const REASONING_OPTIONS = [
+  { value: "", label: "Keine" },
+  { value: "step-by-step", label: "Schritt für Schritt" },
+  { value: "pros-cons", label: "Vor- und Nachteile" },
+  { value: "perspectives", label: "Mehrere Perspektiven" },
+  { value: "tree-of-thought", label: "Lösungswege vergleichen" },
+];
+
 export const ACTABuilder = ({
   fields,
   onFieldsChange,
@@ -104,6 +123,8 @@ export const ACTABuilder = ({
   bare,
   mode,
   selectedModel,
+  layout,
+  sourceTitle,
 }: ACTABuilderProps) => {
   const { scope } = useOrgContext();
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
@@ -135,6 +156,10 @@ export const ACTABuilder = ({
   const assembled = assembleACTAPrompt(fields, variableValues);
   const hasContent = assembled.trim().length > 0;
 
+  // Horizontal layout state
+  const [expanded, setExpanded] = useState(true);
+  const [activeChip, setActiveChip] = useState<string | null>(null);
+
   const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
     onFieldsChange({ ...fields, [key]: value });
   };
@@ -161,7 +186,297 @@ export const ACTABuilder = ({
     toast.success("Prompt kopiert!");
   };
 
-  const content = (
+  const isChipActive = (key: string): boolean => {
+    switch (key) {
+      case "examples": return ext.examples.some(e => e.trim());
+      case "rules": return ext.rules.trim() !== "";
+      case "reasoning": return ext.reasoning !== "" && ext.reasoning !== "none";
+      case "verification": return ext.verification;
+      case "reversePrompt": return ext.reversePrompt;
+      case "negatives": return ext.negatives.trim() !== "";
+      default: return false;
+    }
+  };
+
+  const handleChipClick = (chip: typeof EXTENSION_CHIPS[number]) => {
+    if (chip.type === "boolean") {
+      const key = chip.key as "verification" | "reversePrompt";
+      updateExtensions({ ...ext, [key]: !ext[key] });
+    } else {
+      setActiveChip(activeChip === chip.key ? null : chip.key);
+    }
+  };
+
+  // ── Horizontal layout (desktop) ──
+  if (layout === "horizontal") {
+    return (
+      <div className="bg-card border-b border-border">
+        {/* Header row — click to collapse/expand */}
+        <div
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-2 px-4 py-2 cursor-pointer select-none hover:bg-muted/30 transition-colors"
+        >
+          <span className="text-xs font-bold">ACTA</span>
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+            {filledCount}/4{hasActiveExtensions ? " +" : ""}
+          </Badge>
+          {sourceTitle && (
+            <span className="text-[10px] text-primary font-medium ml-2 truncate">
+              Vorlage: {sourceTitle}
+            </span>
+          )}
+          <ChevronDown
+            className={cn(
+              "w-3.5 h-3.5 text-muted-foreground transition-transform ml-auto shrink-0",
+              expanded && "rotate-180"
+            )}
+          />
+        </div>
+
+        {expanded && (
+          <div className="px-4 pb-3 space-y-2">
+            {/* KI-Suggest — only Experte */}
+            {isExperte && (
+              <div data-tour="acta-ki-suggest">
+                <button
+                  type="button"
+                  onClick={() => setShowSuggest(!showSuggest)}
+                  className="text-[11px] font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
+                >
+                  <Wand2 className="w-3 h-3" /> KI: ACTA-Felder vorschlagen lassen
+                </button>
+                {showSuggest && (
+                  <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 space-y-2 mt-2">
+                    <Textarea
+                      value={suggestInput}
+                      onChange={(e) => setSuggestInput(e.target.value)}
+                      placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
+                      className="text-[11px] min-h-[48px] resize-none"
+                      rows={2}
+                    />
+                    <Button
+                      size="sm"
+                      className="w-full text-[11px] h-7"
+                      disabled={!suggestInput.trim() || aiLoading}
+                      onClick={async () => {
+                        const result = await suggest(suggestInput, selectedModel);
+                        if (result) {
+                          onFieldsChange(result);
+                          setVariableValues({});
+                          setShowSuggest(false);
+                          setSuggestInput("");
+                        }
+                      }}
+                    >
+                      {aiLoading ? (
+                        <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
+                      ) : (
+                        <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 4 Fields in a grid */}
+            <div data-tour="acta-fields" className="grid grid-cols-4 gap-2">
+              {FIELD_CONFIG.map((field) => (
+                <div key={field.key}>
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">
+                    {field.label.split(" (")[0]}
+                  </label>
+                  <Textarea
+                    value={fields[field.key]}
+                    onChange={(e) => updateField(field.key, e.target.value)}
+                    placeholder={field.placeholder}
+                    className="text-[11px] min-h-[52px] resize-y"
+                    rows={3}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Variables panel — full width under fields */}
+            {variables.length > 0 && (
+              <div data-tour="acta-variables" className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-semibold text-muted-foreground">
+                    Angaben ausfüllen ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length})
+                  </span>
+                  {hasUnfilledVars && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-[10px] h-6 gap-1 text-primary"
+                      disabled={aiLoading}
+                      onClick={async () => {
+                        const result = await fillVariables(
+                          variables.filter(v => !variableValues[v]?.trim()),
+                          fields,
+                          selectedModel,
+                        );
+                        if (result) {
+                          setVariableValues(prev => ({ ...prev, ...result }));
+                        }
+                      }}
+                    >
+                      {aiLoading ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Wand2 className="w-3 h-3" />
+                      )}
+                      Beispielwerte
+                    </Button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {variables.map((v) => (
+                    <div key={v} className="flex items-center gap-1.5">
+                      <Badge variant="outline" className="text-[9px] shrink-0 font-mono">{v}</Badge>
+                      <input
+                        type="text"
+                        value={variableValues[v] || ""}
+                        onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
+                        placeholder="z.B. ..."
+                        className="flex-1 h-7 text-[11px] px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Extension Chips + Action Buttons in one row */}
+            <div className="flex items-center gap-1.5">
+              {/* Extension Chips — only Experte */}
+              {isExperte && (
+                <div className="flex gap-1 flex-1 flex-wrap" data-tour="acta-extensions">
+                  {EXTENSION_CHIPS.map((chip) => {
+                    const active = isChipActive(chip.key);
+                    return (
+                      <button
+                        key={chip.key}
+                        onClick={() => handleChipClick(chip)}
+                        className={cn(
+                          "text-[10px] px-2 py-0.5 rounded-full border transition-colors font-medium",
+                          active
+                            ? "bg-primary/10 border-primary/30 text-primary"
+                            : "border-border text-muted-foreground hover:border-primary/30"
+                        )}
+                      >
+                        {active ? "✓ " : "+ "}{chip.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+              {!isExperte && <div className="flex-1" />}
+
+              {/* Action Buttons */}
+              <div className="flex gap-1.5 shrink-0" data-tour="acta-send">
+                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-[11px] h-7 gap-1">
+                  <Send className="w-3 h-3" /> Prompt testen
+                </Button>
+                {isExperte && hasContent && (
+                  <Button
+                    onClick={async () => {
+                      const result = await improve(fields, selectedModel);
+                      if (result) { onFieldsChange(result); setVariableValues({}); }
+                    }}
+                    disabled={aiLoading}
+                    variant="outline"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    title="KI verbessert deine ACTA-Felder"
+                  >
+                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                  </Button>
+                )}
+                <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm" className="h-7 w-7 p-0">
+                  <Copy className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Active Chip Input Area */}
+            {isExperte && activeChip === "examples" && (
+              <div className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
+                <p className="text-[10px] text-muted-foreground">Zeige der KI 1–3 Beispiele (Few-Shot):</p>
+                {ext.examples.map((ex, i) => (
+                  <div key={i} className="flex gap-1.5 items-start">
+                    <Textarea
+                      value={ex}
+                      onChange={(e) => {
+                        const updated = ext.examples.map((v, j) => j === i ? e.target.value : v);
+                        updateExtensions({ ...ext, examples: updated });
+                      }}
+                      placeholder={`Beispiel ${i + 1}...`}
+                      className="text-[11px] min-h-[40px] resize-none flex-1"
+                      rows={2}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0 mt-1"
+                      onClick={() => updateExtensions({ ...ext, examples: ext.examples.filter((_, j) => j !== i) })}
+                    >
+                      <span className="text-xs">✕</span>
+                    </Button>
+                  </div>
+                ))}
+                {ext.examples.length < 3 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-[10px] h-6 w-full"
+                    onClick={() => updateExtensions({ ...ext, examples: [...ext.examples, ""] })}
+                  >
+                    + Beispiel hinzufügen
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {isExperte && activeChip === "rules" && (
+              <Textarea
+                value={ext.rules}
+                onChange={(e) => updateExtensions({ ...ext, rules: e.target.value })}
+                placeholder="Wichtige Regeln und Einschränkungen..."
+                className="text-[11px]"
+                rows={2}
+              />
+            )}
+
+            {isExperte && activeChip === "reasoning" && (
+              <select
+                value={ext.reasoning || ""}
+                onChange={(e) => updateExtensions({ ...ext, reasoning: e.target.value })}
+                className="text-[11px] border border-border rounded-md px-2 py-1.5 bg-background w-full focus:outline-none focus:ring-1 focus:ring-primary/50"
+              >
+                {REASONING_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            )}
+
+            {isExperte && activeChip === "negatives" && (
+              <Textarea
+                value={ext.negatives}
+                onChange={(e) => updateExtensions({ ...ext, negatives: e.target.value })}
+                placeholder="Was die KI NICHT tun soll..."
+                className="text-[11px]"
+                rows={2}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Vertical layout (existing sidebar / mobile) ──
+  const verticalContent = (
     <div className="px-4 pb-4 space-y-4">
       <div data-tour="acta-template-select">
       <Select onValueChange={handleTemplateSelect}>
@@ -376,7 +691,7 @@ export const ACTABuilder = ({
     </div>
   );
 
-  if (bare) return content;
+  if (bare) return verticalContent;
 
   return (
     <Collapsible open={isOpen} onOpenChange={onToggle}>
@@ -391,7 +706,7 @@ export const ACTABuilder = ({
           {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
         <CollapsibleContent>
-          {content}
+          {verticalContent}
         </CollapsibleContent>
       </div>
     </Collapsible>
