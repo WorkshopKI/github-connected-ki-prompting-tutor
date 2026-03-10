@@ -3,12 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogIn } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { LogIn, BookOpen } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { PlaygroundContent } from "@/components/playground/PlaygroundContent";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
-import { PlaygroundSidebar } from "@/components/playground/PlaygroundSidebar";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { PromptBrowser } from "@/components/playground/PromptBrowser";
+import { ACTABuilder } from "@/components/playground/ACTABuilder";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { loadAIRouting, getAllModels } from "@/data/models";
@@ -206,12 +207,31 @@ const Playground = () => {
     chat.sendMessage(prompt);
   };
 
+  // --- Prompt Browser selection handler ---
+  const handleBrowserSelect = (title: string) => {
+    const found = promptLibrary.find(p => p.title === title);
+    if (!found) return;
+    setSourcePromptTitle(title);
+    if (found.actaFields) {
+      setActaFields({
+        act: found.actaFields.act || "",
+        context: found.actaFields.context || "",
+        task: found.actaFields.task || "",
+        ausgabe: found.actaFields.ausgabe || "",
+      });
+    } else {
+      const fallback = splitPromptToACTA(found.prompt, found.title);
+      setActaFields({ act: fallback.act, context: fallback.context, task: fallback.task, ausgabe: fallback.ausgabe });
+    }
+    if (found.confidentiality) setPromptConfidentiality(found.confidentiality);
+  };
+
   const lastUserPrompt = [...chat.messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
   if (isLoading) return null;
 
   // ⚠️ LAYOUT-KETTE: h-screen + overflow-hidden verhindert Body-Scroll.
-  //    Playground hat eigene Scroll-Container in ChatPlayground und PlaygroundSidebar.
+  //    Playground hat eigene Scroll-Container in ChatPlayground und PromptBrowser.
   return (
     <div className="playground-root">
       <PlaygroundHeader
@@ -228,121 +248,155 @@ const Playground = () => {
         onModeChange={handleModeChange}
         sourceTitle={sourcePromptTitle}
         onStartTour={tour.start}
+        onStartAgent={handleStartAgent}
+        agentConfig={agentConfig}
+        onAgentConfigChange={setAgentConfig}
       />
 
       {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
-      <div className="px-4 py-4 max-w-[1380px] mx-auto flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden">
         {!isLoggedIn ? (
-          <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LogIn className="w-5 h-5" />
-                Anmeldung erforderlich
-              </CardTitle>
-              <CardDescription>
-                Melde dich an, um die Prompt Werkstatt zu nutzen und KI-Modelle
-                direkt auszuprobieren.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate("/login")} className="w-full">
-                Zur Anmeldung
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="px-4 py-4 max-w-[1380px] mx-auto">
+            <Card className="max-w-md mx-auto mt-16 rounded-xl border border-border shadow-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <LogIn className="w-5 h-5" />
+                  Anmeldung erforderlich
+                </CardTitle>
+                <CardDescription>
+                  Melde dich an, um die Prompt Werkstatt zu nutzen und KI-Modelle
+                  direkt auszuprobieren.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button onClick={() => navigate("/login")} className="w-full">
+                  Zur Anmeldung
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         ) : (
           <>
-          <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
-            <ResizablePanel defaultSize={35} minSize={20} maxSize={40} className="pr-0">
-              <PlaygroundSidebar
-                conversations={convos.conversations}
-                activeConversationId={convos.activeConversationId}
-                onSelectConversation={handleSelectConversation}
-                onNewConversation={handleNewConversation}
-                onDeleteConversation={handleDeleteConversation}
-                onRenameConversation={convos.renameConversation}
-                actaFields={actaFields}
-                onActaFieldsChange={setActaFields}
-                onSendFromACTA={chat.sendMessage}
-                onApplyTechnique={chat.sendMessage}
-                agentConfig={agentConfig}
-                onAgentConfigChange={setAgentConfig}
-                onStartAgent={handleStartAgent}
-                lastUserPrompt={lastUserPrompt}
-                selectedModel={selectedModel}
-                messages={chat.messages}
-                mode={playgroundMode}
-              />
-            </ResizablePanel>
-            <ResizableHandle withHandle className="mx-2" />
-            <ResizablePanel defaultSize={71}>
-              <PlaygroundContent
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                messages={chat.messages}
-                onSendMessage={chat.sendMessage}
-                isStreaming={chat.isStreaming}
-                streamingContent={chat.streamingContent}
-                thinkingContent={chat.thinkingContent}
-                thinkingEnabled={thinkingEnabled}
-                systemPrompt={systemPrompt}
-                onSystemPromptChange={setSystemPrompt}
-                onClearChat={handleClearChat}
-                onStop={chat.handleStop}
-                onBudgetExhausted={() => setShowBudgetDialog(true)}
-                prefilledPrompt={prefilledPrompt}
-                skillId={skillId}
-                skillTitle={skillTitle}
-                requestedModel={requestedModel}
-                variant="desktop"
-                mode={playgroundMode}
-              />
-            </ResizablePanel>
-          </ResizablePanelGroup>
+            {/* Desktop layout (≥ lg): 3-Panel */}
+            <div className="hidden lg:flex h-full">
+              {/* LEFT: Prompt Browser — fixed 220px */}
+              <div className="w-[220px] shrink-0 border-r border-border">
+                <PromptBrowser
+                  onSelectPrompt={handleBrowserSelect}
+                  activePromptTitle={sourcePromptTitle}
+                  conversations={convos.conversations}
+                  activeConversationId={convos.activeConversationId}
+                  onSelectConversation={handleSelectConversation}
+                  onNewConversation={handleNewConversation}
+                  onDeleteConversation={handleDeleteConversation}
+                  onRenameConversation={convos.renameConversation}
+                />
+              </div>
 
-          {/* Mobile layout (below lg) */}
-          <div className="lg:hidden h-full flex flex-col">
-            <PlaygroundSidebar
-              conversations={convos.conversations}
-              activeConversationId={convos.activeConversationId}
-              onSelectConversation={handleSelectConversation}
-              onNewConversation={handleNewConversation}
-              onDeleteConversation={handleDeleteConversation}
-              onRenameConversation={convos.renameConversation}
-              actaFields={actaFields}
-              onActaFieldsChange={setActaFields}
-              onSendFromACTA={chat.sendMessage}
-              onApplyTechnique={chat.sendMessage}
-              agentConfig={agentConfig}
-              onAgentConfigChange={setAgentConfig}
-              onStartAgent={handleStartAgent}
-              lastUserPrompt={lastUserPrompt}
-              selectedModel={selectedModel}
-              messages={chat.messages}
-              mode={playgroundMode}
-            />
-            <PlaygroundContent
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              messages={chat.messages}
-              onSendMessage={chat.sendMessage}
-              isStreaming={chat.isStreaming}
-              streamingContent={chat.streamingContent}
-              thinkingContent={chat.thinkingContent}
-              thinkingEnabled={thinkingEnabled}
-              systemPrompt={systemPrompt}
-              onSystemPromptChange={setSystemPrompt}
-              onClearChat={handleClearChat}
-              onStop={chat.handleStop}
-              onBudgetExhausted={() => setShowBudgetDialog(true)}
-              prefilledPrompt={prefilledPrompt}
-              skillId={skillId}
-              skillTitle={skillTitle}
-              requestedModel={requestedModel}
-              variant="mobile"
-              mode={playgroundMode}
-            />
-          </div>
+              {/* CENTER: ACTA-Bar (top) + Chat (bottom) */}
+              <div className="flex-1 flex flex-col min-w-0">
+                {/* ACTA Bar */}
+                <ACTABuilder
+                  fields={actaFields}
+                  onFieldsChange={setActaFields}
+                  onSendToPlayground={chat.sendMessage}
+                  layout="horizontal"
+                  mode={playgroundMode}
+                  selectedModel={selectedModel}
+                  sourceTitle={sourcePromptTitle}
+                />
+
+                {/* Chat */}
+                <div className="flex-1 min-h-0 px-4 py-2">
+                  <PlaygroundContent
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    messages={chat.messages}
+                    onSendMessage={chat.sendMessage}
+                    isStreaming={chat.isStreaming}
+                    streamingContent={chat.streamingContent}
+                    thinkingContent={chat.thinkingContent}
+                    thinkingEnabled={thinkingEnabled}
+                    systemPrompt={systemPrompt}
+                    onSystemPromptChange={setSystemPrompt}
+                    onClearChat={handleClearChat}
+                    onStop={chat.handleStop}
+                    onBudgetExhausted={() => setShowBudgetDialog(true)}
+                    prefilledPrompt={prefilledPrompt}
+                    skillId={skillId}
+                    skillTitle={skillTitle}
+                    requestedModel={requestedModel}
+                    variant="desktop"
+                    mode={playgroundMode}
+                    lastUserPrompt={lastUserPrompt}
+                    selectedModel={selectedModel}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile layout (< lg) */}
+            <div className="lg:hidden h-full flex flex-col">
+              {/* ACTA Bar — full width */}
+              <ACTABuilder
+                fields={actaFields}
+                onFieldsChange={setActaFields}
+                onSendToPlayground={chat.sendMessage}
+                layout="horizontal"
+                mode={playgroundMode}
+                selectedModel={selectedModel}
+                sourceTitle={sourcePromptTitle}
+              />
+
+              {/* Chat */}
+              <div className="flex-1 min-h-0 px-4 py-2">
+                <PlaygroundContent
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  messages={chat.messages}
+                  onSendMessage={chat.sendMessage}
+                  isStreaming={chat.isStreaming}
+                  streamingContent={chat.streamingContent}
+                  thinkingContent={chat.thinkingContent}
+                  thinkingEnabled={thinkingEnabled}
+                  systemPrompt={systemPrompt}
+                  onSystemPromptChange={setSystemPrompt}
+                  onClearChat={handleClearChat}
+                  onStop={chat.handleStop}
+                  onBudgetExhausted={() => setShowBudgetDialog(true)}
+                  prefilledPrompt={prefilledPrompt}
+                  skillId={skillId}
+                  skillTitle={skillTitle}
+                  requestedModel={requestedModel}
+                  variant="mobile"
+                  mode={playgroundMode}
+                  lastUserPrompt={lastUserPrompt}
+                  selectedModel={selectedModel}
+                />
+              </div>
+
+              {/* Prompt Browser as Sheet */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button size="icon" className="fixed bottom-4 left-4 z-40 rounded-full shadow-lg h-12 w-12">
+                    <BookOpen className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-0">
+                  <SheetTitle className="sr-only">Vorlagen</SheetTitle>
+                  <PromptBrowser
+                    onSelectPrompt={handleBrowserSelect}
+                    activePromptTitle={sourcePromptTitle}
+                    conversations={convos.conversations}
+                    activeConversationId={convos.activeConversationId}
+                    onSelectConversation={handleSelectConversation}
+                    onNewConversation={handleNewConversation}
+                    onDeleteConversation={handleDeleteConversation}
+                    onRenameConversation={convos.renameConversation}
+                  />
+                </SheetContent>
+              </Sheet>
+            </div>
           </>
         )}
       </div>

@@ -4,8 +4,10 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Brain, Settings } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { ArrowLeft, Brain, Bot, Settings } from "lucide-react";
 import { ModelSelectGroups } from "./ModelSelect";
+import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
 import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
 import type { AIRoutingConfig } from "@/types";
@@ -24,6 +26,9 @@ interface PlaygroundHeaderProps {
   onModeChange: (mode: "einsteiger" | "experte") => void;
   sourceTitle?: string | null;
   onStartTour?: () => void;
+  onStartAgent?: (prompt: string) => void;
+  agentConfig?: AgentConfig;
+  onAgentConfigChange?: (config: AgentConfig) => void;
 }
 
 export function PlaygroundHeader({
@@ -40,6 +45,9 @@ export function PlaygroundHeader({
   onModeChange,
   sourceTitle,
   onStartTour,
+  onStartAgent,
+  agentConfig,
+  onAgentConfigChange,
 }: PlaygroundHeaderProps) {
   const navigate = useNavigate();
 
@@ -107,6 +115,28 @@ export function PlaygroundHeader({
               {aiTier === "internal" ? "🏢 Interne KI · " : "☁️ Externe KI · "}
               {getModelLabel(selectedModel)}
             </span>
+          )}
+
+          {mode === "experte" && onStartAgent && agentConfig && onAgentConfigChange && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="h-8 w-8" title="Agenten-Modus">
+                  <Bot className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[380px] sm:w-[420px] overflow-y-auto">
+                <SheetTitle className="text-base font-bold mb-4 flex items-center gap-2">
+                  <Bot className="w-4 h-4 text-primary" />
+                  Agenten-Modus
+                </SheetTitle>
+                <AgentKnobs
+                  config={agentConfig}
+                  onConfigChange={onAgentConfigChange}
+                  onStartAgent={onStartAgent}
+                  bare
+                />
+              </SheetContent>
+            </Sheet>
           )}
 
           <Popover>
