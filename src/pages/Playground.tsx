@@ -4,6 +4,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { LogIn, BookOpen } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { PlaygroundContent } from "@/components/playground/PlaygroundContent";
@@ -277,10 +278,10 @@ const Playground = () => {
           </div>
         ) : (
           <>
-            {/* Desktop layout (≥ lg): 3-Panel */}
-            <div className="hidden lg:flex h-full">
-              {/* LEFT: Prompt Browser — fixed 220px */}
-              <div className="w-[220px] shrink-0 border-r border-border">
+            {/* Desktop layout (≥ lg): 3-Panel, resizable */}
+            <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
+              {/* LEFT: Prompt Browser — resizable, default ~320px */}
+              <ResizablePanel defaultSize={22} minSize={14} maxSize={35} className="min-w-0">
                 <PromptBrowser
                   onSelectPrompt={handleBrowserSelect}
                   activePromptTitle={sourcePromptTitle}
@@ -291,10 +292,12 @@ const Playground = () => {
                   onDeleteConversation={handleDeleteConversation}
                   onRenameConversation={convos.renameConversation}
                 />
-              </div>
+              </ResizablePanel>
+
+              <ResizableHandle />
 
               {/* CENTER: ACTA-Bar (top) + Chat (bottom) */}
-              <div className="flex-1 flex flex-col min-w-0">
+              <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
                 {/* ACTA Bar */}
                 <ACTABuilder
                   fields={actaFields}
@@ -332,8 +335,8 @@ const Playground = () => {
                     selectedModel={selectedModel}
                   />
                 </div>
-              </div>
-            </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
 
             {/* Mobile layout (< lg) */}
             <div className="lg:hidden h-full flex flex-col">

@@ -114,7 +114,7 @@ export const PromptBrowser = ({
 
       {/* Prompt List */}
       <ScrollArea className="flex-1 min-h-0">
-        <div className="p-2 space-y-0.5">
+        <div className="px-1.5 py-1">
           {activeTab === "skills" ? (
             filteredSkills.length === 0 ? (
               <p className="text-[10px] text-muted-foreground text-center py-4">
@@ -126,27 +126,20 @@ export const PromptBrowser = ({
                   key={s.id}
                   onClick={() => onSelectPrompt(s.title)}
                   className={cn(
-                    "w-full text-left px-2.5 py-2 rounded-md transition-colors",
+                    "w-full text-left px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 min-w-0",
                     activePromptTitle === s.title
                       ? "bg-primary/10"
                       : "hover:bg-muted/50"
                   )}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold truncate flex-1">
-                      {s.title}
-                    </span>
-                    {s.confidentiality && (
-                      <ConfidentialityBadge
-                        level={s.confidentiality as "open" | "internal" | "confidential"}
-                        compact
-                      />
-                    )}
-                  </div>
-                  {s.category && (
-                    <span className="text-[10px] text-muted-foreground">
-                      {s.category}
-                    </span>
+                  <span className="text-[11px] font-medium truncate flex-1">
+                    {s.title}
+                  </span>
+                  {s.confidentiality && (
+                    <ConfidentialityBadge
+                      level={s.confidentiality as "open" | "internal" | "confidential"}
+                      compact
+                    />
                   )}
                 </button>
               ))
@@ -161,22 +154,16 @@ export const PromptBrowser = ({
                 key={`${p.title}-${i}`}
                 onClick={() => onSelectPrompt(p.title)}
                 className={cn(
-                  "w-full text-left px-2.5 py-2 rounded-md transition-colors",
+                  "w-full text-left px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 min-w-0",
                   activePromptTitle === p.title
                     ? "bg-primary/10"
                     : "hover:bg-muted/50"
                 )}
               >
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold truncate flex-1">
-                    {p.title}
-                  </span>
-                  <ConfidentialityBadge
-                    level={p.confidentiality || "open"}
-                    compact
-                  />
-                </div>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-[11px] font-medium truncate flex-1">
+                  {p.title}
+                </span>
+                <span className="text-[9px] text-muted-foreground shrink-0">
                   {p.category}
                 </span>
               </button>
@@ -189,13 +176,13 @@ export const PromptBrowser = ({
       <div className="border-t border-border">
         <button
           onClick={onNewConversation}
-          className="w-full px-3 py-2 text-[11px] font-medium text-primary hover:bg-muted/50 transition-colors flex items-center gap-1.5"
+          className="w-full px-3 py-1.5 text-[11px] font-medium text-primary hover:bg-muted/50 transition-colors flex items-center gap-1.5"
         >
           <Plus className="w-3 h-3" />
           Leerer Prompt
         </button>
         <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
-          <CollapsibleTrigger className="w-full px-3 py-2 text-[11px] font-semibold text-muted-foreground flex items-center justify-between border-t border-border hover:bg-muted/50 transition-colors">
+          <CollapsibleTrigger className="w-full px-3 py-1.5 text-[11px] font-semibold text-muted-foreground flex items-center justify-between border-t border-border hover:bg-muted/50 transition-colors">
             <span>Meine Versuche ({conversations.length})</span>
             <ChevronDown
               className={cn(
