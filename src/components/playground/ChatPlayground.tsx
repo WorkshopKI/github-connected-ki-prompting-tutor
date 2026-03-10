@@ -66,6 +66,7 @@ export interface ChatPlaygroundProps {
   onStop: () => void;
   initialPrompt?: string;
   hideSystemPrompt?: boolean;
+  hideToolbar?: boolean;
 }
 
 export const ChatPlayground = ({
@@ -81,6 +82,7 @@ export const ChatPlayground = ({
   onStop,
   initialPrompt,
   hideSystemPrompt,
+  hideToolbar,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
@@ -158,41 +160,43 @@ export const ChatPlayground = ({
       )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
-        <span className="text-sm font-medium text-muted-foreground">Chat</span>
-        <div className="ml-auto flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={exportAsMarkdown}
-            disabled={!hasMessages}
-            className="text-xs"
-          >
-            <Download className="w-3 h-3 mr-1" />
-            Exportieren
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={copyLastResponse}
-            disabled={!hasAssistantMessage}
-            className="text-xs"
-          >
-            <Copy className="w-3 h-3 mr-1" />
-            Kopieren
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearChat}
-            disabled={!hasMessages}
-            className="text-xs text-destructive hover:text-destructive"
-          >
-            <Trash2 className="w-3 h-3 mr-1" />
-            Verlauf leeren
-          </Button>
+      {!hideToolbar && (
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
+          <span className="text-sm font-medium text-muted-foreground">Chat</span>
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={exportAsMarkdown}
+              disabled={!hasMessages}
+              className="text-xs"
+            >
+              <Download className="w-3 h-3 mr-1" />
+              Exportieren
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={copyLastResponse}
+              disabled={!hasAssistantMessage}
+              className="text-xs"
+            >
+              <Copy className="w-3 h-3 mr-1" />
+              Kopieren
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClearChat}
+              disabled={!hasMessages}
+              className="text-xs text-destructive hover:text-destructive"
+            >
+              <Trash2 className="w-3 h-3 mr-1" />
+              Verlauf leeren
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat.
            flex-1 + min-h-0 = füllt Resthöhe und erlaubt Schrumpfen.
