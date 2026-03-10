@@ -13,7 +13,7 @@ export const PracticeAreaCompact = () => {
 
   return (
     <div>
-      <div className="text-center mb-8">
+      <div className="text-center mb-5">
         <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-3">
           Dein erster guter Prompt
         </h2>
@@ -33,7 +33,7 @@ export const PracticeAreaCompact = () => {
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-4">
         {compactExercises.map((exercise) => (
           <ExerciseCard
             key={exercise.id}
