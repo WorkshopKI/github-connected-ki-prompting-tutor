@@ -1,14 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, ChevronDown, Plus, BookOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { promptLibrary } from "@/data/prompts";
-import { useOrgContext } from "@/contexts/OrgContext";
+import { useOrgContext, ORG_SCOPE_LABELS } from "@/contexts/OrgContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { ConversationHistory } from "./ConversationHistory";
-import type { SavedConversation } from "@/types";
+import type { SavedConversation, OrgScope } from "@/types";
 
 export interface PromptBrowserProps {
   onSelectPrompt: (title: string) => void;
@@ -33,11 +34,16 @@ export const PromptBrowser = ({
   onDeleteConversation,
   onRenameConversation,
 }: PromptBrowserProps) => {
-  const { scope, isDepartment, scopeLabel } = useOrgContext();
+  const { scope, setScope, isDepartment, scopeLabel } = useOrgContext();
   const { skills } = useMySkills();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>(isDepartment ? "dept" : "all");
   const [historyOpen, setHistoryOpen] = useState(false);
+
+  // Auto-switch away from dept tab when department is deselected
+  useEffect(() => {
+    if (!isDepartment && activeTab === "dept") setActiveTab("all");
+  }, [isDepartment]);
 
   const deptPrompts = useMemo(
     () => promptLibrary.filter((p) => p.targetDepartment === scope),
@@ -81,7 +87,16 @@ export const PromptBrowser = ({
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         <div className="flex items-center gap-1.5">
           <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-          <span className="text-xs font-semibold">Vorlagen</span>
+          <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
+            <SelectTrigger className="h-6 text-[11px] border-none shadow-none px-1 font-semibold flex-1 min-w-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
+                <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="relative">
           <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
