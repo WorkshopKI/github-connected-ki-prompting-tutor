@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, ChevronDown, Plus, BookOpen } from "lucide-react";
+import { Search, ChevronDown, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -86,9 +86,18 @@ export const PromptBrowser = ({
       {/* Header + Search */}
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         <div className="flex items-center gap-1.5">
-          <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+          <div className="relative flex-1 min-w-0">
+            <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Suche..."
+              className="w-full h-7 text-[11px] pl-6 pr-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+            />
+          </div>
           <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
-            <SelectTrigger className="h-6 text-[11px] border-none shadow-none px-1 font-semibold flex-1 min-w-0">
+            <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 font-semibold shrink-0 w-auto max-w-[5.5rem]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -97,16 +106,6 @@ export const PromptBrowser = ({
               ))}
             </SelectContent>
           </Select>
-        </div>
-        <div className="relative">
-          <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Suche..."
-            className="w-full h-7 text-[11px] pl-6 pr-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
-          />
         </div>
         {/* Tab Segmented Control */}
         <div className="flex rounded-md border border-border overflow-hidden">
