@@ -7,6 +7,11 @@ export interface LearningModule {
   component: string;
   prerequisites: string[];
   isBonus?: boolean;
+  challenge?: {
+    question: string;
+    placeholder: string;
+    minLength: number;
+  };
 }
 
 // Pflicht-Module: Der Kern-Onboarding-Pfad (~30 Min)
@@ -42,6 +47,11 @@ export const bonusModules: LearningModule[] = [
     component: "AdvancedTechniquesModule",
     prerequisites: ["erste-uebungen"],
     isBonus: true,
+    challenge: {
+      question: "Reflexion: Für welche deiner Arbeitsaufgaben würdest du eine der gelernten Techniken einsetzen? Beschreibe kurz, welche Technik und warum.",
+      placeholder: "z.B. Für die Erstellung von Stellungnahmen würde ich die Selbstprüfung nutzen, weil...",
+      minLength: 30,
+    },
   },
   {
     id: "datenschutz",
@@ -52,6 +62,11 @@ export const bonusModules: LearningModule[] = [
     component: "DataPrivacyIntro",
     prerequisites: ["erste-uebungen"],
     isBonus: true,
+    challenge: {
+      question: "Reflexion: Welche sensiblen Daten könnten in deinen typischen Arbeits-Prompts vorkommen? Wie würdest du sie anonymisieren?",
+      placeholder: "z.B. In meinen Prompts zu Bürgeranfragen kommen Namen und Aktenzeichen vor. Ich würde...",
+      minLength: 30,
+    },
   },
   {
     id: "workflows-bauen",
@@ -62,6 +77,11 @@ export const bonusModules: LearningModule[] = [
     component: "WorkflowBuilderModule",
     prerequisites: ["erste-uebungen"],
     isBonus: true,
+    challenge: {
+      question: "Reflexion: Welches wiederkehrende Projekt oder welche Aufgabe aus deinem Arbeitsalltag möchtest du als erstes mit KI-Unterstützung in Teilschritte zerlegen?",
+      placeholder: "z.B. Die vierteljährliche Berichterstellung, bei der ich immer zuerst Daten sammle, dann...",
+      minLength: 30,
+    },
   },
 ];
 
