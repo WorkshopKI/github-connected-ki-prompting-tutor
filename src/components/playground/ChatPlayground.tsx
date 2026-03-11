@@ -78,7 +78,6 @@ export const ChatPlayground = ({
   onStop,
   initialPrompt,
   hideSystemPrompt,
-  hideToolbar,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
