@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 import { LogIn, BookOpen } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { PlaygroundContent } from "@/components/playground/PlaygroundContent";
@@ -53,6 +54,13 @@ const Playground = () => {
     habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
   });
   const [actaExpanded, setActaExpanded] = useState(true);
+  const actaPanelRef = useRef<ImperativePanelHandle>(null);
+
+  // Sync actaExpanded ↔ ResizablePanel collapse/expand
+  useEffect(() => {
+    if (actaExpanded) actaPanelRef.current?.expand();
+    else actaPanelRef.current?.collapse();
+  }, [actaExpanded]);
 
   // --- Playground mode ---
   const [playgroundMode, setPlaygroundMode] = useState<"einsteiger" | "experte">(() =>
@@ -248,7 +256,17 @@ const Playground = () => {
 
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
                 <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel defaultSize={25} minSize={10} maxSize={70} className="min-h-0">
+                  <ResizablePanel
+                    ref={actaPanelRef}
+                    defaultSize={30}
+                    minSize={15}
+                    maxSize={70}
+                    collapsible
+                    collapsedSize={4}
+                    onCollapse={() => setActaExpanded(false)}
+                    onExpand={() => setActaExpanded(true)}
+                    className="min-h-0"
+                  >
                     <ACTABuilder
                       fields={actaFields}
                       onFieldsChange={setActaFields}
@@ -265,7 +283,7 @@ const Playground = () => {
 
                   <ResizableHandle />
 
-                  <ResizablePanel defaultSize={75} minSize={20} className="min-h-0">
+                  <ResizablePanel defaultSize={70} minSize={20} className="min-h-0">
                     <div className="h-full px-4 py-2">
                       <PlaygroundContent
                         messages={chat.messages}
