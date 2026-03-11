@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Loader2, Scissors, Sparkles, Copy, Check, Lightbulb, Code, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
-import { streamChat, type Msg } from "@/services/llmService";
+import { streamChat } from "@/services/llmService";
+import type { Msg } from "@/types";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { staticDecompositionResults } from "@/data/decompositionExamples";
 

@@ -1,10 +1,8 @@
 import type { Msg } from "@/types";
 import { hasApiKey, getApiKey, getEndpoint } from "./apiKeyService";
+import { proxyFetch } from "./proxyFetch";
+import { parseSSEStream } from "./sseParser";
 import { DEFAULT_MODEL } from "@/lib/constants";
-
-export type { Msg } from "@/types";
-
-const PROXY_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/llm-proxy`;
 
 export async function streamChat({
   messages,
@@ -29,9 +27,6 @@ export async function streamChat({
   try {
     if (hasApiKey()) {
       // ═══ DIRECT MODE: Client → OpenRouter/Provider ═══
-      const apiKey = getApiKey();
-      const endpoint = getEndpoint();
-
       const body: Record<string, unknown> = {
         model: model || DEFAULT_MODEL,
         messages,
@@ -39,11 +34,11 @@ export async function streamChat({
       };
       if (reasoning) body.reasoning = reasoning;
 
-      resp = await fetch(endpoint, {
+      resp = await fetch(getEndpoint(), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${getApiKey()}`,
           "HTTP-Referer": window.location.origin,
           "X-Title": "Prompting Studio",
         },
@@ -52,34 +47,18 @@ export async function streamChat({
       });
     } else {
       // ═══ PROXY MODE: Client → Edge Function → OpenRouter ═══
-      let session;
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data } = await supabase.auth.getSession();
-        session = data.session;
-      } catch {
-        onError("Supabase nicht verfügbar. Bitte API-Key in den Einstellungen hinterlegen.");
+        const body: Record<string, unknown> = { messages, model: model || DEFAULT_MODEL };
+        if (reasoning) body.reasoning = reasoning;
+        resp = await proxyFetch(body, signal);
+      } catch (e) {
+        if (e instanceof Error && e.message === "NOT_AUTHENTICATED") {
+          onError("Bitte melde dich an oder hinterlege einen API-Key in den Einstellungen.");
+          return;
+        }
+        onError(e instanceof Error ? e.message : "Supabase nicht verfügbar. Bitte API-Key in den Einstellungen hinterlegen.");
         return;
       }
-
-      if (!session) {
-        onError("Bitte melde dich an oder hinterlege einen API-Key in den Einstellungen.");
-        return;
-      }
-
-      const body: Record<string, unknown> = { messages, model: model || DEFAULT_MODEL };
-      if (reasoning) body.reasoning = reasoning;
-
-      resp = await fetch(PROXY_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify(body),
-        signal,
-      });
     }
   } catch (e) {
     if (signal?.aborted) {
@@ -103,43 +82,9 @@ export async function streamChat({
     return;
   }
 
-  // ═══ SSE Parsing (identisch für beide Pfade) ═══
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let buf = "";
-
+  // ═══ SSE Parsing via shared parser ═══
   try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buf += decoder.decode(value, { stream: true });
-
-      let idx: number;
-      while ((idx = buf.indexOf("\n")) !== -1) {
-        let line = buf.slice(0, idx);
-        buf = buf.slice(idx + 1);
-        if (line.endsWith("\r")) line = line.slice(0, -1);
-        if (line.startsWith(":") || line.trim() === "") continue;
-        if (!line.startsWith("data: ")) continue;
-        const json = line.slice(6).trim();
-        if (json === "[DONE]") {
-          onDone();
-          return;
-        }
-        try {
-          const parsed = JSON.parse(json);
-          const delta = parsed.choices?.[0]?.delta;
-          if (delta) {
-            if (delta.content) onDelta(delta.content);
-            const thinking = delta.reasoning_content || delta.reasoning;
-            if (thinking && onThinking) onThinking(thinking);
-          }
-        } catch {
-          buf = line + "\n" + buf;
-          break;
-        }
-      }
-    }
+    await parseSSEStream(resp.body, { onDelta, onThinking, onDone }, signal);
   } catch (e) {
     if (signal?.aborted) {
       onDone();
@@ -148,7 +93,7 @@ export async function streamChat({
     onError(e instanceof Error ? e.message : "Stream-Fehler");
     return;
   }
-  onDone();
+  // onDone is called by parseSSEStream
 }
 
 // ═══ Save User Key (nur Workshop-Modus) ═══

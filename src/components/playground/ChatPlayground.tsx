@@ -1,15 +1,12 @@
 import { useRef, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Trash2, Copy, Download, Bot, Brain } from "lucide-react";
-import { toast } from "sonner";
+import { Bot, Brain } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
 import { useOrgContext } from "@/contexts/OrgContext";
-import type { OrgScope } from "@/types";
-import type { Msg } from "@/services/llmService";
+import type { OrgScope, Msg } from "@/types";
 
 interface Suggestion {
   title: string;
@@ -66,7 +63,6 @@ export interface ChatPlaygroundProps {
   onStop: () => void;
   initialPrompt?: string;
   hideSystemPrompt?: boolean;
-  hideToolbar?: boolean;
 }
 
 export const ChatPlayground = ({
@@ -82,7 +78,6 @@ export const ChatPlayground = ({
   onStop,
   initialPrompt,
   hideSystemPrompt,
-  hideToolbar,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
@@ -109,45 +104,7 @@ export const ChatPlayground = ({
       target.scrollHeight - target.scrollTop - target.clientHeight < threshold;
   };
 
-  const copyLastResponse = () => {
-    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-    if (lastAssistant) {
-      navigator.clipboard.writeText(lastAssistant.content);
-      toast.success("Antwort kopiert!");
-    }
-  };
-
-  const exportAsMarkdown = () => {
-    if (messages.length === 0) return;
-    const lines: string[] = [
-      "# Prompt-Werkstatt-Gespräch",
-      "",
-      `*Exportiert am ${new Date().toLocaleDateString("de-DE")}*`,
-      "",
-    ];
-    if (systemPrompt.trim()) {
-      lines.push("## System-Prompt", "", `> ${systemPrompt}`, "");
-    }
-    lines.push("---", "");
-    for (const msg of messages) {
-      if (msg.role === "user") {
-        lines.push("### Du", "", msg.content, "");
-      } else if (msg.role === "assistant") {
-        lines.push("### KI", "", msg.content, "");
-      }
-    }
-    const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `playground-${Date.now()}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Gespräch exportiert!");
-  };
-
   const hasMessages = messages.length > 0 || isStreaming;
-  const hasAssistantMessage = messages.some((m) => m.role === "assistant");
   const turnCount = messages.filter((m) => m.role === "user").length;
 
   return (
@@ -159,48 +116,7 @@ export const ChatPlayground = ({
         </div>
       )}
 
-      {/* Toolbar */}
-      {!hideToolbar && (
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-border">
-          <span className="text-sm font-medium text-muted-foreground">Chat</span>
-          <div className="ml-auto flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={exportAsMarkdown}
-              disabled={!hasMessages}
-              className="text-xs"
-            >
-              <Download className="w-3 h-3 mr-1" />
-              Exportieren
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={copyLastResponse}
-              disabled={!hasAssistantMessage}
-              className="text-xs"
-            >
-              <Copy className="w-3 h-3 mr-1" />
-              Kopieren
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearChat}
-              disabled={!hasMessages}
-              className="text-xs text-destructive hover:text-destructive"
-            >
-              <Trash2 className="w-3 h-3 mr-1" />
-              Verlauf leeren
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat.
-           flex-1 + min-h-0 = füllt Resthöhe und erlaubt Schrumpfen.
-           scrollbar-thin = schmale Overlay-Scrollbar, kein Layout-Shift. */}
+      {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat. */}
       <div
         className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto scrollbar-thin"
         onScroll={handleScroll}
