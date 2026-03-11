@@ -257,10 +257,8 @@ Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
 
     const data = await response.json();
 
-    // Log usage (kein Budget-Abzug)
-    if (userId) {
+      // Log usage (kein Budget-Abzug)
       logUsage(admin, userId, selectedModel, data.usage, "evaluation");
-    }
 
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
 
