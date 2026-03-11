@@ -3,22 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PromptLibrary } from "@/components/PromptLibrary";
 import { MySkills } from "@/components/MySkills";
-import { OrganizationUseCases } from "@/components/OrganizationUseCases";
-import { TeamMembers } from "@/components/TeamMembers";
-import { PendingReviews } from "@/components/PendingReviews";
 import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
-import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Library = () => {
   const navigate = useNavigate();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { skills } = useMySkills();
-  const { isWorkshop } = useAppMode();
   const [activeSection, setActiveSection] = useState<string>("prompts");
 
   const deptPromptCount = useMemo(() => {
@@ -46,7 +39,6 @@ const Library = () => {
 
       {/* Sections-Navigation */}
       <div className="flex items-center gap-1 text-sm border-b border-border pb-2">
-        {/* Prompts */}
         <button
           onClick={() => setActiveSection("prompts")}
           className={cn(
@@ -56,21 +48,8 @@ const Library = () => {
               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
         >
-          Prompts
+          Vorlagen durchsuchen
         </button>
-        {/* Use Cases (jetzt zweiter Platz) */}
-        <button
-          onClick={() => setActiveSection("usecases")}
-          className={cn(
-            "px-3 py-1.5 rounded-md font-medium transition-colors",
-            activeSection === "usecases"
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          )}
-        >
-          Use Cases
-        </button>
-        {/* Meine Skills (jetzt dritter Platz) */}
         <button
           onClick={() => setActiveSection("skills")}
           className={cn(
@@ -87,78 +66,11 @@ const Library = () => {
             </span>
           )}
         </button>
-        {/* Mehr ▾ — Team + Reviews (nur Workshop) */}
-        {isWorkshop && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1",
-                  activeSection === "team" || activeSection === "reviews"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                )}
-              >
-                {activeSection === "team" ? "Team" : activeSection === "reviews" ? "Reviews" : "Mehr"}
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-auto p-1.5">
-              <button
-                onClick={() => setActiveSection("team")}
-                className={cn(
-                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                  activeSection === "team" ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                )}
-              >
-                Team
-              </button>
-              <button
-                onClick={() => setActiveSection("reviews")}
-                className={cn(
-                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                  activeSection === "reviews" ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                )}
-              >
-                Reviews
-              </button>
-            </PopoverContent>
-          </Popover>
-        )}
       </div>
 
       {/* Content je nach Section */}
       {activeSection === "prompts" && <PromptLibrary />}
       {activeSection === "skills" && <MySkills />}
-      {activeSection === "usecases" && (
-        <div className="space-y-8">
-          <OrganizationUseCases />
-          {/* Governance Block */}
-          <div className="max-w-7xl mx-auto rounded-2xl border border-border bg-card/70 p-6 md:p-8">
-            <h3 className="text-lg font-semibold mb-2">Governance & Team-Qualität</h3>
-            <p className="text-muted-foreground text-sm mb-5 max-w-3xl">
-              Definiert gemeinsam, welche Templates offiziell freigegeben sind, welche Risiko-Level eine Review erfordern
-              und welche Kriterien für gute Antworten in eurer Organisation gelten.
-            </p>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
-              <div className="rounded-xl border border-border bg-background/70 p-4">
-                <div className="font-semibold mb-1">1) Freigaben</div>
-                <p className="text-muted-foreground">Teamlead/Admin markieren validierte Prompts als Standards.</p>
-              </div>
-              <div className="rounded-xl border border-border bg-background/70 p-4">
-                <div className="font-semibold mb-1">2) Review</div>
-                <p className="text-muted-foreground">Prompts mit Risiko „hoch" erhalten verpflichtend eine zweite Prüfung.</p>
-              </div>
-              <div className="rounded-xl border border-border bg-background/70 p-4">
-                <div className="font-semibold mb-1">3) KPI</div>
-                <p className="text-muted-foreground">Messung von Nutzung, Antwortqualität und Zeitersparnis pro Team.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {activeSection === "team" && <TeamMembers />}
-      {activeSection === "reviews" && <PendingReviews />}
     </div>
   );
 };

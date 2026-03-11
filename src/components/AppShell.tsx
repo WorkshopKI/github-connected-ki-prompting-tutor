@@ -6,6 +6,8 @@ import {
   GraduationCap,
   Settings,
   Sparkles,
+  Users,
+  ClipboardCheck,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
@@ -47,6 +49,8 @@ function getPageTitle(pathname: string): string {
   const match = all.find((item) => item.path === pathname);
   if (match) return match.label;
   if (pathname === "/admin/teilnehmer") return "Teilnehmer-Verwaltung";
+  if (pathname === "/team") return "Team";
+  if (pathname === "/reviews") return "Reviews";
   return "Seite";
 }
 
@@ -94,6 +98,34 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          {isWorkshop && (
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={isActive("/team")}
+                      tooltip="Team"
+                      onClick={() => navigate("/team")}
+                    >
+                      <Users className="h-4 w-4" />
+                      <span>Team</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={isActive("/reviews")}
+                      tooltip="Reviews"
+                      onClick={() => navigate("/reviews")}
+                    >
+                      <ClipboardCheck className="h-4 w-4" />
+                      <span>Reviews</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
         </SidebarContent>
 
         <SidebarFooter className="p-3">
