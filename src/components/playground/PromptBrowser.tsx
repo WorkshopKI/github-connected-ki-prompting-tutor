@@ -42,8 +42,12 @@ export const PromptBrowser = ({
 
   // Auto-switch away from dept tab when department is deselected
   useEffect(() => {
-    if (!isDepartment && activeTab === "dept") setActiveTab("all");
-  }, [isDepartment]);
+    if (isDepartment) {
+      setActiveTab("dept");
+    } else if (activeTab === "dept") {
+      setActiveTab("all");
+    }
+  }, [scope, isDepartment]);
 
   const deptPrompts = useMemo(
     () => promptLibrary.filter((p) => p.targetDepartment === scope),
