@@ -1,30 +1,56 @@
 
 
-## Problem
+# Code-Refactoring Plan
 
-The `save-user-key` edge function fails with `"Invalid key length"` when trying to encrypt the OpenRouter API key. This happens at the AES-256-GCM key import step, meaning the `ENCRYPTION_KEY` secret is not exactly 64 hex characters (32 bytes).
+## Analyse — Identifizierte Probleme
 
-## Root Cause
+### 1. Doppelte `Msg`-Typ-Exporte
+`llmService.ts` re-exportiert `Msg` aus `@/types`, und zwei Playground-Komponenten importieren `Msg` von `@/services/llmService` statt direkt aus `@/types`. Das verwirrt Lovable bei zukünftigen Änderungen.
 
-The `ENCRYPTION_KEY` secret stored in your backend is not the correct length for AES-256-GCM encryption. It must be exactly 64 hexadecimal characters (representing 32 bytes).
+**Fix:** `export type { Msg }` aus `llmService.ts` entfernen. Imports in `ChatPlayground.tsx` und `PlaygroundContent.tsx` auf `@/types` umstellen.
 
-## Fix
+### 2. Duplizierte Funktionen: `copyLastResponse` und `exportAsMarkdown`
+Beide Funktionen existieren identisch in `ChatPlayground.tsx` UND `PlaygroundContent.tsx`. Da `PlaygroundContent` den `ChatPlayground` mit `hideToolbar` rendert, wird die ChatPlayground-Version nie genutzt.
 
-1. **Generate a valid 256-bit hex key** and update the `ENCRYPTION_KEY` secret. A valid key looks like: `a]1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b` (64 hex chars).
+**Fix:** `copyLastResponse` und `exportAsMarkdown` aus `ChatPlayground.tsx` entfernen (dort wird `hideToolbar` immer gesetzt). Die Toolbar-Logik in `ChatPlayground` kann ebenfalls entfernt werden, da sie nie sichtbar ist.
 
-2. **Add a validation guard** in the edge function so that if the key is misconfigured, the error message is clear instead of a generic crypto error.
+### 3. `evaluationService.ts` umgeht den Proxy
+`evaluationService.ts` ruft die LLM-API direkt auf und nutzt nur den API-Key-Modus — kein Proxy-Fallback. Das funktioniert nicht für Workshop-User ohne eigenen Key.
 
-### Changes
+**Fix:** `evaluationService.ts` refactoren, um den `complete()`-Service aus `completionService.ts` zu nutzen, der bereits beide Pfade (Direct + Proxy) unterstützt.
 
-**`supabase/functions/save-user-key/index.ts`**: Add a length check after reading `ENCRYPTION_KEY`:
-```typescript
-const encKey = Deno.env.get("ENCRYPTION_KEY");
-if (!encKey || encKey.length !== 64) {
-  return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
-}
-```
+### 4. Dupliziertes SSE-Parsing
+`llmService.ts` und `completionService.ts` enthalten nahezu identischen SSE-Parsing-Code (~20 Zeilen). Änderungen müssen an zwei Stellen gemacht werden.
 
-Also add the same guard in **`supabase/functions/llm-proxy/index.ts`** if it uses the same encrypt/decrypt pattern.
+**Fix:** SSE-Parsing in eine gemeinsame Hilfsfunktion `parseSSEStream()` in einer neuen Datei `src/services/sseParser.ts` extrahieren. Beide Services nutzen diese Funktion.
 
-**Secret update**: Re-set the `ENCRYPTION_KEY` secret to a valid 64-character hex string.
+### 5. Duplizierte Auth+Fetch-Logik
+Sowohl `llmService.ts` als auch `completionService.ts` haben den gleichen Proxy-Auth-Flow (Session holen, Headers setzen, Error-Handling). 
+
+**Fix:** Gemeinsame `fetchWithAuth()` Hilfsfunktion in `src/services/apiKeyService.ts` hinzufügen, die beide Services nutzen können.
+
+### 6. `PlaygroundContent.tsx` ist zu groß (492 Zeilen)
+Die Datei enthält DOCX-Export-Logik (~50 Zeilen XML-Templates), Toolbar, Controls und Chat — alles in einer Komponente.
+
+**Fix:** DOCX-Export-Funktion in `src/lib/exportChat.ts` extrahieren. Toolbar als eigene `PlaygroundToolbar.tsx` Komponente. KI-Controls-Bar als `PlaygroundControlsBar.tsx`.
+
+### 7. `Playground.tsx` hat zu viele State-Variablen
+Die Page-Komponente verwaltet ~15 State-Variablen direkt. Das macht es fehleranfällig bei Erweiterungen.
+
+**Fix:** Kein sofortiges Refactoring nötig — die bestehenden Custom Hooks (`useChat`, `useConversations`) sind gut strukturiert. Aber die AI-Routing-Logik (Model, Tier, Confidentiality) könnte in einen `usePlaygroundSettings` Hook extrahiert werden.
+
+---
+
+## Priorisierter Umsetzungsplan
+
+| # | Aufgabe | Risiko | Dateien |
+|---|---------|--------|---------|
+| 1 | `Msg`-Import vereinheitlichen | Niedrig | 3 Dateien |
+| 2 | Tote Toolbar + duplizierte Funktionen aus `ChatPlayground` entfernen | Niedrig | 1 Datei |
+| 3 | SSE-Parser extrahieren | Mittel | 3 Dateien (neu: `sseParser.ts`) |
+| 4 | `evaluationService` auf `complete()` umstellen | Mittel | 1 Datei |
+| 5 | DOCX-Export extrahieren | Niedrig | 2 Dateien (neu: `exportChat.ts`) |
+| 6 | AI-Routing-Hook extrahieren | Mittel | 2 Dateien (neu: `usePlaygroundSettings.ts`) |
+
+Insgesamt werden ca. 150 Zeilen duplizierten Code entfernt und 3 neue, fokussierte Module erstellt.
 
