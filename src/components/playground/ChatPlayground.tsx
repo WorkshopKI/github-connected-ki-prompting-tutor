@@ -1,15 +1,12 @@
 import { useRef, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import { Trash2, Copy, Download, Bot, Brain } from "lucide-react";
-import { toast } from "sonner";
+import { Bot, Brain } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
 import { useOrgContext } from "@/contexts/OrgContext";
-import type { OrgScope } from "@/types";
-import type { Msg } from "@/types";
+import type { OrgScope, Msg } from "@/types";
 
 interface Suggestion {
   title: string;
