@@ -322,7 +322,7 @@ export const ACTABuilder = ({
   // ── Horizontal layout (desktop) ──
   if (layout === "horizontal") {
     return (
-      <div className="bg-card shadow-sm mb-1.5">
+      <div className="bg-card shadow-sm h-full overflow-y-auto">
         {/* Header row — click to collapse/expand */}
         <div
           onClick={() => setExpanded(!expanded)}

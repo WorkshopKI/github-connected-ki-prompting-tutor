@@ -247,50 +247,58 @@ const Playground = () => {
               <ResizableHandle />
 
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
-                <ACTABuilder
-                  fields={actaFields}
-                  onFieldsChange={setActaFields}
-                  onSendToPlayground={chat.sendMessage}
-                  layout="horizontal"
-                  mode={playgroundMode}
-                  selectedModel={settings.selectedModel}
-                  sourceTitle={sourcePromptTitle}
-                  isExpanded={actaExpanded}
-                  onExpandedChange={setActaExpanded}
-                  confidentiality={promptConfidentiality}
-                />
+                <ResizablePanelGroup direction="vertical">
+                  <ResizablePanel defaultSize={30} minSize={10} maxSize={70} className="min-h-0">
+                    <ACTABuilder
+                      fields={actaFields}
+                      onFieldsChange={setActaFields}
+                      onSendToPlayground={chat.sendMessage}
+                      layout="horizontal"
+                      mode={playgroundMode}
+                      selectedModel={settings.selectedModel}
+                      sourceTitle={sourcePromptTitle}
+                      isExpanded={actaExpanded}
+                      onExpandedChange={setActaExpanded}
+                      confidentiality={promptConfidentiality}
+                    />
+                  </ResizablePanel>
 
-                <div className="flex-1 min-h-0 px-4 py-2">
-                  <PlaygroundContent
-                    messages={chat.messages}
-                    onSendMessage={chat.sendMessage}
-                    isStreaming={chat.isStreaming}
-                    streamingContent={chat.streamingContent}
-                    thinkingContent={chat.thinkingContent}
-                    thinkingEnabled={settings.thinkingEnabled}
-                    onThinkingChange={settings.handleThinkingChange}
-                    systemPrompt={systemPrompt}
-                    onSystemPromptChange={setSystemPrompt}
-                    onClearChat={handleClearChat}
-                    onStop={chat.handleStop}
-                    onBudgetExhausted={() => setShowBudgetDialog(true)}
-                    prefilledPrompt={prefilledPrompt}
-                    skillId={skillId}
-                    skillTitle={skillTitle}
-                    requestedModel={requestedModel}
-                    mode={playgroundMode}
-                    lastUserPrompt={lastUserPrompt}
-                    selectedModel={settings.selectedModel}
-                    onModelChange={settings.setSelectedModel}
-                    aiTier={settings.aiTier}
-                    onAiTierChange={settings.setAiTier}
-                    canUseExternal={settings.canUseExternal}
-                    aiRouting={settings.aiRouting}
-                    agentConfig={agentConfig}
-                    onAgentConfigChange={setAgentConfig}
-                    onStartAgent={chat.sendMessage}
-                  />
-                </div>
+                  <ResizableHandle />
+
+                  <ResizablePanel defaultSize={70} minSize={20} className="min-h-0">
+                    <div className="h-full px-4 py-2">
+                      <PlaygroundContent
+                        messages={chat.messages}
+                        onSendMessage={chat.sendMessage}
+                        isStreaming={chat.isStreaming}
+                        streamingContent={chat.streamingContent}
+                        thinkingContent={chat.thinkingContent}
+                        thinkingEnabled={settings.thinkingEnabled}
+                        onThinkingChange={settings.handleThinkingChange}
+                        systemPrompt={systemPrompt}
+                        onSystemPromptChange={setSystemPrompt}
+                        onClearChat={handleClearChat}
+                        onStop={chat.handleStop}
+                        onBudgetExhausted={() => setShowBudgetDialog(true)}
+                        prefilledPrompt={prefilledPrompt}
+                        skillId={skillId}
+                        skillTitle={skillTitle}
+                        requestedModel={requestedModel}
+                        mode={playgroundMode}
+                        lastUserPrompt={lastUserPrompt}
+                        selectedModel={settings.selectedModel}
+                        onModelChange={settings.setSelectedModel}
+                        aiTier={settings.aiTier}
+                        onAiTierChange={settings.setAiTier}
+                        canUseExternal={settings.canUseExternal}
+                        aiRouting={settings.aiRouting}
+                        agentConfig={agentConfig}
+                        onAgentConfigChange={setAgentConfig}
+                        onStartAgent={chat.sendMessage}
+                      />
+                    </div>
+                  </ResizablePanel>
+                </ResizablePanelGroup>
               </ResizablePanel>
             </ResizablePanelGroup>
 
