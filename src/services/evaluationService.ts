@@ -1,4 +1,4 @@
-import { getApiKey, getEndpoint } from "./apiKeyService";
+import { complete } from "./completionService";
 import { DEFAULT_MODEL } from "@/lib/constants";
 import type { Msg } from "@/types";
 
@@ -25,10 +25,6 @@ export async function evaluatePromptDirect(
   context?: string,
   model?: string,
 ): Promise<EvalResult> {
-  const apiKey = getApiKey();
-  const endpoint = getEndpoint();
-  const selectedModel = model || DEFAULT_MODEL;
-
   const messages: Msg[] = [
     { role: "system", content: SYSTEM_PROMPT },
     {
@@ -37,23 +33,11 @@ export async function evaluatePromptDirect(
     },
   ];
 
-  const resp = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": window.location.origin,
-    },
-    body: JSON.stringify({ model: selectedModel, messages, temperature: 0.3 }),
+  const text = await complete({
+    messages,
+    model: model || DEFAULT_MODEL,
+    temperature: 0.3,
   });
-
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || "Bewertung fehlgeschlagen");
-  }
-
-  const data = await resp.json();
-  const text = data.choices?.[0]?.message?.content || "";
 
   try {
     return JSON.parse(text.replace(/```json|```/g, "").trim());
