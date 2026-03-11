@@ -367,7 +367,7 @@ export const ACTABuilder = ({
   // ── Horizontal layout (desktop) ──
   if (layout === "horizontal") {
     return (
-      <div className="bg-card border-b border-border">
+      <div className="bg-card shadow-sm mb-1.5">
         {/* Header row — click to collapse/expand */}
         <div
           onClick={() => setExpanded(!expanded)}
@@ -403,21 +403,8 @@ export const ACTABuilder = ({
               ))}
             </div>
           )}
-          {/* KI-Suggest Icon — nur expanded + Experte */}
-          {expanded && isExperte && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 shrink-0 ml-auto"
-              title="KI: ACTA-Felder vorschlagen"
-              onClick={(e) => { e.stopPropagation(); setShowSuggest(!showSuggest); }}
-            >
-              <Wand2 className="w-3.5 h-3.5 text-primary" />
-            </Button>
-          )}
           <ChevronDown className={cn(
-            "w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0",
-            !expanded && isExperte ? "" : "ml-auto",
+            "w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-auto",
             expanded && "rotate-180"
           )} />
         </div>
@@ -537,11 +524,19 @@ export const ACTABuilder = ({
 
               {/* Action Buttons */}
               <div className="flex gap-1.5 shrink-0" data-tour="acta-send">
-                {/* → An KI senden */}
-                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-xs h-7 gap-1">
-                  <Send className="w-3 h-3" /> An KI senden
-                </Button>
-                {/* 🔍 Prompt prüfen — nur Experte, auto-triggered Evaluation */}
+                {/* 1. ✨ Vorschlagen — nur Experte */}
+                {isExperte && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-7 gap-1"
+                    title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
+                    onClick={() => setShowSuggest(!showSuggest)}
+                  >
+                    <Wand2 className="w-3 h-3" /> Vorschlagen
+                  </Button>
+                )}
+                {/* 2. 🔍 Prüfen — nur Experte + Inhalt vorhanden */}
                 {isExperte && hasContent && (
                   <Popover onOpenChange={(open) => { if (open) evaluatePrompt(assembled); }}>
                     <PopoverTrigger asChild>
@@ -616,7 +611,11 @@ export const ACTABuilder = ({
                     </PopoverContent>
                   </Popover>
                 )}
-                {/* 📋 Kopieren */}
+                {/* 3. → An KI senden — Primary */}
+                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-xs h-7 gap-1">
+                  <Send className="w-3 h-3" /> An KI senden
+                </Button>
+                {/* 4. 📋 Kopieren */}
                 <Button
                   onClick={handleCopy}
                   disabled={!hasContent}
@@ -896,10 +895,17 @@ export const ACTABuilder = ({
       )}
 
       <div data-tour="acta-send" className="flex gap-2">
-        <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
-          <Send className="w-3 h-3 mr-1.5" />
-          An KI senden
-        </Button>
+        {isExperte && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
+            onClick={() => setShowSuggest(!showSuggest)}
+          >
+            <Wand2 className="w-3 h-3" /> Vorschlagen
+          </Button>
+        )}
         {isExperte && hasContent && (
           <Popover onOpenChange={(open) => { if (open) evaluatePrompt(assembled); }}>
             <PopoverTrigger asChild>
@@ -974,6 +980,10 @@ export const ACTABuilder = ({
             </PopoverContent>
           </Popover>
         )}
+        <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
+          <Send className="w-3 h-3 mr-1.5" />
+          An KI senden
+        </Button>
         <Button
           onClick={handleCopy}
           disabled={!hasContent}
