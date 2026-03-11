@@ -52,6 +52,7 @@ const Playground = () => {
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
     habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
   });
+  const [actaExpanded, setActaExpanded] = useState(true);
 
   // --- Playground mode ---
   const [playgroundMode, setPlaygroundMode] = useState<"einsteiger" | "experte">(() =>
@@ -164,6 +165,7 @@ const Playground = () => {
     chat.setStreamingContent("");
     chat.resetThinking();
     convos.clearActiveConversation();
+    setActaExpanded(true);
   };
 
   // --- Prompt Browser selection handler ---
@@ -183,6 +185,7 @@ const Playground = () => {
       setActaFields({ act: fallback.act, context: fallback.context, task: fallback.task, ausgabe: fallback.ausgabe });
     }
     if (found.confidentiality) setPromptConfidentiality(found.confidentiality);
+    setActaExpanded(true);
   };
 
   const lastUserPrompt = [...chat.messages].reverse().find((m) => m.role === "user")?.content ?? "";
@@ -252,6 +255,8 @@ const Playground = () => {
                   mode={playgroundMode}
                   selectedModel={settings.selectedModel}
                   sourceTitle={sourcePromptTitle}
+                  isExpanded={actaExpanded}
+                  onExpandedChange={setActaExpanded}
                 />
 
                 <div className="flex-1 min-h-0 px-4 py-2">
@@ -298,6 +303,8 @@ const Playground = () => {
                 mode={playgroundMode}
                 selectedModel={settings.selectedModel}
                 sourceTitle={sourcePromptTitle}
+                isExpanded={actaExpanded}
+                onExpandedChange={setActaExpanded}
               />
 
               <div className="flex-1 min-h-0 px-4 py-2">
