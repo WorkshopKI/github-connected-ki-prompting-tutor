@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import JSZip from "jszip";
 import { ChatPlayground } from "./ChatPlayground";
 import { ComparisonSplitView } from "./ComparisonSplitView";
 import { PromptEvaluation } from "./PromptEvaluation";
@@ -18,6 +17,7 @@ import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
 import { ModelSelectGroups } from "./ModelSelect";
 import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
+import { exportChatAsMarkdown, exportChatAsDocx } from "@/lib/exportChat";
 import type { Msg } from "@/types";
 import type { AIRoutingConfig } from "@/types";
 
