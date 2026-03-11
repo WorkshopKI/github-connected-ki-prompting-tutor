@@ -20,6 +20,9 @@ const MODEL_COSTS: Record<string, { input: number; output: number }> = {
   "openai/gpt-5.2":                   { input: 3.00, output: 12.00 },
   "openai/gpt-5-mini":               { input: 0.40, output: 1.60 },
   "openai/gpt-5-nano":               { input: 0.10, output: 0.40 },
+  "anthropic/claude-sonnet-4":       { input: 3.00, output: 15.00 },
+  "anthropic/claude-opus-4":         { input: 15.00, output: 75.00 },
+  "anthropic/claude-haiku-3.5":      { input: 0.80, output: 4.00 },
 };
 const DEFAULT_COST = { input: 1.00, output: 4.00 }; // konservativer Fallback
 
