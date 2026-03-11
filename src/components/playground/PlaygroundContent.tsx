@@ -18,7 +18,7 @@ import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
 import { ModelSelectGroups } from "./ModelSelect";
 import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
-import type { Msg } from "@/services/llmService";
+import type { Msg } from "@/types";
 import type { AIRoutingConfig } from "@/types";
 
 export interface PlaygroundContentProps {

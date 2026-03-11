@@ -9,7 +9,7 @@ import { IterationNudge } from "./IterationNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
 import { useOrgContext } from "@/contexts/OrgContext";
 import type { OrgScope } from "@/types";
-import type { Msg } from "@/services/llmService";
+import type { Msg } from "@/types";
 
 interface Suggestion {
   title: string;
