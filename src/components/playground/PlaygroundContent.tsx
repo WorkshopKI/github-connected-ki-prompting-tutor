@@ -174,7 +174,7 @@ export const PlaygroundContent = ({
               Als Markdown (.md)
             </button>
             <button
-              onClick={() => { exportAsDocx(); toast.success("Als Word exportiert!"); }}
+              onClick={() => { exportChatAsDocx(messages); toast.success("Als Word exportiert!"); }}
               className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
             >
               Als Word (.docx)
