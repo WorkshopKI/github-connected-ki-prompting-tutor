@@ -13,8 +13,8 @@ import { PromptBrowser } from "@/components/playground/PromptBrowser";
 import { ACTABuilder } from "@/components/playground/ACTABuilder";
 import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
-import { loadAIRouting, getAllModels } from "@/data/models";
-import { LS_KEYS, DEFAULT_MODEL } from "@/lib/constants";
+import { usePlaygroundSettings } from "@/hooks/usePlaygroundSettings";
+import { LS_KEYS } from "@/lib/constants";
 import { promptLibrary } from "@/data/prompts";
 import { splitPromptToACTA } from "@/lib/promptUtils";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
@@ -33,24 +33,17 @@ const Playground = () => {
   const skillTitle = searchParams.get("skillTitle");
   const requestedModel = searchParams.get("model");
 
-  // --- Model & routing state ---
-  const allModels = getAllModels();
-  const validModel = (id: string | undefined | null): string =>
-    id && allModels.some((m) => m.value === id) ? id : DEFAULT_MODEL;
-
-  const [selectedModel, setSelectedModel] = useState(
-    () => validModel(profile?.preferred_model)
-  );
-  const [thinkingEnabled, setThinkingEnabled] = useState(
-    () => localStorage.getItem(LS_KEYS.THINKING_ENABLED) === "true"
-  );
-  const [aiTier, setAiTier] = useState<"internal" | "external">("external");
-  const aiRouting = loadAIRouting();
+  // --- Confidentiality state (drives routing) ---
   const [promptConfidentiality, setPromptConfidentiality] = useState<"open" | "internal" | "confidential">("open");
-  const [systemPrompt, setSystemPrompt] = useState("");
 
-  const canUseExternal = promptConfidentiality !== "confidential" &&
-    !(promptConfidentiality === "internal" && aiRouting.internalRouting === "internal-only");
+  // --- Model & routing state (extracted hook) ---
+  const settings = usePlaygroundSettings({
+    profileModel: profile?.preferred_model,
+    requestedModel,
+    promptConfidentiality,
+  });
+
+  const [systemPrompt, setSystemPrompt] = useState("");
 
   // --- UI state ---
   const [showBudgetDialog, setShowBudgetDialog] = useState(false);
@@ -84,21 +77,12 @@ const Playground = () => {
   // --- Custom hooks ---
   const chat = useChat({
     systemPrompt,
-    selectedModel,
-    thinkingEnabled,
+    selectedModel: settings.selectedModel,
+    thinkingEnabled: settings.thinkingEnabled,
     onBudgetExhausted: () => setShowBudgetDialog(true),
   });
 
   const convos = useConversations();
-
-  // --- AI tier routing ---
-  useEffect(() => {
-    if (promptConfidentiality === "confidential" || promptConfidentiality === "internal") {
-      setAiTier("internal");
-    } else {
-      setAiTier(aiRouting.openRouting === "prefer-external" ? "external" : "internal");
-    }
-  }, [promptConfidentiality]);
 
   // --- Prefilled prompt confidentiality ---
   useEffect(() => {
@@ -139,41 +123,21 @@ const Playground = () => {
     if (restored) {
       chat.setMessages(restored.messages);
       setSystemPrompt(restored.systemPrompt);
-      setSelectedModel(validModel(restored.model));
+      settings.setSelectedModel(settings.validModel(restored.model));
     }
   }, []);
 
-  // --- Update model when profile loads ---
-  useEffect(() => {
-    if (profile?.preferred_model) setSelectedModel(validModel(profile.preferred_model));
-  }, [profile?.preferred_model]);
-
-  // --- Set requested model from skill URL param ---
-  useEffect(() => {
-    if (requestedModel) {
-      const allModels = getAllModels();
-      if (allModels.some((m) => m.value === requestedModel)) {
-        setSelectedModel(requestedModel);
-      }
-    }
-  }, [requestedModel]);
-
   // --- Persist conversation on message change ---
   useEffect(() => {
-    convos.persistMessages(chat.messages, systemPrompt, selectedModel, chat.isStreaming);
+    convos.persistMessages(chat.messages, systemPrompt, settings.selectedModel, chat.isStreaming);
   }, [chat.messages, chat.isStreaming]);
 
   // --- Handlers ---
-  const handleThinkingChange = (checked: boolean) => {
-    setThinkingEnabled(checked);
-    localStorage.setItem(LS_KEYS.THINKING_ENABLED, String(checked));
-  };
-
   const handleSelectConversation = (conv: Parameters<typeof convos.selectConversation>[0]) => {
     const data = convos.selectConversation(conv);
     chat.setMessages(data.messages);
     setSystemPrompt(data.systemPrompt);
-    setSelectedModel(validModel(data.model));
+    settings.setSelectedModel(settings.validModel(data.model));
     chat.setStreamingContent("");
     chat.resetThinking();
   };
@@ -202,10 +166,6 @@ const Playground = () => {
     convos.clearActiveConversation();
   };
 
-  const handleStartAgent = (prompt: string) => {
-    chat.sendMessage(prompt);
-  };
-
   // --- Prompt Browser selection handler ---
   const handleBrowserSelect = (title: string) => {
     const found = promptLibrary.find(p => p.title === title);
@@ -230,17 +190,16 @@ const Playground = () => {
   if (isLoading) return null;
 
   // ⚠️ LAYOUT-KETTE: h-screen + overflow-hidden verhindert Body-Scroll.
-  //    Playground hat eigene Scroll-Container in ChatPlayground und PromptBrowser.
   return (
     <div className="playground-root">
       <PlaygroundHeader
         mode={playgroundMode}
         onModeChange={handleModeChange}
         onStartTour={tour.start}
-        canUseExternal={canUseExternal}
+        canUseExternal={settings.canUseExternal}
         promptConfidentiality={promptConfidentiality}
-        aiTier={aiTier}
-        aiRouting={aiRouting}
+        aiTier={settings.aiTier}
+        aiRouting={settings.aiRouting}
       />
 
       {/* ⚠️ flex-1 + overflow-hidden: Nimmt Resthöhe (screen − header), kein Scroll auf dieser Ebene */}
@@ -269,7 +228,6 @@ const Playground = () => {
           <>
             {/* Desktop layout (≥ lg): 3-Panel, resizable */}
             <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
-              {/* LEFT: Prompt Browser — resizable, default ~320px */}
               <ResizablePanel defaultSize={22} minSize={14} maxSize={35} className="min-w-0">
                 <PromptBrowser
                   onSelectPrompt={handleBrowserSelect}
@@ -285,20 +243,17 @@ const Playground = () => {
 
               <ResizableHandle />
 
-              {/* CENTER: ACTA-Bar (top) + Chat (bottom) */}
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
-                {/* ACTA Bar */}
                 <ACTABuilder
                   fields={actaFields}
                   onFieldsChange={setActaFields}
                   onSendToPlayground={chat.sendMessage}
                   layout="horizontal"
                   mode={playgroundMode}
-                  selectedModel={selectedModel}
+                  selectedModel={settings.selectedModel}
                   sourceTitle={sourcePromptTitle}
                 />
 
-                {/* Chat */}
                 <div className="flex-1 min-h-0 px-4 py-2">
                   <PlaygroundContent
                     messages={chat.messages}
@@ -306,8 +261,8 @@ const Playground = () => {
                     isStreaming={chat.isStreaming}
                     streamingContent={chat.streamingContent}
                     thinkingContent={chat.thinkingContent}
-                    thinkingEnabled={thinkingEnabled}
-                    onThinkingChange={handleThinkingChange}
+                    thinkingEnabled={settings.thinkingEnabled}
+                    onThinkingChange={settings.handleThinkingChange}
                     systemPrompt={systemPrompt}
                     onSystemPromptChange={setSystemPrompt}
                     onClearChat={handleClearChat}
@@ -319,15 +274,15 @@ const Playground = () => {
                     requestedModel={requestedModel}
                     mode={playgroundMode}
                     lastUserPrompt={lastUserPrompt}
-                    selectedModel={selectedModel}
-                    onModelChange={setSelectedModel}
-                    aiTier={aiTier}
-                    onAiTierChange={setAiTier}
-                    canUseExternal={canUseExternal}
-                    aiRouting={aiRouting}
+                    selectedModel={settings.selectedModel}
+                    onModelChange={settings.setSelectedModel}
+                    aiTier={settings.aiTier}
+                    onAiTierChange={settings.setAiTier}
+                    canUseExternal={settings.canUseExternal}
+                    aiRouting={settings.aiRouting}
                     agentConfig={agentConfig}
                     onAgentConfigChange={setAgentConfig}
-                    onStartAgent={handleStartAgent}
+                    onStartAgent={chat.sendMessage}
                   />
                 </div>
               </ResizablePanel>
@@ -335,18 +290,16 @@ const Playground = () => {
 
             {/* Mobile layout (< lg) */}
             <div className="lg:hidden h-full flex flex-col">
-              {/* ACTA Bar — full width */}
               <ACTABuilder
                 fields={actaFields}
                 onFieldsChange={setActaFields}
                 onSendToPlayground={chat.sendMessage}
                 layout="horizontal"
                 mode={playgroundMode}
-                selectedModel={selectedModel}
+                selectedModel={settings.selectedModel}
                 sourceTitle={sourcePromptTitle}
               />
 
-              {/* Chat */}
               <div className="flex-1 min-h-0 px-4 py-2">
                 <PlaygroundContent
                   messages={chat.messages}
@@ -354,7 +307,7 @@ const Playground = () => {
                   isStreaming={chat.isStreaming}
                   streamingContent={chat.streamingContent}
                   thinkingContent={chat.thinkingContent}
-                  thinkingEnabled={thinkingEnabled}
+                  thinkingEnabled={settings.thinkingEnabled}
                   systemPrompt={systemPrompt}
                   onSystemPromptChange={setSystemPrompt}
                   onClearChat={handleClearChat}
@@ -366,23 +319,19 @@ const Playground = () => {
                   requestedModel={requestedModel}
                   mode={playgroundMode}
                   lastUserPrompt={lastUserPrompt}
-                  selectedModel={selectedModel}
-                  onModelChange={setSelectedModel}
-                  onThinkingChange={(enabled) => {
-                    setThinkingEnabled(enabled);
-                    localStorage.setItem(LS_KEYS.THINKING_ENABLED, String(enabled));
-                  }}
-                  aiTier={aiTier}
-                  onAiTierChange={setAiTier}
-                  canUseExternal={canUseExternal}
-                  aiRouting={aiRouting}
+                  selectedModel={settings.selectedModel}
+                  onModelChange={settings.setSelectedModel}
+                  onThinkingChange={settings.handleThinkingChange}
+                  aiTier={settings.aiTier}
+                  onAiTierChange={settings.setAiTier}
+                  canUseExternal={settings.canUseExternal}
+                  aiRouting={settings.aiRouting}
                   agentConfig={agentConfig}
                   onAgentConfigChange={setAgentConfig}
                   onStartAgent={chat.sendMessage}
                 />
               </div>
 
-              {/* Prompt Browser as Sheet */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button size="icon" className="fixed bottom-4 left-4 z-40 rounded-full shadow-lg h-12 w-12">
