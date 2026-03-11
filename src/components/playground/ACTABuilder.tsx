@@ -27,6 +27,7 @@ export interface ACTABuilderProps {
   sourceTitle?: string | null;
   isExpanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
+  confidentiality?: "open" | "internal" | "confidential";
 }
 
 const FIELD_CONFIG = [
@@ -227,6 +228,7 @@ export const ACTABuilder = ({
   sourceTitle,
   isExpanded: isExpandedProp,
   onExpandedChange,
+  confidentiality,
 }: ACTABuilderProps) => {
   const { scope } = useOrgContext();
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
@@ -325,21 +327,18 @@ export const ACTABuilder = ({
           className="flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors"
         >
           <span className="text-xs font-bold">ACTA</span>
-          {/* 4 Mini-Dots */}
-          <div className="flex gap-1">
-            {CARD_CONFIG.map((card) => (
-              <div key={card.key} className={cn(
-                "w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold",
-                fields[card.key].trim().length > 5
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
-              )}>
-                {fields[card.key].trim().length > 5 ? "✓" : card.shortLabel[0]}
-              </div>
-            ))}
-          </div>
           {sourceTitle && (
             <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
+          )}
+          {confidentiality === "confidential" && (
+            <span className="text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0" title="Nur interne KI zugelassen — keine externen Modelle">
+              🔒 Vertraulich
+            </span>
+          )}
+          {confidentiality === "internal" && (
+            <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0" title="Interne Daten — externe KI nur ohne sensible Inhalte">
+              🟡 Intern
+            </span>
           )}
           {/* Offene Variablen-Warnung — nur collapsed */}
           {!expanded && variables.length > 0 && hasUnfilledVars && (

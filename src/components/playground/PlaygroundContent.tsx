@@ -133,8 +133,8 @@ export const PlaygroundContent = ({
         {isExperte && lastUserPrompt && chatMode === "chat" && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground">
-                <Sparkles className="w-3 h-3" /> Check
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground" title="KI bewertet deinen Prompt auf Vollständigkeit und Klarheit">
+                <Sparkles className="w-3 h-3" /> Prompt prüfen
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-[360px] max-h-[400px] overflow-y-auto p-4">
@@ -147,8 +147,8 @@ export const PlaygroundContent = ({
         {isExperte && hasAssistantResponse && chatMode === "chat" && lastUserPrompt && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground">
-                <Scale className="w-3 h-3" /> Bewertung
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground" title="KI bewertet die Qualität und Vollständigkeit der Antwort">
+                <Scale className="w-3 h-3" /> Antwort bewerten
               </Button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-[400px] max-h-[500px] overflow-y-auto p-4">
