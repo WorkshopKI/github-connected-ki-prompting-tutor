@@ -488,7 +488,7 @@ export const ACTABuilder = ({
                     title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
                     onClick={() => setShowSuggest(!showSuggest)}
                   >
-                    <Wand2 className="w-3 h-3" /> Vorschlagen
+                    <Wand2 className="w-3 h-3" /> ACTA Inhalte vorschlagen
                   </Button>
                 )}
                 {/* 2. 🔍 Prüfen — nur Experte + Inhalt vorhanden */}
@@ -817,7 +817,7 @@ export const ACTABuilder = ({
             title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
             onClick={() => setShowSuggest(!showSuggest)}
           >
-            <Wand2 className="w-3 h-3" /> Vorschlagen
+            <Wand2 className="w-3 h-3" /> ACTA Inhalte vorschlagen
           </Button>
         )}
         {isExperte && hasContent && (
