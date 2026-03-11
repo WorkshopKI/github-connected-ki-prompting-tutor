@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Copy, Trash2, Sparkles, Scale, Bookmark, Settings, Brain } from "lucide-react";
+import { Download, Copy, Trash2, Scale, Bookmark, Settings, Brain } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,6 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { toast } from "sonner";
 import { ChatPlayground } from "./ChatPlayground";
 import { ComparisonSplitView } from "./ComparisonSplitView";
-import { PromptEvaluation } from "./PromptEvaluation";
 import { JudgePanel } from "./JudgePanel";
 import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
 import { ModelSelectGroups } from "./ModelSelect";
@@ -128,20 +127,6 @@ export const PlaygroundContent = ({
         <span className="text-xs font-semibold text-foreground mr-1">
           {chatMode === "compare" ? "Vergleich" : "Chat"}
         </span>
-
-        {/* Prompt-Check — nur Experte + Chat + Prompt vorhanden */}
-        {isExperte && lastUserPrompt && chatMode === "chat" && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1 text-muted-foreground" title="KI bewertet deinen Prompt auf Vollständigkeit und Klarheit">
-                <Sparkles className="w-3 h-3" /> Prompt prüfen
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-[360px] max-h-[400px] overflow-y-auto p-4">
-              <PromptEvaluation prompt={lastUserPrompt} model={selectedModel} />
-            </PopoverContent>
-          </Popover>
-        )}
 
         {/* KI-Bewertung — nur Experte + Chat + Antwort vorhanden */}
         {isExperte && hasAssistantResponse && chatMode === "chat" && lastUserPrompt && (
