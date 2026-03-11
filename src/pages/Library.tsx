@@ -23,17 +23,16 @@ const Library = () => {
 
   return (
     <div className="space-y-6">
-      {/* Zeile 1: Titel + Neuer Prompt */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="page-title">Prompt Sammlung</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            {isDepartment
-              ? `${deptPromptCount} ${shortLabel}-Prompts · ${promptLibrary.length} gesamt`
-              : `${promptLibrary.length} Prompts`
-            }
-          </p>
-        </div>
+      {/* Zeile 1: Titel + Count + Button */}
+      <div className="flex items-center gap-3">
+        <h1 className="page-title">Prompt Sammlung</h1>
+        <span className="text-sm text-muted-foreground">
+          {isDepartment
+            ? `${deptPromptCount} ${shortLabel}-Prompts · ${promptLibrary.length} gesamt`
+            : `${promptLibrary.length} Prompts`
+          }
+        </span>
+        <div className="flex-1" />
         <Button onClick={() => navigate("/playground")}>+ Neuer Prompt</Button>
       </div>
 
@@ -48,7 +47,7 @@ const Library = () => {
               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
         >
-          Vorlagen durchsuchen
+          Vorlagen
         </button>
         <button
           onClick={() => setActiveSection("skills")}
@@ -59,7 +58,7 @@ const Library = () => {
               : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
           )}
         >
-          Meine Skills
+          Skills
           {skills.length > 0 && (
             <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full ml-1.5">
               {skills.length}
