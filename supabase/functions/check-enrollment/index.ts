@@ -47,30 +47,41 @@ serve(async (req) => {
       );
     }
 
-    // 2. Check capacity
+    // 2. Check that email is pre-invited on the whitelist (admin must add first)
+    const { data: existing } = await supabase
+      .from("enrollment_whitelist")
+      .select("id, is_active")
+      .eq("email", email.toLowerCase())
+      .eq("course_id", courseCode)
+      .maybeSingle();
+
+    if (!existing) {
+      return new Response(
+        JSON.stringify({ allowed: false, reason: "Diese E-Mail-Adresse ist nicht für diesen Kurs eingeladen. Bitte wende dich an die Kursleitung." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!existing.is_active) {
+      return new Response(
+        JSON.stringify({ allowed: false, reason: "Dein Zugang zu diesem Kurs wurde deaktiviert." }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 3. Check capacity (count only registered users, not just invited)
     const { count } = await supabase
       .from("enrollment_whitelist")
       .select("id", { count: "exact", head: true })
       .eq("course_id", courseCode)
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .not("registered_at", "is", null);
 
     if (count !== null && count >= course.max_participants) {
       return new Response(
         JSON.stringify({ allowed: false, reason: "Der Kurs ist leider bereits voll." }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
-    }
-
-    // 3. Upsert email into whitelist
-    const { error: upsertErr } = await supabase
-      .from("enrollment_whitelist")
-      .upsert(
-        { email: email.toLowerCase(), course_id: courseCode },
-        { onConflict: "email,course_id" }
-      );
-
-    if (upsertErr) {
-      console.error("Whitelist upsert error:", upsertErr);
     }
 
     return new Response(
