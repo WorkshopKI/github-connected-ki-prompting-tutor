@@ -511,7 +511,7 @@ export const ACTABuilder = ({
                     </PopoverTrigger>
                     <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
                       <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
-                      <PromptEvaluation prompt={assembled} model={selectedModel} />
+                      <PromptEvaluation prompt={assembled} />
                       <div className="border-t border-border pt-3">
                         <Button
                           onClick={async () => {
@@ -828,7 +828,7 @@ export const ACTABuilder = ({
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
               <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
-              <PromptEvaluation prompt={assembled} model={selectedModel} />
+              <PromptEvaluation prompt={assembled} />
               <div className="border-t border-border pt-3">
                 <Button
                   onClick={async () => {
