@@ -232,6 +232,10 @@ export const ACTABuilder = ({
   onExpandedChange,
   confidentiality,
 }: ACTABuilderProps) => {
+  const [internalOpen, setInternalOpen] = useState(true);
+  const effectiveOpen = isOpen !== undefined ? isOpen : internalOpen;
+  const effectiveToggle = onToggle || (() => setInternalOpen(prev => !prev));
+
   const { scope } = useOrgContext();
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
 
@@ -1001,7 +1005,7 @@ export const ACTABuilder = ({
   if (bare) return verticalContent;
 
   return (
-    <Collapsible open={isOpen} onOpenChange={onToggle}>
+    <Collapsible open={effectiveOpen} onOpenChange={effectiveToggle}>
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
@@ -1010,7 +1014,7 @@ export const ACTABuilder = ({
               {filledCount}/4{hasActiveExtensions ? " +" : ""}
             </Badge>
           </div>
-          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {effectiveOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
         <CollapsibleContent>
           {verticalContent}
