@@ -84,17 +84,6 @@ export function PlaygroundHeader({
         </div>
       </div>
 
-      {/* Confidentiality warnings */}
-      {!canUseExternal && (
-        <div className="text-[11px] text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950 px-4 py-1.5 text-center">
-          🔒 Vertraulicher Prompt — nur interne KI zugelassen
-        </div>
-      )}
-      {canUseExternal && aiTier === "external" && promptConfidentiality === "internal" && aiRouting.warnOnExternal && (
-        <div className="text-[11px] text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-4 py-1.5 text-center">
-          ⚠ Stelle sicher, dass keine vertraulichen Daten im Prompt enthalten sind.
-        </div>
-      )}
     </header>
   );
 }
