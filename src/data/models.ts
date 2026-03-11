@@ -42,8 +42,8 @@ export const PREMIUM_MODELS: ModelOption[] = [
   { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true, tier: "external" },
   { value: "google/gemini-2.5-pro", label: "Gemini 2.5 Pro", isPremium: true, tier: "external" },
   { value: "openai/gpt-5.4", label: "GPT-5.4 (latest)", isPremium: true, isLatest: true, tier: "external" },
-  { value: "anthropic/claude-sonnet-4", label: "Claude Sonnet 4", isPremium: true, tier: "external" },
-  { value: "anthropic/claude-opus-4", label: "Claude Opus 4", isPremium: true, tier: "external" },
+  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6", isPremium: true, tier: "external" },
+  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6", isPremium: true, tier: "external" },
   { value: "anthropic/claude-haiku-3.5", label: "Claude Haiku 3.5", tier: "external" },
 ];
 
