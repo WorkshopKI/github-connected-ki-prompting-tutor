@@ -33,7 +33,7 @@ function findMatchingUseCase(prompt: PromptItem): OrgUseCase | null {
   }) || null;
 }
 
-const BASE_CATEGORIES = ["Alle", "Fachbereich", "Büroalltag", "Recherche", "Privat"];
+const BASE_CATEGORIES = ["Büroalltag", "Recherche", "Privat"];
 
 function departmentScopeToKey(label: string): string | undefined {
   const map: Record<string, string> = {
@@ -144,7 +144,7 @@ export const PromptLibrary = () => {
   const { scope, isDepartment, scopeLabel } = useOrgContext();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Alle");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [departmentScope, setDepartmentScope] = useState(isDepartment ? "Meine Abteilung" : "Alle");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -159,10 +159,6 @@ export const PromptLibrary = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<PromptItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  const primaryCategories = useMemo(() => {
-    return BASE_CATEGORIES;
-  }, []);
-
   const [tableSortBy, setTableSortBy] = useState<string>("title");
   const [tableSortDir, setTableSortDir] = useState<"asc" | "desc">("asc");
   const toggleTableSort = (col: string) => {
@@ -175,9 +171,15 @@ export const PromptLibrary = () => {
   };
 
   useEffect(() => {
-    setSelectedCategory("Alle");
+    setSelectedCategory(null);
     setDepartmentScope(isDepartment ? "Meine Abteilung" : "Alle");
   }, [scope, isDepartment]);
+
+  useEffect(() => {
+    if (departmentScope !== "Alle") {
+      setSelectedCategory(null);
+    }
+  }, [departmentScope]);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -195,8 +197,7 @@ export const PromptLibrary = () => {
         prompt.category.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesCategory =
-        selectedCategory === "Alle" ||
-        (selectedCategory === "Fachbereich" && prompt.level === "organisation") ||
+        selectedCategory === null ||
         (selectedCategory === "Büroalltag" && (prompt.level === "beruf" || prompt.type === "blueprint")) ||
         (selectedCategory === "Recherche" && (prompt.level === "websuche" || prompt.level === "research")) ||
         (selectedCategory === "Privat" && prompt.level === "alltag");
@@ -208,10 +209,7 @@ export const PromptLibrary = () => {
 
       const matchesDepartmentScope =
         departmentScope === "Alle"
-          ? (scope === "organisation" ? true
-             : scope === "privat" ? !prompt.targetDepartment
-             : isDepartment ? (!prompt.targetDepartment || prompt.targetDepartment === scope)
-             : true)
+          ? true
           : departmentScope === "Meine Abteilung"
             ? prompt.targetDepartment === scope
             : prompt.targetDepartment === departmentScopeToKey(departmentScope);
@@ -358,7 +356,7 @@ export const PromptLibrary = () => {
                   <option value="confidential">🔴 Vertraulich</option>
                 </select>
               </div>
-              {selectedCategory === "Fachbereich" && (
+              {departmentScope !== "Alle" && (
                 <>
                   <div className="space-y-1.5">
                     <label className="text-xs font-medium text-muted-foreground">Abteilung</label>
@@ -405,77 +403,78 @@ export const PromptLibrary = () => {
           </Popover>
         </div>
 
-        {/* Zeile 2: Abteilungs-Dropdown | Kategorien | Count */}
+        {/* Zeile 2: Abteilungs-Dropdown + Kategorien + Count */}
         <div className="flex items-center gap-1.5">
-          {/* Abteilungs-Dropdown — nur wenn Department-Scope */}
-          {isDepartment && (
-            <>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={departmentScope !== "Alle" ? "default" : "outline"}
-                    size="sm"
-                    className="h-7 text-xs gap-1"
-                  >
-                    ⬡ {departmentScope === "Meine Abteilung"
-                      ? scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")
-                      : departmentScope === "Alle"
-                        ? "Alle Abteilungen"
-                        : departmentScope}
-                    <ChevronDown className="w-3 h-3" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-1.5">
+          {/* Abteilungs-Dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={departmentScope !== "Alle" ? "default" : "outline"}
+                size="sm"
+                className="h-7 text-xs gap-1"
+              >
+                {departmentScope === "Meine Abteilung"
+                  ? `⬡ ${scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")}`
+                  : departmentScope === "Alle"
+                    ? "⬡ Alle Abteilungen"
+                    : `⬡ ${departmentScope}`}
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-auto p-1.5">
+              <button
+                onClick={() => setDepartmentScope("Alle")}
+                className={cn(
+                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                  departmentScope === "Alle" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                )}
+              >
+                Alle Abteilungen
+              </button>
+              {isDepartment && (
+                <button
+                  onClick={() => setDepartmentScope("Meine Abteilung")}
+                  className={cn(
+                    "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                    departmentScope === "Meine Abteilung" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                  )}
+                >
+                  ⬡ {scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")} (meine)
+                </button>
+              )}
+              {["HR", "Legal", "IT", "Öffentlichkeitsarbeit", "Bauverfahren"]
+                .filter(d => !(isDepartment && d === scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")))
+                .map(dept => (
                   <button
-                    onClick={() => setDepartmentScope("Alle")}
+                    key={dept}
+                    onClick={() => setDepartmentScope(dept)}
                     className={cn(
                       "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                      departmentScope === "Alle" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                      departmentScope === dept ? "bg-primary text-primary-foreground" : "hover:bg-muted"
                     )}
                   >
-                    Alle Abteilungen
+                    {dept}
                   </button>
-                  <button
-                    onClick={() => setDepartmentScope("Meine Abteilung")}
-                    className={cn(
-                      "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                      departmentScope === "Meine Abteilung" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                    )}
-                  >
-                    ⬡ {scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")} (meine)
-                  </button>
-                  {["HR", "Legal", "IT", "Öffentlichkeitsarbeit", "Bauverfahren"]
-                    .filter(d => d !== scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", ""))
-                    .map(dept => (
-                      <button
-                        key={dept}
-                        onClick={() => setDepartmentScope(dept)}
-                        className={cn(
-                          "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                          departmentScope === dept ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                        )}
-                      >
-                        {dept}
-                      </button>
-                  ))}
-                </PopoverContent>
-              </Popover>
-              <div className="w-px h-4 bg-border mx-0.5" />
-            </>
-          )}
-          {/* Kategorie-Chips */}
+              ))}
+            </PopoverContent>
+          </Popover>
+          {/* Kategorie-Chips — nur aktiv wenn Dropdown auf "Alle" */}
           {BASE_CATEGORIES.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => {
+                if (departmentScope !== "Alle") return;
+                setSelectedCategory(selectedCategory === category ? null : category);
+              }}
+              disabled={departmentScope !== "Alle"}
               size="sm"
-              className="h-7 text-xs"
+              className={cn("h-7 text-xs", departmentScope !== "Alle" && "opacity-40")}
             >
               {category}
             </Button>
           ))}
-          {/* Count — rechts */}
+          {/* Count */}
           <span className="text-xs text-muted-foreground ml-auto whitespace-nowrap">
             {filteredPrompts.length} gefunden
           </span>

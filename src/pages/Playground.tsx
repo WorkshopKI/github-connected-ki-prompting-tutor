@@ -56,10 +56,13 @@ const Playground = () => {
   const [actaExpanded, setActaExpanded] = useState(true);
   const actaPanelRef = useRef<ImperativePanelHandle>(null);
 
-  // Sync actaExpanded ↔ ResizablePanel collapse/expand
+  // Sync resizable panel with ACTA collapse state
   useEffect(() => {
-    if (actaExpanded) actaPanelRef.current?.expand();
-    else actaPanelRef.current?.collapse();
+    if (actaExpanded) {
+      actaPanelRef.current?.expand();
+    } else {
+      actaPanelRef.current?.collapse();
+    }
   }, [actaExpanded]);
 
   // --- Playground mode ---
@@ -256,17 +259,7 @@ const Playground = () => {
 
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
                 <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel
-                    ref={actaPanelRef}
-                    defaultSize={30}
-                    minSize={15}
-                    maxSize={70}
-                    collapsible
-                    collapsedSize={4}
-                    onCollapse={() => setActaExpanded(false)}
-                    onExpand={() => setActaExpanded(true)}
-                    className="min-h-0"
-                  >
+                  <ResizablePanel ref={actaPanelRef} defaultSize={25} minSize={10} maxSize={70} collapsible collapsedSize={0} className="min-h-0">
                     <ACTABuilder
                       fields={actaFields}
                       onFieldsChange={setActaFields}
