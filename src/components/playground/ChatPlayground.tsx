@@ -63,7 +63,6 @@ export interface ChatPlaygroundProps {
   onStop: () => void;
   initialPrompt?: string;
   hideSystemPrompt?: boolean;
-  hideToolbar?: boolean;
 }
 
 export const ChatPlayground = ({
