@@ -2,29 +2,29 @@
 
 ## Problem
 
-The `save-user-key` edge function fails with `"Invalid key length"` when trying to encrypt the OpenRouter API key. This happens at the AES-256-GCM key import step, meaning the `ENCRYPTION_KEY` secret is not exactly 64 hex characters (32 bytes).
+In der `PromptBrowser`-Sidebar (Playground) wechselt der Abteilungsfilter-Dropdown zwar den Scope korrekt, aber der aktive Tab ("Alle" / "Abteilung X" / "Skills") wird nicht automatisch auf den Abteilungs-Tab umgeschaltet. Der User muss manuell den Tab wechseln.
 
-## Root Cause
+## Lösung
 
-The `ENCRYPTION_KEY` secret stored in your backend is not the correct length for AES-256-GCM encryption. It must be exactly 64 hexadecimal characters (representing 32 bytes).
+Den bestehenden `useEffect` in `PromptBrowser.tsx` erweitern: Wenn ein Department-Scope ausgewählt wird (`isDepartment === true`), soll automatisch der `"dept"`-Tab aktiv werden. Wird auf "Privatgebrauch" oder "Gesamte Organisation" gewechselt, bleibt `"all"` aktiv.
 
-## Fix
+## Technische Änderung
 
-1. **Generate a valid 256-bit hex key** and update the `ENCRYPTION_KEY` secret. A valid key looks like: `a]1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b` (64 hex chars).
+**`src/components/playground/PromptBrowser.tsx`** (Zeilen 43-46):
 
-2. **Add a validation guard** in the edge function so that if the key is misconfigured, the error message is clear instead of a generic crypto error.
+Den bestehenden `useEffect` erweitern:
 
-### Changes
-
-**`supabase/functions/save-user-key/index.ts`**: Add a length check after reading `ENCRYPTION_KEY`:
 ```typescript
-const encKey = Deno.env.get("ENCRYPTION_KEY");
-if (!encKey || encKey.length !== 64) {
-  return jsonRes({ error: "Server encryption key misconfigured (expected 64 hex chars)" }, 500);
-}
+useEffect(() => {
+  if (isDepartment) {
+    setActiveTab("dept");
+  } else if (activeTab === "dept") {
+    setActiveTab("all");
+  }
+}, [scope, isDepartment]);
 ```
 
-Also add the same guard in **`supabase/functions/llm-proxy/index.ts`** if it uses the same encrypt/decrypt pattern.
+Damit wird bei jeder Scope-Änderung geprüft: Ist es eine Abteilung → zeige den Abteilungs-Tab. Ist es keine Abteilung und der dept-Tab war aktiv → wechsle auf "Alle".
 
-**Secret update**: Re-set the `ENCRYPTION_KEY` secret to a valid 64-character hex string.
+Eine einzelne Datei, eine minimale Änderung.
 
