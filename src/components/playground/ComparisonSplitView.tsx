@@ -27,7 +27,7 @@ interface Props {
 
 export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedModel, onBackToChat }: Props) => {
   const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
-  const [modelB, setModelB] = useState("anthropic/claude-sonnet-4.6");
+  const [modelB, setModelB] = useState("openai/gpt-5");
   const [promptText, setPromptText] = useState("");
   const [promptA, setPromptA] = useState("");
   const [promptB, setPromptB] = useState("");
