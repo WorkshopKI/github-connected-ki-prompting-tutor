@@ -427,23 +427,24 @@ export const ACTABuilder = ({
 
             {/* Inline variables */}
             {variables.length > 0 && (
-              <div data-tour="acta-variables" className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-muted-foreground shrink-0">
-                  Angaben ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length}):
-                </span>
-                {variables.map((v) => (
-                  <div key={v} className="flex items-center gap-1">
-                    <span className="text-[11px] font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">{v}</span>
-                    <input
-                      type="text"
-                      value={variableValues[v] || ""}
-                      onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
-                      placeholder="..."
-                      className="h-6 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
-                      style={{ width: Math.max(50, ((variableValues[v]?.length || 3) * 8) + 16) }}
-                    />
-                  </div>
-                ))}
+              <div data-tour="acta-variables" className="flex items-center gap-2">
+                <div className="flex flex-1 min-w-0 flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold text-muted-foreground shrink-0">
+                    Angaben ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length}):
+                  </span>
+                  {variables.map((v) => (
+                    <div key={v} className="flex items-center gap-1 flex-1 min-w-[80px]">
+                      <span className="text-[11px] font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">{v}</span>
+                      <input
+                        type="text"
+                        value={variableValues[v] || ""}
+                        onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
+                        placeholder="..."
+                        className="h-6 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 flex-1 min-w-[50px]"
+                      />
+                    </div>
+                  ))}
+                </div>
                 {hasUnfilledVars && (
                   <Button
                     variant="ghost"
