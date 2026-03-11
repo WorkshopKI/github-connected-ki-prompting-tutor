@@ -367,6 +367,18 @@ const Playground = () => {
                   mode={playgroundMode}
                   lastUserPrompt={lastUserPrompt}
                   selectedModel={selectedModel}
+                  onModelChange={setSelectedModel}
+                  onThinkingChange={(enabled) => {
+                    setThinkingEnabled(enabled);
+                    localStorage.setItem(LS_KEYS.THINKING_ENABLED, String(enabled));
+                  }}
+                  aiTier={aiTier}
+                  onAiTierChange={setAiTier}
+                  canUseExternal={canUseExternal}
+                  aiRouting={aiRouting}
+                  agentConfig={agentConfig}
+                  onAgentConfigChange={setAgentConfig}
+                  onStartAgent={chat.sendMessage}
                 />
               </div>
 
