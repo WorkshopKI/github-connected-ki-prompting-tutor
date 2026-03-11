@@ -168,7 +168,7 @@ export const PlaygroundContent = ({
           </PopoverTrigger>
           <PopoverContent align="end" className="w-auto p-1.5">
             <button
-              onClick={() => { exportAsMarkdown(); toast.success("Als Markdown exportiert!"); }}
+              onClick={() => { exportChatAsMarkdown(messages); toast.success("Als Markdown exportiert!"); }}
               className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
             >
               Als Markdown (.md)
