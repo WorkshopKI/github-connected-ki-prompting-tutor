@@ -276,7 +276,7 @@ const Playground = () => {
 
                   <ResizableHandle />
 
-                  <ResizablePanel defaultSize={75} minSize={20} className="min-h-0">
+                  <ResizablePanel defaultSize={70} minSize={20} className="min-h-0">
                     <div className="h-full px-4 py-2">
                       <PlaygroundContent
                         messages={chat.messages}
