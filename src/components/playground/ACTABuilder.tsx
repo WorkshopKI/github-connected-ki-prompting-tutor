@@ -10,8 +10,8 @@ import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy, Loa
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
-import { PromptEvaluation } from "./PromptEvaluation";
 import { ContextExtensions, TaskExtensions, AusgabeExtensions } from "./ACTAExtensionsUI";
+import { supabase } from "@/integrations/supabase/client";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useACTAAssist } from "@/hooks/useACTAAssist";
 import { extractVariables } from "@/lib/promptUtils";
@@ -251,6 +251,51 @@ export const ACTABuilder = ({
   const { suggest, improve, fillVariables, isLoading: aiLoading } = useACTAAssist();
   const [showSuggest, setShowSuggest] = useState(false);
   const [suggestInput, setSuggestInput] = useState("");
+
+  // Inline prompt evaluation (auto-triggered from Prüfen popover)
+  const [evalResult, setEvalResult] = useState<{ hasContext: boolean; isSpecific: boolean; hasConstraints: boolean; feedback: string } | null>(null);
+  const [evalLoading, setEvalLoading] = useState(false);
+  const evalScore = evalResult ? [evalResult.hasContext, evalResult.isSpecific, evalResult.hasConstraints].filter(Boolean).length : 0;
+
+  const evaluatePrompt = async (promptText: string) => {
+    if (!promptText.trim() || evalLoading) return;
+    setEvalLoading(true);
+    setEvalResult(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { toast.error("Bitte melde dich an."); setEvalLoading(false); return; }
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/evaluate-prompt`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+          body: JSON.stringify({
+            userPrompt: promptText,
+            badPrompt: "Ein unspezifischer Prompt ohne Kontext.",
+            context: "Freie Prompt-Bewertung im Playground",
+            goodExample: "",
+            improvementHints: ["Kontext hinzufügen", "Spezifischer werden", "Constraints definieren"],
+            model: "google/gemini-3-flash-preview",
+          }),
+        }
+      );
+      if (!resp.ok) {
+        if (resp.status === 402) toast.error("KI-Budget aufgebraucht.");
+        else if (resp.status === 429) toast.error("Zu viele Anfragen. Bitte warte kurz.");
+        else toast.error("Bewertung fehlgeschlagen.");
+        setEvalLoading(false);
+        return;
+      }
+      setEvalResult(await resp.json());
+    } catch {
+      toast.error("Verbindungsfehler bei der Bewertung.");
+    }
+    setEvalLoading(false);
+  };
 
   // Variablen-Erkennung
   const allFieldsText = `${fields.act} ${fields.context} ${fields.task} ${fields.ausgabe}`;
@@ -493,7 +538,7 @@ export const ACTABuilder = ({
                 )}
                 {/* 2. 🔍 Prüfen — nur Experte + Inhalt vorhanden */}
                 {isExperte && hasContent && (
-                  <Popover>
+                  <Popover onOpenChange={(open) => { if (open) evaluatePrompt(assembled); }}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -506,22 +551,63 @@ export const ACTABuilder = ({
                     </PopoverTrigger>
                     <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
                       <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
-                      <PromptEvaluation prompt={assembled} />
-                      <div className="border-t border-border pt-3">
-                        <Button
-                          onClick={async () => {
-                            const result = await improve(fields, selectedModel);
-                            if (result) { onFieldsChange(result); setVariableValues({}); }
-                          }}
-                          disabled={aiLoading}
-                          variant="outline"
-                          size="sm"
-                          className="w-full text-xs h-7 gap-1.5"
-                        >
-                          {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                          Verbesserungsvorschläge übernehmen
-                        </Button>
-                      </div>
+                      {evalLoading && (
+                        <div className="flex items-center gap-2 py-3 justify-center text-muted-foreground">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="text-xs">Wird geprüft...</span>
+                        </div>
+                      )}
+                      {evalResult && (
+                        <Card className="p-3 space-y-2">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-semibold">Prompt-Check</span>
+                            <span className={cn(
+                              "text-xs font-bold",
+                              evalScore === 3 ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                            )}>
+                              {evalScore}/3
+                            </span>
+                          </div>
+                          {[
+                            { label: "Kontext", met: evalResult.hasContext },
+                            { label: "Spezifik", met: evalResult.isSpecific },
+                            { label: "Constraints", met: evalResult.hasConstraints },
+                          ].map((c) => (
+                            <div key={c.label}>
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="text-[11px] font-medium text-muted-foreground">{c.label}</span>
+                                <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-red-600 dark:text-red-400")}>
+                                  {c.met ? "✓ Gut" : "✗ Fehlt"}
+                                </span>
+                              </div>
+                              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                                <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]")} />
+                              </div>
+                            </div>
+                          ))}
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">{evalResult.feedback}</p>
+                        </Card>
+                      )}
+                      {evalResult && evalScore === 3 && (
+                        <p className="text-xs text-primary font-medium text-center py-1">✓ Dein Prompt erfüllt alle Kriterien.</p>
+                      )}
+                      {evalResult && evalScore < 3 && (
+                        <div className="border-t border-border pt-3">
+                          <Button
+                            onClick={async () => {
+                              const result = await improve(fields, selectedModel);
+                              if (result) { onFieldsChange(result); setVariableValues({}); }
+                            }}
+                            disabled={aiLoading}
+                            variant="outline"
+                            size="sm"
+                            className="w-full text-xs h-7 gap-1.5"
+                          >
+                            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                            Verbesserungsvorschläge übernehmen
+                          </Button>
+                        </div>
+                      )}
                     </PopoverContent>
                   </Popover>
                 )}
@@ -821,7 +907,7 @@ export const ACTABuilder = ({
           </Button>
         )}
         {isExperte && hasContent && (
-          <Popover>
+          <Popover onOpenChange={(open) => { if (open) evaluatePrompt(assembled); }}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -834,22 +920,63 @@ export const ACTABuilder = ({
             </PopoverTrigger>
             <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
               <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
-              <PromptEvaluation prompt={assembled} />
-              <div className="border-t border-border pt-3">
-                <Button
-                  onClick={async () => {
-                    const result = await improve(fields, selectedModel);
-                    if (result) { onFieldsChange(result); setVariableValues({}); }
-                  }}
-                  disabled={aiLoading}
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs h-7 gap-1.5"
-                >
-                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                  Verbesserungsvorschläge übernehmen
-                </Button>
-              </div>
+              {evalLoading && (
+                <div className="flex items-center gap-2 py-3 justify-center text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-xs">Wird geprüft...</span>
+                </div>
+              )}
+              {evalResult && (
+                <Card className="p-3 space-y-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-semibold">Prompt-Check</span>
+                    <span className={cn(
+                      "text-xs font-bold",
+                      evalScore === 3 ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                    )}>
+                      {evalScore}/3
+                    </span>
+                  </div>
+                  {[
+                    { label: "Kontext", met: evalResult.hasContext },
+                    { label: "Spezifik", met: evalResult.isSpecific },
+                    { label: "Constraints", met: evalResult.hasConstraints },
+                  ].map((c) => (
+                    <div key={c.label}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-[11px] font-medium text-muted-foreground">{c.label}</span>
+                        <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-red-600 dark:text-red-400")}>
+                          {c.met ? "✓ Gut" : "✗ Fehlt"}
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]")} />
+                      </div>
+                    </div>
+                  ))}
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{evalResult.feedback}</p>
+                </Card>
+              )}
+              {evalResult && evalScore === 3 && (
+                <p className="text-xs text-primary font-medium text-center py-1">✓ Dein Prompt erfüllt alle Kriterien.</p>
+              )}
+              {evalResult && evalScore < 3 && (
+                <div className="border-t border-border pt-3">
+                  <Button
+                    onClick={async () => {
+                      const result = await improve(fields, selectedModel);
+                      if (result) { onFieldsChange(result); setVariableValues({}); }
+                    }}
+                    disabled={aiLoading}
+                    variant="outline"
+                    size="sm"
+                    className="w-full text-xs h-7 gap-1.5"
+                  >
+                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                    Verbesserungsvorschläge übernehmen
+                  </Button>
+                </div>
+              )}
             </PopoverContent>
           </Popover>
         )}
