@@ -145,9 +145,7 @@ JSON-Format:
       const judgeData = await judgeResponse.json();
 
       // Log usage (kein Budget-Abzug)
-      if (userId) {
-        logUsage(admin, userId, judgeModel, judgeData.usage, "judge");
-      }
+      logUsage(admin, userId, judgeModel, judgeData.usage, "judge");
 
       const rawContent = judgeData.choices?.[0]?.message?.content || "";
       if (!rawContent) {
