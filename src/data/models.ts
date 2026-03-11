@@ -30,8 +30,8 @@ export function saveAIRouting(config: AIRoutingConfig) {
  */
 export const STANDARD_MODELS: ModelOption[] = [
   { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true, tier: "external" },
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6 (latest)", isLatest: true, tier: "external" },
-  { value: "openai/gpt-5.4", label: "GPT-5.4 (latest)", isLatest: true, tier: "external" },
+  { value: "openai/gpt-5", label: "GPT-5 (latest)", isLatest: true, tier: "external" },
+  { value: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", tier: "external" },
 ];
 
 /**
@@ -39,21 +39,18 @@ export const STANDARD_MODELS: ModelOption[] = [
  * Bei neuen Releases hier die Model-IDs aktualisieren.
  */
 export const PREMIUM_MODELS: ModelOption[] = [
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6 (latest)", isPremium: true, isLatest: true, tier: "external" },
   { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "google/gemini-2.5-pro", label: "Gemini 2.5 Pro", isPremium: true, tier: "external" },
+  { value: "openai/gpt-5.2", label: "GPT-5.2 (latest)", isPremium: true, isLatest: true, tier: "external" },
 ];
 
 /**
- * Open-Source-Modelle — leistungsfähige Modelle mit offenen Gewichten.
+ * Weitere Modelle — kleinere/schnellere Varianten.
  */
 export const OPEN_SOURCE_MODELS: ModelOption[] = [
-  { value: "mistralai/mistral-large-2512", label: "Mistral Large 3 (2512)", isOpenSource: true, tier: "external" },
-  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B", isOpenSource: true, tier: "external" },
-  { value: "google/gemma-3-27b-it", label: "Gemma 3 27B", isOpenSource: true, tier: "external" },
-  { value: "mistralai/mistral-small-3.1-24b-instruct", label: "Mistral Small 3.1 24B", isOpenSource: true, tier: "external" },
-  { value: "allenai/olmo-3.1-32b-think", label: "OLMo 3.1 32B Think", isOpenSource: true, tier: "external" },
-  { value: "qwen/qwen3.5-122b-a10b", label: "Qwen 3.5 122B-A10B", isOpenSource: true, tier: "external" },
-  { value: "qwen/qwen3.5-397b-a17b", label: "Qwen 3.5 397B-A17B", isOpenSource: true, tier: "external" },
+  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", tier: "external" },
+  { value: "openai/gpt-5-nano", label: "GPT-5 Nano", tier: "external" },
+  { value: "google/gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite", tier: "external" },
 ];
 
 export { DEFAULT_MODEL } from "@/lib/constants";

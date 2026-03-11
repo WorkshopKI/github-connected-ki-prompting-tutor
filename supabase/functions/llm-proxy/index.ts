@@ -12,17 +12,14 @@ const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 /* ── Grobe Kosten-Schätzung pro 1M Tokens (input/output) ── */
 const MODEL_COSTS: Record<string, { input: number; output: number }> = {
   "google/gemini-3-flash-preview":     { input: 0.10, output: 0.40 },
-  "anthropic/claude-sonnet-4.6":       { input: 3.00, output: 15.00 },
-  "openai/gpt-5.4":                    { input: 2.50, output: 10.00 },
-  "anthropic/claude-opus-4.6":         { input: 15.00, output: 75.00 },
   "google/gemini-3.1-pro-preview":     { input: 1.25, output: 5.00 },
-  "mistralai/mistral-large-2512":      { input: 2.00, output: 6.00 },
-  "openai/gpt-oss-120b":              { input: 1.00, output: 3.00 },
-  "google/gemma-3-27b-it":            { input: 0.10, output: 0.20 },
-  "mistralai/mistral-small-3.1-24b":  { input: 0.10, output: 0.30 },
-  "allenai/olmo-3.1-32b-think":       { input: 0.10, output: 0.20 },
-  "qwen/qwen-3.5-122b-a10b":         { input: 0.15, output: 0.60 },
-  "qwen/qwen-3.5-397b-a17b":         { input: 0.30, output: 1.20 },
+  "google/gemini-2.5-pro":            { input: 1.25, output: 5.00 },
+  "google/gemini-2.5-flash":          { input: 0.15, output: 0.60 },
+  "google/gemini-2.5-flash-lite":     { input: 0.08, output: 0.30 },
+  "openai/gpt-5":                     { input: 2.50, output: 10.00 },
+  "openai/gpt-5.2":                   { input: 3.00, output: 12.00 },
+  "openai/gpt-5-mini":               { input: 0.40, output: 1.60 },
+  "openai/gpt-5-nano":               { input: 0.10, output: 0.40 },
 };
 const DEFAULT_COST = { input: 1.00, output: 4.00 }; // konservativer Fallback
 
