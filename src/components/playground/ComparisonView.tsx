@@ -20,7 +20,7 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     () => localStorage.getItem("thinking_enabled") === "true"
   );
   const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
-  const [modelB, setModelB] = useState("anthropic/claude-sonnet-4.6");
+  const [modelB, setModelB] = useState("openai/gpt-5");
   const [prompt, setPrompt] = useState("");
   const [resultA, setResultA] = useState<ComparisonResult | null>(null);
   const [resultB, setResultB] = useState<ComparisonResult | null>(null);
