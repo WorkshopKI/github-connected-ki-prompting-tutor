@@ -259,7 +259,17 @@ const Playground = () => {
 
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
                 <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel ref={actaPanelRef} defaultSize={25} minSize={10} maxSize={70} collapsible collapsedSize={0} className="min-h-0">
+                  <ResizablePanel
+                    ref={actaPanelRef}
+                    defaultSize={30}
+                    minSize={15}
+                    maxSize={70}
+                    collapsible
+                    collapsedSize={5}
+                    onCollapse={() => setActaExpanded(false)}
+                    onExpand={() => setActaExpanded(true)}
+                    className="min-h-0"
+                  >
                     <ACTABuilder
                       fields={actaFields}
                       onFieldsChange={setActaFields}

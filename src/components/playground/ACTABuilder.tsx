@@ -371,11 +371,11 @@ export const ACTABuilder = ({
   // ── Horizontal layout (desktop) ──
   if (layout === "horizontal") {
     return (
-      <div className="bg-card shadow-sm h-full overflow-y-auto">
-        {/* Header row — click to collapse/expand */}
+      <div className="bg-card shadow-sm h-full flex flex-col">
+        {/* Header row — click to collapse/expand, always visible */}
         <div
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors"
+          className="flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors shrink-0"
         >
           <span className="text-xs font-bold">ACTA</span>
           {sourceTitle && (
@@ -414,7 +414,7 @@ export const ACTABuilder = ({
         </div>
 
         {expanded && (
-          <div className="px-4 pb-3 space-y-2">
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-3 space-y-2">
             {/* KI-Suggest Eingabe — wenn aktiv */}
             {isExperte && showSuggest && (
               <div data-tour="acta-ki-suggest" className="bg-primary/5 border border-primary/15 rounded-lg p-2.5 space-y-2">
