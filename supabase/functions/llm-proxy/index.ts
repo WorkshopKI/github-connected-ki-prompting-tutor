@@ -23,6 +23,9 @@ const MODEL_COSTS: Record<string, { input: number; output: number }> = {
   "anthropic/claude-sonnet-4":       { input: 3.00, output: 15.00 },
   "anthropic/claude-opus-4":         { input: 15.00, output: 75.00 },
   "anthropic/claude-haiku-3.5":      { input: 0.80, output: 4.00 },
+  "mistral/mistral-large":           { input: 2.00, output: 6.00 },
+  "mistral/mistral-small":           { input: 0.10, output: 0.30 },
+  "mistral/codestral":               { input: 0.30, output: 0.90 },
 };
 const DEFAULT_COST = { input: 1.00, output: 4.00 }; // konservativer Fallback
 

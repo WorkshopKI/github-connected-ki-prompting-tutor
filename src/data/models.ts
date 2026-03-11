@@ -54,6 +54,9 @@ export const OPEN_SOURCE_MODELS: ModelOption[] = [
   { value: "openai/gpt-5-mini", label: "GPT-5 Mini", tier: "external" },
   { value: "openai/gpt-5-nano", label: "GPT-5 Nano", tier: "external" },
   { value: "google/gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite", tier: "external" },
+  { value: "mistral/mistral-large", label: "Mistral Large", tier: "external" },
+  { value: "mistral/mistral-small", label: "Mistral Small", tier: "external" },
+  { value: "mistral/codestral", label: "Codestral", tier: "external" },
 ];
 
 export { DEFAULT_MODEL } from "@/lib/constants";
