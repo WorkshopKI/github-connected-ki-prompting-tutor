@@ -106,9 +106,17 @@ export const ChatPlayground = ({
 
   const hasMessages = messages.length > 0 || isStreaming;
   const turnCount = messages.filter((m) => m.role === "user").length;
-      {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat.
-           flex-1 + min-h-0 = füllt Resthöhe und erlaubt Schrumpfen.
-           scrollbar-thin = schmale Overlay-Scrollbar, kein Layout-Shift. */}
+
+  return (
+    <div className="flex flex-col h-full min-w-0 bg-gradient-card rounded-xl border border-border shadow-lg">
+      {/* System Prompt */}
+      {!hideSystemPrompt && (
+        <div className="px-4 pt-4">
+          <SystemPromptEditor value={systemPrompt} onChange={onSystemPromptChange} />
+        </div>
+      )}
+
+      {/* ⚠️ EINZIGER vertikaler Scroll-Container im Chat. */}
       <div
         className="flex-1 px-4 py-4 space-y-4 min-h-0 overflow-y-auto scrollbar-thin"
         onScroll={handleScroll}
