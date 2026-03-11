@@ -179,6 +179,12 @@ export const PromptLibrary = () => {
     setDepartmentScope(isDepartment ? "Meine Abteilung" : "Alle");
   }, [scope, isDepartment]);
 
+  useEffect(() => {
+    if (selectedCategory !== "Fachbereich" && selectedCategory !== "Alle") {
+      setDepartmentScope("Alle");
+    }
+  }, [selectedCategory]);
+
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
@@ -415,7 +421,8 @@ export const PromptLibrary = () => {
                   <Button
                     variant={departmentScope !== "Alle" ? "default" : "outline"}
                     size="sm"
-                    className="h-7 text-xs gap-1"
+                    className={cn("h-7 text-xs gap-1", selectedCategory !== "Fachbereich" && selectedCategory !== "Alle" && "opacity-50")}
+                    disabled={selectedCategory !== "Fachbereich" && selectedCategory !== "Alle"}
                   >
                     ⬡ {departmentScope === "Meine Abteilung"
                       ? scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")
