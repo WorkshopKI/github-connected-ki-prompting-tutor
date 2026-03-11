@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Copy, Check, Search, Sparkles, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown, SlidersHorizontal, X } from "lucide-react";
+import { Copy, Check, Search, Sparkles, ChevronDown, ChevronUp, Shield, Clock, Wrench, Building2, AlertTriangle, Star, LayoutGrid, List, ArrowUpDown, SlidersHorizontal, X, ShieldCheck } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,20 @@ import { useOrgContext } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
 import { extractVariables } from "@/lib/promptUtils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { orgUseCases } from "@/data/orgUseCases";
+import type { OrgUseCase } from "@/data/orgUseCases";
+import { RISK_COLORS } from "@/lib/constants";
+
+function findMatchingUseCase(prompt: PromptItem): OrgUseCase | null {
+  const normalizedTitle = prompt.title.toLowerCase().replace(/[-–]/g, " ");
+  return orgUseCases.find(uc => {
+    const ucTitle = uc.title.toLowerCase().replace(/[-–]/g, " ");
+    const ucWords = ucTitle.split(" ").slice(0, 2).join(" ");
+    const promptWords = normalizedTitle.split(" ").slice(0, 2).join(" ");
+    return normalizedTitle.includes(ucWords) || ucTitle.includes(promptWords);
+  }) || null;
+}
 
 const BASE_CATEGORIES = ["Alle", "Alltag", "Beruf", "Websuche", "Deep Research", "Blueprints", "Organisation"];
 
@@ -550,6 +564,41 @@ export const PromptLibrary = () => {
                   </button>
                 </div>
               </div>
+              {/* Governance-Detail — wenn Use Case vorhanden */}
+              {(() => {
+                const uc = findMatchingUseCase(prompt);
+                if (!uc) return null;
+                return (
+                  <Collapsible>
+                    <CollapsibleTrigger
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1.5 w-full mt-2 pt-2 border-t border-border text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ShieldCheck className="w-3 h-3" />
+                      <span className="font-medium">Qualitätskriterien & Governance</span>
+                      <ChevronDown className="w-3 h-3 ml-auto" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground">Risiko:</span>
+                        <Badge variant="outline" className={cn("text-[10px]", RISK_COLORS[uc.risk] || "")}>
+                          {uc.risk}
+                        </Badge>
+                        <span className="text-[10px] text-muted-foreground ml-auto">Rolle: {uc.role}</span>
+                      </div>
+                      <div className="space-y-1">
+                        {uc.qualityCriteria.map((criterion, i) => (
+                          <div key={i} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                            <span className="text-primary mt-0.5">✓</span>
+                            <span>{criterion}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground italic">{uc.goal}</p>
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })()}
             </Card>
           ))}
         </div>

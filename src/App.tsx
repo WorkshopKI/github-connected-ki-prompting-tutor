@@ -12,6 +12,8 @@ import { StandaloneSyncProvider } from "@/contexts/StandaloneSyncContext";
 import { OrgProvider } from "@/contexts/OrgContext";
 import { GuestBanner } from "@/components/GuestBanner";
 import { AppShell } from "@/components/AppShell";
+import { TeamMembers } from "@/components/TeamMembers";
+import { PendingReviews } from "@/components/PendingReviews";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import Login from "./pages/Login";
@@ -46,6 +48,8 @@ const WorkshopApp = () => (
             <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
             <Route path="/profil" element={<Navigate to="/settings" replace />} />
             <Route path="/admin/teilnehmer" element={<PlatformLayout><AdminParticipants /></PlatformLayout>} />
+            <Route path="/team" element={<PlatformLayout><TeamMembers /></PlatformLayout>} />
+            <Route path="/reviews" element={<PlatformLayout><PendingReviews /></PlatformLayout>} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
