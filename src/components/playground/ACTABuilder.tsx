@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,8 @@ export interface ACTABuilderProps {
   selectedModel?: string;
   layout?: "vertical" | "horizontal";
   sourceTitle?: string | null;
+  isExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }
 
 const FIELD_CONFIG = [
@@ -97,6 +99,104 @@ function assembleACTAPrompt(fields: ACTAFields, varValues?: Record<string, strin
   return finalPrompt;
 }
 
+const CARD_CONFIG = [
+  { key: "act" as const, icon: "👤", shortLabel: "ACT", placeholder: "Welche Expertenrolle soll die KI einnehmen?" },
+  { key: "context" as const, icon: "📋", shortLabel: "CONTEXT", placeholder: "Hintergrund, Situation, Rahmenbedingungen..." },
+  { key: "task" as const, icon: "🎯", shortLabel: "TASK", placeholder: "Was genau soll die KI tun?" },
+  { key: "ausgabe" as const, icon: "📄", shortLabel: "AUSGABE", placeholder: "Länge, Struktur, Sprache des Ergebnisses..." },
+];
+
+interface ACTACardProps {
+  icon: string;
+  shortLabel: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  maxHeight?: number;
+}
+
+function ACTACard({ icon, shortLabel, value, onChange, placeholder, maxHeight = 120 }: ACTACardProps) {
+  const [editing, setEditing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isEmpty = !value.trim();
+
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.selectionStart = textareaRef.current.value.length;
+      autoResize(textareaRef.current);
+    }
+  }, [editing]);
+
+  const autoResize = (el: HTMLTextAreaElement) => {
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
+  };
+
+  return (
+    <div
+      onClick={() => !editing && setEditing(true)}
+      className={cn(
+        "flex-1 min-w-0 rounded-lg p-2.5 transition-all cursor-pointer flex flex-col gap-1",
+        editing
+          ? "border-[1.5px] border-primary bg-card shadow-[0_0_0_3px_rgba(192,105,74,0.08)]"
+          : isEmpty
+            ? "border border-dashed border-border bg-muted/30 hover:border-primary/30"
+            : "border border-primary/15 bg-card shadow-sm hover:shadow-md"
+      )}
+      style={{ cursor: editing ? "text" : "pointer" }}
+    >
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm leading-none">{icon}</span>
+        <span className={cn(
+          "text-[10px] font-bold uppercase tracking-wider",
+          isEmpty ? "text-muted-foreground/50" : "text-primary"
+        )}>
+          {shortLabel}
+        </span>
+        {!editing && !isEmpty && (
+          <span className="ml-auto text-muted-foreground/40 text-xs">✏️</span>
+        )}
+        {editing && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setEditing(false); }}
+            className="ml-auto text-[10px] font-semibold text-primary bg-primary/10 rounded px-1.5 py-0.5 hover:bg-primary/15 transition-colors"
+          >
+            ✓ Fertig
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => { onChange(e.target.value); autoResize(e.target); }}
+          onBlur={() => setEditing(false)}
+          placeholder={placeholder}
+          className="w-full border-none outline-none resize-none text-xs leading-relaxed text-foreground bg-transparent font-[inherit] p-0"
+          style={{ minHeight: 36, maxHeight, overflow: "auto" }}
+        />
+      ) : isEmpty ? (
+        <span className="text-xs text-muted-foreground/50 leading-relaxed italic">
+          {placeholder}
+        </span>
+      ) : (
+        <div
+          className="text-xs text-foreground leading-relaxed overflow-hidden break-words"
+          style={{
+            maxHeight,
+            display: "-webkit-box",
+            WebkitLineClamp: Math.floor(maxHeight / 18),
+            WebkitBoxOrient: "vertical" as const,
+          }}
+        >
+          {value}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const EXTENSION_CHIPS = [
   { key: "examples" as const, label: "Few-Shot", type: "array" as const },
   { key: "rules" as const, label: "Regeln", type: "string" as const },
@@ -125,6 +225,8 @@ export const ACTABuilder = ({
   selectedModel,
   layout,
   sourceTitle,
+  isExpanded: isExpandedProp,
+  onExpandedChange,
 }: ACTABuilderProps) => {
   const { scope } = useOrgContext();
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
@@ -156,8 +258,13 @@ export const ACTABuilder = ({
   const assembled = assembleACTAPrompt(fields, variableValues);
   const hasContent = assembled.trim().length > 0;
 
-  // Horizontal layout state
-  const [expanded, setExpanded] = useState(true);
+  // Horizontal layout state — controlled/uncontrolled pattern
+  const [internalExpanded, setInternalExpanded] = useState(true);
+  const expanded = isExpandedProp !== undefined ? isExpandedProp : internalExpanded;
+  const setExpanded = (val: boolean) => {
+    if (onExpandedChange) onExpandedChange(val);
+    else setInternalExpanded(val);
+  };
   const [activeChip, setActiveChip] = useState<string | null>(null);
 
   const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
@@ -178,6 +285,7 @@ export const ACTABuilder = ({
   const handleSend = () => {
     if (!hasContent) return;
     onSendToPlayground(assembled);
+    setExpanded(false);
   };
 
   const handleCopy = () => {
@@ -214,136 +322,143 @@ export const ACTABuilder = ({
         {/* Header row — click to collapse/expand */}
         <div
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 px-4 py-2 cursor-pointer select-none hover:bg-muted/30 transition-colors"
+          className="flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors"
         >
           <span className="text-xs font-bold">ACTA</span>
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-            {filledCount}/4{hasActiveExtensions ? " +" : ""}
-          </Badge>
+          {/* 4 Mini-Dots */}
+          <div className="flex gap-1">
+            {CARD_CONFIG.map((card) => (
+              <div key={card.key} className={cn(
+                "w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold",
+                fields[card.key].trim().length > 5
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}>
+                {fields[card.key].trim().length > 5 ? "✓" : card.shortLabel[0]}
+              </div>
+            ))}
+          </div>
           {sourceTitle && (
-            <span className="text-[10px] text-primary font-medium ml-2 truncate">
-              Vorlage: {sourceTitle}
-            </span>
+            <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
           )}
-          <ChevronDown
-            className={cn(
-              "w-3.5 h-3.5 text-muted-foreground transition-transform ml-auto shrink-0",
-              expanded && "rotate-180"
-            )}
-          />
+          {/* Offene Variablen-Warnung — nur collapsed */}
+          {!expanded && variables.length > 0 && hasUnfilledVars && (
+            <Badge variant="outline" className="text-[10px] text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600">
+              {variables.filter(v => !variableValues[v]?.trim()).length} offen
+            </Badge>
+          )}
+          {/* Aktive Extensions — nur collapsed + Experte */}
+          {!expanded && isExperte && hasActiveExtensions && (
+            <div className="flex gap-1">
+              {EXTENSION_CHIPS.filter(c => isChipActive(c.key)).map(c => (
+                <span key={c.key} className="text-[10px] text-primary bg-primary/10 px-1.5 rounded-full font-medium">
+                  ✓ {c.label}
+                </span>
+              ))}
+            </div>
+          )}
+          {/* KI-Suggest Icon — nur expanded + Experte */}
+          {expanded && isExperte && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 shrink-0 ml-auto"
+              title="KI: ACTA-Felder vorschlagen"
+              onClick={(e) => { e.stopPropagation(); setShowSuggest(!showSuggest); }}
+            >
+              <Wand2 className="w-3.5 h-3.5 text-primary" />
+            </Button>
+          )}
+          <ChevronDown className={cn(
+            "w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0",
+            !expanded && isExperte ? "" : "ml-auto",
+            expanded && "rotate-180"
+          )} />
         </div>
 
         {expanded && (
           <div className="px-4 pb-3 space-y-2">
-            {/* KI-Suggest — only Experte */}
-            {isExperte && (
-              <div data-tour="acta-ki-suggest">
-                <button
-                  type="button"
-                  onClick={() => setShowSuggest(!showSuggest)}
-                  className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1.5 transition-colors"
+            {/* KI-Suggest Eingabe — wenn aktiv */}
+            {isExperte && showSuggest && (
+              <div data-tour="acta-ki-suggest" className="bg-primary/5 border border-primary/15 rounded-lg p-2.5 space-y-2">
+                <Textarea
+                  value={suggestInput}
+                  onChange={(e) => setSuggestInput(e.target.value)}
+                  placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
+                  className="text-xs min-h-[48px] resize-none"
+                  rows={2}
+                />
+                <Button
+                  size="sm"
+                  className="w-full text-xs h-7"
+                  disabled={!suggestInput.trim() || aiLoading}
+                  onClick={async () => {
+                    const result = await suggest(suggestInput, selectedModel);
+                    if (result) {
+                      onFieldsChange(result);
+                      setVariableValues({});
+                      setShowSuggest(false);
+                      setSuggestInput("");
+                    }
+                  }}
                 >
-                  <Wand2 className="w-3 h-3" /> KI: ACTA-Felder vorschlagen lassen
-                </button>
-                {showSuggest && (
-                  <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 space-y-2 mt-2">
-                    <Textarea
-                      value={suggestInput}
-                      onChange={(e) => setSuggestInput(e.target.value)}
-                      placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
-                      className="text-xs min-h-[48px] resize-none"
-                      rows={2}
-                    />
-                    <Button
-                      size="sm"
-                      className="w-full text-xs h-7"
-                      disabled={!suggestInput.trim() || aiLoading}
-                      onClick={async () => {
-                        const result = await suggest(suggestInput, selectedModel);
-                        if (result) {
-                          onFieldsChange(result);
-                          setVariableValues({});
-                          setShowSuggest(false);
-                          setSuggestInput("");
-                        }
-                      }}
-                    >
-                      {aiLoading ? (
-                        <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
-                      ) : (
-                        <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
-                      )}
-                    </Button>
-                  </div>
-                )}
+                  {aiLoading ? (
+                    <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
+                  ) : (
+                    <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
+                  )}
+                </Button>
               </div>
             )}
 
-            {/* 4 Fields in a grid */}
-            <div data-tour="acta-fields" className="grid grid-cols-4 gap-2">
-              {FIELD_CONFIG.map((field) => (
-                <div key={field.key}>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">
-                    {field.label.split(" (")[0]}
-                  </label>
-                  <Textarea
-                    value={fields[field.key]}
-                    onChange={(e) => updateField(field.key, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="text-xs min-h-[52px] resize-y"
-                    rows={3}
-                  />
-                </div>
+            {/* 4 ACTA Cards */}
+            <div data-tour="acta-fields" className="flex gap-2">
+              {CARD_CONFIG.map((card) => (
+                <ACTACard
+                  key={card.key}
+                  icon={card.icon}
+                  shortLabel={card.shortLabel}
+                  value={fields[card.key]}
+                  onChange={(v) => updateField(card.key, v)}
+                  placeholder={card.placeholder}
+                />
               ))}
             </div>
 
-            {/* Variables panel — full width under fields */}
+            {/* Inline variables */}
             {variables.length > 0 && (
-              <div data-tour="acta-variables" className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-muted-foreground">
-                    Angaben ausfüllen ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length})
-                  </span>
-                  {hasUnfilledVars && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs h-6 gap-1 text-primary"
-                      disabled={aiLoading}
-                      onClick={async () => {
-                        const result = await fillVariables(
-                          variables.filter(v => !variableValues[v]?.trim()),
-                          fields,
-                          selectedModel,
-                        );
-                        if (result) {
-                          setVariableValues(prev => ({ ...prev, ...result }));
-                        }
-                      }}
-                    >
-                      {aiLoading ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <Wand2 className="w-3 h-3" />
-                      )}
-                      Beispielwerte
-                    </Button>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {variables.map((v) => (
-                    <div key={v} className="flex items-center gap-1.5">
-                      <Badge variant="outline" className="text-[11px] shrink-0 font-mono">{v}</Badge>
-                      <input
-                        type="text"
-                        value={variableValues[v] || ""}
-                        onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
-                        placeholder="z.B. ..."
-                        className="flex-1 h-7 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div data-tour="acta-variables" className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground shrink-0">
+                  Angaben ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length}):
+                </span>
+                {variables.map((v) => (
+                  <div key={v} className="flex items-center gap-1">
+                    <span className="text-[11px] font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">{v}</span>
+                    <input
+                      type="text"
+                      value={variableValues[v] || ""}
+                      onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
+                      placeholder="..."
+                      className="h-6 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50"
+                      style={{ width: Math.max(50, ((variableValues[v]?.length || 3) * 8) + 16) }}
+                    />
+                  </div>
+                ))}
+                {hasUnfilledVars && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-6 gap-1 text-primary shrink-0"
+                    disabled={aiLoading}
+                    onClick={async () => {
+                      const result = await fillVariables(variables.filter(v => !variableValues[v]?.trim()), fields, selectedModel);
+                      if (result) setVariableValues(prev => ({ ...prev, ...result }));
+                    }}
+                  >
+                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                    Beispielwerte
+                  </Button>
+                )}
               </div>
             )}
 

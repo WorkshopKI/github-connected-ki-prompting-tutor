@@ -218,24 +218,6 @@ export const PlaygroundContent = ({
         </Button>
       </div>
 
-      {/* System-Prompt — nur Experte, Chat-Modus */}
-      {isExperte && chatMode === "chat" && (
-        <details className="border-b border-border">
-          <summary className="text-[10px] text-muted-foreground px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors">
-            ⚙ System-Prompt (optional)
-          </summary>
-          <div className="px-4 pb-2">
-            <Textarea
-              value={systemPrompt}
-              onChange={(e) => onSystemPromptChange(e.target.value)}
-              placeholder="Optionaler System-Prompt..."
-              className="text-[11px] min-h-[48px] resize-y"
-              rows={2}
-            />
-          </div>
-        </details>
-      )}
-
       {/* ═══ CONTENT — Chat oder Vergleich ═══ */}
       {chatMode === "compare" ? (
         <ComparisonSplitView
@@ -376,6 +358,17 @@ export const PlaygroundContent = ({
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-3 space-y-3">
               <h4 className="text-xs font-semibold">Einstellungen</h4>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">System-Prompt</label>
+                <Textarea
+                  value={systemPrompt}
+                  onChange={(e) => onSystemPromptChange(e.target.value)}
+                  placeholder="Optionaler System-Prompt..."
+                  className="text-xs min-h-[48px] resize-y"
+                  rows={2}
+                />
+              </div>
+              <Separator />
               <label className="flex items-center justify-between">
                 <span className="text-[11px]">🤖 Agenten-Modus</span>
                 <Switch checked={agentEnabled} onCheckedChange={setAgentEnabled} />
