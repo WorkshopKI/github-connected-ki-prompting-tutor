@@ -259,7 +259,7 @@ export const PlaygroundContent = ({
             onStop={onStop}
             initialPrompt={prefilledPrompt}
             hideSystemPrompt
-            hideToolbar
+            
           />
         </div>
       )}
