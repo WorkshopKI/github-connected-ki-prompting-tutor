@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
+import { PromptEvaluation } from "./PromptEvaluation";
 import { ContextExtensions, TaskExtensions, AusgabeExtensions } from "./ACTAExtensionsUI";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useACTAAssist } from "@/hooks/useACTAAssist";
@@ -490,25 +492,53 @@ export const ACTABuilder = ({
 
               {/* Action Buttons */}
               <div className="flex gap-1.5 shrink-0" data-tour="acta-send">
+                {/* → An KI senden */}
                 <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-xs h-7 gap-1">
-                  <Send className="w-3 h-3" /> Prompt testen
+                  <Send className="w-3 h-3" /> An KI senden
                 </Button>
+                {/* 🔍 Prompt prüfen — nur Experte, Popover mit Evaluation + Verbessern */}
                 {isExperte && hasContent && (
-                  <Button
-                    onClick={async () => {
-                      const result = await improve(fields, selectedModel);
-                      if (result) { onFieldsChange(result); setVariableValues({}); }
-                    }}
-                    disabled={aiLoading}
-                    variant="outline"
-                    size="sm"
-                    className="h-7 w-7 p-0"
-                    title="KI verbessert deine ACTA-Felder"
-                  >
-                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs h-7 gap-1"
+                        title="Prompt auf Qualität prüfen und Verbesserungsvorschläge erhalten"
+                      >
+                        <Search className="w-3 h-3" /> Prüfen
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
+                      <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
+                      <PromptEvaluation prompt={assembled} model={selectedModel} />
+                      <div className="border-t border-border pt-3">
+                        <Button
+                          onClick={async () => {
+                            const result = await improve(fields, selectedModel);
+                            if (result) { onFieldsChange(result); setVariableValues({}); }
+                          }}
+                          disabled={aiLoading}
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-xs h-7 gap-1.5"
+                        >
+                          {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                          Verbesserungsvorschläge übernehmen
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 )}
-                <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm" className="h-7 w-7 p-0">
+                {/* 📋 Kopieren */}
+                <Button
+                  onClick={handleCopy}
+                  disabled={!hasContent}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  title="Assemblierten Prompt in die Zwischenablage kopieren"
+                >
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
@@ -782,23 +812,48 @@ export const ACTABuilder = ({
       <div data-tour="acta-send" className="flex gap-2">
         <Button onClick={handleSend} disabled={!hasContent} className="flex-1" size="sm">
           <Send className="w-3 h-3 mr-1.5" />
-          → Prompt testen
+          An KI senden
         </Button>
         {isExperte && hasContent && (
-          <Button
-            onClick={async () => {
-              const result = await improve(fields, selectedModel);
-              if (result) { onFieldsChange(result); setVariableValues({}); }
-            }}
-            disabled={aiLoading}
-            variant="outline"
-            size="sm"
-            title="KI verbessert deine ACTA-Felder"
-          >
-            {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1"
+                title="Prompt auf Qualität prüfen und Verbesserungsvorschläge erhalten"
+              >
+                <Search className="w-3 h-3" /> Prüfen
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[380px] max-h-[450px] overflow-y-auto p-4 space-y-3">
+              <h4 className="text-sm font-semibold">Prompt-Qualität prüfen</h4>
+              <PromptEvaluation prompt={assembled} model={selectedModel} />
+              <div className="border-t border-border pt-3">
+                <Button
+                  onClick={async () => {
+                    const result = await improve(fields, selectedModel);
+                    if (result) { onFieldsChange(result); setVariableValues({}); }
+                  }}
+                  disabled={aiLoading}
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs h-7 gap-1.5"
+                >
+                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+                  Verbesserungsvorschläge übernehmen
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
-        <Button onClick={handleCopy} disabled={!hasContent} variant="outline" size="sm">
+        <Button
+          onClick={handleCopy}
+          disabled={!hasContent}
+          variant="outline"
+          size="sm"
+          title="Assemblierten Prompt in die Zwischenablage kopieren"
+        >
           <Copy className="w-3 h-3 mr-1.5" />
           Kopieren
         </Button>
