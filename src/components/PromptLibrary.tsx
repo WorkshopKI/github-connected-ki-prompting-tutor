@@ -153,6 +153,7 @@ export const PromptLibrary = () => {
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [viewMode, setViewMode] = useState<string>("grid");
   const [sortByRating, setSortByRating] = useState(false);
+  const [expandedCardIndex, setExpandedCardIndex] = useState<number | null>(null);
 
   const [confFilter, setConfFilter] = useState<string>("all");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -174,6 +175,10 @@ export const PromptLibrary = () => {
     setSelectedCategory(null);
     setDepartmentScope(isDepartment ? "Meine Abteilung" : "Alle");
   }, [scope, isDepartment]);
+
+  useEffect(() => {
+    setExpandedCardIndex(null);
+  }, [selectedCategory, departmentScope, searchQuery]);
 
 
   const copyToClipboard = (text: string, index: number) => {
@@ -541,11 +546,11 @@ export const PromptLibrary = () => {
           {(showAll ? filteredPrompts : filteredPrompts.slice(0, 6)).map((prompt, index) => (
             <Card
               key={index}
-              className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              className="p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               onClick={() => handlePromptClick(prompt)}
             >
-              {/* Zeile 1: Titel + Status-Badge */}
-              <div className="flex items-start justify-between gap-3 mb-2">
+              {/* Zeile 1: Titel + Badges */}
+              <div className="flex items-start justify-between gap-3 mb-1.5">
                 <h4 className="font-semibold text-sm">{prompt.title}</h4>
                 <div className="flex items-center gap-1 shrink-0">
                   {prompt.official ? (
@@ -556,34 +561,49 @@ export const PromptLibrary = () => {
                   <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
                 </div>
               </div>
-              {/* Zeile 2: Kategorie + Level als Text */}
-              <p className="text-[11px] text-muted-foreground mb-3">
-                {prompt.category}{prompt.level ? ` \u00b7 ${prompt.level}` : ""}{prompt.type === "blueprint" ? " \u00b7 Blueprint" : ""}{prompt.needsWeb ? " \u00b7 Websuche" : ""}{prompt.department ? ` \u00b7 ${prompt.department}` : ""}
-              </p>
-              {/* Zeile 3: Prompt-Text */}
-              <p className="text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2 line-clamp-2 mb-3">
-                {prompt.prompt}
-              </p>
-              {/* Zeile 4: Rating + Actions */}
-              <div className="flex items-center justify-between">
-                <InlineRating title={prompt.title} />
-                <div className="flex items-center gap-1">
+              {/* Zeile 2: Kategorie + Actions — eine Zeile */}
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] text-muted-foreground">
+                  {prompt.category}{prompt.level ? ` · ${prompt.level}` : ""}{prompt.type === "blueprint" ? " · Blueprint" : ""}{prompt.needsWeb ? " · Websuche" : ""}{prompt.department ? ` · ${prompt.department}` : ""}
+                </p>
+                <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     onClick={(e) => { e.stopPropagation(); copyToClipboard(prompt.prompt, index); }}
-                    className="p-1.5 rounded-md hover:bg-muted transition-colors"
-                    title="Kopieren"
+                    className="p-1 rounded-md hover:bg-muted transition-colors"
+                    title="Prompt kopieren"
                   >
                     {copiedIndex === index ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`); }}
-                    className="p-1.5 rounded-md hover:bg-primary/10 transition-colors group"
-                    title="Im Labor verfeinern"
+                    className="p-1 rounded-md hover:bg-primary/10 transition-colors group"
+                    title="In der Werkstatt öffnen"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </button>
                 </div>
               </div>
+              {/* Zeile 3: Prompt-Text — 4 Zeilen oder voll aufgeklappt */}
+              <div
+                className={cn(
+                  "text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2",
+                  expandedCardIndex === index ? "" : "line-clamp-4"
+                )}
+              >
+                {prompt.prompt}
+              </div>
+              {/* "mehr/weniger" Toggle — nur wenn Text abgeschnitten wird */}
+              {prompt.prompt.length > 180 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedCardIndex(expandedCardIndex === index ? null : index);
+                  }}
+                  className="text-[11px] text-primary font-medium mt-1 hover:underline"
+                >
+                  {expandedCardIndex === index ? "▾ weniger" : "▸ mehr anzeigen"}
+                </button>
+              )}
               {/* Governance-Detail — wenn Use Case vorhanden */}
               {(() => {
                 const uc = findMatchingUseCase(prompt);
