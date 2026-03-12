@@ -33,7 +33,7 @@ function findMatchingUseCase(prompt: PromptItem): OrgUseCase | null {
   }) || null;
 }
 
-const BASE_CATEGORIES = ["Büroalltag", "Recherche", "Privat"];
+const BASE_CATEGORIES = ["Büroalltag", "Recherche", "Deep Research", "Mini Apps", "Privat"];
 
 function departmentScopeToKey(label: string): string | undefined {
   const map: Record<string, string> = {
@@ -175,11 +175,6 @@ export const PromptLibrary = () => {
     setDepartmentScope(isDepartment ? "Meine Abteilung" : "Alle");
   }, [scope, isDepartment]);
 
-  useEffect(() => {
-    if (departmentScope !== "Alle") {
-      setSelectedCategory(null);
-    }
-  }, [departmentScope]);
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -199,7 +194,9 @@ export const PromptLibrary = () => {
       const matchesCategory =
         selectedCategory === null ||
         (selectedCategory === "Büroalltag" && (prompt.level === "beruf" || prompt.type === "blueprint")) ||
-        (selectedCategory === "Recherche" && (prompt.level === "websuche" || prompt.level === "research")) ||
+        (selectedCategory === "Recherche" && prompt.level === "websuche") ||
+        (selectedCategory === "Deep Research" && prompt.level === "research") ||
+        (selectedCategory === "Mini Apps" && prompt.level === "miniapps") ||
         (selectedCategory === "Privat" && prompt.level === "alltag");
 
       const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
@@ -423,7 +420,7 @@ export const PromptLibrary = () => {
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-1.5">
               <button
-                onClick={() => setDepartmentScope("Alle")}
+                onClick={() => { setDepartmentScope("Alle"); }}
                 className={cn(
                   "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
                   departmentScope === "Alle" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
@@ -433,7 +430,7 @@ export const PromptLibrary = () => {
               </button>
               {isDepartment && (
                 <button
-                  onClick={() => setDepartmentScope("Meine Abteilung")}
+                  onClick={() => { setDepartmentScope("Meine Abteilung"); setSelectedCategory(null); }}
                   className={cn(
                     "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
                     departmentScope === "Meine Abteilung" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
@@ -447,7 +444,7 @@ export const PromptLibrary = () => {
                 .map(dept => (
                   <button
                     key={dept}
-                    onClick={() => setDepartmentScope(dept)}
+                    onClick={() => { setDepartmentScope(dept); setSelectedCategory(null); }}
                     className={cn(
                       "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
                       departmentScope === dept ? "bg-primary text-primary-foreground" : "hover:bg-muted"
@@ -458,18 +455,21 @@ export const PromptLibrary = () => {
               ))}
             </PopoverContent>
           </Popover>
-          {/* Kategorie-Chips — nur aktiv wenn Dropdown auf "Alle" */}
+          {/* Kategorie-Chips — IMMER klickbar */}
           {BASE_CATEGORIES.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               onClick={() => {
-                if (departmentScope !== "Alle") return;
-                setSelectedCategory(selectedCategory === category ? null : category);
+                if (selectedCategory === category) {
+                  setSelectedCategory(null);
+                } else {
+                  setSelectedCategory(category);
+                  setDepartmentScope("Alle");
+                }
               }}
-              disabled={departmentScope !== "Alle"}
               size="sm"
-              className={cn("h-7 text-xs", departmentScope !== "Alle" && "opacity-40")}
+              className="h-7 text-xs"
             >
               {category}
             </Button>

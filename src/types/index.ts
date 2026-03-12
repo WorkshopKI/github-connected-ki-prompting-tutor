@@ -119,7 +119,7 @@ export interface PromptItem {
   title: string;
   prompt: string;
   needsWeb?: boolean;
-  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint" | "organisation";
+  level?: "alltag" | "beruf" | "websuche" | "research" | "blueprint" | "organisation" | "miniapps";
   type?: "prompt" | "blueprint";
   constraints?: PromptConstraints;
   acceptanceCriteria?: string;
