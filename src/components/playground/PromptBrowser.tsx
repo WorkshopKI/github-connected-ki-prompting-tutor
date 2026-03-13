@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, ChevronDown, Plus } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -190,15 +190,8 @@ export const PromptBrowser = ({
         </div>
       </ScrollArea>
 
-      {/* Footer: New Prompt + Conversations */}
+      {/* Footer: Conversations */}
       <div className="border-t border-border">
-        <button
-          onClick={onNewConversation}
-          className="w-full px-3 py-1.5 text-[11px] font-medium text-primary hover:bg-muted/50 transition-colors flex items-center gap-1.5"
-        >
-          <Plus className="w-3 h-3" />
-          Leerer Prompt
-        </button>
         <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
           <CollapsibleTrigger className="w-full px-3 py-1.5 text-[11px] font-semibold text-muted-foreground flex items-center justify-between border-t border-border hover:bg-muted/50 transition-colors">
             <span>Meine Versuche ({conversations.length})</span>

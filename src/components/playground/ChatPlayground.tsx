@@ -6,7 +6,7 @@ import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
 import { useOrgContext } from "@/contexts/OrgContext";
-import type { OrgScope, Msg } from "@/types";
+import type { OrgScope, Msg, AIRoutingConfig } from "@/types";
 
 interface Suggestion {
   title: string;
@@ -63,6 +63,15 @@ export interface ChatPlaygroundProps {
   onStop: () => void;
   initialPrompt?: string;
   hideSystemPrompt?: boolean;
+  // KI-Controls passed through to ChatInput
+  selectedModel?: string;
+  onModelChange?: (model: string) => void;
+  onThinkingChange?: (enabled: boolean) => void;
+  aiTier?: "internal" | "external";
+  onAiTierChange?: (tier: "internal" | "external") => void;
+  canUseExternal?: boolean;
+  aiRouting?: AIRoutingConfig;
+  isExperte?: boolean;
 }
 
 export const ChatPlayground = ({
@@ -78,6 +87,14 @@ export const ChatPlayground = ({
   onStop,
   initialPrompt,
   hideSystemPrompt,
+  selectedModel,
+  onModelChange,
+  onThinkingChange,
+  aiTier,
+  onAiTierChange,
+  canUseExternal,
+  aiRouting,
+  isExperte,
 }: ChatPlaygroundProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef(true);
@@ -199,6 +216,15 @@ export const ChatPlayground = ({
           isStreaming={isStreaming}
           onStop={onStop}
           initialValue={initialPrompt}
+          selectedModel={selectedModel}
+          onModelChange={onModelChange}
+          thinkingEnabled={thinkingEnabled}
+          onThinkingChange={onThinkingChange}
+          aiTier={aiTier}
+          onAiTierChange={onAiTierChange}
+          canUseExternal={canUseExternal}
+          aiRouting={aiRouting}
+          isExperte={isExperte}
         />
       </div>
     </div>

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown, ChevronUp, ChevronRight, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search, X, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
@@ -30,6 +30,7 @@ export interface ACTABuilderProps {
   isExpanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
   confidentiality?: "open" | "internal" | "confidential";
+  onReset?: () => void;
 }
 
 const FIELD_CONFIG = [
@@ -331,6 +332,7 @@ export const ACTABuilder = ({
   isExpanded: isExpandedProp,
   onExpandedChange,
   confidentiality,
+  onReset,
 }: ACTABuilderProps) => {
   const [internalOpen, setInternalOpen] = useState(true);
   const effectiveOpen = isOpen !== undefined ? isOpen : internalOpen;
@@ -563,6 +565,17 @@ export const ACTABuilder = ({
                 </span>
               ))}
             </div>
+          )}
+          {/* Reset — nur wenn Felder befüllt */}
+          {hasContent && onReset && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onReset(); }}
+              className="text-[10px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 transition-colors ml-auto mr-1"
+              title="ACTA-Felder leeren und neu beginnen"
+            >
+              <RotateCcw className="w-3 h-3" /> Neu
+            </button>
           )}
         </div>
 
