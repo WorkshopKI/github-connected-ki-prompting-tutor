@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown, ChevronUp, ChevronRight, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
@@ -563,10 +563,21 @@ export const ACTABuilder = ({
             {/* KI-Suggest Eingabe — wenn aktiv */}
             {isExperte && showSuggest && (
               <div data-tour="acta-ki-suggest" className="bg-primary/5 border border-primary/15 rounded-lg p-2.5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">Beschreibe kurz was du brauchst:</span>
+                  <button
+                    type="button"
+                    onClick={() => { setShowSuggest(false); setSuggestInput(""); }}
+                    className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                    title="Schließen"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 <Textarea
                   value={suggestInput}
                   onChange={(e) => setSuggestInput(e.target.value)}
-                  placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
+                  placeholder="z.B. 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
                   className="text-xs min-h-[48px] resize-none"
                   rows={2}
                 />
@@ -913,10 +924,21 @@ export const ACTABuilder = ({
           </button>
           {showSuggest && (
             <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground">Beschreibe kurz was du brauchst:</span>
+                <button
+                  type="button"
+                  onClick={() => { setShowSuggest(false); setSuggestInput(""); }}
+                  className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                  title="Schließen"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
               <Textarea
                 value={suggestInput}
                 onChange={(e) => setSuggestInput(e.target.value)}
-                placeholder="Beschreibe kurz was du brauchst, z.B.: 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
+                placeholder="z.B. 'Pressemitteilung für die Eröffnung eines neuen Bürgerservice-Zentrums'"
                 className="text-xs min-h-[48px] resize-none"
                 rows={2}
               />
