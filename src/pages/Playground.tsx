@@ -179,6 +179,13 @@ const Playground = () => {
     setActaExpanded(true);
   };
 
+  // --- ACTA Reset handler ---
+  const handleACTAReset = () => {
+    setActaFields({ act: "", context: "", task: "", ausgabe: "" });
+    setSourcePromptTitle(null);
+    setPromptConfidentiality("open");
+  };
+
   // --- Prompt Browser selection handler ---
   const handleBrowserSelect = (title: string) => {
     const found = promptLibrary.find(p => p.title === title);
@@ -281,6 +288,7 @@ const Playground = () => {
                       isExpanded={actaExpanded}
                       onExpandedChange={setActaExpanded}
                       confidentiality={promptConfidentiality}
+                      onReset={handleACTAReset}
                     />
                   </ResizablePanel>
 
@@ -336,6 +344,7 @@ const Playground = () => {
                 isExpanded={actaExpanded}
                 onExpandedChange={setActaExpanded}
                 confidentiality={promptConfidentiality}
+                onReset={handleACTAReset}
               />
 
               <div className="flex-1 min-h-0 px-0 pt-0 pb-0">

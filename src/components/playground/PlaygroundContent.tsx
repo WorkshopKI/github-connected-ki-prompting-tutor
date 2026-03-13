@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Download, Copy, Trash2, Scale, Bookmark, Settings, Brain } from "lucide-react";
+import { Download, Copy, Trash2, Scale, Bookmark, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
@@ -13,12 +12,9 @@ import { ChatPlayground } from "./ChatPlayground";
 import { ComparisonSplitView } from "./ComparisonSplitView";
 import { JudgePanel } from "./JudgePanel";
 import { AgentKnobs, type AgentConfig } from "./AgentKnobs";
-import { ModelSelectGroups } from "./ModelSelect";
-import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
 import { exportChatAsMarkdown, exportChatAsDocx } from "@/lib/exportChat";
-import type { Msg } from "@/types";
-import type { AIRoutingConfig } from "@/types";
+import type { Msg, AIRoutingConfig } from "@/types";
 
 export interface PlaygroundContentProps {
   messages: Msg[];
@@ -124,9 +120,20 @@ export const PlaygroundContent = ({
 
       {/* ═══ TOOLBAR — Icon-only + kontextuelle Buttons ═══ */}
       <div className="flex items-center px-3 py-1.5 border-b border-border gap-1">
-        <span className="text-xs font-semibold text-foreground mr-1">
-          {chatMode === "compare" ? "Vergleich" : "Chat"}
-        </span>
+        <span className="text-xs font-semibold text-foreground mr-1">Chat</span>
+        {isExperte && (
+          <button
+            onClick={() => setChatMode(chatMode === "compare" ? "chat" : "compare")}
+            className={cn(
+              "text-[11px] px-2 py-0.5 rounded-md border font-medium transition-colors",
+              chatMode === "compare"
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "border-border text-muted-foreground hover:border-primary/30"
+            )}
+          >
+            ⚖ Vergleich
+          </button>
+        )}
 
         {/* KI-Bewertung — nur Experte + Chat + Antwort vorhanden */}
         {isExperte && hasAssistantResponse && chatMode === "chat" && lastUserPrompt && (
@@ -201,140 +208,9 @@ export const PlaygroundContent = ({
         >
           <Trash2 className="w-3.5 h-3.5" />
         </Button>
-      </div>
 
-      {/* ═══ CONTENT — Chat oder Vergleich ═══ */}
-      {chatMode === "compare" ? (
-        <ComparisonSplitView
-          systemPrompt={systemPrompt}
-          onBudgetExhausted={onBudgetExhausted}
-          selectedModel={selectedModel}
-          onBackToChat={() => setChatMode("chat")}
-        />
-      ) : (
-        <div data-tour="chat-area" className="flex-1 min-h-0">
-          <ChatPlayground
-            messages={messages}
-            onSendMessage={onSendMessage}
-            isStreaming={isStreaming}
-            streamingContent={streamingContent}
-            thinkingContent={thinkingContent}
-            thinkingEnabled={thinkingEnabled}
-            systemPrompt={systemPrompt}
-            onSystemPromptChange={onSystemPromptChange}
-            onClearChat={onClearChat}
-            onStop={onStop}
-            initialPrompt={prefilledPrompt}
-            hideSystemPrompt
-            
-          />
-        </div>
-      )}
-
-      {/* ═══ KI-CONTROLS BAR — über dem Input, nur Experte ═══ */}
-      {isExperte && (
-        <div className="border-t border-border px-3 py-1.5 flex items-center gap-2">
-          {/* Modus-Switch */}
-          <div className="flex gap-0.5 bg-muted rounded-md p-0.5">
-            <button
-              onClick={() => setChatMode("chat")}
-              className={cn(
-                "px-2 py-0.5 rounded text-[10px] font-medium transition-colors",
-                chatMode === "chat" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              💬 Chat
-            </button>
-            <button
-              onClick={() => setChatMode("compare")}
-              className={cn(
-                "px-2 py-0.5 rounded text-[10px] font-medium transition-colors",
-                chatMode === "compare" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              ⚖ Vergleich
-            </button>
-          </div>
-
-          <div className="flex-1" />
-
-          {/* Model badge + dropdown */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 hover:bg-muted text-[10px] font-medium text-foreground transition-colors">
-                {aiTier === "internal" ? "🏢" : "☁️"} {getModelLabel(selectedModel)}
-              </button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-64 p-3 space-y-3">
-              <h4 className="text-xs font-semibold">Modell</h4>
-              <Select value={selectedModel} onValueChange={onModelChange}>
-                <SelectTrigger className="w-full text-xs h-8">
-                  <span className="truncate">{getModelLabel(selectedModel)}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {aiTier === "internal" ? (
-                    <SelectGroup>
-                      <SelectLabel>🏢 Interne KI</SelectLabel>
-                      {aiRouting.internalModel ? (
-                        <SelectItem value={aiRouting.internalModel}>
-                          {aiRouting.internalModel}
-                        </SelectItem>
-                      ) : (
-                        <SelectItem value="internal-default" disabled>
-                          Nicht konfiguriert
-                        </SelectItem>
-                      )}
-                    </SelectGroup>
-                  ) : (
-                    <ModelSelectGroups />
-                  )}
-                </SelectContent>
-              </Select>
-              <div className="flex rounded-lg border border-border overflow-hidden">
-                <button
-                  onClick={() => onAiTierChange("internal")}
-                  className={cn(
-                    "flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
-                    aiTier === "internal"
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted/50"
-                  )}
-                >
-                  🏢 Intern
-                </button>
-                <button
-                  onClick={() => canUseExternal && onAiTierChange("external")}
-                  disabled={!canUseExternal}
-                  className={cn(
-                    "flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
-                    aiTier === "external" && canUseExternal
-                      ? "bg-primary text-primary-foreground"
-                      : canUseExternal
-                        ? "text-muted-foreground hover:bg-muted/50"
-                        : "text-muted-foreground/30 cursor-not-allowed"
-                  )}
-                >
-                  ☁️ Extern
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          {/* Thinking toggle chip */}
-          <button
-            onClick={() => onThinkingChange(!thinkingEnabled)}
-            className={cn(
-              "text-[10px] px-2 py-0.5 rounded-full border font-medium transition-colors flex items-center gap-1",
-              thinkingEnabled
-                ? "bg-primary/10 border-primary/30 text-primary"
-                : "border-border text-muted-foreground hover:border-primary/30"
-            )}
-          >
-            <Brain className="w-3 h-3" />
-            {thinkingEnabled ? "Denken an" : "Denken"}
-          </button>
-
-          {/* Settings Popover — Agent toggle + session settings */}
+        {/* Settings — nur Experte */}
+        {isExperte && (
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -382,6 +258,41 @@ export const PlaygroundContent = ({
               </p>
             </PopoverContent>
           </Popover>
+        )}
+      </div>
+
+      {/* ═══ CONTENT — Chat oder Vergleich ═══ */}
+      {chatMode === "compare" ? (
+        <ComparisonSplitView
+          systemPrompt={systemPrompt}
+          onBudgetExhausted={onBudgetExhausted}
+          selectedModel={selectedModel}
+          onBackToChat={() => setChatMode("chat")}
+        />
+      ) : (
+        <div data-tour="chat-area" className="flex-1 min-h-0">
+          <ChatPlayground
+            messages={messages}
+            onSendMessage={onSendMessage}
+            isStreaming={isStreaming}
+            streamingContent={streamingContent}
+            thinkingContent={thinkingContent}
+            thinkingEnabled={thinkingEnabled}
+            systemPrompt={systemPrompt}
+            onSystemPromptChange={onSystemPromptChange}
+            onClearChat={onClearChat}
+            onStop={onStop}
+            initialPrompt={prefilledPrompt}
+            hideSystemPrompt
+            selectedModel={selectedModel}
+            onModelChange={onModelChange}
+            onThinkingChange={onThinkingChange}
+            aiTier={aiTier}
+            onAiTierChange={onAiTierChange}
+            canUseExternal={canUseExternal}
+            aiRouting={aiRouting}
+            isExperte={isExperte}
+          />
         </div>
       )}
     </main>
