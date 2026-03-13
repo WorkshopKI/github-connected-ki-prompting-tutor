@@ -516,12 +516,24 @@ export const ACTABuilder = ({
   // ── Horizontal layout (desktop) ──
   if (layout === "horizontal") {
     return (
-      <div className="bg-card shadow-sm h-full flex flex-col">
+      <div className={cn(
+        "bg-card transition-shadow h-full flex flex-col",
+        expanded ? "border-b border-border" : "shadow-sm"
+      )}>
         {/* Header row — click to collapse/expand, always visible */}
         <div
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none hover:bg-muted/30 transition-colors shrink-0"
+          className={cn(
+            "flex items-center gap-2 px-4 py-1.5 cursor-pointer select-none transition-colors shrink-0",
+            expanded
+              ? "hover:bg-muted/30"
+              : "bg-muted/40 hover:bg-muted/60 dark:bg-muted/20 dark:hover:bg-muted/30"
+          )}
         >
+          <ChevronDown className={cn(
+            "w-4 h-4 text-muted-foreground transition-transform shrink-0",
+            !expanded && "-rotate-90"
+          )} />
           <span className="text-xs font-bold">ACTA</span>
           {sourceTitle && (
             <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
@@ -552,10 +564,6 @@ export const ACTABuilder = ({
               ))}
             </div>
           )}
-          <ChevronDown className={cn(
-            "w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0 ml-auto",
-            expanded && "rotate-180"
-          )} />
         </div>
 
         {expanded && (
