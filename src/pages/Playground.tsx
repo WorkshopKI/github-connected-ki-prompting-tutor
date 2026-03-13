@@ -287,7 +287,7 @@ const Playground = () => {
                   <ResizableHandle />
 
                   <ResizablePanel defaultSize={70} minSize={20} className="min-h-0">
-                    <div className="h-full px-2 pt-0.5 pb-1">
+                    <div className="h-full px-0 pt-0 pb-0">
                       <PlaygroundContent
                         messages={chat.messages}
                         onSendMessage={chat.sendMessage}
@@ -338,7 +338,7 @@ const Playground = () => {
                 confidentiality={promptConfidentiality}
               />
 
-              <div className="flex-1 min-h-0 px-2 pt-0.5 pb-1">
+              <div className="flex-1 min-h-0 px-0 pt-0 pb-0">
                 <PlaygroundContent
                   messages={chat.messages}
                   onSendMessage={chat.sendMessage}
