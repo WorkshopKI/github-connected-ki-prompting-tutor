@@ -251,7 +251,7 @@ function VariableComboInput({ label, value, onChange, kiOptions, kiLoading, onLo
     <div ref={ref} className="flex-1 min-w-[100px] relative">
       <label className={cn(
         "text-[10px] font-semibold uppercase tracking-wider mb-1 flex items-center gap-1",
-        filled ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+        filled ? "text-primary" : "text-muted-foreground"
       )}>
         {filled && <span>✓</span>}
         {label}
@@ -266,7 +266,7 @@ function VariableComboInput({ label, value, onChange, kiOptions, kiLoading, onLo
           className={cn(
             "w-full h-7 text-xs pl-2 pr-7 rounded-md border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors",
             filled
-              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950/30"
+              ? "border-primary/30 bg-primary/5"
               : open ? "border-primary" : "border-border"
           )}
         />
@@ -645,7 +645,7 @@ export const ACTABuilder = ({
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg border-l-[3px] transition-all",
                 hasUnfilledVars
                   ? "bg-primary/5 border-l-primary"
-                  : "bg-green-50 dark:bg-green-950/30 border-l-green-600 dark:border-l-green-500"
+                  : "bg-primary/5 border-l-primary"
               )}>
                 {hasUnfilledVars ? (
                   <>
@@ -658,7 +658,7 @@ export const ACTABuilder = ({
                 ) : (
                   <>
                     <span className="text-sm">✅</span>
-                    <span className="text-xs font-semibold text-green-700 dark:text-green-400">Prompt vollständig — bereit zum Senden</span>
+                    <span className="text-xs font-semibold text-primary">Prompt vollständig — bereit zum Senden</span>
                   </>
                 )}
               </div>
