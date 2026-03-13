@@ -53,6 +53,8 @@ const Playground = () => {
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
     habitat: "", hands: ["read", "write", "web"], leash: 50, proof: "sources", task: "",
   });
+  const [chatMode, setChatMode] = useState<"chat" | "compare">("chat");
+  const [lastAssembledPrompt, setLastAssembledPrompt] = useState("");
   const [actaExpanded, setActaExpanded] = useState(true);
   const actaPanelRef = useRef<ImperativePanelHandle>(null);
 
@@ -206,6 +208,16 @@ const Playground = () => {
     setActaExpanded(true);
   };
 
+  // Route "An KI senden" based on active mode
+  const handleSendToPlayground = (assembledPrompt: string) => {
+    setLastAssembledPrompt(assembledPrompt);
+    if (chatMode === "compare") {
+      // In compare mode: just store the prompt, ComparisonSplitView picks it up via initialPrompt
+      return;
+    }
+    chat.sendMessage(assembledPrompt);
+  };
+
   const lastUserPrompt = [...chat.messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
   if (isLoading) return null;
@@ -280,7 +292,7 @@ const Playground = () => {
                     <ACTABuilder
                       fields={actaFields}
                       onFieldsChange={setActaFields}
-                      onSendToPlayground={chat.sendMessage}
+                      onSendToPlayground={handleSendToPlayground}
                       layout="horizontal"
                       mode={playgroundMode}
                       selectedModel={settings.selectedModel}
@@ -324,6 +336,9 @@ const Playground = () => {
                         agentConfig={agentConfig}
                         onAgentConfigChange={setAgentConfig}
                         onStartAgent={chat.sendMessage}
+                        chatMode={chatMode}
+                        onChatModeChange={setChatMode}
+                        assembledPrompt={lastAssembledPrompt}
                       />
                     </div>
                   </ResizablePanel>
@@ -336,7 +351,7 @@ const Playground = () => {
               <ACTABuilder
                 fields={actaFields}
                 onFieldsChange={setActaFields}
-                onSendToPlayground={chat.sendMessage}
+                onSendToPlayground={handleSendToPlayground}
                 layout="horizontal"
                 mode={playgroundMode}
                 selectedModel={settings.selectedModel}
@@ -376,6 +391,9 @@ const Playground = () => {
                   agentConfig={agentConfig}
                   onAgentConfigChange={setAgentConfig}
                   onStartAgent={chat.sendMessage}
+                  chatMode={chatMode}
+                  onChatModeChange={setChatMode}
+                  assembledPrompt={lastAssembledPrompt}
                 />
               </div>
 

@@ -46,6 +46,10 @@ export interface PlaygroundContentProps {
   agentConfig: AgentConfig;
   onAgentConfigChange: (config: AgentConfig) => void;
   onStartAgent: (prompt: string) => void;
+  // Chat/Compare mode (lifted to Playground.tsx)
+  chatMode: "chat" | "compare";
+  onChatModeChange: (mode: "chat" | "compare") => void;
+  assembledPrompt?: string;
 }
 
 export const PlaygroundContent = ({
@@ -76,9 +80,12 @@ export const PlaygroundContent = ({
   agentConfig,
   onAgentConfigChange,
   onStartAgent,
+  chatMode,
+  onChatModeChange,
+  assembledPrompt,
 }: PlaygroundContentProps) => {
   const isExperte = mode === "experte";
-  const [chatMode, setChatMode] = useState<"chat" | "compare">("chat");
+  const setChatMode = onChatModeChange;
   const [agentEnabled, setAgentEnabled] = useState(false);
 
   const lastAssistantContent =
@@ -120,20 +127,29 @@ export const PlaygroundContent = ({
 
       {/* ═══ TOOLBAR — Icon-only + kontextuelle Buttons ═══ */}
       <div className="flex items-center px-3 py-1.5 border-b border-border gap-1">
-        <span className="text-xs font-semibold text-foreground mr-1">Chat</span>
-        {isExperte && (
+        {/* Modus-Toggle */}
+        <div className="flex gap-0.5 bg-muted rounded-md p-0.5 mr-1">
           <button
-            onClick={() => setChatMode(chatMode === "compare" ? "chat" : "compare")}
+            onClick={() => setChatMode("chat")}
             className={cn(
-              "text-[11px] px-2 py-0.5 rounded-md border font-medium transition-colors",
-              chatMode === "compare"
-                ? "bg-primary/10 border-primary/30 text-primary"
-                : "border-border text-muted-foreground hover:border-primary/30"
+              "px-2 py-0.5 rounded text-[11px] font-medium transition-colors",
+              chatMode === "chat" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
             )}
           >
-            ⚖ Vergleich
+            Chat
           </button>
-        )}
+          {isExperte && (
+            <button
+              onClick={() => setChatMode("compare")}
+              className={cn(
+                "px-2 py-0.5 rounded text-[11px] font-medium transition-colors",
+                chatMode === "compare" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Vergleich
+            </button>
+          )}
+        </div>
 
         {/* KI-Bewertung — nur Experte + Chat + Antwort vorhanden */}
         {isExperte && hasAssistantResponse && chatMode === "chat" && lastUserPrompt && (
@@ -268,6 +284,8 @@ export const PlaygroundContent = ({
           onBudgetExhausted={onBudgetExhausted}
           selectedModel={selectedModel}
           onBackToChat={() => setChatMode("chat")}
+          initialPrompt={lastUserPrompt || assembledPrompt}
+          internalModel={aiRouting?.internalModel}
         />
       ) : (
         <div data-tour="chat-area" className="flex-1 min-h-0">
