@@ -8,6 +8,7 @@ export interface UseACTAAssistReturn {
   suggest: (description: string, model?: string) => Promise<ACTAFields | null>;
   improve: (fields: ACTAFields, model?: string) => Promise<ACTAFields | null>;
   fillVariables: (variableNames: string[], fields: ACTAFields, model?: string) => Promise<Record<string, string> | null>;
+  suggestVariableOptions: (variableNames: string[], fields: ACTAFields, model?: string) => Promise<Record<string, string[]> | null>;
   isLoading: boolean;
 }
 
@@ -71,6 +72,19 @@ Verbesserungsprinzipien:
 - extensions.negatives: Typische KI-Fehler als Negativ-Constraints ergänzen
 - NICHT den Inhalt komplett umschreiben — verbessern und ergänzen
 - Alle Texte auf Deutsch`;
+
+const SUGGEST_OPTIONS_SYSTEM = `Du bist ein Prompt-Engineering-Assistent. Der Benutzer hat eine Vorlage mit Platzhaltern. Generiere für jeden Platzhalter 4-5 realistische, verschiedene Beispielwerte.
+Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Backticks):
+Jeder Key ist ein Platzhalter-Name, jeder Value ein Array mit 4-5 verschiedenen Beispielwerten.
+Beispiel:
+Eingabe: Platzhalter: Vertragstyp, Partei A
+Kontext: Vertragsjurist, Zivil- und Verwaltungsrecht
+Antwort: {"Vertragstyp": ["Dienstleistungsvertrag", "Werkvertrag", "Rahmenvertrag", "IT-Servicevertrag", "Lizenzvertrag"], "Partei A": ["Stadt Musterstadt", "Landkreis Beispiel", "Stadtverwaltung Freiburg", "Bezirksamt Berlin-Mitte"]}
+Regeln:
+- Werte müssen realistisch, konkret und verschieden sein
+- Werte sollen zum fachlichen Kontext der Vorlage passen
+- Alle Werte auf Deutsch
+- Pro Platzhalter 4-5 verschiedene Optionen`;
 
 const FILL_VARIABLES_SYSTEM = `Du bist ein Prompt-Engineering-Assistent. Der Benutzer hat eine Vorlage mit Platzhaltern. Fülle die Platzhalter mit realistischen, konkreten Beispielwerten aus.
 Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Backticks, kein Preamble).
@@ -212,5 +226,39 @@ export function useACTAAssist(): UseACTAAssistReturn {
     }
   }, []);
 
-  return { suggest, improve, fillVariables, isLoading };
+  const suggestVariableOptions = useCallback(async (
+    variableNames: string[],
+    fields: ACTAFields,
+    model?: string,
+  ): Promise<Record<string, string[]> | null> => {
+    if (variableNames.length === 0) return null;
+    setIsLoading(true);
+    try {
+      const contextHint = [fields.act, fields.context, fields.task].filter(Boolean).join(". ");
+      const text = await complete({
+        messages: [
+          { role: "system", content: SUGGEST_OPTIONS_SYSTEM },
+          { role: "user", content: `Platzhalter: ${variableNames.join(", ")}\nKontext: ${contextHint || "Allgemein"}` },
+        ],
+        model,
+        temperature: 0.7,
+      });
+      const clean = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(clean);
+      const result: Record<string, string[]> = {};
+      for (const name of variableNames) {
+        if (Array.isArray(parsed[name]) && parsed[name].length > 0) {
+          result[name] = parsed[name];
+        }
+      }
+      return Object.keys(result).length > 0 ? result : null;
+    } catch (e) {
+      handleError(e);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { suggest, improve, fillVariables, suggestVariableOptions, isLoading };
 }

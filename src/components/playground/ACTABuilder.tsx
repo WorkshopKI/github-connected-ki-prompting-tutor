@@ -217,6 +217,106 @@ const REASONING_OPTIONS = [
   { value: "tree-of-thought", label: "Lösungswege vergleichen" },
 ];
 
+interface VariableComboInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  kiOptions: string[];
+  kiLoading: boolean;
+  onLoadMore: () => void;
+  kiLoaded: boolean;
+}
+
+function VariableComboInput({ label, value, onChange, kiOptions, kiLoading, onLoadMore, kiLoaded }: VariableComboInputProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const filled = value.trim().length > 0;
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Filter suggestions by input
+  const filtered = kiOptions.filter(s =>
+    !value.trim() || s.toLowerCase().includes(value.toLowerCase())
+  );
+
+  return (
+    <div ref={ref} className="flex-1 min-w-[100px] relative">
+      <label className={cn(
+        "text-[10px] font-semibold uppercase tracking-wider mb-1 flex items-center gap-1",
+        filled ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+      )}>
+        {filled && <span>✓</span>}
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setOpen(true)}
+          placeholder="Eintippen oder auswählen..."
+          className={cn(
+            "w-full h-7 text-xs pl-2 pr-7 rounded-md border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors",
+            filled
+              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950/30"
+              : open ? "border-primary" : "border-border"
+          )}
+        />
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="absolute right-1 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground"
+        >
+          <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+        </button>
+      </div>
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-[200px] overflow-y-auto">
+          {filtered.length > 0 ? (
+            filtered.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => { onChange(s); setOpen(false); }}
+                className="w-full text-left px-2.5 py-1.5 text-xs hover:bg-muted transition-colors border-b border-border/40 last:border-b-0"
+              >
+                {s}
+              </button>
+            ))
+          ) : (
+            <div className="px-2.5 py-2 text-xs text-muted-foreground italic">
+              Keine Treffer — eigenen Wert eintippen
+            </div>
+          )}
+          {/* "Mehr Vorschläge" — lädt KI-Optionen */}
+          {!kiLoaded && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onLoadMore(); }}
+              disabled={kiLoading}
+              className="w-full text-left px-2.5 py-2 text-xs border-t border-border bg-primary/5 text-primary font-medium hover:bg-primary/10 transition-colors flex items-center gap-1.5"
+            >
+              {kiLoading ? (
+                <><Loader2 className="w-3 h-3 animate-spin" /> Generiere Vorschläge...</>
+              ) : (
+                <><Wand2 className="w-3 h-3" /> Mehr Vorschläge laden</>
+              )}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export const ACTABuilder = ({
   fields,
   onFieldsChange,
@@ -252,7 +352,7 @@ export const ACTABuilder = ({
     ext.reversePrompt ||
     ext.negatives.trim() !== "";
 
-  const { suggest, improve, fillVariables, isLoading: aiLoading } = useACTAAssist();
+  const { suggest, improve, fillVariables, suggestVariableOptions, isLoading: aiLoading } = useACTAAssist();
   const [showSuggest, setShowSuggest] = useState(false);
   const [suggestInput, setSuggestInput] = useState("");
 
@@ -320,6 +420,50 @@ export const ACTABuilder = ({
   };
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [extensionsOpen, setExtensionsOpen] = useState(false);
+
+  // KI-Vorschläge für Variablen (Combobox) — sessionStorage-Cache pro Template
+  const cacheKey = sourceTitle ? `acta-suggestions::${sourceTitle}` : null;
+  const [variableOptions, setVariableOptions] = useState<Record<string, string[]>>(() => {
+    if (!cacheKey) return {};
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : {};
+    } catch { return {}; }
+  });
+  const [kiOptionsLoaded, setKiOptionsLoaded] = useState(() => {
+    if (!cacheKey) return false;
+    try { return !!sessionStorage.getItem(cacheKey); }
+    catch { return false; }
+  });
+
+  // Cache bei Template-Wechsel laden/zurücksetzen
+  useEffect(() => {
+    if (cacheKey) {
+      try {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+          setVariableOptions(JSON.parse(cached));
+          setKiOptionsLoaded(true);
+          return;
+        }
+      } catch { /* ignore */ }
+    }
+    setVariableOptions({});
+    setKiOptionsLoaded(false);
+  }, [cacheKey, variables.join(",")]);
+
+  const handleLoadMoreOptions = async () => {
+    if (kiOptionsLoaded || aiLoading) return;
+    const result = await suggestVariableOptions(variables, fields, selectedModel);
+    if (result) {
+      setVariableOptions(result);
+      setKiOptionsLoaded(true);
+      if (cacheKey) {
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(result)); }
+        catch { /* sessionStorage voll — ignorieren */ }
+      }
+    }
+  };
 
   const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
     onFieldsChange({ ...fields, [key]: value });
@@ -487,54 +631,21 @@ export const ACTABuilder = ({
                 )}
               </div>
             )}
-            {/* ═══ VARIABLEN — Inputs + Beispielwerte in einer Zeile ═══ */}
+            {/* ═══ VARIABLEN — Combobox-Inputs ═══ */}
             {variables.length > 0 && (
-              <div data-tour="acta-variables" className="flex items-end gap-2 flex-wrap">
+              <div data-tour="acta-variables" className="flex items-end gap-2 flex-wrap relative z-10">
                 {variables.map((v) => (
-                  <div key={v} className="flex-1 min-w-[100px]">
-                    <label className={cn(
-                      "text-[10px] font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 block",
-                      variableValues[v]?.trim() ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
-                    )}>
-                      {variableValues[v]?.trim() && <span>✓</span>}
-                      {v}
-                    </label>
-                    <input
-                      type="text"
-                      value={variableValues[v] || ""}
-                      onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
-                      placeholder={`z.B. ...`}
-                      className={cn(
-                        "w-full h-7 text-xs px-2 rounded-md border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors",
-                        variableValues[v]?.trim()
-                          ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950/30"
-                          : "border-border"
-                      )}
-                    />
-                  </div>
+                  <VariableComboInput
+                    key={v}
+                    label={v}
+                    value={variableValues[v] || ""}
+                    onChange={(val) => setVariableValues(prev => ({ ...prev, [v]: val }))}
+                    kiOptions={variableOptions[v] || []}
+                    kiLoading={aiLoading}
+                    onLoadMore={handleLoadMoreOptions}
+                    kiLoaded={kiOptionsLoaded}
+                  />
                 ))}
-                {/* Beispielwerte — direkt neben den Inputs */}
-                {hasUnfilledVars && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-xs gap-1 text-primary border-primary/30 bg-primary/5 hover:bg-primary/10 shrink-0"
-                    disabled={aiLoading}
-                    onClick={async () => {
-                      const result = await fillVariables(
-                        variables.filter(v => !variableValues[v]?.trim()),
-                        fields,
-                        selectedModel,
-                      );
-                      if (result) {
-                        setVariableValues(prev => ({ ...prev, ...result }));
-                      }
-                    }}
-                  >
-                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                    Beispielwerte
-                  </Button>
-                )}
               </div>
             )}
 
