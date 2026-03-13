@@ -29,7 +29,7 @@ export function PlaygroundHeader({
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
-      <div className="flex items-center h-12 px-4 max-w-[1380px] mx-auto">
+      <div className="flex items-center h-12 px-4">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
