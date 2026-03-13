@@ -197,16 +197,16 @@ export const ChatPlayground = ({
           <ChatMessage role="assistant" content={streamingContent} isStreaming />
         )}
 
+        {/* Iteration Nudge — inside scroll, directly under output */}
+        {!isStreaming && turnCount > 0 && (
+          <IterationNudge
+            turnCount={turnCount}
+            onSendSuggestion={(text) => onSendMessage(text)}
+          />
+        )}
+
         {hasMessages && <div ref={bottomRef} />}
       </div>
-
-      {/* Iteration Nudge */}
-      {!isStreaming && turnCount > 0 && (
-        <IterationNudge
-          turnCount={turnCount}
-          onSendSuggestion={(text) => onSendMessage(text)}
-        />
-      )}
 
       {/* Input */}
       <div className="px-4 pb-4 pt-2 border-t border-border">

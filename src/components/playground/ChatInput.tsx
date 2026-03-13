@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Square, Brain, Plus, Paperclip, Globe, Microscope } from "lucide-react";
+import { Send, Square, Brain, Plus, Paperclip } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ModelSelectGroups } from "./ModelSelect";
@@ -101,20 +101,6 @@ export const ChatInput = ({
                 <div>
                   <div className="font-medium">Datei anhängen</div>
                   <div className="text-[10px] text-muted-foreground">PDF, Bild, Dokument</div>
-                </div>
-              </button>
-              <button className="flex items-center gap-2.5 w-full px-3 py-1.5 text-xs rounded-md hover:bg-muted transition-colors">
-                <Globe className="w-3.5 h-3.5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium">Websuche</div>
-                  <div className="text-[10px] text-muted-foreground">Aktuelle Infos aus dem Web</div>
-                </div>
-              </button>
-              <button className="flex items-center gap-2.5 w-full px-3 py-1.5 text-xs rounded-md hover:bg-muted transition-colors">
-                <Microscope className="w-3.5 h-3.5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium">Deep Research</div>
-                  <div className="text-[10px] text-muted-foreground">Tiefgehende Analyse</div>
                 </div>
               </button>
             </PopoverContent>
