@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -15,8 +15,10 @@ import { cn } from "@/lib/utils";
 interface ComparisonRound {
   promptA: string;
   promptB: string;
+  promptC?: string;
   resultA: ComparisonResult;
   resultB: ComparisonResult;
+  resultC?: ComparisonResult;
 }
 
 interface Props {
@@ -24,11 +26,15 @@ interface Props {
   onBudgetExhausted: () => void;
   selectedModel?: string;
   onBackToChat?: () => void;
+  initialPrompt?: string;
+  internalModel?: string | null;
 }
 
-export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedModel, onBackToChat }: Props) => {
+export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedModel, onBackToChat, initialPrompt, internalModel }: Props) => {
   const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
   const [modelB, setModelB] = useState("openai/gpt-5");
+  const [modelC, setModelC] = useState<string | null>(null);
+  const [threeWay, setThreeWay] = useState(false);
   const [promptText, setPromptText] = useState("");
   const [promptA, setPromptA] = useState("");
   const [promptB, setPromptB] = useState("");
@@ -36,29 +42,59 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
   const [rounds, setRounds] = useState<ComparisonRound[]>([]);
   const [currentA, setCurrentA] = useState<ComparisonResult | null>(null);
   const [currentB, setCurrentB] = useState<ComparisonResult | null>(null);
+  const [currentC, setCurrentC] = useState<ComparisonResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const accA = useRef("");
   const accB = useRef("");
+  const accC = useRef("");
   const abortA = useRef<AbortController | null>(null);
   const abortB = useRef<AbortController | null>(null);
+  const abortC = useRef<AbortController | null>(null);
   const doneCount = useRef(0);
   const roundPromptA = useRef("");
   const roundPromptB = useRef("");
+
+  // Set default model C when three-way is activated
+  useEffect(() => {
+    if (threeWay && !modelC) {
+      setModelC(internalModel || "openai/gpt-oss-120b");
+    }
+  }, [threeWay, internalModel]);
+
+  // Pre-fill prompt from ACTA builder
+  useEffect(() => {
+    if (initialPrompt && !promptText && rounds.length === 0) {
+      setPromptText(initialPrompt);
+    }
+  }, [initialPrompt]);
+
+  const threeWayRef = useRef(threeWay);
+  const modelCRef = useRef(modelC);
+  threeWayRef.current = threeWay;
+  modelCRef.current = modelC;
 
   const handleCompare = useCallback(() => {
     const pA = decoupled ? promptA.trim() : promptText.trim();
     const pB = decoupled ? promptB.trim() : promptText.trim();
     if (!pA || !pB || isRunning) return;
 
+    const isThreeWay = threeWayRef.current;
+    const currentModelC = modelCRef.current;
+    const expectedDone = isThreeWay && currentModelC ? 3 : 2;
+
     setIsRunning(true);
     doneCount.current = 0;
     accA.current = "";
     accB.current = "";
+    accC.current = "";
     roundPromptA.current = pA;
     roundPromptB.current = pB;
     setCurrentA({ model: modelA, content: "", isStreaming: true });
     setCurrentB({ model: modelB, content: "", isStreaming: true });
+    if (isThreeWay && currentModelC) {
+      setCurrentC({ model: currentModelC, content: "", isStreaming: true });
+    }
 
     const msgsA: Msg[] = [];
     const msgsB: Msg[] = [];
@@ -69,21 +105,24 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
     msgsA.push({ role: "user", content: pA });
     msgsB.push({ role: "user", content: pB });
 
-    const markDone = (side: "A" | "B") => {
+    const markDone = () => {
       doneCount.current++;
-      if (doneCount.current >= 2) {
+      if (doneCount.current >= expectedDone) {
         setIsRunning(false);
         setRounds(prev => [
           ...prev,
           {
             promptA: roundPromptA.current,
             promptB: roundPromptB.current,
+            promptC: isThreeWay ? roundPromptA.current : undefined,
             resultA: { model: modelA, content: accA.current, isStreaming: false },
             resultB: { model: modelB, content: accB.current, isStreaming: false },
+            resultC: isThreeWay && currentModelC ? { model: currentModelC, content: accC.current, isStreaming: false } : undefined,
           },
         ]);
         setCurrentA(null);
         setCurrentB(null);
+        setCurrentC(null);
       }
     };
 
@@ -100,13 +139,13 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
       },
       onDone: () => {
         setCurrentA({ model: modelA, content: accA.current, isStreaming: false });
-        markDone("A");
+        markDone();
       },
       onError: (error, status) => {
         if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
         else toast.error(`Modell A: ${error}`);
         setCurrentA(prev => prev ? { ...prev, isStreaming: false } : null);
-        markDone("A");
+        markDone();
       },
     });
 
@@ -120,23 +159,54 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
       },
       onDone: () => {
         setCurrentB({ model: modelB, content: accB.current, isStreaming: false });
-        markDone("B");
+        markDone();
       },
       onError: (error, status) => {
         if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
         else toast.error(`Modell B: ${error}`);
         setCurrentB(prev => prev ? { ...prev, isStreaming: false } : null);
-        markDone("B");
+        markDone();
       },
     });
+
+    // Stream model C — only if threeWay
+    if (isThreeWay && currentModelC) {
+      abortC.current = new AbortController();
+      accC.current = "";
+      const msgsC: Msg[] = [];
+      if (systemPrompt.trim()) msgsC.push({ role: "system", content: systemPrompt });
+      msgsC.push({ role: "user", content: pA });
+
+      streamChat({
+        messages: msgsC,
+        model: currentModelC,
+        signal: abortC.current.signal,
+        onDelta: (text) => {
+          accC.current += text;
+          setCurrentC({ model: currentModelC!, content: accC.current, isStreaming: true });
+        },
+        onDone: () => {
+          setCurrentC({ model: currentModelC!, content: accC.current, isStreaming: false });
+          markDone();
+        },
+        onError: (error, status) => {
+          if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
+          else toast.error(`Modell C: ${error}`);
+          setCurrentC(prev => prev ? { ...prev, isStreaming: false } : null);
+          markDone();
+        },
+      });
+    }
   }, [promptText, promptA, promptB, decoupled, isRunning, modelA, modelB, systemPrompt, onBudgetExhausted]);
 
   const handleStop = () => {
     abortA.current?.abort();
     abortB.current?.abort();
+    abortC.current?.abort();
     setIsRunning(false);
     setCurrentA(prev => prev ? { ...prev, isStreaming: false } : null);
     setCurrentB(prev => prev ? { ...prev, isStreaming: false } : null);
+    setCurrentC(prev => prev ? { ...prev, isStreaming: false } : null);
   };
 
   const canSend = decoupled
@@ -151,16 +221,37 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
           <span className="text-[10px] font-bold text-primary">A</span>
           <ModelSelect value={modelA} onValueChange={setModelA} disabled={isRunning} />
         </div>
-        <div className="flex-1 px-3 py-1.5 flex items-center gap-2">
+        <div className={cn("flex-1 px-3 py-1.5 flex items-center gap-2", threeWay ? "border-r border-border" : "")}>
           <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">B</span>
           <ModelSelect value={modelB} onValueChange={setModelB} disabled={isRunning} />
         </div>
+        {threeWay ? (
+          <div className="flex-1 px-3 py-1.5 flex items-center gap-2">
+            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">C</span>
+            <ModelSelect value={modelC || ""} onValueChange={setModelC} disabled={isRunning} />
+            <button
+              onClick={() => { setThreeWay(false); setModelC(null); }}
+              className="text-[10px] text-muted-foreground hover:text-foreground ml-auto"
+              title="Spalte C entfernen"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setThreeWay(true)}
+            className="px-3 py-1.5 flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border-l border-border"
+            title="Drittes Modell hinzufügen"
+          >
+            <span className="text-sm">+</span> Modell C
+          </button>
+        )}
       </div>
 
       {/* Split results — scrollable */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Column A */}
-        <div className="flex-1 overflow-y-auto border-r border-border p-3 space-y-3">
+        <div className={cn("flex-1 overflow-y-auto border-r border-border p-3 space-y-3")}>
           {rounds.map((r, i) => (
             <div key={i} className="space-y-1">
               <span className="text-[9px] text-muted-foreground font-medium">Runde {i + 1}</span>
@@ -181,7 +272,7 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
         </div>
 
         {/* Column B */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        <div className={cn("flex-1 overflow-y-auto p-3 space-y-3", threeWay ? "border-r border-border" : "")}>
           {rounds.map((r, i) => (
             <div key={i} className="space-y-1">
               <span className="text-[9px] text-muted-foreground font-medium">Runde {i + 1}</span>
@@ -200,6 +291,24 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
             </div>
           )}
         </div>
+
+        {/* Column C — nur wenn threeWay */}
+        {threeWay && (
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {rounds.map((r, i) => (
+              <div key={i} className="space-y-1">
+                <span className="text-[9px] text-muted-foreground font-medium">Runde {i + 1}</span>
+                {r.resultC && <ComparisonColumn label="" result={r.resultC} />}
+              </div>
+            ))}
+            {currentC && <ComparisonColumn label="..." result={currentC} />}
+            {rounds.length === 0 && !currentC && (
+              <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
+                Prompt eingeben und vergleichen
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Comparative evaluation — after completed round */}
@@ -263,7 +372,7 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
             {decoupled ? "✓ Entkoppelt" : "Entkoppeln"}
           </button>
           <span className="text-[10px] text-muted-foreground flex-1 truncate">
-            {decoupled ? "Verschiedene Prompts pro Modell" : "Gleicher Prompt an beide"}
+            {decoupled ? "Verschiedene Prompts pro Modell" : "Gleicher Prompt an alle"}
           </span>
           {isRunning && (
             <Button onClick={handleStop} variant="destructive" size="sm" className="h-6 text-[10px] gap-1">
@@ -324,7 +433,7 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
             size="sm"
             className="h-7 text-[11px] gap-1"
           >
-            <Send className="w-3 h-3" /> {decoupled ? "Beide senden" : "Vergleichen"}
+            <Send className="w-3 h-3" /> {decoupled ? "Alle senden" : "Vergleichen"}
           </Button>
         </div>
       </div>

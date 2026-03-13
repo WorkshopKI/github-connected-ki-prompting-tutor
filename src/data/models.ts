@@ -57,6 +57,7 @@ export const OPEN_SOURCE_MODELS: ModelOption[] = [
   { value: "mistral/mistral-large", label: "Mistral Large", tier: "external" },
   { value: "mistral/mistral-small", label: "Mistral Small", tier: "external" },
   { value: "mistral/codestral", label: "Codestral", tier: "external" },
+  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B (Open Source)", tier: "external" },
 ];
 
 export { DEFAULT_MODEL } from "@/lib/constants";
