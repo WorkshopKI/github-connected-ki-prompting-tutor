@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown, ChevronUp, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight, User, FileText, Target, Layout, Send, Copy, Loader2, Wand2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { getLibraryTemplates, EMPTY_EXTENSIONS, type ACTAFields, type ACTAExtensions } from "./ACTATemplates";
@@ -319,6 +319,7 @@ export const ACTABuilder = ({
     else setInternalExpanded(val);
   };
   const [activeChip, setActiveChip] = useState<string | null>(null);
+  const [extensionsOpen, setExtensionsOpen] = useState(false);
 
   const updateField = (key: "act" | "context" | "task" | "ausgabe", value: string) => {
     onFieldsChange({ ...fields, [key]: value });
@@ -462,35 +463,72 @@ export const ACTABuilder = ({
               ))}
             </div>
 
-            {/* Inline variables */}
+            {/* ═══ NUDGE BAR — Was als nächstes? ═══ */}
             {variables.length > 0 && (
-              <div data-tour="acta-variables" className="flex items-center gap-2">
-                <div className="flex flex-1 min-w-0 flex-wrap items-center gap-2">
-                  <span className="text-xs font-semibold text-muted-foreground shrink-0">
-                    Angaben ({variables.filter(v => variableValues[v]?.trim()).length}/{variables.length}):
-                  </span>
-                  {variables.map((v) => (
-                    <div key={v} className="flex items-center gap-1 flex-1 min-w-[80px]">
-                      <span className="text-[11px] font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">{v}</span>
-                      <input
-                        type="text"
-                        value={variableValues[v] || ""}
-                        onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
-                        placeholder="..."
-                        className="h-6 text-xs px-2 rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 flex-1 min-w-[50px]"
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg border-l-[3px] transition-all",
+                hasUnfilledVars
+                  ? "bg-primary/5 border-l-primary"
+                  : "bg-green-50 dark:bg-green-950/30 border-l-green-600 dark:border-l-green-500"
+              )}>
+                {hasUnfilledVars ? (
+                  <>
+                    <span className="text-sm">👋</span>
+                    <span className="text-xs font-semibold text-foreground">
+                      Noch {variables.filter(v => !variableValues[v]?.trim()).length} {variables.filter(v => !variableValues[v]?.trim()).length === 1 ? "Angabe" : "Angaben"} offen
+                    </span>
+                    <span className="text-xs text-muted-foreground">— fülle die Felder unten aus</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm">✅</span>
+                    <span className="text-xs font-semibold text-green-700 dark:text-green-400">Prompt vollständig — bereit zum Senden</span>
+                  </>
+                )}
+              </div>
+            )}
+            {/* ═══ VARIABLEN — Inputs + Beispielwerte in einer Zeile ═══ */}
+            {variables.length > 0 && (
+              <div data-tour="acta-variables" className="flex items-end gap-2 flex-wrap">
+                {variables.map((v) => (
+                  <div key={v} className="flex-1 min-w-[100px]">
+                    <label className={cn(
+                      "text-[10px] font-semibold uppercase tracking-wider mb-1 flex items-center gap-1 block",
+                      variableValues[v]?.trim() ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+                    )}>
+                      {variableValues[v]?.trim() && <span>✓</span>}
+                      {v}
+                    </label>
+                    <input
+                      type="text"
+                      value={variableValues[v] || ""}
+                      onChange={(e) => setVariableValues(prev => ({ ...prev, [v]: e.target.value }))}
+                      placeholder={`z.B. ...`}
+                      className={cn(
+                        "w-full h-7 text-xs px-2 rounded-md border bg-background focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors",
+                        variableValues[v]?.trim()
+                          ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950/30"
+                          : "border-border"
+                      )}
+                    />
+                  </div>
+                ))}
+                {/* Beispielwerte — direkt neben den Inputs */}
                 {hasUnfilledVars && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-xs h-6 gap-1 text-primary shrink-0"
+                    className="h-7 text-xs gap-1 text-primary border-primary/30 bg-primary/5 hover:bg-primary/10 shrink-0"
                     disabled={aiLoading}
                     onClick={async () => {
-                      const result = await fillVariables(variables.filter(v => !variableValues[v]?.trim()), fields, selectedModel);
-                      if (result) setVariableValues(prev => ({ ...prev, ...result }));
+                      const result = await fillVariables(
+                        variables.filter(v => !variableValues[v]?.trim()),
+                        fields,
+                        selectedModel,
+                      );
+                      if (result) {
+                        setVariableValues(prev => ({ ...prev, ...result }));
+                      }
                     }}
                   >
                     {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
@@ -500,36 +538,28 @@ export const ACTABuilder = ({
               </div>
             )}
 
-            {/* Extension Chips + Action Buttons in one row */}
+            {/* ═══ ACTIONS + PROGRESSIVE DISCLOSURE ═══ */}
             <div className="flex items-center gap-1.5">
-              {/* Extension Chips — only Experte */}
+              {/* ▸ Erweiterte Optionen — nur Experte */}
               {isExperte && (
-                <div className="flex gap-1 flex-1 flex-wrap" data-tour="acta-extensions">
-                  {EXTENSION_CHIPS.map((chip) => {
-                    const active = isChipActive(chip.key);
-                    return (
-                      <button
-                        key={chip.key}
-                        onClick={() => handleChipClick(chip)}
-                        className={cn(
-                          "text-xs px-2 py-0.5 rounded-full border transition-colors font-medium",
-                          active
-                            ? "bg-primary/10 border-primary/30 text-primary"
-                            : "border-border text-muted-foreground hover:border-primary/30"
-                        )}
-                      >
-                        {active ? "✓ " : "+ "}{chip.label}
-                      </button>
-                    );
-                  })}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setExtensionsOpen(!extensionsOpen)}
+                  className="text-xs text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 transition-colors"
+                >
+                  <ChevronRight className={cn(
+                    "w-3 h-3 transition-transform",
+                    extensionsOpen && "rotate-90"
+                  )} />
+                  Erweiterte Optionen
+                </button>
               )}
               {!isExperte && <div className="flex-1" />}
-
+              <div className="flex-1" />
               {/* Action Buttons */}
               <div className="flex gap-1.5 shrink-0" data-tour="acta-send">
-                {/* 1. ✨ Vorschlagen — nur Experte */}
-                {isExperte && (
+                {/* ✨ Vorschlagen — nur Experte, nur wenn kein sourceTitle (leeres Template) */}
+                {isExperte && !sourceTitle && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -537,10 +567,10 @@ export const ACTABuilder = ({
                     title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
                     onClick={() => setShowSuggest(!showSuggest)}
                   >
-                    <Wand2 className="w-3 h-3" /> ACTA Inhalte vorschlagen
+                    <Wand2 className="w-3 h-3" /> Vorschlagen
                   </Button>
                 )}
-                {/* 2. 🔍 Prüfen — nur Experte + Inhalt vorhanden */}
+                {/* 🔍 Prüfen — nur Experte + Inhalt */}
                 {isExperte && hasContent && (
                   <Popover onOpenChange={(open) => { if (open) evaluatePrompt(assembled); }}>
                     <PopoverTrigger asChild>
@@ -615,11 +645,16 @@ export const ACTABuilder = ({
                     </PopoverContent>
                   </Popover>
                 )}
-                {/* 3. → An KI senden — Primary */}
-                <Button onClick={handleSend} disabled={!hasContent} size="sm" className="text-xs h-7 gap-1">
+                {/* → An KI senden — disabled wenn Variablen offen */}
+                <Button
+                  onClick={handleSend}
+                  disabled={!hasContent || hasUnfilledVars}
+                  size="sm"
+                  className="text-xs h-7 gap-1"
+                >
                   <Send className="w-3 h-3" /> An KI senden
                 </Button>
-                {/* 4. 📋 Kopieren */}
+                {/* 📋 Kopieren */}
                 <Button
                   onClick={handleCopy}
                   disabled={!hasContent}
@@ -632,76 +667,97 @@ export const ACTABuilder = ({
                 </Button>
               </div>
             </div>
-
-            {/* Active Chip Input Area */}
-            {isExperte && activeChip === "examples" && (
-              <div className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
-                <p className="text-[11px] text-muted-foreground">Zeige der KI 1–3 Beispiele (Few-Shot):</p>
-                {ext.examples.map((ex, i) => (
-                  <div key={i} className="flex gap-1.5 items-start">
-                    <Textarea
-                      value={ex}
-                      onChange={(e) => {
-                        const updated = ext.examples.map((v, j) => j === i ? e.target.value : v);
-                        updateExtensions({ ...ext, examples: updated });
-                      }}
-                      placeholder={`Beispiel ${i + 1}...`}
-                      className="text-xs min-h-[40px] resize-none flex-1"
-                      rows={2}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 shrink-0 mt-1"
-                      onClick={() => updateExtensions({ ...ext, examples: ext.examples.filter((_, j) => j !== i) })}
-                    >
-                      <span className="text-xs">✕</span>
-                    </Button>
+            {/* ═══ EXTENSIONS — nur wenn aufgeklappt ═══ */}
+            {isExperte && extensionsOpen && (
+              <div className="bg-muted/30 border border-border rounded-lg p-2.5 space-y-2">
+                {/* Extension Chips */}
+                <div className="flex gap-1 flex-wrap" data-tour="acta-extensions">
+                  {EXTENSION_CHIPS.map((chip) => {
+                    const active = isChipActive(chip.key);
+                    return (
+                      <button
+                        key={chip.key}
+                        onClick={() => handleChipClick(chip)}
+                        className={cn(
+                          "text-xs px-2 py-0.5 rounded-full border transition-colors font-medium",
+                          active
+                            ? "bg-primary/10 border-primary/30 text-primary"
+                            : "border-border text-muted-foreground hover:border-primary/30"
+                        )}
+                      >
+                        {active ? "✓ " : "+ "}{chip.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Active Chip Input Area */}
+                {activeChip === "examples" && (
+                  <div className="bg-muted/30 border border-border rounded-md p-2.5 space-y-1.5">
+                    <p className="text-[11px] text-muted-foreground">Zeige der KI 1–3 Beispiele (Few-Shot):</p>
+                    {ext.examples.map((ex, i) => (
+                      <div key={i} className="flex gap-1.5 items-start">
+                        <Textarea
+                          value={ex}
+                          onChange={(e) => {
+                            const updated = ext.examples.map((v, j) => j === i ? e.target.value : v);
+                            updateExtensions({ ...ext, examples: updated });
+                          }}
+                          placeholder={`Beispiel ${i + 1}...`}
+                          className="text-xs min-h-[40px] resize-none flex-1"
+                          rows={2}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 shrink-0 mt-1"
+                          onClick={() => updateExtensions({ ...ext, examples: ext.examples.filter((_, j) => j !== i) })}
+                        >
+                          <span className="text-xs">✕</span>
+                        </Button>
+                      </div>
+                    ))}
+                    {ext.examples.length < 3 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs h-6 w-full"
+                        onClick={() => updateExtensions({ ...ext, examples: [...ext.examples, ""] })}
+                      >
+                        + Beispiel hinzufügen
+                      </Button>
+                    )}
                   </div>
-                ))}
-                {ext.examples.length < 3 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-6 w-full"
-                    onClick={() => updateExtensions({ ...ext, examples: [...ext.examples, ""] })}
+                )}
+                {activeChip === "rules" && (
+                  <Textarea
+                    value={ext.rules}
+                    onChange={(e) => updateExtensions({ ...ext, rules: e.target.value })}
+                    placeholder="Wichtige Regeln und Einschränkungen..."
+                    className="text-xs"
+                    rows={2}
+                  />
+                )}
+                {activeChip === "reasoning" && (
+                  <select
+                    value={ext.reasoning || ""}
+                    onChange={(e) => updateExtensions({ ...ext, reasoning: e.target.value })}
+                    className="text-xs border border-border rounded-md px-2 py-1.5 bg-background w-full focus:outline-none focus:ring-1 focus:ring-primary/50"
                   >
-                    + Beispiel hinzufügen
-                  </Button>
+                    {REASONING_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                )}
+                {activeChip === "negatives" && (
+                  <Textarea
+                    value={ext.negatives}
+                    onChange={(e) => updateExtensions({ ...ext, negatives: e.target.value })}
+                    placeholder="Was die KI NICHT tun soll..."
+                    className="text-xs"
+                    rows={2}
+                  />
                 )}
               </div>
-            )}
-
-            {isExperte && activeChip === "rules" && (
-              <Textarea
-                value={ext.rules}
-                onChange={(e) => updateExtensions({ ...ext, rules: e.target.value })}
-                placeholder="Wichtige Regeln und Einschränkungen..."
-                className="text-xs"
-                rows={2}
-              />
-            )}
-
-            {isExperte && activeChip === "reasoning" && (
-              <select
-                value={ext.reasoning || ""}
-                onChange={(e) => updateExtensions({ ...ext, reasoning: e.target.value })}
-                className="text-xs border border-border rounded-md px-2 py-1.5 bg-background w-full focus:outline-none focus:ring-1 focus:ring-primary/50"
-              >
-                {REASONING_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            )}
-
-            {isExperte && activeChip === "negatives" && (
-              <Textarea
-                value={ext.negatives}
-                onChange={(e) => updateExtensions({ ...ext, negatives: e.target.value })}
-                placeholder="Was die KI NICHT tun soll..."
-                className="text-xs"
-                rows={2}
-              />
             )}
           </div>
         )}
