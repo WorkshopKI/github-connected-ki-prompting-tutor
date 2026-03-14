@@ -130,12 +130,12 @@ export const PlaygroundContent = ({
         {/* Zonen-Label */}
         <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mr-2 hidden sm:inline">Ergebnis</span>
         {/* Modus-Toggle */}
-        <div className="flex gap-0.5 bg-card rounded-md p-0.5 mr-1 shadow-sm">
+        <div className="flex gap-0.5 bg-card rounded-md p-0.5 mr-1 shadow-sm border border-border/60">
           <button
             onClick={() => setChatMode("chat")}
             className={cn(
               "px-2 py-0.5 rounded text-[11px] font-medium transition-colors",
-              chatMode === "chat" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+              chatMode === "chat" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Chat
@@ -145,7 +145,7 @@ export const PlaygroundContent = ({
               onClick={() => setChatMode("compare")}
               className={cn(
                 "px-2 py-0.5 rounded text-[11px] font-medium transition-colors",
-                chatMode === "compare" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                chatMode === "compare" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               Vergleich
