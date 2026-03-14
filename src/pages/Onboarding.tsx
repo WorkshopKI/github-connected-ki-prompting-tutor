@@ -202,7 +202,7 @@ const Onboarding = () => {
         >
           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0 ${
             status === "completed"
-              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
+              ? "bg-primary/15 text-primary"
               : status === "available"
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground"
