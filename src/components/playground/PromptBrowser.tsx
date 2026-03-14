@@ -86,7 +86,7 @@ export const PromptBrowser = ({
   }, [isDepartment, scopeLabel]);
 
   return (
-    <div className="h-full flex flex-col bg-card/50">
+    <div className="h-full flex flex-col bg-muted/30 dark:bg-muted/20">
       {/* Header + Search */}
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         <div className="flex items-center gap-1.5">
@@ -146,7 +146,7 @@ export const PromptBrowser = ({
                   className={cn(
                     "w-full text-left px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 min-w-0",
                     activePromptTitle === s.title
-                      ? "bg-primary/10"
+                      ? "bg-primary/15 border-l-2 border-l-primary"
                       : "hover:bg-muted/50"
                   )}
                 >
@@ -174,7 +174,7 @@ export const PromptBrowser = ({
                 className={cn(
                   "w-full text-left px-2 py-1 rounded-md transition-colors flex items-center gap-1.5 min-w-0",
                   activePromptTitle === p.title
-                    ? "bg-primary/10"
+                    ? "bg-primary/15 border-l-2 border-l-primary"
                     : "hover:bg-muted/50"
                 )}
               >
