@@ -287,26 +287,28 @@ export const PromptLibrary = () => {
 
   return (
     <section>
-      <div className="mb-5 space-y-3">
-        {/* Zeile 1: Suche (aufklappbar) + Filter-Popover */}
-        <div className="flex items-center gap-2">
+      <div className="mb-4">
+        {/* Einzeilig: Suche + Abteilung + Kategorien + Filter */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Suche — kompakt, expandierbar */}
           {searchOpen ? (
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <div className="relative w-48">
+              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground w-3.5 h-3.5" />
               <Input
                 type="text"
-                placeholder="Suche nach Prompts..."
+                placeholder="Suche…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9 text-sm"
+                className="pl-8 h-7 text-xs"
                 autoFocus
+                onBlur={() => { if (!searchQuery) setSearchOpen(false); }}
               />
               {searchQuery && (
                 <button
                   onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-3 h-3" />
                 </button>
               )}
             </div>
@@ -315,23 +317,99 @@ export const PromptLibrary = () => {
               variant="outline"
               size="sm"
               onClick={() => setSearchOpen(true)}
-              className="gap-1.5 text-muted-foreground"
+              className="h-7 text-xs gap-1 text-muted-foreground"
             >
               <Search className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Suche</span>
+              Suche
             </Button>
           )}
-
-          {!searchOpen && <div className="flex-1" />}
-
+          {/* Trennstrich */}
+          <div className="w-px h-5 bg-border" />
+          {/* Abteilungs-Dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={departmentScope !== "Alle" ? "default" : "outline"}
+                size="sm"
+                className="h-7 text-xs gap-1"
+              >
+                {departmentScope === "Meine Abteilung"
+                  ? `⬡ ${scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")}`
+                  : departmentScope === "Alle"
+                    ? "⬡ Alle Abteilungen"
+                    : `⬡ ${departmentScope}`}
+                <ChevronDown className="w-3 h-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-auto p-1.5">
+              <button
+                onClick={() => { setDepartmentScope("Alle"); }}
+                className={cn(
+                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                  departmentScope === "Alle" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                )}
+              >
+                Alle Abteilungen
+              </button>
+              {isDepartment && (
+                <button
+                  onClick={() => { setDepartmentScope("Meine Abteilung"); setSelectedCategory(null); }}
+                  className={cn(
+                    "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                    departmentScope === "Meine Abteilung" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                  )}
+                >
+                  ⬡ {scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")} (meine)
+                </button>
+              )}
+              {["HR", "Legal", "IT", "Öffentlichkeitsarbeit", "Bauverfahren"]
+                .filter(d => !(isDepartment && d === scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")))
+                .map(dept => (
+                  <button
+                    key={dept}
+                    onClick={() => { setDepartmentScope(dept); setSelectedCategory(null); }}
+                    className={cn(
+                      "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
+                      departmentScope === dept ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                    )}
+                  >
+                    {dept}
+                  </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+          {/* Kategorie-Chips */}
+          {BASE_CATEGORIES.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              onClick={() => {
+                if (selectedCategory === category) {
+                  setSelectedCategory(null);
+                } else {
+                  setSelectedCategory(category);
+                  setDepartmentScope("Alle");
+                }
+              }}
+              size="sm"
+              className="h-7 text-xs"
+            >
+              {category}
+            </Button>
+          ))}
+          {/* Spacer */}
+          <div className="flex-1" />
+          {/* Count */}
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
+            {filteredPrompts.length} gefunden
+          </span>
           {/* Filter-Popover */}
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
+              <Button variant="outline" size="sm" className="relative h-7 w-7 p-0">
                 <SlidersHorizontal className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Filter</span>
                 {(onlyVerified || sortByRating || confFilter !== "all") && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
               </Button>
             </PopoverTrigger>
@@ -403,86 +481,6 @@ export const PromptLibrary = () => {
               </div>
             </PopoverContent>
           </Popover>
-        </div>
-
-        {/* Zeile 2: Abteilungs-Dropdown + Kategorien + Count */}
-        <div className="flex items-center gap-1.5">
-          {/* Abteilungs-Dropdown */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={departmentScope !== "Alle" ? "default" : "outline"}
-                size="sm"
-                className="h-7 text-xs gap-1"
-              >
-                {departmentScope === "Meine Abteilung"
-                  ? `⬡ ${scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")}`
-                  : departmentScope === "Alle"
-                    ? "⬡ Alle Abteilungen"
-                    : `⬡ ${departmentScope}`}
-                <ChevronDown className="w-3 h-3" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-auto p-1.5">
-              <button
-                onClick={() => { setDepartmentScope("Alle"); }}
-                className={cn(
-                  "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                  departmentScope === "Alle" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                )}
-              >
-                Alle Abteilungen
-              </button>
-              {isDepartment && (
-                <button
-                  onClick={() => { setDepartmentScope("Meine Abteilung"); setSelectedCategory(null); }}
-                  className={cn(
-                    "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                    departmentScope === "Meine Abteilung" ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                  )}
-                >
-                  ⬡ {scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")} (meine)
-                </button>
-              )}
-              {["HR", "Legal", "IT", "Öffentlichkeitsarbeit", "Bauverfahren"]
-                .filter(d => !(isDepartment && d === scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "")))
-                .map(dept => (
-                  <button
-                    key={dept}
-                    onClick={() => { setDepartmentScope(dept); setSelectedCategory(null); }}
-                    className={cn(
-                      "block w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors",
-                      departmentScope === dept ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                    )}
-                  >
-                    {dept}
-                  </button>
-              ))}
-            </PopoverContent>
-          </Popover>
-          {/* Kategorie-Chips — IMMER klickbar */}
-          {BASE_CATEGORIES.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => {
-                if (selectedCategory === category) {
-                  setSelectedCategory(null);
-                } else {
-                  setSelectedCategory(category);
-                  setDepartmentScope("Alle");
-                }
-              }}
-              size="sm"
-              className="h-7 text-xs"
-            >
-              {category}
-            </Button>
-          ))}
-          {/* Count */}
-          <span className="text-xs text-muted-foreground ml-auto whitespace-nowrap">
-            {filteredPrompts.length} gefunden
-          </span>
         </div>
       </div>
 
@@ -587,13 +585,13 @@ export const PromptLibrary = () => {
               <div
                 className={cn(
                   "text-xs text-foreground/80 font-mono leading-relaxed bg-muted/40 rounded-md px-3 py-2",
-                  expandedCardIndex === index ? "" : "line-clamp-4"
+                  expandedCardIndex === index ? "" : "line-clamp-7"
                 )}
               >
                 {prompt.prompt}
               </div>
               {/* "mehr/weniger" Toggle — nur wenn Text abgeschnitten wird */}
-              {prompt.prompt.length > 180 && (
+              {prompt.prompt.length > 350 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
