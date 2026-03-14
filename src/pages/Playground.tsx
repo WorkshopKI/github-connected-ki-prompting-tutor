@@ -16,6 +16,7 @@ import { useChat } from "@/hooks/useChat";
 import { useConversations } from "@/hooks/useConversations";
 import { usePlaygroundSettings } from "@/hooks/usePlaygroundSettings";
 import { LS_KEYS } from "@/lib/constants";
+import { loadStringFromStorage } from "@/lib/storage";
 import { promptLibrary } from "@/data/prompts";
 import { splitPromptToACTA } from "@/lib/promptUtils";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
@@ -69,7 +70,7 @@ const Playground = () => {
 
   // --- Playground mode ---
   const [playgroundMode, setPlaygroundMode] = useState<"einsteiger" | "experte">(() =>
-    (localStorage.getItem(LS_KEYS.PLAYGROUND_MODE) as "einsteiger" | "experte") ?? "einsteiger"
+    loadStringFromStorage(LS_KEYS.PLAYGROUND_MODE, "einsteiger") as "einsteiger" | "experte"
   );
 
   const handleModeChange = (mode: "einsteiger" | "experte") => {

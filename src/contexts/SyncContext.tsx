@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
+import { LS_KEYS } from "@/lib/constants";
 import type { ExerciseResult, LocalProgress, SyncStatus } from "@/types";
 
 export type { SyncStatus } from "@/types";
@@ -47,7 +48,6 @@ export const useSyncContext = () => {
 
 /* ── LocalStorage helpers ── */
 
-const LS_KEY = "user_progress_v2";
 
 function emptyProgress(): LocalProgress {
   return {
@@ -60,12 +60,12 @@ function emptyProgress(): LocalProgress {
 }
 
 function loadLocal(): LocalProgress {
-  return loadFromStorage(LS_KEY, emptyProgress());
+  return loadFromStorage(LS_KEYS.PROGRESS, emptyProgress());
 }
 
 function saveLocal(p: LocalProgress) {
   p.updatedAt = new Date().toISOString();
-  saveToStorage(LS_KEY, p);
+  saveToStorage(LS_KEYS.PROGRESS, p);
 }
 
 /* ── Merge logic ── */

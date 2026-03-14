@@ -1,16 +1,16 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Send, Square, Scale } from "lucide-react";
-import { streamChat } from "@/services/llmService";
 import type { Msg } from "@/types";
-import { toast } from "sonner";
 import { ComparisonColumn, type ComparisonResult } from "./ComparisonColumn";
 import { ModelSelect } from "./ModelSelect";
 import { ComparativeJudge } from "./ComparativeJudge";
 import { getModelLabel } from "@/data/models";
+import { DEFAULT_MODEL, SECONDARY_MODEL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useComparisonStreaming, type StreamSlot } from "@/hooks/useComparisonStreaming";
 
 interface ComparisonRound {
   promptA: string;
@@ -31,8 +31,8 @@ interface Props {
 }
 
 export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedModel, onBackToChat, initialPrompt, internalModel }: Props) => {
-  const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
-  const [modelB, setModelB] = useState("openai/gpt-5");
+  const [modelA, setModelA] = useState(DEFAULT_MODEL);
+  const [modelB, setModelB] = useState(SECONDARY_MODEL);
   const [modelC, setModelC] = useState<string | null>(null);
   const [threeWay, setThreeWay] = useState(false);
   const [promptText, setPromptText] = useState("");
@@ -43,17 +43,8 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
   const [currentA, setCurrentA] = useState<ComparisonResult | null>(null);
   const [currentB, setCurrentB] = useState<ComparisonResult | null>(null);
   const [currentC, setCurrentC] = useState<ComparisonResult | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
 
-  const accA = useRef("");
-  const accB = useRef("");
-  const accC = useRef("");
-  const abortA = useRef<AbortController | null>(null);
-  const abortB = useRef<AbortController | null>(null);
-  const abortC = useRef<AbortController | null>(null);
-  const doneCount = useRef(0);
-  const roundPromptA = useRef("");
-  const roundPromptB = useRef("");
+  const { streamAll, stopAll, isRunning, getContent } = useComparisonStreaming({ onBudgetExhausted });
 
   // Set default model C when three-way is activated
   useEffect(() => {
@@ -81,129 +72,71 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
 
     const isThreeWay = threeWayRef.current;
     const currentModelC = modelCRef.current;
-    const expectedDone = isThreeWay && currentModelC ? 3 : 2;
 
-    setIsRunning(true);
-    doneCount.current = 0;
-    accA.current = "";
-    accB.current = "";
-    accC.current = "";
-    roundPromptA.current = pA;
-    roundPromptB.current = pB;
     setCurrentA({ model: modelA, content: "", isStreaming: true });
     setCurrentB({ model: modelB, content: "", isStreaming: true });
     if (isThreeWay && currentModelC) {
       setCurrentC({ model: currentModelC, content: "", isStreaming: true });
     }
 
-    const msgsA: Msg[] = [];
-    const msgsB: Msg[] = [];
-    if (systemPrompt.trim()) {
-      msgsA.push({ role: "system", content: systemPrompt });
-      msgsB.push({ role: "system", content: systemPrompt });
-    }
-    msgsA.push({ role: "user", content: pA });
-    msgsB.push({ role: "user", content: pB });
+    const buildMessages = (userContent: string): Msg[] => {
+      const msgs: Msg[] = [];
+      if (systemPrompt.trim()) msgs.push({ role: "system", content: systemPrompt });
+      msgs.push({ role: "user", content: userContent });
+      return msgs;
+    };
 
-    const markDone = () => {
-      doneCount.current++;
-      if (doneCount.current >= expectedDone) {
-        setIsRunning(false);
+    const slots: StreamSlot[] = [
+      {
+        model: modelA,
+        messages: buildMessages(pA),
+        label: "Modell A",
+        onUpdate: (content, streaming) =>
+          setCurrentA({ model: modelA, content, isStreaming: streaming }),
+      },
+      {
+        model: modelB,
+        messages: buildMessages(pB),
+        label: "Modell B",
+        onUpdate: (content, streaming) =>
+          setCurrentB({ model: modelB, content, isStreaming: streaming }),
+      },
+    ];
+
+    if (isThreeWay && currentModelC) {
+      slots.push({
+        model: currentModelC,
+        messages: buildMessages(pA),
+        label: "Modell C",
+        onUpdate: (content, streaming) =>
+          setCurrentC({ model: currentModelC!, content, isStreaming: streaming }),
+      });
+    }
+
+    streamAll(slots, {
+      onAllDone: () => {
         setRounds(prev => [
           ...prev,
           {
-            promptA: roundPromptA.current,
-            promptB: roundPromptB.current,
-            promptC: isThreeWay ? roundPromptA.current : undefined,
-            resultA: { model: modelA, content: accA.current, isStreaming: false },
-            resultB: { model: modelB, content: accB.current, isStreaming: false },
-            resultC: isThreeWay && currentModelC ? { model: currentModelC, content: accC.current, isStreaming: false } : undefined,
+            promptA: pA,
+            promptB: pB,
+            promptC: isThreeWay ? pA : undefined,
+            resultA: { model: modelA, content: getContent(0), isStreaming: false },
+            resultB: { model: modelB, content: getContent(1), isStreaming: false },
+            resultC: isThreeWay && currentModelC
+              ? { model: currentModelC, content: getContent(2), isStreaming: false }
+              : undefined,
           },
         ]);
         setCurrentA(null);
         setCurrentB(null);
         setCurrentC(null);
-      }
-    };
-
-    abortA.current = new AbortController();
-    abortB.current = new AbortController();
-
-    streamChat({
-      messages: msgsA,
-      model: modelA,
-      signal: abortA.current.signal,
-      onDelta: (text) => {
-        accA.current += text;
-        setCurrentA({ model: modelA, content: accA.current, isStreaming: true });
-      },
-      onDone: () => {
-        setCurrentA({ model: modelA, content: accA.current, isStreaming: false });
-        markDone();
-      },
-      onError: (error, status) => {
-        if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
-        else toast.error(`Modell A: ${error}`);
-        setCurrentA(prev => prev ? { ...prev, isStreaming: false } : null);
-        markDone();
       },
     });
-
-    streamChat({
-      messages: msgsB,
-      model: modelB,
-      signal: abortB.current.signal,
-      onDelta: (text) => {
-        accB.current += text;
-        setCurrentB({ model: modelB, content: accB.current, isStreaming: true });
-      },
-      onDone: () => {
-        setCurrentB({ model: modelB, content: accB.current, isStreaming: false });
-        markDone();
-      },
-      onError: (error, status) => {
-        if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
-        else toast.error(`Modell B: ${error}`);
-        setCurrentB(prev => prev ? { ...prev, isStreaming: false } : null);
-        markDone();
-      },
-    });
-
-    // Stream model C — only if threeWay
-    if (isThreeWay && currentModelC) {
-      abortC.current = new AbortController();
-      accC.current = "";
-      const msgsC: Msg[] = [];
-      if (systemPrompt.trim()) msgsC.push({ role: "system", content: systemPrompt });
-      msgsC.push({ role: "user", content: pA });
-
-      streamChat({
-        messages: msgsC,
-        model: currentModelC,
-        signal: abortC.current.signal,
-        onDelta: (text) => {
-          accC.current += text;
-          setCurrentC({ model: currentModelC!, content: accC.current, isStreaming: true });
-        },
-        onDone: () => {
-          setCurrentC({ model: currentModelC!, content: accC.current, isStreaming: false });
-          markDone();
-        },
-        onError: (error, status) => {
-          if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
-          else toast.error(`Modell C: ${error}`);
-          setCurrentC(prev => prev ? { ...prev, isStreaming: false } : null);
-          markDone();
-        },
-      });
-    }
-  }, [promptText, promptA, promptB, decoupled, isRunning, modelA, modelB, systemPrompt, onBudgetExhausted]);
+  }, [promptText, promptA, promptB, decoupled, isRunning, modelA, modelB, systemPrompt, streamAll, getContent]);
 
   const handleStop = () => {
-    abortA.current?.abort();
-    abortB.current?.abort();
-    abortC.current?.abort();
-    setIsRunning(false);
+    stopAll();
     setCurrentA(prev => prev ? { ...prev, isStreaming: false } : null);
     setCurrentB(prev => prev ? { ...prev, isStreaming: false } : null);
     setCurrentC(prev => prev ? { ...prev, isStreaming: false } : null);

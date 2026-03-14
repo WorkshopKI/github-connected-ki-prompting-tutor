@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Lightbulb, X } from "lucide-react";
 import { LS_KEYS } from "@/lib/constants";
+import { loadStringFromStorage } from "@/lib/storage";
 
 const suggestions = [
   "Kürze die Einleitung auf maximal 2 Sätze.",
@@ -19,13 +20,9 @@ interface Props {
 }
 
 export const IterationNudge = ({ turnCount, onSendSuggestion }: Props) => {
-  const [dismissed] = useState(() => {
-    try {
-      return localStorage.getItem(LS_KEYS.NUDGE_DISMISSED) === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [dismissed] = useState(
+    () => loadStringFromStorage(LS_KEYS.NUDGE_DISMISSED, "false") === "true"
+  );
   const [visible, setVisible] = useState(true);
 
   // Stabile Auswahl von 2 Vorschlägen pro Session

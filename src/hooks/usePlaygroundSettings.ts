@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { loadAIRouting, getAllModels } from "@/data/models";
 import { LS_KEYS, DEFAULT_MODEL } from "@/lib/constants";
+import { loadStringFromStorage } from "@/lib/storage";
 import type { AIRoutingConfig } from "@/types";
 
 interface UsePlaygroundSettingsOptions {
@@ -24,7 +25,7 @@ export function usePlaygroundSettings({
 
   const [selectedModel, setSelectedModel] = useState(() => validModel(profileModel));
   const [thinkingEnabled, setThinkingEnabled] = useState(
-    () => localStorage.getItem(LS_KEYS.THINKING_ENABLED) === "true",
+    () => loadStringFromStorage(LS_KEYS.THINKING_ENABLED, "false") === "true",
   );
   const [aiTier, setAiTier] = useState<"internal" | "external">("external");
   const aiRouting: AIRoutingConfig = loadAIRouting();
