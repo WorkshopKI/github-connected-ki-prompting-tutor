@@ -147,7 +147,7 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
   return (
     <div className="grid grid-cols-2 gap-1.5">
       {cards.map(card => (
-        <div key={card.label} className="bg-primary/8 rounded-lg px-2.5 py-2 border border-primary/10">
+        <div key={card.label} className="bg-card rounded-lg px-2.5 py-2 border border-border shadow-sm">
           <div className="flex items-center gap-1.5 mb-1">
             <span className="text-xs">{card.icon}</span>
             <span className="text-[9px] font-bold uppercase tracking-wider text-primary">{card.label}</span>
@@ -328,7 +328,7 @@ export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) =>
                 <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Dein Prompt</span>
               </div>
               {/* Cards Container */}
-              <div className="border border-primary/10 bg-primary/[0.02] rounded-xl p-2">
+              <div className="border border-border/60 bg-muted/30 rounded-xl p-2">
                 <ACTAMiniCards fields={actaFields} />
               </div>
             </div>

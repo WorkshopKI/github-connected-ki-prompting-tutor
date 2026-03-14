@@ -161,7 +161,7 @@ function ACTACard({ icon, shortLabel, longLabel, sublabel, value, onChange, plac
           ? "border-[1.5px] border-primary bg-card shadow-[0_0_0_3px_rgba(192,105,74,0.08)]"
           : isEmpty
             ? "border border-dashed border-border bg-muted/30 hover:border-primary/30"
-            : "border border-primary/15 bg-card shadow-sm hover:shadow-md"
+            : "border border-border bg-card shadow-sm hover:shadow-md"
       )}
       style={{ cursor: editing ? "text" : "pointer" }}
     >
@@ -559,8 +559,8 @@ export const ACTABuilder = ({
   if (layout === "horizontal") {
     return (
       <div className={cn(
-        "bg-card transition-shadow flex flex-col",
-        expanded ? "border-b border-border" : "shadow-sm"
+        "bg-background transition-shadow flex flex-col",
+        expanded ? "border-b border-border shadow-sm" : "shadow-sm"
       )}>
         {/* Header row — click to collapse/expand, always visible */}
         <div
@@ -708,8 +708,8 @@ export const ACTABuilder = ({
               <div className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg border-l-[3px] transition-all",
                 (hasUnfilledVars || hasEmptyRaketeFields)
-                  ? "bg-primary/5 border-l-primary"
-                  : "bg-primary/5 border-l-primary"
+                  ? "bg-amber-50 dark:bg-amber-950/30 border-l-amber-500 dark:border-l-amber-400"
+                  : "bg-primary/10 border-l-primary"
               )}>
                 {hasUnfilledVars ? (
                   <>

@@ -126,7 +126,7 @@ export const PlaygroundContent = ({
       )}
 
       {/* ═══ TOOLBAR — Icon-only + kontextuelle Buttons ═══ */}
-      <div className="flex items-center px-3 py-1.5 border-b border-border gap-1">
+      <div className="flex items-center px-3 py-1.5 border-b border-border bg-card/80 backdrop-blur-sm gap-1">
         {/* Modus-Toggle */}
         <div className="flex gap-0.5 bg-muted rounded-md p-0.5 mr-1">
           <button
