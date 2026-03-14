@@ -86,7 +86,7 @@ export const PromptBrowser = ({
   }, [isDepartment, scopeLabel]);
 
   return (
-    <div className="h-full flex flex-col bg-muted/30 dark:bg-muted/20">
+    <div data-tour="prompt-browser" className="h-full flex flex-col bg-muted/30 dark:bg-muted/20">
       {/* Header + Search */}
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         <div className="flex items-center gap-1.5">

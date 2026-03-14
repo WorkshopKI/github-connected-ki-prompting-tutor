@@ -38,14 +38,28 @@ export function TourOverlay({
   useEffect(() => {
     const el = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
     if (!el) {
-      // Fallback: zentriert anzeigen statt überspringen
-      setTargetRect({
-        top: window.innerHeight / 2 - 100,
-        left: window.innerWidth / 2 - 100,
-        width: 200,
-        height: 50,
-      });
-      return;
+      // Retry nach 300ms — Element könnte noch rendern
+      const retryTimer = setTimeout(() => {
+        const retryEl = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
+        if (!retryEl) {
+          onNext(); // Wirklich nicht vorhanden → überspringen
+        } else {
+          // Element gefunden, messen und anzeigen
+          const rect = retryEl.getBoundingClientRect();
+          setTargetRect({
+            top: rect.top - PADDING,
+            left: rect.left - PADDING,
+            width: rect.width + PADDING * 2,
+            height: rect.height + PADDING * 2,
+          });
+          // Elevate
+          const computed = window.getComputedStyle(retryEl);
+          if (computed.position === "static") retryEl.style.position = "relative";
+          retryEl.style.zIndex = "102";
+          retryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }, 300);
+      return () => clearTimeout(retryTimer);
     }
 
     // Save original styles and elevate

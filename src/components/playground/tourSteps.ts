@@ -12,18 +12,20 @@ export interface TourStep {
 }
 
 export const TOUR_STEPS: TourStep[] = [
+  // Schritt 1: Prompt Browser (links)
   {
-    target: "acta-fields",
-    title: "Prompt aufbauen",
+    target: "prompt-browser",
+    title: "Prompt Sammlung",
     description:
-      "Wähle links eine Vorlage aus der Prompt Sammlung oder fülle die Felder direkt aus. Je mehr Kontext du gibst, desto besser das Ergebnis.",
-    position: "bottom",
+      "Wähle eine Vorlage aus der Sammlung. Die Felder werden automatisch vorausgefüllt. Du kannst nach Abteilung filtern oder die Suche nutzen.",
+    position: "right",
   },
+  // Schritt 2: ACTA/RAKETE Felder (mode-spezifisch)
   {
     target: "acta-fields",
     title: "Die ACTA-Methode",
     description:
-      "Vier Felder für den perfekten Prompt: Rolle (Act), Kontext (Context), Aufgabe (Task) und Ausgabeformat.",
+      "Vier Felder für den perfekten Prompt: Rolle (Act), Kontext (Context), Aufgabe (Task) und Ausgabeformat. Fülle sie aus — je mehr Kontext, desto besser.",
     position: "bottom",
     mode: "einsteiger",
   },
@@ -35,67 +37,28 @@ export const TOUR_STEPS: TourStep[] = [
     position: "bottom",
     mode: "experte",
   },
-  {
-    target: "acta-variables",
-    title: "Angaben ausfüllen",
-    description:
-      "Wenn eine Vorlage Platzhalter enthält (z.B. {{Thema}}), erscheinen hier Eingabefelder. Du kannst sie selbst ausfüllen oder Beispielwerte von der KI vorschlagen lassen.",
-    position: "bottom",
-  },
-  {
-    target: "acta-extensions",
-    title: "Fortgeschrittene Techniken",
-    description:
-      "Erweitere deinen Prompt mit Beispielen (Few-Shot), Denkstrategien (Chain-of-Thought), Selbstprüfung und mehr. Klicke auf '+' um eine Technik hinzuzufügen.",
-    position: "bottom",
-    mode: "experte",
-  },
-  {
-    target: "acta-ki-suggest",
-    title: "KI-Assistent",
-    description:
-      "Beschreibe kurz was du brauchst — die KI füllt alle ACTA-Felder für dich aus. Oder klicke den Zauberstab-Button um einen bestehenden Prompt zu verbessern.",
-    position: "bottom",
-    mode: "einsteiger",
-  },
-  {
-    target: "acta-ki-suggest",
-    title: "KI-Assistent",
-    description:
-      "Beschreibe kurz was du brauchst — die KI füllt alle RAKETE-Felder für dich aus, inklusive Teste und Einschränkungen. Oder klicke den Zauberstab-Button um einen bestehenden Prompt zu verbessern.",
-    position: "bottom",
-    mode: "experte",
-  },
-  {
-    target: "acta-preview",
-    title: "Prompt-Vorschau",
-    description:
-      "Hier siehst du in Echtzeit, wie dein fertiger Prompt aussehen wird. Alle Felder und Erweiterungen werden automatisch zusammengebaut.",
-    position: "top",
-  },
+  // Schritt 3: Senden-Bereich
   {
     target: "acta-send",
     title: "Prompt testen",
     description:
-      "Sende deinen Prompt an die KI und sieh die Antwort im Chat. Du kannst danach iterieren und den Prompt weiter verfeinern.",
+      "Sende deinen Prompt an die KI. Nutze «Prüfen» für eine Qualitätsbewertung oder «Vorschlagen» um die KI die Felder ausfüllen zu lassen.",
     position: "top",
   },
+  // Schritt 4: Chat-Bereich
   {
     target: "chat-area",
     title: "Chat-Bereich",
     description:
-      "Hier erscheint die KI-Antwort. Du kannst die Antwort kopieren, exportieren oder den Verlauf leeren und von vorn beginnen.",
+      "Hier erscheint die KI-Antwort. Du kannst die Antwort kopieren, exportieren, bewerten oder den Verlauf leeren und von vorn beginnen.",
     position: "left",
   },
 ];
 
-/** Filtert Steps nach aktuellem Modus und prüft ob das Target im DOM existiert */
+/** Filtert Steps nach aktuellem Modus.
+ *  DOM-Prüfung wird NICHT hier gemacht — TourOverlay überspringt fehlende Targets bereits. */
 export function getStepsForMode(
   mode: "einsteiger" | "experte"
 ): TourStep[] {
-  return TOUR_STEPS.filter((s) => {
-    if (s.mode && s.mode !== mode) return false;
-    const el = document.querySelector(`[data-tour="${s.target}"]`);
-    return !!el;
-  });
+  return TOUR_STEPS.filter((s) => !s.mode || s.mode === mode);
 }
