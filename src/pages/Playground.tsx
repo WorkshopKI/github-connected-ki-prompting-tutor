@@ -34,6 +34,7 @@ const Playground = () => {
   const skillId = searchParams.get("skillId");
   const skillTitle = searchParams.get("skillTitle");
   const requestedModel = searchParams.get("model");
+  const isNew = searchParams.get("new") === "true";
 
   // --- Confidentiality state (drives routing) ---
   const [promptConfidentiality, setPromptConfidentiality] = useState<"open" | "internal" | "confidential">("open");
@@ -140,6 +141,21 @@ const Playground = () => {
       settings.setSelectedModel(settings.validModel(restored.model));
     }
   }, []);
+
+  // --- "Neuer Prompt" flow from Library ---
+  useEffect(() => {
+    if (isNew && !prefilledPrompt && !libraryTitle && !skillId) {
+      toast("Neuer Prompt", {
+        description: "Wähle eine Vorlage aus der Sammlung (links) oder fülle die Felder im Baukasten aus.",
+        duration: 6000,
+      });
+      // Clean up URL param
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("new");
+      const qs = newParams.toString();
+      window.history.replaceState({}, "", `${window.location.pathname}${qs ? `?${qs}` : ""}`);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Persist conversation on message change ---
   useEffect(() => {

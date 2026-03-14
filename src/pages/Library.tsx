@@ -25,7 +25,6 @@ const Library = () => {
     <div className="space-y-6">
       {/* Zeile 1: Titel + Count + Button */}
       <div className="flex items-center gap-3">
-        <h1 className="page-title">Prompt Sammlung</h1>
         <span className="text-sm text-muted-foreground">
           {isDepartment
             ? `${deptPromptCount} ${shortLabel}-Prompts · ${promptLibrary.length} gesamt`
@@ -33,7 +32,7 @@ const Library = () => {
           }
         </span>
         <div className="flex-1" />
-        <Button onClick={() => navigate("/playground")}>+ Neuer Prompt</Button>
+        <Button onClick={() => navigate("/playground?new=true")}>+ Neuer Prompt</Button>
       </div>
 
       {/* Sections-Navigation */}

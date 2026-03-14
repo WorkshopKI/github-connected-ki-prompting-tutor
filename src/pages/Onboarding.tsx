@@ -243,18 +243,7 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Onboarding</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          {isOnboardingComplete
-            ? "Kern-Onboarding abgeschlossen! Entdecke die Bonus-Module."
-            : "3 kurze Module, dann kannst du loslegen."
-          }
-        </p>
-      </div>
-
+    <div className="space-y-6">
       {/* Progress — zeigt Pflicht-Fortschritt */}
       <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
         <div className="flex items-center justify-between mb-3">
@@ -263,7 +252,16 @@ const Onboarding = () => {
         </div>
         <Progress value={requiredPercent} className="h-2.5 mb-3" />
         <div className="flex gap-4 text-xs text-muted-foreground">
-          <span>{requiredCompleted} von {requiredModules.length} Pflicht-Modulen abgeschlossen</span>
+          <span>
+            {isOnboardingComplete
+              ? "Abgeschlossen! Entdecke die Bonus-Module."
+              : `${requiredCompleted} von ${requiredModules.length} Pflicht-Modulen · ${
+                  requiredModules.length - requiredCompleted === 0
+                    ? "Bereit für die Werkstatt!"
+                    : `Noch ${requiredModules.length - requiredCompleted} ${requiredModules.length - requiredCompleted === 1 ? "Modul" : "Module"}`
+                }`
+            }
+          </span>
           {bonusCompleted > 0 && (
             <span>· {bonusCompleted} von {bonusModules.length} Bonus-Module</span>
           )}
