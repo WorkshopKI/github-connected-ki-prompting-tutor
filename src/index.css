@@ -57,6 +57,23 @@ All colors MUST be HSL.
     --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
     --shadow-glow: 0 0 40px hsla(18, 65%, 48%, 0.30);
 
+    /* ── Lernpfad Stufen-Farben ── */
+    --stufe-1: #6b8cae;
+    --stufe-1-light: #eef3f8;
+    --stufe-1-ring: rgba(107, 140, 174, 0.2);
+    --stufe-2: #7a6ca8;
+    --stufe-2-light: #f0edf5;
+    --stufe-2-ring: rgba(122, 108, 168, 0.2);
+    --stufe-3: #8a6420;
+    --stufe-3-light: #f7f1e3;
+    --stufe-3-ring: rgba(138, 100, 32, 0.2);
+    --stufe-4: #5a8a5a;
+    --stufe-4-light: #edf5ed;
+    --stufe-4-ring: rgba(90, 138, 90, 0.2);
+    --stufe-5: #3a3a3a;
+    --stufe-5-light: #f0f0f0;
+    --stufe-5-ring: rgba(58, 58, 58, 0.15);
+
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --section-gap: 5rem;
@@ -168,6 +185,24 @@ All colors MUST be HSL.
     --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
     --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
     --shadow-glow: 0 0 40px hsla(18, 60%, 55%, 0.35);
+
+    /* ── Lernpfad Stufen-Farben (Dark) ── */
+    --stufe-1: #8da8c4;
+    --stufe-1-light: rgba(107, 140, 174, 0.12);
+    --stufe-1-ring: rgba(141, 168, 196, 0.2);
+    --stufe-2: #9b8ec0;
+    --stufe-2-light: rgba(122, 108, 168, 0.12);
+    --stufe-2-ring: rgba(155, 142, 192, 0.2);
+    --stufe-3: #c4952e;
+    --stufe-3-light: rgba(138, 100, 32, 0.12);
+    --stufe-3-ring: rgba(196, 149, 46, 0.2);
+    --stufe-4: #7aaa7a;
+    --stufe-4-light: rgba(90, 138, 90, 0.12);
+    --stufe-4-ring: rgba(122, 170, 122, 0.2);
+    --stufe-5: #a0a0a0;
+    --stufe-5-light: rgba(160, 160, 160, 0.1);
+    --stufe-5-ring: rgba(160, 160, 160, 0.15);
+
     --chart-1: 18.2813 57.1429% 43.9216%;
     --chart-2: 251.4545 84.6154% 74.5098%;
     --chart-3: 48 10.6383% 9.2157%;

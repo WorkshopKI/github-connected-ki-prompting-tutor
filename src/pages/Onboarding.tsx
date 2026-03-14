@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   CheckCircle2,
   Play,
@@ -67,34 +67,49 @@ const STUFE_STYLES: Record<string, {
   badge: string; badgeActive: string;
 }> = {
   blue: {
-    bg: "bg-blue-600", text: "text-blue-600 dark:text-blue-400",
-    border: "border-blue-600", ring: "ring-blue-600/10", fill: "bg-blue-600",
-    badge: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
-    badgeActive: "bg-blue-600 text-white",
+    bg: "bg-[var(--stufe-1)]",
+    text: "text-[var(--stufe-1)]",
+    border: "border-[var(--stufe-1)]",
+    ring: "ring-[var(--stufe-1-ring)]",
+    fill: "bg-[var(--stufe-1)]",
+    badge: "bg-[var(--stufe-1-light)] text-[var(--stufe-1)]",
+    badgeActive: "bg-[var(--stufe-1)] text-white",
   },
   violet: {
-    bg: "bg-violet-600", text: "text-violet-600 dark:text-violet-400",
-    border: "border-violet-600", ring: "ring-violet-600/10", fill: "bg-violet-600",
-    badge: "bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-400",
-    badgeActive: "bg-violet-600 text-white",
+    bg: "bg-[var(--stufe-2)]",
+    text: "text-[var(--stufe-2)]",
+    border: "border-[var(--stufe-2)]",
+    ring: "ring-[var(--stufe-2-ring)]",
+    fill: "bg-[var(--stufe-2)]",
+    badge: "bg-[var(--stufe-2-light)] text-[var(--stufe-2)]",
+    badgeActive: "bg-[var(--stufe-2)] text-white",
   },
   amber: {
-    bg: "bg-amber-600", text: "text-amber-600 dark:text-amber-400",
-    border: "border-amber-600", ring: "ring-amber-600/10", fill: "bg-amber-600",
-    badge: "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400",
-    badgeActive: "bg-amber-600 text-white",
+    bg: "bg-[var(--stufe-3)]",
+    text: "text-[var(--stufe-3)]",
+    border: "border-[var(--stufe-3)]",
+    ring: "ring-[var(--stufe-3-ring)]",
+    fill: "bg-[var(--stufe-3)]",
+    badge: "bg-[var(--stufe-3-light)] text-[var(--stufe-3)]",
+    badgeActive: "bg-[var(--stufe-3)] text-white",
   },
   emerald: {
-    bg: "bg-emerald-600", text: "text-emerald-600 dark:text-emerald-400",
-    border: "border-emerald-600", ring: "ring-emerald-600/10", fill: "bg-emerald-600",
-    badge: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
-    badgeActive: "bg-emerald-600 text-white",
+    bg: "bg-[var(--stufe-4)]",
+    text: "text-[var(--stufe-4)]",
+    border: "border-[var(--stufe-4)]",
+    ring: "ring-[var(--stufe-4-ring)]",
+    fill: "bg-[var(--stufe-4)]",
+    badge: "bg-[var(--stufe-4-light)] text-[var(--stufe-4)]",
+    badgeActive: "bg-[var(--stufe-4)] text-white",
   },
   slate: {
-    bg: "bg-slate-700", text: "text-slate-700 dark:text-slate-300",
-    border: "border-slate-700", ring: "ring-slate-700/10", fill: "bg-slate-700",
-    badge: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-    badgeActive: "bg-slate-700 text-white",
+    bg: "bg-[var(--stufe-5)]",
+    text: "text-[var(--stufe-5)]",
+    border: "border-[var(--stufe-5)]",
+    ring: "ring-[var(--stufe-5-ring)]",
+    fill: "bg-[var(--stufe-5)]",
+    badge: "bg-[var(--stufe-5-light)] text-[var(--stufe-5)]",
+    badgeActive: "bg-[var(--stufe-5)] text-white",
   },
 };
 
@@ -105,6 +120,18 @@ const Onboarding = () => {
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [challengeAnswers, setChallengeAnswers] = useState<Record<string, string>>({});
   const [bonusOpen, setBonusOpen] = useState(false);
+
+  // Auto-expand aktive Stufe nur beim ersten Laden
+  const [hasAutoExpanded, setHasAutoExpanded] = useState(false);
+  useEffect(() => {
+    if (!hasAutoExpanded && stufeProgress.length > 0) {
+      const current = stufeProgress.find(s => s.isCurrent);
+      if (current) {
+        setExpandedStufe(current.nr);
+      }
+      setHasAutoExpanded(true);
+    }
+  }, [stufeProgress, hasAutoExpanded]);
 
   // Abwärtskompatibilität: Alte Modul-IDs auf neue mappen
   const moduleStatuses = useMemo(() => {
@@ -146,12 +173,6 @@ const Onboarding = () => {
     return statuses;
   }, [completedLessons]);
 
-  // Auto-expand current stufe on mount
-  const currentStufe = stufeProgress.find(s => s.isCurrent);
-  if (expandedStufe === null && currentStufe) {
-    setExpandedStufe(currentStufe.nr);
-  }
-
   const toggleStufe = (nr: number) => {
     setExpandedStufe(prev => prev === nr ? null : nr);
     setExpandedModule(null);
@@ -181,7 +202,7 @@ const Onboarding = () => {
         >
           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0 ${
             status === "completed"
-              ? "bg-primary/15 text-primary"
+              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
               : status === "available"
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground"
@@ -353,10 +374,6 @@ const Onboarding = () => {
     return null;
   };
 
-  // Find overall current stufe for the header
-  const currentStufeData = stufeProgress.find(s => s.isCurrent) || stufeProgress[0];
-  const currentStyles = STUFE_STYLES[lernpfadStufen[currentStufeData.nr - 1].color] || STUFE_STYLES.blue;
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -368,44 +385,37 @@ const Onboarding = () => {
         </p>
 
         {/* Segmentierte Fortschrittsleiste */}
-        <div className="flex items-end gap-4">
-          <div className="flex-1 space-y-1.5">
-            <div className="flex gap-1">
-              {lernpfadStufen.map((stufe, i) => {
-                const sp = stufeProgress[i];
-                const styles = STUFE_STYLES[stufe.color] || STUFE_STYLES.slate;
-                return (
-                  <div key={stufe.nr} className="flex-1">
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${styles.fill}`}
-                        style={{ width: `${sp.progress}%` }}
-                      />
-                    </div>
+        <div className="space-y-1.5">
+          <div className="flex gap-1">
+            {lernpfadStufen.map((stufe, i) => {
+              const sp = stufeProgress[i];
+              const styles = STUFE_STYLES[stufe.color] || STUFE_STYLES.slate;
+              return (
+                <div key={stufe.nr} className="flex-1">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${styles.fill}`}
+                      style={{ width: `${sp.progress}%` }}
+                    />
                   </div>
-                );
-              })}
-            </div>
-            <div className="flex gap-1">
-              {lernpfadStufen.map((stufe, i) => {
-                const sp = stufeProgress[i];
-                const styles = STUFE_STYLES[stufe.color] || STUFE_STYLES.slate;
-                return (
-                  <div key={stufe.nr} className="flex-1">
-                    <span className={`text-[10px] font-medium ${
-                      sp.isCurrent ? styles.text : "text-muted-foreground"
-                    }`}>
-                      {stufe.title}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-          <div className="shrink-0 text-right">
-            <span className={`text-lg font-bold ${currentStyles.text}`}>
-              Stufe {currentStufeData.nr}
-            </span>
+          <div className="flex gap-1">
+            {lernpfadStufen.map((stufe, i) => {
+              const sp = stufeProgress[i];
+              const styles = STUFE_STYLES[stufe.color] || STUFE_STYLES.slate;
+              return (
+                <div key={stufe.nr} className="flex-1">
+                  <span className={`text-[10px] font-medium ${
+                    sp.isCurrent ? styles.text : "text-muted-foreground"
+                  }`}>
+                    {stufe.title}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -444,7 +454,7 @@ const Onboarding = () => {
                   )}
                 </div>
                 {!isLast && (
-                  <div className={`w-0.5 flex-1 min-h-[16px] ${
+                  <div className={`w-0.5 flex-1 min-h-[24px] ${
                     isComplete ? `${styles.fill} opacity-40` : "bg-border"
                   }`} />
                 )}
@@ -460,19 +470,19 @@ const Onboarding = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-[10px] font-bold uppercase tracking-wider ${
-                        isLocked ? "text-muted-foreground/50" : styles.text
+                        isLocked ? "text-muted-foreground/40" : styles.text
                       }`}>
                         Stufe {stufe.nr}
                       </span>
                       {renderStatusBadge(sp, styles)}
                     </div>
                     <h3 className={`font-semibold text-base mt-0.5 ${
-                      isLocked ? "text-muted-foreground/50" : ""
+                      isLocked ? "text-muted-foreground/70" : ""
                     }`}>
                       {stufe.title}
                     </h3>
                     <p className={`text-sm mt-0.5 ${
-                      isLocked ? "text-muted-foreground/40" : "text-muted-foreground"
+                      isLocked ? "text-muted-foreground/50" : "text-muted-foreground"
                     }`}>
                       {stufe.subtitle}
                     </p>
