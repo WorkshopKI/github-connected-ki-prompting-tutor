@@ -9,7 +9,21 @@ export function extractVariables(text: string): string[] {
  * Zerlegt einen Fließtext-Prompt heuristisch in ACTA-Felder.
  * Wird als Fallback genutzt, wenn ein PromptItem keine actaFields hat.
  */
-export function splitPromptToACTA(promptText: string, _title?: string): { act: string; context: string; task: string; ausgabe: string } {
+export function splitPromptToACTA(promptText: string, _title?: string): {
+  act: string;
+  context: string;
+  task: string;
+  ausgabe: string;
+  extensions?: {
+    examples: string[];
+    rules: string;
+    reasoning: string;
+    verification: boolean;
+    verificationNote: string;
+    reversePrompt: boolean;
+    negatives: string;
+  };
+} {
   const sentences = promptText
     .split(/(?<=[.!?])\s+/)
     .map(s => s.trim())
@@ -19,10 +33,12 @@ export function splitPromptToACTA(promptText: string, _title?: string): { act: s
 
   const formatKeywords = /struktur|format|länge|wörter|sätze|spalten|tabelle|absatz|bullet|sprache|sprachniveau|ton:|max\.|maximal|min\./i;
   const contextKeywords = /zielgruppe|hintergrund|kontext|thema|gendersensib|barrierefrei|bürger|keine.*daten|regeln?:|anforderung/i;
+  const negativesKeywords = /nicht|kein(?:e|en|er)?|ohne|vermeide|NICHT|WICHTIG.*NICHT/i;
 
   const taskParts: string[] = [];
   const ausgabeParts: string[] = [];
   const contextParts: string[] = [];
+  const negativesParts: string[] = [];
 
   sentences.forEach((s, i) => {
     if (i === 0) {
@@ -31,6 +47,8 @@ export function splitPromptToACTA(promptText: string, _title?: string): { act: s
       ausgabeParts.push(s);
     } else if (contextKeywords.test(s)) {
       contextParts.push(s);
+    } else if (negativesKeywords.test(s) && s.length < 100) {
+      negativesParts.push(s);
     } else {
       taskParts.push(s);
     }
@@ -39,7 +57,16 @@ export function splitPromptToACTA(promptText: string, _title?: string): { act: s
   return {
     act: "",
     context: contextParts.join(" "),
-    task: taskParts.join(" "),
+    task: (taskParts.length > 0 ? taskParts : [sentences[0]]).join(" "),
     ausgabe: ausgabeParts.join(" "),
+    extensions: negativesParts.length > 0 ? {
+      examples: [],
+      rules: "",
+      reasoning: "",
+      verification: false,
+      verificationNote: "",
+      reversePrompt: false,
+      negatives: negativesParts.join(" "),
+    } : undefined,
   };
 }

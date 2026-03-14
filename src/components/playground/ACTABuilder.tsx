@@ -444,7 +444,12 @@ export const ACTABuilder = ({
     !(ext.verificationNote || "").trim() || !(ext.negatives || "").trim()
   );
 
-  const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
+  const baseFilledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
+  const raketeFilledCount = isExperte ? (
+    ((ext.verificationNote || "").trim().length > 5 ? 1 : 0) +
+    ((ext.negatives || "").trim().length > 5 ? 1 : 0)
+  ) : 0;
+  const filledCount = baseFilledCount + raketeFilledCount;
   const assembled = assembleACTAPrompt(fields, variableValues);
   const hasContent = assembled.trim().length > 0;
 
@@ -1334,7 +1339,7 @@ export const ACTABuilder = ({
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{frameworkName}-Baukasten</span>
             <Badge variant="secondary" className="text-xs">
-              {filledCount}/4{hasActiveExtensions ? " +" : ""}
+              {filledCount}/{isExperte ? 6 : 4}{hasActiveExtensions ? " +" : ""}
             </Badge>
           </div>
           {effectiveOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
