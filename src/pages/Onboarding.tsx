@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { requiredModules, bonusModules, learningModules } from "@/data/learningPath";
 import { ACTAIntroduction } from "@/components/ACTAIntroduction";
+import { RAKETEIntroduction } from "@/components/RAKETEIntroduction";
 import { PracticeAreaCompact } from "@/components/PracticeAreaCompact";
 import { AdvancedTechniquesModule } from "@/components/AdvancedTechniquesModule";
 import { DataPrivacyIntro } from "@/components/DataPrivacyIntro";
@@ -16,6 +17,7 @@ import { WorkflowBuilderModule } from "@/components/WorkflowBuilderModule";
 
 const componentMap: Record<string, React.ComponentType> = {
   ACTAIntroduction: ACTAIntroduction,
+  RAKETEIntroduction: RAKETEIntroduction,
   PracticeAreaCompact: PracticeAreaCompact,
   AdvancedTechniquesModule: AdvancedTechniquesModule,
   DataPrivacyIntro: DataPrivacyIntro,
