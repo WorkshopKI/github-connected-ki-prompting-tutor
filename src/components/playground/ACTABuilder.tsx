@@ -578,7 +578,7 @@ export const ACTABuilder = ({
           )} />
           <span className="text-xs font-bold">{frameworkName}</span>
           {sourceTitle && (
-            <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
+            <span className="text-xs text-primary font-medium truncate min-w-0 flex-1">{sourceTitle}</span>
           )}
           {confidentiality && confidentiality !== "open" && (
             <ConfidentialityBadge level={confidentiality} compact />
