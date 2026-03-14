@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
-import { LS_KEYS } from "@/lib/constants";
+import { LS_KEYS, ALERT_COLORS } from "@/lib/constants";
 import type { ComplianceSettings } from "@/types";
 
 const defaultCompliance: ComplianceSettings = {
@@ -26,7 +26,7 @@ export function ComplianceSettingsTab() {
       <h3 className="font-semibold text-sm flex items-center gap-2">
         🛡️ Sicherheit & Compliance
       </h3>
-      <Alert variant="destructive" className="border-amber-200 bg-amber-50 text-amber-800">
+      <Alert variant="destructive" className={ALERT_COLORS.warning}>
         <AlertTriangle className="h-4 w-4 text-primary" />
         <AlertDescription>
           Definieren Sie Regeln für die Prompt-Erstellung in Ihrer Organisation.

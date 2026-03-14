@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { ALERT_COLORS } from "@/lib/constants";
 import { RedactionExercise } from "@/components/RedactionExercise";
 import { redactionDrills } from "@/data/redactionDrills";
 import { useOrgContext } from "@/contexts/OrgContext";
@@ -56,12 +57,12 @@ export const DataPrivacyIntro = () => {
           </Card>
         </div>
 
-        <Card className="p-4 bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 rounded-lg">
+        <Card className={`p-4 rounded-lg ${ALERT_COLORS.danger}`}>
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-red-800 dark:text-red-300">Die goldene Regel</p>
-              <p className="text-xs text-red-700 dark:text-red-400 mt-1">
+              <p className="text-sm font-medium">Die goldene Regel</p>
+              <p className="text-xs mt-1">
                 Im Zweifel: Anonymisiere. Ersetze echte Namen durch [NAME], Aktenzeichen durch [AZ],
                 Adressen durch [ADRESSE]. Die KI braucht die echten Daten fast nie um dir zu helfen.
               </p>

@@ -1,15 +1,16 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Square, Brain } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { streamChat } from "@/services/llmService";
 import type { Msg } from "@/types";
-import { toast } from "sonner";
 import { ComparisonColumn, type ComparisonResult } from "./ComparisonColumn";
 import { ModelSelect } from "./ModelSelect";
 import { getModelLabel } from "@/data/models";
+import { LS_KEYS, DEFAULT_MODEL, SECONDARY_MODEL } from "@/lib/constants";
+import { loadStringFromStorage } from "@/lib/storage";
+import { useComparisonStreaming } from "@/hooks/useComparisonStreaming";
 
 export interface ComparisonViewProps {
   systemPrompt: string;
@@ -18,27 +19,19 @@ export interface ComparisonViewProps {
 
 export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonViewProps) => {
   const [thinkingEnabled, setThinkingEnabled] = useState(
-    () => localStorage.getItem("thinking_enabled") === "true"
+    () => loadStringFromStorage(LS_KEYS.THINKING_ENABLED, "false") === "true"
   );
-  const [modelA, setModelA] = useState("google/gemini-3-flash-preview");
-  const [modelB, setModelB] = useState("openai/gpt-5");
+  const [modelA, setModelA] = useState(DEFAULT_MODEL);
+  const [modelB, setModelB] = useState(SECONDARY_MODEL);
   const [prompt, setPrompt] = useState("");
   const [resultA, setResultA] = useState<ComparisonResult | null>(null);
   const [resultB, setResultB] = useState<ComparisonResult | null>(null);
-  const [isRunning, setIsRunning] = useState(false);
-  const accA = useRef("");
-  const accB = useRef("");
-  const abortA = useRef<AbortController | null>(null);
-  const abortB = useRef<AbortController | null>(null);
-  const doneCount = useRef(0);
 
-  const handleCompare = useCallback(async () => {
+  const { streamAll, stopAll, isRunning } = useComparisonStreaming({ onBudgetExhausted });
+
+  const handleCompare = useCallback(() => {
     if (!prompt.trim() || isRunning) return;
 
-    setIsRunning(true);
-    doneCount.current = 0;
-    accA.current = "";
-    accB.current = "";
     setResultA({ model: modelA, content: "", isStreaming: true });
     setResultB({ model: modelB, content: "", isStreaming: true });
 
@@ -48,65 +41,28 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
     }
     apiMessages.push({ role: "user", content: prompt });
 
-    const markDone = () => {
-      doneCount.current++;
-      if (doneCount.current >= 2) setIsRunning(false);
-    };
-
-    abortA.current = new AbortController();
-    abortB.current = new AbortController();
-
     const reasoningParam = thinkingEnabled ? { effort: "high" } : undefined;
 
-    // Stream model A
-    streamChat({
-      messages: apiMessages,
-      model: modelA,
-      reasoning: reasoningParam,
-      signal: abortA.current.signal,
-      onDelta: (text) => {
-        accA.current += text;
-        setResultA({ model: modelA, content: accA.current, isStreaming: true });
+    streamAll([
+      {
+        model: modelA,
+        messages: apiMessages,
+        label: "Modell A",
+        onUpdate: (content, streaming) =>
+          setResultA({ model: modelA, content, isStreaming: streaming }),
       },
-      onDone: () => {
-        setResultA({ model: modelA, content: accA.current, isStreaming: false });
-        markDone();
+      {
+        model: modelB,
+        messages: apiMessages,
+        label: "Modell B",
+        onUpdate: (content, streaming) =>
+          setResultB({ model: modelB, content, isStreaming: streaming }),
       },
-      onError: (error, status) => {
-        if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
-        else toast.error(`Modell A: ${error}`);
-        setResultA((prev) => prev ? { ...prev, isStreaming: false } : null);
-        markDone();
-      },
-    });
-
-    // Stream model B
-    streamChat({
-      messages: apiMessages,
-      model: modelB,
-      reasoning: reasoningParam,
-      signal: abortB.current.signal,
-      onDelta: (text) => {
-        accB.current += text;
-        setResultB({ model: modelB, content: accB.current, isStreaming: true });
-      },
-      onDone: () => {
-        setResultB({ model: modelB, content: accB.current, isStreaming: false });
-        markDone();
-      },
-      onError: (error, status) => {
-        if (status === 402 || error === "budget_exhausted") onBudgetExhausted();
-        else toast.error(`Modell B: ${error}`);
-        setResultB((prev) => prev ? { ...prev, isStreaming: false } : null);
-        markDone();
-      },
-    });
-  }, [prompt, isRunning, modelA, modelB, systemPrompt, onBudgetExhausted]);
+    ], { reasoning: reasoningParam });
+  }, [prompt, isRunning, modelA, modelB, systemPrompt, thinkingEnabled, streamAll]);
 
   const handleStop = () => {
-    abortA.current?.abort();
-    abortB.current?.abort();
-    setIsRunning(false);
+    stopAll();
     setResultA((prev) => prev ? { ...prev, isStreaming: false } : null);
     setResultB((prev) => prev ? { ...prev, isStreaming: false } : null);
   };
@@ -135,7 +91,7 @@ export const ComparisonView = ({ systemPrompt, onBudgetExhausted }: ComparisonVi
           checked={thinkingEnabled}
           onCheckedChange={(checked) => {
             setThinkingEnabled(checked);
-            localStorage.setItem("thinking_enabled", String(checked));
+            localStorage.setItem(LS_KEYS.THINKING_ENABLED, String(checked));
           }}
         />
         <Label htmlFor="comparison-thinking-toggle" className="text-xs flex items-center gap-1 cursor-pointer" title="Erweiterte Denkfähigkeit aktivieren (Reasoning/Thinking)">

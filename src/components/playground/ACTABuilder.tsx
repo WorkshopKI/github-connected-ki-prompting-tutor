@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useACTAAssist } from "@/hooks/useACTAAssist";
 import { extractVariables } from "@/lib/promptUtils";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 
 export interface ACTABuilderProps {
   fields: ACTAFields;
@@ -540,15 +541,8 @@ export const ACTABuilder = ({
           {sourceTitle && (
             <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
           )}
-          {confidentiality === "confidential" && (
-            <span className="text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0" title="Nur interne KI zugelassen — keine externen Modelle">
-              🔒 Vertraulich
-            </span>
-          )}
-          {confidentiality === "internal" && (
-            <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0" title="Interne Daten — externe KI nur ohne sensible Inhalte">
-              🟡 Intern
-            </span>
+          {confidentiality && confidentiality !== "open" && (
+            <ConfidentialityBadge level={confidentiality} compact />
           )}
           {/* Offene Variablen-Warnung — nur collapsed */}
           {!expanded && variables.length > 0 && hasUnfilledVars && (

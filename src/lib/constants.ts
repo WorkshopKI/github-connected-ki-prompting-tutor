@@ -91,5 +91,17 @@ export const LEVEL_BADGE_COLORS: Record<string, string> = {
   organisation: BADGE_COLORS.high,
 };
 
-/* ── Default-Modell ── */
+/* ── Alert/Warning-Card Farben ──
+ * Für Alert-Boxen und Warnhinweis-Karten mit border + bg + text + dark:-Varianten.
+ * NICHT die Tailwind-Strings manuell kopieren!
+ */
+export const ALERT_COLORS = {
+  /** 🟡 Warnung — amber */
+  warning: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400",
+  /** 🔴 Gefahr — red */
+  danger: "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400",
+} as const;
+
+/* ── Default-Modelle ── */
 export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
+export const SECONDARY_MODEL = "openai/gpt-5";
