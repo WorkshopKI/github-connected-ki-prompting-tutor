@@ -197,6 +197,40 @@ export interface FlawChallenge {
   difficulty: 1 | 2 | 3;
 }
 
+/* ── KI-Kontext & Qualitätsregeln ── */
+
+export interface WorkRule {
+  id: string;
+  text: string;
+  domain: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface KIContext {
+  profile: {
+    abteilung: string;
+    fachgebiet: string;
+    aufgaben: string;
+    stil: string;
+  };
+  workRules: WorkRule[];
+}
+
+export interface Constraint {
+  id: string;
+  title: string;
+  rule: string;
+  domain: string;
+  active: boolean;
+  source: "manual" | "rejection";
+  example?: {
+    before: string;
+    after: string;
+  };
+  createdAt: string;
+}
+
 /* ── Einstellungen ── */
 
 export interface PlatformSettings {

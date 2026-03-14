@@ -7,6 +7,7 @@ import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
 import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
 import { RolesSettings } from "@/components/settings/RolesSettings";
 import { useAppMode } from "@/contexts/AppModeContext";
+import { KIContextEditor } from "@/components/settings/KIContextEditor";
 
 const Settings = () => {
   const { isWorkshop } = useAppMode();
@@ -32,6 +33,8 @@ const Settings = () => {
           <ProfileContent>
             <MeinBereichSection />
           </ProfileContent>
+          {/* KI-Kontext Editor */}
+          <KIContextEditor />
         </TabsContent>
 
         {isWorkshop && (

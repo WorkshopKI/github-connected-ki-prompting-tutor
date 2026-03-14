@@ -7,6 +7,8 @@ import { promptLibrary } from "@/data/prompts";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { cn } from "@/lib/utils";
+import { ConstraintLibrary } from "@/components/ConstraintLibrary";
+import { loadConstraints } from "@/services/constraintService";
 
 const Library = () => {
   const navigate = useNavigate();
@@ -64,11 +66,28 @@ const Library = () => {
             </span>
           )}
         </button>
+        <button
+          onClick={() => setActiveSection("constraints")}
+          className={cn(
+            "px-3 py-1.5 rounded-md font-medium transition-colors",
+            activeSection === "constraints"
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          )}
+        >
+          Qualitätsregeln
+          {(() => { const n = loadConstraints().length; return n > 0 ? (
+            <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full ml-1.5">
+              {n}
+            </span>
+          ) : null; })()}
+        </button>
       </div>
 
       {/* Content je nach Section */}
       {activeSection === "prompts" && <PromptLibrary />}
       {activeSection === "skills" && <MySkills />}
+      {activeSection === "constraints" && <ConstraintLibrary />}
     </div>
   );
 };
