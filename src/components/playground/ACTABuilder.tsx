@@ -589,16 +589,7 @@ export const ACTABuilder = ({
               {variables.filter(v => !variableValues[v]?.trim()).length} offen
             </Badge>
           )}
-          {/* Aktive Extensions — direkt nach dem Titel */}
-          {isExperte && hasActiveExtensions && (
-            <div className="flex gap-1 shrink-0">
-              {EXTENSION_CHIPS.filter(c => isChipActive(c.key)).map(c => (
-                <span key={c.key} className="text-[10px] text-primary bg-primary/10 px-1.5 rounded-full font-medium">
-                  ✓ {c.label}
-                </span>
-              ))}
-            </div>
-          )}
+
           {/* Spacer — drückt Reset nach rechts */}
           <div className="flex-1" />
           {/* Reset — nur wenn Felder befüllt */}
