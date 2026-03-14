@@ -18,6 +18,15 @@ export const TOUR_STEPS: TourStep[] = [
     description:
       "Wähle eine Vorlage aus der Prompt Sammlung. Die ACTA-Felder werden automatisch vorausgefüllt.",
     position: "bottom",
+    mode: "einsteiger",
+  },
+  {
+    target: "acta-template-select",
+    title: "Vorlage laden",
+    description:
+      "Wähle eine Vorlage aus der Prompt Sammlung. Die RAKETE-Felder werden automatisch vorausgefüllt.",
+    position: "bottom",
+    mode: "experte",
   },
   {
     target: "acta-fields",
@@ -25,6 +34,15 @@ export const TOUR_STEPS: TourStep[] = [
     description:
       "Vier Felder für den perfekten Prompt: Rolle (Act), Kontext (Context), Aufgabe (Task) und Ausgabeformat. Fülle sie aus — je mehr Kontext, desto besser das Ergebnis.",
     position: "right",
+    mode: "einsteiger",
+  },
+  {
+    target: "acta-fields",
+    title: "Die RAKETE-Methode",
+    description:
+      "Sechs Felder für den perfekten Prompt: Rolle, Kontext, Aufgabe, Ergebnis, Teste (Selbstprüfung) und Einschränkungen. Die ersten vier kennst du von ACTA — Teste und Einschränkungen machen deinen Prompt noch präziser.",
+    position: "right",
+    mode: "experte",
   },
   {
     target: "acta-variables",
@@ -45,7 +63,7 @@ export const TOUR_STEPS: TourStep[] = [
     target: "acta-ki-suggest",
     title: "KI-Assistent",
     description:
-      "Beschreibe kurz was du brauchst — die KI füllt alle ACTA-Felder für dich aus. Oder klicke den Zauberstab-Button um einen bestehenden Prompt zu verbessern.",
+      "Beschreibe kurz was du brauchst — die KI füllt alle RAKETE-Felder für dich aus, inklusive Teste und Einschränkungen. Oder klicke den Zauberstab-Button um einen bestehenden Prompt zu verbessern.",
     position: "bottom",
     mode: "experte",
   },

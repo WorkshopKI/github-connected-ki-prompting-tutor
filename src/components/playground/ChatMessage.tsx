@@ -28,6 +28,8 @@ interface ACTAFields {
   aufgabe: string;
   format: string;
   extras: string[];
+  verificationNote: string;
+  negatives: string;
 }
 
 function parseACTAPrompt(content: string): ACTAFields | null {
@@ -38,7 +40,7 @@ function parseACTAPrompt(content: string): ACTAFields | null {
   if (!hasRolle && !hasAufgabe) return null;
 
   const lines = content.split("\n");
-  const fields: ACTAFields = { rolle: "", kontext: "", aufgabe: "", format: "", extras: [] };
+  const fields: ACTAFields = { rolle: "", kontext: "", aufgabe: "", format: "", extras: [], verificationNote: "", negatives: "" };
   let currentField: keyof ACTAFields | "extra" = "rolle";
 
   for (const line of lines) {
@@ -57,11 +59,17 @@ function parseACTAPrompt(content: string): ACTAFields | null {
     } else if (trimmed.startsWith("Ausgabeformat: ")) {
       fields.format = trimmed.replace("Ausgabeformat: ", "");
       currentField = "format";
+    } else if (trimmed.startsWith("Selbstprüfung: ")) {
+      fields.verificationNote = trimmed.replace("Selbstprüfung: ", "");
+      fields.extras.push(trimmed);
+      currentField = "extra";
+    } else if (trimmed.startsWith("WICHTIG — NICHT:")) {
+      fields.negatives = trimmed.replace("WICHTIG — NICHT:", "").trim();
+      fields.extras.push(trimmed);
+      currentField = "extra";
     } else if (
       trimmed.startsWith("Denkweise: ") ||
-      trimmed.startsWith("Selbstprüfung: ") ||
       trimmed.startsWith("Wichtige Regeln:") ||
-      trimmed.startsWith("WICHTIG — NICHT:") ||
       trimmed.startsWith("Beispiele zur Orientierung:")
     ) {
       fields.extras.push(trimmed);
@@ -146,9 +154,27 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
           </div>
         </div>
       ))}
-      {fields.extras.length > 0 && (
+      {fields.verificationNote.trim() && (
+        <div className="col-span-2">
+          <span className="inline-flex items-center gap-1 text-[10px] bg-muted/50 rounded px-1.5 py-0.5 text-muted-foreground">
+            <span>🧪</span>
+            <span className="font-medium text-foreground/80">T</span>
+            <span className="truncate max-w-[120px]">{fields.verificationNote}</span>
+          </span>
+        </div>
+      )}
+      {fields.negatives.trim() && (
+        <div className="col-span-2">
+          <span className="inline-flex items-center gap-1 text-[10px] bg-muted/50 rounded px-1.5 py-0.5 text-muted-foreground">
+            <span>🚫</span>
+            <span className="font-medium text-foreground/80">E</span>
+            <span className="truncate max-w-[120px]">{fields.negatives}</span>
+          </span>
+        </div>
+      )}
+      {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).length > 0 && (
         <div className="col-span-2 text-[10px] text-muted-foreground flex flex-wrap gap-1.5">
-          {fields.extras.map((e, i) => {
+          {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).map((e, i) => {
             const label = e.split(":")[0];
             return (
               <span key={i} className="bg-muted px-2 py-0.5 rounded-full">
