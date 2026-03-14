@@ -318,55 +318,61 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
         {decoupled ? (
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] font-semibold text-primary mb-0.5 block">Prompt A</label>
-              <Textarea
-                value={promptA}
-                onChange={(e) => setPromptA(e.target.value)}
-                placeholder="Prompt für Modell A — kann erweitert werden..."
-                className="text-[11px] min-h-[44px] resize-y"
-                rows={2}
-                disabled={isRunning}
-              />
+              <label className="text-[10px] font-semibold text-primary mb-1 block">Prompt A</label>
+              <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
+                <Textarea
+                  value={promptA}
+                  onChange={(e) => setPromptA(e.target.value)}
+                  placeholder="Prompt für Modell A…"
+                  className="text-sm min-h-[44px] resize-y border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
+                  rows={2}
+                  disabled={isRunning}
+                />
+              </div>
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 mb-0.5 block">
+              <label className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 mb-1 block">
                 Prompt B
               </label>
-              <Textarea
-                value={promptB}
-                onChange={(e) => setPromptB(e.target.value)}
-                placeholder="Basis-Prompt für Modell B..."
-                className="text-[11px] min-h-[44px] resize-y"
-                rows={2}
-                disabled={isRunning}
-              />
+              <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
+                <Textarea
+                  value={promptB}
+                  onChange={(e) => setPromptB(e.target.value)}
+                  placeholder="Prompt für Modell B…"
+                  className="text-sm min-h-[44px] resize-y border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
+                  rows={2}
+                  disabled={isRunning}
+                />
+              </div>
             </div>
           </div>
         ) : (
-          <Textarea
-            value={promptText}
-            onChange={(e) => setPromptText(e.target.value)}
-            placeholder="Prompt zum Vergleichen eingeben..."
-            className="text-[11px] min-h-[40px] resize-none"
-            rows={1}
-            disabled={isRunning}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleCompare();
-              }
-            }}
-          />
+          <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
+            <Textarea
+              value={promptText}
+              onChange={(e) => setPromptText(e.target.value)}
+              placeholder="Prompt zum Vergleichen eingeben…"
+              className="text-sm min-h-[40px] resize-none border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
+              rows={1}
+              disabled={isRunning}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleCompare();
+                }
+              }}
+            />
+          </div>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-1">
           <Button
             onClick={handleCompare}
             disabled={isRunning || !canSend}
             size="sm"
-            className="h-7 text-[11px] gap-1"
+            className="h-8 text-xs gap-1.5 rounded-lg"
           >
-            <Send className="w-3 h-3" /> {decoupled ? "Alle senden" : "Vergleichen"}
+            <Send className="w-3.5 h-3.5" /> {decoupled ? "Alle senden" : "Vergleichen"}
           </Button>
         </div>
       </div>
