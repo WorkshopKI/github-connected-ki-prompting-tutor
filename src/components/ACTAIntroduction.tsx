@@ -45,6 +45,19 @@ export const ACTAIntroduction = () => {
 
       {/* Teil 3: Quick Challenge */}
       <ACTAQuickChallenge />
+
+      {/* Teil 4: RAKETE-Vorschau */}
+      <div className="bg-muted/30 border border-border rounded-xl p-5 mt-8">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-lg">🚀</span>
+          <h4 className="font-semibold text-sm">Wie geht es weiter?</h4>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Im nächsten Modul lernst du die <strong>RAKETE-Methode</strong> kennen —
+          eine Erweiterung von ACTA um zwei Felder, die deine Prompts noch präziser machen:
+          <strong>Teste</strong> (Selbstprüfung) und <strong>Einschränkungen</strong> (was die KI NICHT tun soll).
+        </p>
+      </div>
     </div>
   );
 };
