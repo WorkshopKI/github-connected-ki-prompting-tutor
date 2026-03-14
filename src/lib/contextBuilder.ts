@@ -9,8 +9,8 @@ import { getActiveConstraints } from "@/services/constraintService";
 export function buildContextPrefix(): string {
   const ctx = loadKIContext();
   const constraints = getActiveConstraints();
-
-  const hasProfile = ctx.department || ctx.expertise || ctx.typicalTasks || ctx.style;
+  const p = ctx.profile;
+  const hasProfile = p.abteilung || p.fachgebiet || p.aufgaben || p.stil;
   const activeRules = ctx.workRules.filter(r => r.active);
   const hasRules = activeRules.length > 0;
   const hasConstraints = constraints.length > 0;
@@ -21,10 +21,10 @@ export function buildContextPrefix(): string {
 
   if (hasProfile) {
     lines.push("# Kontext des Nutzers");
-    if (ctx.department) lines.push(`Abteilung: ${ctx.department}`);
-    if (ctx.expertise) lines.push(`Fachgebiet: ${ctx.expertise}`);
-    if (ctx.typicalTasks) lines.push(`Typische Aufgaben: ${ctx.typicalTasks}`);
-    if (ctx.style) lines.push(`Bevorzugter Stil: ${ctx.style}`);
+    if (p.abteilung) lines.push(`Abteilung: ${p.abteilung}`);
+    if (p.fachgebiet) lines.push(`Fachgebiet: ${p.fachgebiet}`);
+    if (p.aufgaben) lines.push(`Typische Aufgaben: ${p.aufgaben}`);
+    if (p.stil) lines.push(`Bevorzugter Stil: ${p.stil}`);
     lines.push("");
   }
 
