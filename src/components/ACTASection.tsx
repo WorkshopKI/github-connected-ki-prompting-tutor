@@ -47,60 +47,34 @@ export const ACTASection = () => {
   }, [scope, isDepartment]);
 
   return (
-    <section className="mb-16">
-      <div className="text-center mb-10">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
+    <section className="mb-6">
+      <div className="text-center mb-5">
+        <h2 className="text-lg font-bold tracking-tight mb-1">
           Die ACTA-Methode
         </h2>
-        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-sm text-muted-foreground">
           Ein strukturiertes Framework für perfekte Prompts
         </p>
       </div>
 
-      {/* Stepper-Linie – nur auf Desktop */}
-      <div className="hidden lg:flex items-center justify-center mb-10">
-        <div className="flex items-center gap-0">
-          {[
-            { letter: "A", label: "Rolle" },
-            { letter: "C", label: "Kontext" },
-            { letter: "T", label: "Aufgabe" },
-            { letter: "A", label: "Format" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center">
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-sm">
-                  {item.letter}
-                </div>
-                <span className="text-[10px] text-muted-foreground font-medium">
-                  {item.label}
-                </span>
-              </div>
-              {i < 3 && (
-                <div className="w-16 xl:w-24 h-px bg-primary/25 mx-2 mt-[-12px]" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Compact 4-column grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         {actaCards.map((card, i) => (
           <div
             key={i}
-            className="bg-card/80 rounded-lg p-5"
+            className="bg-card/80 rounded-lg p-3"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="bg-primary/10 p-2.5 rounded-lg">
-                <card.icon className="w-5 h-5 text-primary" />
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-primary/10 p-1.5 rounded-md">
+                <card.icon className="w-4 h-4 text-primary" />
               </div>
-              <span className="text-xl font-bold text-primary">{card.letter}</span>
+              <span className="text-base font-bold text-primary">{card.letter}</span>
             </div>
-            <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className="text-sm font-semibold mb-1">{card.title}</h3>
+            <p className="text-xs text-muted-foreground mb-2">
               {card.description}
             </p>
-            <div className="bg-muted/50 rounded-md px-3 py-2">
+            <div className="bg-muted/50 rounded-md px-2.5 py-1.5">
               <p className="text-xs text-foreground/80 font-mono leading-relaxed">
                 {card.quote}
               </p>
@@ -133,12 +107,12 @@ export const ACTASection = () => {
 
       {/* Collapsible practice example */}
       {showExample && (
-        <div className="bg-gradient-card rounded-2xl p-8 md:p-12 shadow-sm border border-border mt-4">
-          <h3 className="text-xl font-bold mb-4 text-center">
+        <div className="bg-gradient-card rounded-xl p-5 border border-border mt-3">
+          <h3 className="text-sm font-bold mb-3 text-center">
             ACTA in der Praxis – Vollständiges Beispiel
           </h3>
 
-          <div className="bg-background/50 rounded-xl p-5 space-y-4">
+          <div className="bg-background/50 rounded-lg p-4 space-y-3">
             <div>
               <p className="text-xs font-semibold text-foreground mb-1.5 uppercase tracking-wide">Act (Rolle)</p>
               <div className="bg-muted/50 rounded-md px-3 py-2">
