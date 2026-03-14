@@ -14,7 +14,7 @@ export interface LearningModule {
   };
 }
 
-// Pflicht-Module: Der Kern-Onboarding-Pfad (~30 Min)
+// Pflicht-Module: Der Kern-Onboarding-Pfad (~40 Min)
 export const requiredModules: LearningModule[] = [
   {
     id: "acta-einfuehrung",
@@ -33,6 +33,15 @@ export const requiredModules: LearningModule[] = [
     type: "praxis",
     component: "PracticeAreaCompact",
     prerequisites: ["acta-einfuehrung"],
+  },
+  {
+    id: "rakete-einfuehrung",
+    title: "Die RAKETE-Methode",
+    description: "Von ACTA zu RAKETE — 2 zusätzliche Felder für exzellente Prompts",
+    duration: "10 Min",
+    type: "theorie",
+    component: "RAKETEIntroduction",
+    prerequisites: ["erste-uebungen"],
   },
 ];
 

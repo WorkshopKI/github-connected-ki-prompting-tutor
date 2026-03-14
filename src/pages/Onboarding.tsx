@@ -13,10 +13,12 @@ import { PracticeAreaCompact } from "@/components/PracticeAreaCompact";
 import { AdvancedTechniquesModule } from "@/components/AdvancedTechniquesModule";
 import { DataPrivacyIntro } from "@/components/DataPrivacyIntro";
 import { WorkflowBuilderModule } from "@/components/WorkflowBuilderModule";
+import { RAKETEIntroduction } from "@/components/RAKETEIntroduction";
 
 const componentMap: Record<string, React.ComponentType> = {
   ACTAIntroduction: ACTAIntroduction,
   PracticeAreaCompact: PracticeAreaCompact,
+  RAKETEIntroduction: RAKETEIntroduction,
   AdvancedTechniquesModule: AdvancedTechniquesModule,
   DataPrivacyIntro: DataPrivacyIntro,
   WorkflowBuilderModule: WorkflowBuilderModule,
@@ -238,7 +240,7 @@ const Onboarding = () => {
         <p className="text-muted-foreground text-sm mt-1">
           {isOnboardingComplete
             ? "Kern-Onboarding abgeschlossen! Entdecke die Bonus-Module."
-            : "2 kurze Module, dann kannst du loslegen."
+            : "3 kurze Module, dann kannst du loslegen."
           }
         </p>
       </div>
@@ -263,7 +265,7 @@ const Onboarding = () => {
         <div className="flex items-center gap-2 mb-3">
           <BookOpen className="w-4 h-4 text-primary" />
           <h2 className="font-semibold text-sm">Pflicht — Kern-Onboarding</h2>
-          <span className="text-xs text-muted-foreground">~30 Minuten</span>
+          <span className="text-xs text-muted-foreground">~40 Minuten</span>
         </div>
         <div className="space-y-2">
           {requiredModules.map((mod, index) => renderModule(mod, index + 1))}
@@ -276,7 +278,7 @@ const Onboarding = () => {
           <PartyPopper className="w-8 h-8 text-primary mx-auto mb-3" />
           <h3 className="text-lg font-bold mb-2">Onboarding abgeschlossen!</h3>
           <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-            Du kennst die ACTA-Methode und hast deine ersten Prompts verbessert.
+            Du kennst die ACTA- und RAKETE-Methode und hast deine ersten Prompts verbessert.
             Du bist bereit für die Prompt Sammlung und die Prompt Werkstatt.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
@@ -306,7 +308,7 @@ const Onboarding = () => {
           }
         </p>
         <div className="space-y-2">
-          {bonusModules.map((mod, index) => renderModule(mod, index + 3))}
+          {bonusModules.map((mod, index) => renderModule(mod, index + 4))}
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ export const PracticeAreaCompact = () => {
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
           Verbessere diese schwachen Prompts mit der ACTA-Methode.
-          Die KI bewertet deinen Prompt automatisch.
+          Im nächsten Modul lernst du dann die RAKETE-Erweiterung kennen. Die KI bewertet deinen Prompt automatisch.
         </p>
       </div>
 
