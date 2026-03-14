@@ -1,11 +1,10 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import type { ImperativePanelHandle } from "react-resizable-panels";
 import { LogIn, BookOpen } from "lucide-react";
 import { BudgetDialog } from "@/components/BudgetDialog";
 import { PlaygroundContent } from "@/components/playground/PlaygroundContent";
@@ -58,16 +57,6 @@ const Playground = () => {
   const [chatMode, setChatMode] = useState<"chat" | "compare">("chat");
   const [lastAssembledPrompt, setLastAssembledPrompt] = useState("");
   const [actaExpanded, setActaExpanded] = useState(true);
-  const actaPanelRef = useRef<ImperativePanelHandle>(null);
-
-  // Sync resizable panel with ACTA collapse state
-  useEffect(() => {
-    if (actaExpanded) {
-      actaPanelRef.current?.expand();
-    } else {
-      actaPanelRef.current?.collapse();
-    }
-  }, [actaExpanded]);
 
   // --- Playground mode ---
   const [playgroundMode, setPlaygroundMode] = useState<"einsteiger" | "experte">(() =>
@@ -289,38 +278,26 @@ const Playground = () => {
               <ResizableHandle />
 
               <ResizablePanel defaultSize={78} minSize={50} className="min-w-0 flex flex-col">
-                <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel
-                    ref={actaPanelRef}
-                    defaultSize={30}
-                    minSize={15}
-                    maxSize={70}
-                    collapsible
-                    collapsedSize={5}
-                    onCollapse={() => setActaExpanded(false)}
-                    onExpand={() => setActaExpanded(true)}
-                    className="min-h-0"
-                  >
-                    <ACTABuilder
-                      fields={actaFields}
-                      onFieldsChange={setActaFields}
-                      onSendToPlayground={handleSendToPlayground}
-                      layout="horizontal"
-                      mode={playgroundMode}
-                      selectedModel={settings.selectedModel}
-                      sourceTitle={sourcePromptTitle}
-                      isExpanded={actaExpanded}
-                      onExpandedChange={setActaExpanded}
-                      confidentiality={promptConfidentiality}
-                      onReset={handleACTAReset}
-                    />
-                  </ResizablePanel>
+                {/* ⚠️ Builder nimmt natürliche Höhe ein (shrink-0), Chat füllt den Rest (flex-1 min-h-0) */}
+                <div className="shrink-0">
+                  <ACTABuilder
+                    fields={actaFields}
+                    onFieldsChange={setActaFields}
+                    onSendToPlayground={handleSendToPlayground}
+                    layout="horizontal"
+                    mode={playgroundMode}
+                    selectedModel={settings.selectedModel}
+                    sourceTitle={sourcePromptTitle}
+                    isExpanded={actaExpanded}
+                    onExpandedChange={setActaExpanded}
+                    confidentiality={promptConfidentiality}
+                    onReset={handleACTAReset}
+                  />
+                </div>
 
-                  <ResizableHandle />
-
-                  <ResizablePanel defaultSize={70} minSize={20} className="min-h-0">
-                    <div className="h-full px-0 pt-0 pb-0">
-                      <PlaygroundContent
+                <div className="flex-1 min-h-0">
+                  <div className="h-full px-0 pt-0 pb-0">
+                    <PlaygroundContent
                         messages={chat.messages}
                         onSendMessage={chat.sendMessage}
                         isStreaming={chat.isStreaming}
@@ -352,9 +329,8 @@ const Playground = () => {
                         onChatModeChange={setChatMode}
                         assembledPrompt={lastAssembledPrompt}
                       />
-                    </div>
-                  </ResizablePanel>
-                </ResizablePanelGroup>
+                  </div>
+                </div>
               </ResizablePanel>
             </ResizablePanelGroup>
 
