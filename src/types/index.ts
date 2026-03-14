@@ -213,3 +213,39 @@ export interface ComplianceSettings {
   auditLog: boolean;
   approvedModelsOnly: boolean;
 }
+
+/* ── KI-Kontext & Qualitätsregeln ── */
+
+export interface WorkRule {
+  id: string;
+  text: string;
+  domain: string;
+  active: boolean;
+  source: "manual" | "constraint-library";
+  constraintId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KIContext {
+  department: string;
+  expertise: string;
+  typicalTasks: string;
+  style: string;
+  workRules: WorkRule[];
+}
+
+export interface Constraint {
+  id: string;
+  title: string;
+  domain: string;
+  rule: string;
+  example?: {
+    before: string;
+    after: string;
+  };
+  source: "manual" | "rejection";
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
