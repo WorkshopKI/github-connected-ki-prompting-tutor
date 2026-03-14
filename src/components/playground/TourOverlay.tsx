@@ -34,44 +34,29 @@ export function TourOverlay({
   const [targetRect, setTargetRect] = useState<Rect | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
+  // Track the elevated element so cleanup always restores styles
+  const elevatedRef = useRef<{ el: HTMLElement; origPosition: string; origZIndex: string } | null>(null);
+
   // Elevate the target element above the overlay so it stays interactive
   useEffect(() => {
-    const el = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
-    if (!el) {
-      // Retry nach 300ms — Element könnte noch rendern
-      const retryTimer = setTimeout(() => {
-        const retryEl = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
-        if (!retryEl) {
-          onNext(); // Wirklich nicht vorhanden → überspringen
-        } else {
-          // Element gefunden, messen und anzeigen
-          const rect = retryEl.getBoundingClientRect();
-          setTargetRect({
-            top: rect.top - PADDING,
-            left: rect.left - PADDING,
-            width: rect.width + PADDING * 2,
-            height: rect.height + PADDING * 2,
-          });
-          // Elevate
-          const computed = window.getComputedStyle(retryEl);
-          if (computed.position === "static") retryEl.style.position = "relative";
-          retryEl.style.zIndex = "102";
-          retryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
-      }, 300);
-      return () => clearTimeout(retryTimer);
+    // Restore previous element styles on step change
+    if (elevatedRef.current) {
+      const { el: prev, origPosition, origZIndex } = elevatedRef.current;
+      prev.style.position = origPosition;
+      prev.style.zIndex = origZIndex;
+      elevatedRef.current = null;
     }
 
-    // Save original styles and elevate
-    const origPosition = el.style.position;
-    const origZIndex = el.style.zIndex;
-    const computed = window.getComputedStyle(el);
-    if (computed.position === "static") {
-      el.style.position = "relative";
-    }
-    el.style.zIndex = "102";
+    const elevate = (el: HTMLElement) => {
+      const origPosition = el.style.position;
+      const origZIndex = el.style.zIndex;
+      const computed = window.getComputedStyle(el);
+      if (computed.position === "static") el.style.position = "relative";
+      el.style.zIndex = "102";
+      elevatedRef.current = { el, origPosition, origZIndex };
+    };
 
-    const measure = () => {
+    const measureAndShow = (el: HTMLElement) => {
       const rect = el.getBoundingClientRect();
       setTargetRect({
         top: rect.top - PADDING,
@@ -81,16 +66,48 @@ export function TourOverlay({
       });
     };
 
-    measure();
+    const el = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
+
+    if (!el) {
+      // Sofort zentrierten Fallback anzeigen — Step wird NIE übersprungen
+      setTargetRect({
+        top: window.innerHeight / 2 - 25,
+        left: window.innerWidth / 2 - 100,
+        width: 200,
+        height: 50,
+      });
+
+      // Retry bis zu 3× alle 300ms
+      let attempts = 0;
+      const retryInterval = setInterval(() => {
+        attempts++;
+        const retryEl = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
+        if (retryEl) {
+          clearInterval(retryInterval);
+          elevate(retryEl);
+          measureAndShow(retryEl);
+          retryEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          // Nachmessen nach scroll
+          setTimeout(() => measureAndShow(retryEl), 400);
+        } else if (attempts >= 3) {
+          clearInterval(retryInterval);
+        }
+      }, 300);
+
+      return () => clearInterval(retryInterval);
+    }
+
+    // Element sofort gefunden — normaler Ablauf
+    elevate(el);
+    measureAndShow(el);
     el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    const timer = setTimeout(measure, 400);
-    window.addEventListener("resize", measure);
+    const timer = setTimeout(() => measureAndShow(el), 400);
+
+    const onResize = () => measureAndShow(el);
+    window.addEventListener("resize", onResize);
 
     return () => {
-      // Restore original styles
-      el.style.position = origPosition;
-      el.style.zIndex = origZIndex;
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
       clearTimeout(timer);
     };
   }, [step.target]);
