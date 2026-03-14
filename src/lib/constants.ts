@@ -41,8 +41,10 @@ export const LS_KEYS = {
   STANDALONE_ENDPOINT: "standalone_endpoint",
   PLAYGROUND_MODE: "playground_mode",
   TOUR_COMPLETED: "tour_completed",
-  KI_CONTEXT: "ki_context",
-  CONSTRAINTS: "quality_constraints",
+  KI_CONTEXT: "ps-ki-context",
+  CONSTRAINTS: "ps-constraints",
+  REJECTION_NUDGE_COOLDOWN: "ps-rejection-nudge-cooldown",
+  LERNPFAD_PROGRESS: "ps-lernpfad-progress",
 } as const;
 
 /* ── Semantische Badge-Farben (3-Stufen) ──

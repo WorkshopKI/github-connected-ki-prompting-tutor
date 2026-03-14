@@ -3,69 +3,63 @@ import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import type { KIContext, WorkRule } from "@/types";
 
 const DEFAULT_CONTEXT: KIContext = {
-  profile: { abteilung: "", fachgebiet: "", aufgaben: "", stil: "" },
+  department: "",
+  expertise: "",
+  typicalTasks: "",
+  style: "",
   workRules: [],
 };
 
+// ═══ LOAD ═══
 export function loadKIContext(): KIContext {
   return loadFromStorage<KIContext>(LS_KEYS.KI_CONTEXT, DEFAULT_CONTEXT);
 }
 
+// ═══ SAVE ═══
 export function saveKIContext(ctx: KIContext): void {
   saveToStorage(LS_KEYS.KI_CONTEXT, ctx);
 }
 
-export function updateKIContextProfile(
-  field: keyof KIContext["profile"],
-  value: string
-): KIContext {
+// ═══ UPDATE PROFILE FIELDS ═══
+export function updateKIContextProfile(fields: Partial<Pick<KIContext, "department" | "expertise" | "typicalTasks" | "style">>): void {
   const ctx = loadKIContext();
-  ctx.profile[field] = value;
-  saveKIContext(ctx);
-  return ctx;
+  saveKIContext({ ...ctx, ...fields });
 }
 
-export function addWorkRule(text: string, domain: string): KIContext {
-  const ctx = loadKIContext();
-  const rule: WorkRule = {
-    id: crypto.randomUUID(),
-    text,
-    domain,
-    active: true,
-    createdAt: new Date().toISOString(),
+// ═══ WORK RULES ═══
+export function addWorkRule(rule: Omit<WorkRule, "id" | "createdAt" | "updatedAt">): WorkRule {
+  const now = new Date().toISOString();
+  const newRule: WorkRule = {
+    ...rule,
+    id: `wr-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: now,
+    updatedAt: now,
   };
-  ctx.workRules.push(rule);
+  const ctx = loadKIContext();
+  ctx.workRules.unshift(newRule);
   saveKIContext(ctx);
-  return ctx;
+  return newRule;
 }
 
-export function updateWorkRule(
-  id: string,
-  updates: Partial<Pick<WorkRule, "text" | "domain">>
-): KIContext {
+export function updateWorkRule(id: string, updates: Partial<WorkRule>): void {
   const ctx = loadKIContext();
-  const rule = ctx.workRules.find((r) => r.id === id);
-  if (rule) {
-    if (updates.text !== undefined) rule.text = updates.text;
-    if (updates.domain !== undefined) rule.domain = updates.domain;
-    saveKIContext(ctx);
-  }
-  return ctx;
-}
-
-export function deleteWorkRule(id: string): KIContext {
-  const ctx = loadKIContext();
-  ctx.workRules = ctx.workRules.filter((r) => r.id !== id);
+  const idx = ctx.workRules.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  ctx.workRules[idx] = { ...ctx.workRules[idx], ...updates, updatedAt: new Date().toISOString() };
   saveKIContext(ctx);
-  return ctx;
 }
 
-export function toggleWorkRuleActive(id: string): KIContext {
+export function deleteWorkRule(id: string): void {
   const ctx = loadKIContext();
-  const rule = ctx.workRules.find((r) => r.id === id);
-  if (rule) {
-    rule.active = !rule.active;
-    saveKIContext(ctx);
-  }
-  return ctx;
+  ctx.workRules = ctx.workRules.filter(r => r.id !== id);
+  saveKIContext(ctx);
+}
+
+export function toggleWorkRuleActive(id: string): void {
+  const ctx = loadKIContext();
+  const idx = ctx.workRules.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  ctx.workRules[idx].active = !ctx.workRules[idx].active;
+  ctx.workRules[idx].updatedAt = new Date().toISOString();
+  saveKIContext(ctx);
 }

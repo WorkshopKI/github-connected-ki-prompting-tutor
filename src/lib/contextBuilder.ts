@@ -1,47 +1,56 @@
 import { loadKIContext } from "@/services/kiContextService";
 import { getActiveConstraints } from "@/services/constraintService";
 
-export function getActiveRuleCount(): number {
-  const ctx = loadKIContext();
-  const activeWorkRules = ctx.workRules.filter((r) => r.active).length;
-  const activeConstraints = getActiveConstraints().length;
-  return activeWorkRules + activeConstraints;
-}
-
+/**
+ * Generiert den System-Prompt-Prefix aus persönlichem KI-Kontext + aktiven Qualitätsregeln.
+ * Wird vor den System-Prompt im Prompt-Labor gehängt.
+ * Gibt leeren String zurück wenn kein Kontext konfiguriert ist.
+ */
 export function buildContextPrefix(): string {
   const ctx = loadKIContext();
   const constraints = getActiveConstraints();
-  const parts: string[] = [];
 
-  // Profil-Block
-  const { abteilung, fachgebiet, aufgaben, stil } = ctx.profile;
-  const hasProfile = abteilung || fachgebiet || aufgaben || stil;
+  const hasProfile = ctx.department || ctx.expertise || ctx.typicalTasks || ctx.style;
+  const activeRules = ctx.workRules.filter(r => r.active);
+  const hasRules = activeRules.length > 0;
+  const hasConstraints = constraints.length > 0;
+
+  if (!hasProfile && !hasRules && !hasConstraints) return "";
+
+  const lines: string[] = [];
+
   if (hasProfile) {
-    parts.push("## Nutzer-Kontext");
-    if (abteilung) parts.push(`- Abteilung: ${abteilung}`);
-    if (fachgebiet) parts.push(`- Fachgebiet: ${fachgebiet}`);
-    if (aufgaben) parts.push(`- Typische Aufgaben: ${aufgaben}`);
-    if (stil) parts.push(`- Bevorzugter Stil: ${stil}`);
+    lines.push("# Kontext des Nutzers");
+    if (ctx.department) lines.push(`Abteilung: ${ctx.department}`);
+    if (ctx.expertise) lines.push(`Fachgebiet: ${ctx.expertise}`);
+    if (ctx.typicalTasks) lines.push(`Typische Aufgaben: ${ctx.typicalTasks}`);
+    if (ctx.style) lines.push(`Bevorzugter Stil: ${ctx.style}`);
+    lines.push("");
   }
 
-  // Arbeitsregeln
-  const activeRules = ctx.workRules.filter((r) => r.active);
-  if (activeRules.length > 0) {
-    parts.push("");
-    parts.push("## Arbeitsregeln");
-    activeRules.forEach((r) => {
-      parts.push(`- ${r.text}`);
+  if (hasRules) {
+    lines.push("# Arbeitsregeln");
+    activeRules.forEach(r => lines.push(`- ${r.text}`));
+    lines.push("");
+  }
+
+  if (hasConstraints) {
+    lines.push("# Qualitätsregeln");
+    constraints.forEach(c => {
+      lines.push(`- ${c.title}: ${c.rule}`);
     });
+    lines.push("");
   }
 
-  // Qualitätsregeln
-  if (constraints.length > 0) {
-    parts.push("");
-    parts.push("## Qualitätsregeln");
-    constraints.forEach((c) => {
-      parts.push(`- ${c.title}: ${c.rule}`);
-    });
-  }
+  return lines.join("\n");
+}
 
-  return parts.join("\n");
+/**
+ * Gibt die Anzahl aktiver Regeln zurück (Arbeitsregeln + Constraints).
+ * Für Badge-Anzeige im Chat-Input.
+ */
+export function getActiveRuleCount(): number {
+  const ctx = loadKIContext();
+  const constraints = getActiveConstraints();
+  return ctx.workRules.filter(r => r.active).length + constraints.length;
 }

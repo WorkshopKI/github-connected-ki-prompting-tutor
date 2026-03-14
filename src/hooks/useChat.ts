@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { streamChat } from "@/services/llmService";
+import { buildContextPrefix } from "@/lib/contextBuilder";
 import { toast } from "sonner";
 import type { Msg } from "@/types";
 
@@ -50,8 +51,12 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
       thinkingRef.current = "";
 
       const apiMessages: Msg[] = [];
-      if (systemPrompt.trim()) {
-        apiMessages.push({ role: "system", content: systemPrompt });
+      const contextPrefix = buildContextPrefix();
+      const fullSystemPrompt = contextPrefix
+        ? `${contextPrefix}\n---\n\n${systemPrompt}`.trim()
+        : systemPrompt;
+      if (fullSystemPrompt.trim()) {
+        apiMessages.push({ role: "system", content: fullSystemPrompt });
       }
       apiMessages.push(...newMessages.slice(-20));
 
