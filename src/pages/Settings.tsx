@@ -12,14 +12,7 @@ const Settings = () => {
   const { isWorkshop } = useAppMode();
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Einstellungen</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Konto, Plattform-Konfiguration und Governance
-        </p>
-      </div>
-
+    <div className="space-y-6">
       <Tabs defaultValue="profil" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profil" className="gap-1.5">
