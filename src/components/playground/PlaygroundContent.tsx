@@ -126,9 +126,11 @@ export const PlaygroundContent = ({
       )}
 
       {/* ═══ TOOLBAR — Icon-only + kontextuelle Buttons ═══ */}
-      <div className="flex items-center px-3 py-1.5 border-b border-border bg-card/80 backdrop-blur-sm gap-1">
+      <div className="flex items-center px-3 py-1.5 border-b border-border border-t-2 border-t-border bg-secondary/50 dark:bg-muted/30 gap-1">
+        {/* Zonen-Label */}
+        <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mr-2 hidden sm:inline">Ergebnis</span>
         {/* Modus-Toggle */}
-        <div className="flex gap-0.5 bg-muted rounded-md p-0.5 mr-1">
+        <div className="flex gap-0.5 bg-card rounded-md p-0.5 mr-1 shadow-sm">
           <button
             onClick={() => setChatMode("chat")}
             className={cn(
