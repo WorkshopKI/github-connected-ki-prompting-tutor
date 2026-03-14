@@ -24,20 +24,8 @@ const Library = () => {
   const shortLabel = scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "");
 
   return (
-    <div className="space-y-6">
-      {/* Zeile 1: Titel + Count + Button */}
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">
-          {isDepartment
-            ? `${deptPromptCount} ${shortLabel}-Prompts · ${promptLibrary.length} gesamt`
-            : `${promptLibrary.length} Prompts`
-          }
-        </span>
-        <div className="flex-1" />
-        <Button onClick={() => navigate("/playground?new=true")}>+ Neuer Prompt</Button>
-      </div>
-
-      {/* Sections-Navigation */}
+    <div className="space-y-3">
+      {/* Navigation: Tabs + Count + Neu-Button — alles in einer Zeile */}
       <div className="flex items-center gap-1 text-sm border-b border-border pb-2">
         <button
           onClick={() => setActiveSection("prompts")}
@@ -82,6 +70,22 @@ const Library = () => {
             </span>
           ) : null; })()}
         </button>
+        {/* Spacer + Count + Button — rechts */}
+        <div className="flex-1" />
+        <span className="text-xs text-muted-foreground hidden sm:inline">
+          {isDepartment
+            ? `${deptPromptCount} ${shortLabel} · ${promptLibrary.length} gesamt`
+            : `${promptLibrary.length} Prompts`
+          }
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs gap-1"
+          onClick={() => navigate("/playground?new=true")}
+        >
+          + Neu
+        </Button>
       </div>
 
       {/* Content je nach Section */}
