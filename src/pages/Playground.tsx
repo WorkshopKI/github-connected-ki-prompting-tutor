@@ -21,6 +21,7 @@ import { promptLibrary } from "@/data/prompts";
 import { splitPromptToACTA } from "@/lib/promptUtils";
 import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import type { AgentConfig } from "@/components/playground/AgentKnobs";
+import { toast } from "sonner";
 import { useTour } from "@/hooks/useTour";
 import { getStepsForMode } from "@/components/playground/tourSteps";
 import { TourOverlay } from "@/components/playground/TourOverlay";
@@ -76,6 +77,13 @@ const Playground = () => {
   const handleModeChange = (mode: "einsteiger" | "experte") => {
     setPlaygroundMode(mode);
     localStorage.setItem(LS_KEYS.PLAYGROUND_MODE, mode);
+    if (mode === "experte" && !localStorage.getItem("rakete_intro_shown")) {
+      toast.info(
+        "ACTA → RAKETE: Deine 4 Felder sind jetzt deutsch benannt. Neu dazu: Teste (Selbstprüfung) + Einschränkungen (Was die KI NICHT tun soll)",
+        { duration: 6000 }
+      );
+      localStorage.setItem("rakete_intro_shown", "true");
+    }
   };
 
   // --- Guided tour ---
