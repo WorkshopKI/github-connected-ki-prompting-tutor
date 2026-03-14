@@ -138,11 +138,14 @@ src/
 │   ├── client.ts                   # Supabase Client Init
 │   └── types.ts                    # Generierte DB Types
 ├── services/
-│   └── llmService.ts               # streamChat() SSE Client + onThinking, saveUserKey()
+│   ├── llmService.ts               # streamChat() SSE Client + onThinking, saveUserKey()
+│   ├── constraintService.ts        # CRUD für Qualitätsregeln (Constraint Library)
+│   └── kiContextService.ts         # CRUD für persönlichen KI-Kontext (Arbeitsregeln)
 ├── lib/
 │   ├── constants.ts                # LS_KEYS, ROUTES, BADGE_COLORS, PRIORITY_COLORS, RISK_COLORS, SEVERITY_COLORS, LEVEL_BADGE_COLORS, DEFAULT_MODEL
 │   ├── utils.ts                    # cn() Tailwind Class Merger
 │   ├── promptUtils.ts              # extractVariables() — zentralisiert
+│   ├── contextBuilder.ts           # Baut System-Prompt-Prefix aus KI-Kontext + Constraints
 │   ├── exportSkill.ts              # Markdown + Agent Skill (ZIP) Export
 │   └── storage.ts                  # Zentraler localStorage-Zugriff (Key-Registry im Header)
 ├── pages/
@@ -236,6 +239,14 @@ supabase/
 - 6 Tabs: Mein Konto | Allgemein | Rollen & Rechte | Compliance | KI-Konfiguration | Darstellung
 - "Mein Konto" enthält Profil-Funktionalität (importiert `ProfileContent` aus `Profile.tsx`)
 - `/profil` redirected auf `/settings`
+
+### KI-Kontext & Qualitätsregeln (Feature: Qualitätsschicht)
+Zwei zusammenhängende Features:
+- **KI-Kontext** (`kiContextService.ts`): Persönliche Arbeitsregeln und Profildaten, die als System-Prompt-Prefix bei jeder LLM-Anfrage mitgesendet werden.
+- **Constraint Library** (`constraintService.ts`): Qualitätsregeln, die der User aus Erfahrungen ableitet. Aktive Constraints fließen ebenfalls in den KI-Kontext.
+- **Context Builder** (`contextBuilder.ts`): Assembliert den System-Prompt-Prefix aus beiden Quellen.
+- localStorage Keys: `ps-ki-context`, `ps-constraints`
+- Integration: `useChat.ts` nutzt `buildContextPrefix()` um den System-Prompt automatisch zu erweitern.
 
 ### Auth System (`AuthContext`)
 - **Email OTP:** Kurscode + Email → `check-enrollment` validiert → Supabase sendet OTP → 8-stelliger Code
