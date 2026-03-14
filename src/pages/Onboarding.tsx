@@ -130,105 +130,113 @@ const Onboarding = () => {
           </Card>
         ) : (
           <Card
-            className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            className={`rounded-xl border transition-all ${
               status === "completed"
                 ? "border-l-4 border-l-primary/50 border-border"
-                : "border-l-4 border-l-primary border-border hover:shadow-md bg-primary/[0.02]"
+                : "border-l-4 border-l-primary border-border"
             }`}
-            onClick={() => toggleModule(mod.id)}
           >
-            <div className="flex items-center gap-4">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
-                status === "completed"
-                  ? "bg-primary/15 text-primary"
-                  : "bg-primary text-primary-foreground"
-              }`}>
-                {status === "completed" ? <CheckCircle2 className="w-5 h-5" /> : showNumber}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-sm">{mod.title}</span>
-                  <Badge className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
-                    {typeLabels[mod.type]}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">{mod.duration}</span>
+            {/* Header — klickbar */}
+            <div
+              className={`p-4 cursor-pointer transition-colors ${
+                !isExpanded && status !== "completed" ? "hover:bg-primary/[0.02]" : ""
+              }`}
+              onClick={() => toggleModule(mod.id)}
+            >
+              <div className="flex items-center gap-4">
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold shrink-0 ${
+                  status === "completed"
+                    ? "bg-primary/15 text-primary"
+                    : "bg-primary text-primary-foreground"
+                }`}>
+                  {status === "completed" ? <CheckCircle2 className="w-5 h-5" /> : showNumber}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
-              </div>
-              <div className="shrink-0">
-                {status === "completed" ? (
-                  <span className="text-xs text-primary font-medium">Abgeschlossen</span>
-                ) : (
-                  <Play className="w-5 h-5 text-primary" />
-                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm">{mod.title}</span>
+                    <Badge className={`text-[10px] ${typeBadgeColors[mod.type] || ""}`}>
+                      {typeLabels[mod.type]}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{mod.duration}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">{mod.description}</p>
+                </div>
+                <div className="shrink-0">
+                  {status === "completed" ? (
+                    <span className="text-xs text-primary font-medium">Abgeschlossen</span>
+                  ) : (
+                    <Play className="w-5 h-5 text-primary" />
+                  )}
+                </div>
               </div>
             </div>
-          </Card>
-        )}
-
-        {/* Expanded Content */}
-        {isExpanded && Component && (
-          <div className="mt-2 p-6 rounded-xl border border-border bg-muted/20">
-            <Component />
-            {status !== "completed" && (
-              <div className="mt-6 pt-4 border-t border-border space-y-4">
-                {mod.challenge ? (
-                  <div className="bg-primary/5 border border-primary/15 rounded-lg p-4 space-y-3">
-                    <p className="text-sm font-medium">{mod.challenge.question}</p>
-                    <Textarea
-                      value={challengeAnswers[mod.id] || ""}
-                      onChange={(e) => setChallengeAnswers(prev => ({ ...prev, [mod.id]: e.target.value }))}
-                      placeholder={mod.challenge.placeholder}
-                      className="text-xs min-h-[72px] resize-none"
-                      rows={3}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground">
-                        {(challengeAnswers[mod.id] || "").length < mod.challenge.minLength
-                          ? `Noch mindestens ${mod.challenge.minLength - (challengeAnswers[mod.id] || "").length} Zeichen`
-                          : "✓ Ausreichend"
-                        }
-                      </span>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          markLessonComplete(mod.id);
-                        }}
-                        disabled={(challengeAnswers[mod.id] || "").length < mod.challenge.minLength}
-                        className="gap-2"
-                        size="sm"
-                      >
+            {/* Expanded Content — getönter Body innerhalb derselben Card */}
+            {isExpanded && Component && (
+              <div className="bg-muted/30 border-t border-border">
+                <div className="p-6">
+                  <Component />
+                  {status !== "completed" && (
+                    <div className="mt-6 pt-4 border-t border-border space-y-4">
+                      {mod.challenge ? (
+                        <div className="bg-background border border-border rounded-lg p-4 space-y-3">
+                          <p className="text-sm font-medium">{mod.challenge.question}</p>
+                          <Textarea
+                            value={challengeAnswers[mod.id] || ""}
+                            onChange={(e) => setChallengeAnswers(prev => ({ ...prev, [mod.id]: e.target.value }))}
+                            placeholder={mod.challenge.placeholder}
+                            className="text-xs min-h-[72px] resize-none"
+                            rows={3}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">
+                              {(challengeAnswers[mod.id] || "").length < mod.challenge.minLength
+                                ? `Noch mindestens ${mod.challenge.minLength - (challengeAnswers[mod.id] || "").length} Zeichen`
+                                : "✓ Ausreichend"
+                              }
+                            </span>
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markLessonComplete(mod.id);
+                              }}
+                              disabled={(challengeAnswers[mod.id] || "").length < mod.challenge.minLength}
+                              className="gap-2"
+                              size="sm"
+                            >
+                              <CheckCircle2 className="w-4 h-4" />
+                              Modul abschließen
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              markLessonComplete(mod.id);
+                            }}
+                            className="gap-2"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            Modul abschließen
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {status === "completed" && (
+                    <div className="mt-6 pt-4 border-t border-border">
+                      <Button disabled variant="outline" className="gap-2">
                         <CheckCircle2 className="w-4 h-4" />
-                        Modul abschließen
+                        Bereits abgeschlossen
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        markLessonComplete(mod.id);
-                      }}
-                      className="gap-2"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      Modul abschließen
-                    </Button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
-            {status === "completed" && (
-              <div className="mt-6 pt-4 border-t border-border">
-                <Button disabled variant="outline" className="gap-2">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Bereits abgeschlossen
-                </Button>
-              </div>
-            )}
-          </div>
+          </Card>
         )}
       </div>
     );
