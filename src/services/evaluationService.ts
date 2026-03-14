@@ -1,6 +1,14 @@
 import { complete } from "./completionService";
 import { DEFAULT_MODEL } from "@/lib/constants";
+import { getActiveConstraints } from "@/services/constraintService";
 import type { Msg } from "@/types";
+
+export interface ConstraintCheckResult {
+  constraintId: string;
+  constraintTitle: string;
+  met: boolean;
+  explanation: string;
+}
 
 const SYSTEM_PROMPT = `Du bist ein KI-Prompting-Tutor. Der Benutzer übt, schlechte Prompts zu verbessern.
 Bewerte den verbesserten Prompt auf einer Skala von 0-100:
@@ -43,5 +51,53 @@ export async function evaluatePromptDirect(
     return JSON.parse(text.replace(/```json|```/g, "").trim());
   } catch {
     return { score: 50, feedback: text.slice(0, 300) };
+  }
+}
+
+// ═══ Constraint-Check ═══
+
+const CONSTRAINT_CHECK_PROMPT = `Du bist ein KI-Qualitätsprüfer. Prüfe den folgenden KI-Output gegen die domänenspezifischen Qualitätsregeln des Nutzers.
+
+Qualitätsregeln:
+{CONSTRAINTS}
+
+Antworte NUR mit einem JSON-Array (kein Markdown, kein Preamble):
+[
+  {
+    "constraintId": "ID der Regel",
+    "constraintTitle": "Titel der Regel",
+    "met": true/false,
+    "explanation": "Kurze Begründung auf Deutsch (1 Satz)"
+  }
+]`;
+
+export async function evaluateWithConstraints(
+  output: string,
+  model?: string,
+): Promise<ConstraintCheckResult[]> {
+  const constraints = getActiveConstraints();
+  if (constraints.length === 0) return [];
+
+  const constraintList = constraints.map(c =>
+    `- ID: ${c.id} | Titel: "${c.title}" | Regel: "${c.rule}"`
+  ).join("\n");
+
+  const systemPrompt = CONSTRAINT_CHECK_PROMPT.replace("{CONSTRAINTS}", constraintList);
+
+  const messages: Msg[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: `Prüfe diesen KI-Output:\n\n"${output.slice(0, 2000)}"` },
+  ];
+
+  const text = await complete({
+    messages,
+    model: model || DEFAULT_MODEL,
+    temperature: 0.2,
+  });
+
+  try {
+    return JSON.parse(text.replace(/```json|```/g, "").trim());
+  } catch {
+    return [];
   }
 }
