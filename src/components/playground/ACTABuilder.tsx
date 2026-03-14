@@ -576,7 +576,7 @@ export const ACTABuilder = ({
             "w-4 h-4 text-muted-foreground transition-transform shrink-0",
             !expanded && "-rotate-90"
           )} />
-          <span className="text-xs font-bold">{frameworkName}</span>
+          <span className="text-xs font-bold shrink-0">{frameworkName}</span>
           {sourceTitle && (
             <span className="text-xs text-primary font-medium truncate min-w-0 flex-1">{sourceTitle}</span>
           )}
@@ -589,9 +589,9 @@ export const ACTABuilder = ({
               {variables.filter(v => !variableValues[v]?.trim()).length} offen
             </Badge>
           )}
-          {/* Aktive Extensions — nur collapsed + Experte */}
+          {/* Aktive Extensions — direkt nach dem Titel */}
           {isExperte && hasActiveExtensions && (
-            <div className="flex gap-1">
+            <div className="flex gap-1 shrink-0">
               {EXTENSION_CHIPS.filter(c => isChipActive(c.key)).map(c => (
                 <span key={c.key} className="text-[10px] text-primary bg-primary/10 px-1.5 rounded-full font-medium">
                   ✓ {c.label}
@@ -599,12 +599,14 @@ export const ACTABuilder = ({
               ))}
             </div>
           )}
+          {/* Spacer — drückt Reset nach rechts */}
+          <div className="flex-1" />
           {/* Reset — nur wenn Felder befüllt */}
           {hasContent && onReset && (
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onReset(); }}
-              className="text-[10px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 transition-colors ml-auto mr-1"
+              className="text-[10px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 transition-colors shrink-0 mr-1"
               title={`${frameworkName}-Felder leeren und neu beginnen`}
             >
               <RotateCcw className="w-3 h-3" /> Neu
