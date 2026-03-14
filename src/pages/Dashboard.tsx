@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
@@ -9,11 +9,19 @@ import {
   Sparkles,
   Users,
   ArrowRight,
+  Target,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { StatCard } from "@/components/StatCard";
 import { AnalyticsSection } from "@/components/AnalyticsSection";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -26,6 +34,10 @@ import { useOrgContext } from "@/contexts/OrgContext";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
+import { ComparisonExercise } from "@/components/ComparisonExercise";
+import { comparisonExercises } from "@/data/comparisonExercises";
+import { LS_KEYS } from "@/lib/constants";
+import { loadArrayFromStorage, saveToStorage } from "@/lib/storage";
 
 
 function getGreeting(): string {
@@ -82,6 +94,39 @@ const Dashboard = () => {
 
   const displayName = profile?.display_name;
 
+  /* ── Erkenne den Unterschied ── */
+  const [compDialogOpen, setCompDialogOpen] = useState(false);
+
+  const comparisonHistory = useMemo<string[]>(
+    () => loadArrayFromStorage<string>(LS_KEYS.COMPARISON_HISTORY),
+    []
+  );
+  const [localHistory, setLocalHistory] = useState<string[]>(comparisonHistory);
+
+  const nextExercise = useMemo(() => {
+    const remaining = comparisonExercises.filter(
+      (e) => !localHistory.includes(e.id)
+    );
+    if (remaining.length > 0) return remaining[0];
+    return null;
+  }, [localHistory]);
+
+  const allCompleted = !nextExercise;
+
+  const handleComparisonComplete = useCallback(
+    (correct: boolean) => {
+      if (!nextExercise) return;
+      const updated = [...localHistory, nextExercise.id];
+      setLocalHistory(updated);
+      saveToStorage(LS_KEYS.COMPARISON_HISTORY, updated);
+    },
+    [nextExercise, localHistory]
+  );
+
+  const handleResetComparison = useCallback(() => {
+    setLocalHistory([]);
+    saveToStorage(LS_KEYS.COMPARISON_HISTORY, []);
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -225,6 +270,66 @@ const Dashboard = () => {
 
       {/* Tagesaufgabe — volle Breite */}
       <DailyChallengeCard />
+
+      {/* Erkenne den Unterschied */}
+      <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Target className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-base">Erkenne den Unterschied</h2>
+              <p className="text-sm text-muted-foreground">
+                Trainiere dein Qualitätsurteil — 70% vs. 100%
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {nextExercise && (
+              <Badge className="bg-muted text-muted-foreground text-xs hidden sm:inline-flex">
+                {nextExercise.domain}
+              </Badge>
+            )}
+            <Badge className="bg-primary/10 text-primary text-xs">
+              {localHistory.length}/{comparisonExercises.length}
+            </Badge>
+            {allCompleted ? (
+              <Button size="sm" variant="outline" onClick={handleResetComparison}>
+                Erneut üben
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => setCompDialogOpen(true)}>
+                Übung starten
+              </Button>
+            )}
+          </div>
+        </div>
+        {allCompleted && (
+          <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-3 flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            Alle Übungen abgeschlossen!
+          </p>
+        )}
+      </Card>
+
+      <Dialog open={compDialogOpen} onOpenChange={setCompDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Erkenne den Unterschied</DialogTitle>
+            <DialogDescription>
+              Vergleiche zwei KI-Outputs und finde den professionellen.
+            </DialogDescription>
+          </DialogHeader>
+          {nextExercise && (
+            <ComparisonExercise
+              key={nextExercise.id}
+              exercise={nextExercise}
+              onComplete={handleComparisonComplete}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Analytics Section — collapsible */}
       <AnalyticsSection completedLessons={completedLessons} />
