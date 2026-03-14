@@ -168,30 +168,19 @@ export const PlaygroundContent = ({
         <div className="flex-1" />
 
         {/* Icon-only actions */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-destructive"
+          title="Chat Verlauf löschen"
+          onClick={onClearChat}
+          disabled={!hasMessages}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" title="Exportieren" disabled={!hasMessages}>
-              <Download className="w-3.5 h-3.5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-auto p-1.5">
-            <button
-              onClick={() => { exportChatAsMarkdown(messages); toast.success("Als Markdown exportiert!"); }}
-              className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
-            >
-              Als Markdown (.md)
-            </button>
-            <button
-              onClick={() => { exportChatAsDocx(messages); toast.success("Als Word exportiert!"); }}
-              className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
-            >
-              Als Word (.docx)
-            </button>
-          </PopoverContent>
-        </Popover>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7" title="Kopieren" disabled={!hasAssistantMessage}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" title="KI Antwort in Zwischenablage" disabled={!hasAssistantMessage}>
               <Copy className="w-3.5 h-3.5" />
             </Button>
           </PopoverTrigger>
@@ -214,16 +203,27 @@ export const PlaygroundContent = ({
             </button>
           </PopoverContent>
         </Popover>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-destructive"
-          title="Verlauf leeren"
-          onClick={onClearChat}
-          disabled={!hasMessages}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-7 w-7" title="Exportieren" disabled={!hasMessages}>
+              <Download className="w-3.5 h-3.5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-auto p-1.5">
+            <button
+              onClick={() => { exportChatAsMarkdown(messages); toast.success("Als Markdown exportiert!"); }}
+              className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
+            >
+              Export als Markdown
+            </button>
+            <button
+              onClick={() => { exportChatAsDocx(messages); toast.success("Als Word exportiert!"); }}
+              className="block w-full text-left px-3 py-1.5 text-[11px] rounded-md hover:bg-muted transition-colors"
+            >
+              Export als Word
+            </button>
+          </PopoverContent>
+        </Popover>
 
         {/* Settings — nur Experte */}
         {isExperte && (
