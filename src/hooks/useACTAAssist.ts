@@ -5,14 +5,14 @@ import type { ACTAFields } from "@/components/playground/ACTATemplates";
 import { EMPTY_EXTENSIONS } from "@/components/playground/ACTATemplates";
 
 export interface UseACTAAssistReturn {
-  suggest: (description: string, model?: string) => Promise<ACTAFields | null>;
-  improve: (fields: ACTAFields, model?: string) => Promise<ACTAFields | null>;
+  suggest: (description: string, model?: string, mode?: "einsteiger" | "experte") => Promise<ACTAFields | null>;
+  improve: (fields: ACTAFields, model?: string, mode?: "einsteiger" | "experte") => Promise<ACTAFields | null>;
   fillVariables: (variableNames: string[], fields: ACTAFields, model?: string) => Promise<Record<string, string> | null>;
   suggestVariableOptions: (variableNames: string[], fields: ACTAFields, model?: string) => Promise<Record<string, string[]> | null>;
   isLoading: boolean;
 }
 
-const SUGGEST_SYSTEM = `Du bist ein Prompt-Engineering-Experte. Der Benutzer beschreibt kurz, was er braucht. Du zerlegst das in die ACTA-Struktur.
+const SUGGEST_SYSTEM_ACTA = `Du bist ein Prompt-Engineering-Experte. Der Benutzer beschreibt kurz, was er braucht. Du zerlegst das in die ACTA-Struktur.
 
 Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Backticks, kein Preamble):
 {
@@ -42,7 +42,35 @@ Regeln:
 - extensions.negatives: Nur wenn typische KI-Fehler vermieden werden müssen
 - Alle Texte auf Deutsch`;
 
-const IMPROVE_SYSTEM = `Du bist ein Prompt-Engineering-Experte. Verbessere den ACTA-Prompt des Benutzers.
+const SUGGEST_SYSTEM_RAKETE = `Du bist ein Prompt-Engineering-Experte. Der Benutzer beschreibt kurz, was er braucht. Du zerlegst das in die RAKETE-Struktur (6 Felder: Rolle, Kontext, Aufgabe, Ergebnis, Teste, Einschränkungen).
+Antworte NUR mit einem JSON-Objekt (kein Markdown, keine Backticks, kein Preamble):
+{
+  "act": "Spezifische Expertenrolle",
+  "context": "Hintergrund, Zielgruppe, Rahmenbedingungen",
+  "task": "Konkrete Aufgabe, was die KI tun soll",
+  "ausgabe": "Gewünschtes Format, Länge, Struktur, Sprache",
+  "extensions": {
+    "examples": [],
+    "rules": "",
+    "reasoning": "",
+    "verification": true,
+    "verificationNote": "Konkreter Prüfauftrag: Worauf soll die KI ihre eigene Antwort prüfen?",
+    "reversePrompt": false,
+    "negatives": "Was die KI NICHT tun soll"
+  }
+}
+Regeln:
+- act: Immer eine spezifische Expertenrolle, nicht generisch
+- context: Alle relevanten Rahmenbedingungen aus der Beschreibung ableiten
+- task: Klare, eindeutige Handlungsanweisung
+- ausgabe: Konkretes Format mit Längenangabe
+- verification: true wenn Genauigkeit, Vollständigkeit oder Compliance wichtig ist
+- verificationNote: Konkreten, aufgabenspezifischen Prüfauftrag formulieren (z.B. "Prüfe auf fachliche Korrektheit und vollständige Abdeckung aller Anforderungen")
+- negatives: IMMER befüllen — mindestens 2 Einschränkungen die typische KI-Schwächen adressieren (z.B. "Keine Floskeln. Nicht spekulieren.")
+- reasoning: "step-by-step" wenn die Aufgabe komplex ist, sonst ""
+- Alle Texte auf Deutsch`;
+
+const IMPROVE_SYSTEM_ACTA = `Du bist ein Prompt-Engineering-Experte. Verbessere den ACTA-Prompt des Benutzers.
 
 Du erhältst die aktuellen ACTA-Felder als JSON. Antworte NUR mit einem verbesserten JSON-Objekt (kein Markdown, keine Backticks, kein Preamble) im selben Format:
 {
@@ -70,6 +98,18 @@ Verbesserungsprinzipien:
 - extensions.reasoning: Denkstrategie empfehlen wenn die Aufgabe komplex ist
 - extensions.verification: Empfehlen wenn Genauigkeit wichtig ist
 - extensions.negatives: Typische KI-Fehler als Negativ-Constraints ergänzen
+- NICHT den Inhalt komplett umschreiben — verbessern und ergänzen
+- Alle Texte auf Deutsch`;
+
+const IMPROVE_SYSTEM_RAKETE = `Du bist ein Prompt-Engineering-Experte. Verbessere den RAKETE-Prompt des Benutzers.
+Du erhältst die aktuellen RAKETE-Felder als JSON. Antworte NUR mit einem verbesserten JSON-Objekt.
+RAKETE-spezifische Verbesserungsprinzipien:
+- act → Rolle: Expertise spezifischer machen
+- context → Kontext: Fehlende Rahmenbedingungen und Zielgruppe ergänzen
+- task → Aufgabe: Mehrdeutigkeiten auflösen
+- ausgabe → Ergebnis: Format-Angaben konkretisieren
+- extensions.verificationNote → Teste: Konkreten Prüfauftrag ergänzen wenn leer oder zu vage
+- extensions.negatives → Einschränkungen: Typische KI-Fehler als Negativ-Constraints ergänzen wenn leer oder zu wenig
 - NICHT den Inhalt komplett umschreiben — verbessern und ergänzen
 - Alle Texte auf Deutsch`;
 
@@ -133,13 +173,15 @@ function handleError(e: unknown) {
 export function useACTAAssist(): UseACTAAssistReturn {
   const [isLoading, setIsLoading] = useState(false);
 
-  const suggest = useCallback(async (description: string, model?: string): Promise<ACTAFields | null> => {
+  const suggest = useCallback(async (description: string, model?: string, mode?: "einsteiger" | "experte"): Promise<ACTAFields | null> => {
     if (!description.trim()) return null;
     setIsLoading(true);
+    const systemPrompt = mode === "experte" ? SUGGEST_SYSTEM_RAKETE : SUGGEST_SYSTEM_ACTA;
+    const frameworkName = mode === "experte" ? "RAKETE" : "ACTA";
     try {
       const text = await complete({
         messages: [
-          { role: "system", content: SUGGEST_SYSTEM },
+          { role: "system", content: systemPrompt },
           { role: "user", content: `Mein Ziel: ${description}` },
         ],
         model,
@@ -150,7 +192,7 @@ export function useACTAAssist(): UseACTAAssistReturn {
         toast.error("KI-Antwort konnte nicht verarbeitet werden.");
         return null;
       }
-      toast.success("ACTA-Felder vorgeschlagen!");
+      toast.success(`${frameworkName}-Felder vorgeschlagen!`);
       return result;
     } catch (e) {
       handleError(e);
@@ -160,12 +202,13 @@ export function useACTAAssist(): UseACTAAssistReturn {
     }
   }, []);
 
-  const improve = useCallback(async (fields: ACTAFields, model?: string): Promise<ACTAFields | null> => {
+  const improve = useCallback(async (fields: ACTAFields, model?: string, mode?: "einsteiger" | "experte"): Promise<ACTAFields | null> => {
     setIsLoading(true);
+    const systemPrompt = mode === "experte" ? IMPROVE_SYSTEM_RAKETE : IMPROVE_SYSTEM_ACTA;
     try {
       const text = await complete({
         messages: [
-          { role: "system", content: IMPROVE_SYSTEM },
+          { role: "system", content: systemPrompt },
           { role: "user", content: `Aktueller Prompt:\n${JSON.stringify({
             act: fields.act, context: fields.context, task: fields.task, ausgabe: fields.ausgabe,
             extensions: fields.extensions ?? EMPTY_EXTENSIONS,

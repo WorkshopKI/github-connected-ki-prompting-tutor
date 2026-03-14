@@ -384,7 +384,16 @@ export const ACTABuilder = ({
   // Inline prompt evaluation (auto-triggered from Prüfen popover)
   const [evalResult, setEvalResult] = useState<{ hasContext: boolean; isSpecific: boolean; hasConstraints: boolean; feedback: string } | null>(null);
   const [evalLoading, setEvalLoading] = useState(false);
-  const evalScore = evalResult ? [evalResult.hasContext, evalResult.isSpecific, evalResult.hasConstraints].filter(Boolean).length : 0;
+  const evalMaxScore = isExperte ? 5 : 3;
+  const evalScore = evalResult ? [
+    evalResult.hasContext,
+    evalResult.isSpecific,
+    evalResult.hasConstraints,
+    ...(isExperte ? [
+      !!(ext.verificationNote || "").trim(),
+      !!(ext.negatives || "").trim(),
+    ] : []),
+  ].filter(Boolean).length : 0;
 
   const evaluatePrompt = async (promptText: string) => {
     if (!promptText.trim() || evalLoading) return;
@@ -626,7 +635,7 @@ export const ACTABuilder = ({
                   className="w-full text-xs h-7"
                   disabled={!suggestInput.trim() || aiLoading}
                   onClick={async () => {
-                    const result = await suggest(suggestInput, selectedModel);
+                    const result = await suggest(suggestInput, selectedModel, mode);
                     if (result) {
                       onFieldsChange(result);
                       setVariableValues({});
@@ -804,15 +813,19 @@ export const ACTABuilder = ({
                             <span className="text-xs font-semibold">Prompt-Check</span>
                             <span className={cn(
                               "text-xs font-bold",
-                              evalScore === 3 ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                              evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
                             )}>
-                              {evalScore}/3
+                              {evalScore}/{evalMaxScore}
                             </span>
                           </div>
                           {[
                             { label: "Kontext", met: evalResult.hasContext },
                             { label: "Spezifik", met: evalResult.isSpecific },
                             { label: "Constraints", met: evalResult.hasConstraints },
+                            ...(isExperte ? [
+                              { label: "Teste (Selbstprüfung)", met: !!(ext.verificationNote || "").trim() },
+                              { label: "Einschränkungen", met: !!(ext.negatives || "").trim() },
+                            ] : []),
                           ].map((c) => (
                             <div key={c.label}>
                               <div className="flex justify-between items-center mb-1">
@@ -829,14 +842,14 @@ export const ACTABuilder = ({
                           <p className="text-[11px] text-muted-foreground leading-relaxed">{evalResult.feedback}</p>
                         </Card>
                       )}
-                      {evalResult && evalScore === 3 && (
+                      {evalResult && evalScore === evalMaxScore && (
                         <p className="text-xs text-primary font-medium text-center py-1">✓ Dein Prompt erfüllt alle Kriterien.</p>
                       )}
-                      {evalResult && evalScore < 3 && (
+                      {evalResult && evalScore < evalMaxScore && (
                         <div className="border-t border-border pt-3">
                           <Button
                             onClick={async () => {
-                              const result = await improve(fields, selectedModel);
+                              const result = await improve(fields, selectedModel, mode);
                               if (result) { onFieldsChange(result); setVariableValues({}); }
                             }}
                             disabled={aiLoading}
@@ -1035,7 +1048,7 @@ export const ACTABuilder = ({
                 className="w-full text-xs h-7"
                 disabled={!suggestInput.trim() || aiLoading}
                 onClick={async () => {
-                  const result = await suggest(suggestInput, selectedModel);
+                  const result = await suggest(suggestInput, selectedModel, mode);
                   if (result) {
                     onFieldsChange(result);
                     setVariableValues({});
@@ -1056,33 +1069,53 @@ export const ACTABuilder = ({
       )}
 
       <div data-tour="acta-fields" className="space-y-4">
-      {FIELD_CONFIG.map((field) => {
-        const Icon = field.icon;
-        const value = fields[field.key];
+      {fieldConfig.map((field) => {
+        const isExtField = "isExtension" in field && field.isExtension;
+        const isNewField = "isNew" in field && field.isNew;
+        let value: string;
+        let onChange: (val: string) => void;
+        const placeholder: string = field.placeholder;
+        if (isExtField && field.key === "verification") {
+          value = ext.verificationNote || "";
+          onChange = (val) => updateExtensions({ ...ext, verification: val.trim().length > 0, verificationNote: val });
+        } else if (isExtField && field.key === "negatives") {
+          value = ext.negatives || "";
+          onChange = (val) => updateExtensions({ ...ext, negatives: val });
+        } else {
+          value = fields[field.key as keyof typeof fields] || "";
+          onChange = (val) => updateField(field.key as "act" | "context" | "task" | "ausgabe", val);
+        }
+        const Icon = "icon" in field && typeof field.icon === "function" ? field.icon : null;
         const isFilled = value.trim().length > 10;
 
         return (
           <div key={field.key} className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <Icon className="w-4 h-4 text-primary" />
-              <label className="text-xs font-medium">{field.label}</label>
-              <Badge
-                variant={isFilled ? "default" : "secondary"}
-                className="text-[10px] px-1.5 py-0 h-4 ml-auto"
-              >
-                {isFilled ? "✓" : "–"}
-              </Badge>
+              {Icon ? <Icon className="w-4 h-4 text-primary" /> : <span className="text-sm">{field.icon}</span>}
+              <label className="text-xs font-medium">{"label" in field ? field.label : ""}</label>
+              {isNewField && !value.trim() ? (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 ml-auto text-primary border-primary/30 animate-pulse">
+                  NEU
+                </Badge>
+              ) : (
+                <Badge
+                  variant={isFilled ? "default" : "secondary"}
+                  className="text-[10px] px-1.5 py-0 h-4 ml-auto"
+                >
+                  {isFilled ? "✓" : "–"}
+                </Badge>
+              )}
             </div>
             <Textarea
               value={value}
-              onChange={(e) => updateField(field.key, e.target.value)}
-              placeholder={field.placeholder}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={placeholder}
               className="text-xs min-h-[72px] resize-none"
               rows={3}
             />
-            {isExperte && field.key === "context" && <ContextExtensions extensions={ext} onChange={updateExtensions} />}
-            {isExperte && field.key === "task" && <TaskExtensions extensions={ext} onChange={updateExtensions} />}
-            {isExperte && field.key === "ausgabe" && <AusgabeExtensions extensions={ext} onChange={updateExtensions} />}
+            {!isExtField && isExperte && field.key === "context" && <ContextExtensions extensions={ext} onChange={updateExtensions} />}
+            {!isExtField && isExperte && field.key === "task" && <TaskExtensions extensions={ext} onChange={updateExtensions} />}
+            {!isExtField && isExperte && field.key === "ausgabe" && <AusgabeExtensions extensions={ext} onChange={updateExtensions} />}
           </div>
         );
       })}
@@ -1138,8 +1171,17 @@ export const ACTABuilder = ({
       )}
 
       <div className="flex items-center gap-1 mb-1">
-        {FIELD_CONFIG.map((field, i) => {
-          const filled = fields[field.key].trim().length > 10;
+        {fieldConfig.map((field, i) => {
+          const isExtField = "isExtension" in field && field.isExtension;
+          let filled: boolean;
+          if (isExtField && field.key === "verification") {
+            filled = (ext.verificationNote || "").trim().length > 10;
+          } else if (isExtField && field.key === "negatives") {
+            filled = (ext.negatives || "").trim().length > 10;
+          } else {
+            filled = (fields[field.key as keyof typeof fields] || "").trim().length > 10;
+          }
+          const stepLabel = "label" in field ? field.label : field.key;
           return (
             <div key={field.key} className="flex items-center">
               <div className={cn(
@@ -1152,9 +1194,9 @@ export const ACTABuilder = ({
                 "text-[10px] ml-1 font-medium",
                 filled ? "text-foreground" : "text-muted-foreground"
               )}>
-                {field.key === "ausgabe" ? "Ausgabe" : field.key.charAt(0).toUpperCase() + field.key.slice(1)}
+                {stepLabel}
               </span>
-              {i < 3 && <div className={cn(
+              {i < fieldConfig.length - 1 && <div className={cn(
                 "w-4 h-0.5 mx-1.5 transition-colors",
                 filled ? "bg-primary" : "bg-muted"
               )} />}
@@ -1213,15 +1255,19 @@ export const ACTABuilder = ({
                     <span className="text-xs font-semibold">Prompt-Check</span>
                     <span className={cn(
                       "text-xs font-bold",
-                      evalScore === 3 ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                      evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
                     )}>
-                      {evalScore}/3
+                      {evalScore}/{evalMaxScore}
                     </span>
                   </div>
                   {[
                     { label: "Kontext", met: evalResult.hasContext },
                     { label: "Spezifik", met: evalResult.isSpecific },
                     { label: "Constraints", met: evalResult.hasConstraints },
+                    ...(isExperte ? [
+                      { label: "Teste (Selbstprüfung)", met: !!(ext.verificationNote || "").trim() },
+                      { label: "Einschränkungen", met: !!(ext.negatives || "").trim() },
+                    ] : []),
                   ].map((c) => (
                     <div key={c.label}>
                       <div className="flex justify-between items-center mb-1">
@@ -1238,14 +1284,14 @@ export const ACTABuilder = ({
                   <p className="text-[11px] text-muted-foreground leading-relaxed">{evalResult.feedback}</p>
                 </Card>
               )}
-              {evalResult && evalScore === 3 && (
+              {evalResult && evalScore === evalMaxScore && (
                 <p className="text-xs text-primary font-medium text-center py-1">✓ Dein Prompt erfüllt alle Kriterien.</p>
               )}
-              {evalResult && evalScore < 3 && (
+              {evalResult && evalScore < evalMaxScore && (
                 <div className="border-t border-border pt-3">
                   <Button
                     onClick={async () => {
-                      const result = await improve(fields, selectedModel);
+                      const result = await improve(fields, selectedModel, mode);
                       if (result) { onFieldsChange(result); setVariableValues({}); }
                     }}
                     disabled={aiLoading}
