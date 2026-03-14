@@ -248,6 +248,18 @@ Zwei zusammenhängende Features:
 - localStorage Keys: `ps-ki-context`, `ps-constraints`
 - Integration: `useChat.ts` nutzt `buildContextPrefix()` um den System-Prompt automatisch zu erweitern.
 
+### Lernpfad (Onboarding-Redesign)
+Die Onboarding-Seite zeigt einen 5-stufigen Lernpfad als vertikale Timeline:
+1. Formulieren (bestehende Module: ACTA, Übungen, RAKETE + Bonus)
+2. Bewerten (Prüfen-Funktion, Spot the Flaw)
+3. Unterscheiden (Erkenne den Unterschied)
+4. Artikulieren (Rejection-Workflow)
+5. Systematisieren (KI-Kontext, Qualitätsregeln)
+
+Fortschritt wird über `useLernpfadProgress` Hook berechnet.
+Stufen-Daten in `src/data/learningPath.ts` (lernpfadStufen).
+Sidebar-Label: "Onboarding". Route: /onboarding.
+
 ### Auth System (`AuthContext`)
 - **Email OTP:** Kurscode + Email → `check-enrollment` validiert → Supabase sendet OTP → 8-stelliger Code
 - **Guest Tokens:** Admin erstellt Tokens → User gibt Code ein → `guest-login` erstellt Auth User + Session
