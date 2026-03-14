@@ -13,35 +13,26 @@ export interface TourStep {
 
 export const TOUR_STEPS: TourStep[] = [
   {
-    target: "acta-template-select",
-    title: "Vorlage laden",
+    target: "acta-fields",
+    title: "Prompt aufbauen",
     description:
-      "Wähle eine Vorlage aus der Prompt Sammlung. Die ACTA-Felder werden automatisch vorausgefüllt.",
+      "Wähle links eine Vorlage aus der Prompt Sammlung oder fülle die Felder direkt aus. Je mehr Kontext du gibst, desto besser das Ergebnis.",
     position: "bottom",
-    mode: "einsteiger",
-  },
-  {
-    target: "acta-template-select",
-    title: "Vorlage laden",
-    description:
-      "Wähle eine Vorlage aus der Prompt Sammlung. Die RAKETE-Felder werden automatisch vorausgefüllt.",
-    position: "bottom",
-    mode: "experte",
   },
   {
     target: "acta-fields",
     title: "Die ACTA-Methode",
     description:
-      "Vier Felder für den perfekten Prompt: Rolle (Act), Kontext (Context), Aufgabe (Task) und Ausgabeformat. Fülle sie aus — je mehr Kontext, desto besser das Ergebnis.",
-    position: "right",
+      "Vier Felder für den perfekten Prompt: Rolle (Act), Kontext (Context), Aufgabe (Task) und Ausgabeformat.",
+    position: "bottom",
     mode: "einsteiger",
   },
   {
     target: "acta-fields",
     title: "Die RAKETE-Methode",
     description:
-      "Sechs Felder für den perfekten Prompt: Rolle, Kontext, Aufgabe, Ergebnis, Teste (Selbstprüfung) und Einschränkungen. Die ersten vier kennst du von ACTA — Teste und Einschränkungen machen deinen Prompt noch präziser.",
-    position: "right",
+      "Sechs Felder: Rolle, Kontext, Aufgabe, Ergebnis, Teste (Selbstprüfung) und Einschränkungen. Teste und Einschränkungen machen deinen Prompt noch präziser.",
+    position: "bottom",
     mode: "experte",
   },
   {
@@ -56,7 +47,7 @@ export const TOUR_STEPS: TourStep[] = [
     title: "Fortgeschrittene Techniken",
     description:
       "Erweitere deinen Prompt mit Beispielen (Few-Shot), Denkstrategien (Chain-of-Thought), Selbstprüfung und mehr. Klicke auf '+' um eine Technik hinzuzufügen.",
-    position: "right",
+    position: "bottom",
     mode: "experte",
   },
   {
@@ -98,9 +89,13 @@ export const TOUR_STEPS: TourStep[] = [
   },
 ];
 
-/** Filtert Steps nach aktuellem Modus */
+/** Filtert Steps nach aktuellem Modus und prüft ob das Target im DOM existiert */
 export function getStepsForMode(
   mode: "einsteiger" | "experte"
 ): TourStep[] {
-  return TOUR_STEPS.filter((s) => !s.mode || s.mode === mode);
+  return TOUR_STEPS.filter((s) => {
+    if (s.mode && s.mode !== mode) return false;
+    const el = document.querySelector(`[data-tour="${s.target}"]`);
+    return !!el;
+  });
 }

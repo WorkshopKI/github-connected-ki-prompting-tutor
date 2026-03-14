@@ -140,6 +140,8 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
     { icon: "📋", label: "KONTEXT", text: fields.kontext },
     { icon: "🎯", label: "AUFGABE", text: fields.aufgabe },
     { icon: "📄", label: "FORMAT", text: fields.format },
+    { icon: "🧪", label: "TESTE", text: fields.verificationNote },
+    { icon: "🚫", label: "EINSCHRÄNKUNGEN", text: fields.negatives },
   ].filter(c => c.text.trim());
 
   return (
@@ -155,24 +157,6 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
           </div>
         </div>
       ))}
-      {fields.verificationNote.trim() && (
-        <div className="col-span-2">
-          <span className="inline-flex items-center gap-1 text-[10px] bg-muted/50 rounded px-1.5 py-0.5 text-muted-foreground">
-            <span>🧪</span>
-            <span className="font-medium text-foreground/80">T</span>
-            <span className="truncate max-w-[120px]">{fields.verificationNote}</span>
-          </span>
-        </div>
-      )}
-      {fields.negatives.trim() && (
-        <div className="col-span-2">
-          <span className="inline-flex items-center gap-1 text-[10px] bg-muted/50 rounded px-1.5 py-0.5 text-muted-foreground">
-            <span>🚫</span>
-            <span className="font-medium text-foreground/80">E</span>
-            <span className="truncate max-w-[120px]">{fields.negatives}</span>
-          </span>
-        </div>
-      )}
       {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).length > 0 && (
         <div className="col-span-2 text-[10px] text-muted-foreground flex flex-wrap gap-1.5">
           {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).map((e, i) => {
