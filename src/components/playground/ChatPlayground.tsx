@@ -4,6 +4,7 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { SystemPromptEditor } from "./SystemPromptEditor";
 import { IterationNudge } from "./IterationNudge";
+import { RejectionNudge } from "./RejectionNudge";
 import { ThinkingBlock } from "./ThinkingBlock";
 import { useOrgContext } from "@/contexts/OrgContext";
 import type { OrgScope, Msg, AIRoutingConfig } from "@/types";
@@ -202,6 +203,14 @@ export const ChatPlayground = ({
           <IterationNudge
             turnCount={turnCount}
             onSendSuggestion={(text) => onSendMessage(text)}
+          />
+        )}
+
+        {/* Rejection Nudge — nach dem 2. Turn */}
+        {!isStreaming && turnCount >= 2 && (
+          <RejectionNudge
+            turnCount={turnCount}
+            recentMessages={messages.slice(-4)}
           />
         )}
 
