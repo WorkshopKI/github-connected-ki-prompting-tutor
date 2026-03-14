@@ -559,7 +559,7 @@ export const ACTABuilder = ({
   if (layout === "horizontal") {
     return (
       <div className={cn(
-        "bg-card transition-shadow h-full flex flex-col",
+        "bg-card transition-shadow flex flex-col",
         expanded ? "border-b border-border" : "shadow-sm"
       )}>
         {/* Header row — click to collapse/expand, always visible */}
@@ -613,7 +613,7 @@ export const ACTABuilder = ({
         </div>
 
         {expanded && (
-          <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-3 space-y-2">
+          <div className="px-4 pb-3 space-y-2">
             {/* KI-Suggest Eingabe — wenn aktiv */}
             {isExperte && showSuggest && (
               <div data-tour="acta-ki-suggest" className="bg-primary/5 border border-primary/15 rounded-lg p-2.5 space-y-2">
