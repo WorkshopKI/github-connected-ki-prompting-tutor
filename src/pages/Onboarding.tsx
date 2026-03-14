@@ -378,10 +378,8 @@ const Onboarding = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="page-title mb-1">Dein Lernpfad</h1>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-lg mb-6">
-          Von der ersten KI-Anfrage bis zum eigenen Qualitätssystem.
-          Fünf Stufen, die aufeinander aufbauen.
+        <p className="text-sm text-muted-foreground mb-4">
+          Fünf Stufen — von der ersten KI-Anfrage bis zum eigenen Qualitätssystem.
         </p>
 
         {/* Segmentierte Fortschrittsleiste */}
