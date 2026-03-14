@@ -41,6 +41,24 @@ const FIELD_CONFIG = [
   { key: "ausgabe" as const, label: "Ausgabe (Format)", icon: Layout, placeholder: "Wie soll das Ergebnis aussehen? (Länge, Struktur, Sprache...)" },
 ];
 
+// ACTA — Einsteiger (4 Felder)
+const ACTA_FIELDS = [
+  { key: "act" as const, letter: "A", label: "Act", sublabel: "Rolle", icon: "👤", placeholder: "Welche Expertenrolle soll die KI einnehmen?" },
+  { key: "context" as const, letter: "C", label: "Context", sublabel: "Kontext", icon: "📋", placeholder: "Hintergrund, Situation, Rahmenbedingungen..." },
+  { key: "task" as const, letter: "T", label: "Task", sublabel: "Aufgabe", icon: "🎯", placeholder: "Was genau soll die KI tun?" },
+  { key: "ausgabe" as const, letter: "A", label: "Ausgabe", sublabel: "Ergebnis", icon: "📄", placeholder: "Länge, Struktur, Sprache des Ergebnisses..." },
+];
+
+// RAKETE — Fortgeschritten (6 Felder, die ersten 4 = ACTA umbenannt)
+const RAKETE_FIELDS = [
+  { key: "act" as const, letter: "R", label: "Rolle", sublabel: "= Act", icon: "👤", placeholder: "Welche Expertenrolle soll die KI einnehmen?", isExtension: false, isNew: false },
+  { key: "context" as const, letter: "K", label: "Kontext", sublabel: "= Context", icon: "📋", placeholder: "Hintergrund, Situation, Rahmenbedingungen...", isExtension: false, isNew: false },
+  { key: "task" as const, letter: "A", label: "Aufgabe", sublabel: "= Task", icon: "🎯", placeholder: "Was genau soll die KI tun?", isExtension: false, isNew: false },
+  { key: "ausgabe" as const, letter: "E", label: "Ergebnis", sublabel: "= Ausgabe", icon: "📄", placeholder: "Länge, Struktur, Sprache des Ergebnisses...", isExtension: false, isNew: false },
+  { key: "verification" as const, letter: "T", label: "Teste", sublabel: "Selbstprüfung", icon: "🧪", placeholder: "Worauf soll die KI ihre Antwort überprüfen? z.B. Vollständigkeit, Korrektheit, Bias...", isExtension: true, isNew: true },
+  { key: "negatives" as const, letter: "E", label: "Einschränkungen", sublabel: "Was NICHT", icon: "🚫", placeholder: "Was soll die KI NICHT tun? z.B. keine Floskeln, nicht spekulieren, keine Aufzählungen...", isExtension: true, isNew: true },
+];
+
 function replaceVariables(text: string, values: Record<string, string>): string {
   let result = text;
   for (const [key, val] of Object.entries(values)) {
@@ -104,23 +122,19 @@ function assembleACTAPrompt(fields: ACTAFields, varValues?: Record<string, strin
   return finalPrompt;
 }
 
-const CARD_CONFIG = [
-  { key: "act" as const, icon: "👤", shortLabel: "ACT", placeholder: "Welche Expertenrolle soll die KI einnehmen?" },
-  { key: "context" as const, icon: "📋", shortLabel: "CONTEXT", placeholder: "Hintergrund, Situation, Rahmenbedingungen..." },
-  { key: "task" as const, icon: "🎯", shortLabel: "TASK", placeholder: "Was genau soll die KI tun?" },
-  { key: "ausgabe" as const, icon: "📄", shortLabel: "AUSGABE", placeholder: "Länge, Struktur, Sprache des Ergebnisses..." },
-];
-
 interface ACTACardProps {
   icon: string;
   shortLabel: string;
+  longLabel: string;
+  sublabel: string;
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
   maxHeight?: number;
+  isNew?: boolean;
 }
 
-function ACTACard({ icon, shortLabel, value, onChange, placeholder, maxHeight = 120 }: ACTACardProps) {
+function ACTACard({ icon, shortLabel, longLabel, sublabel, value, onChange, placeholder, maxHeight = 120, isNew }: ACTACardProps) {
   const [editing, setEditing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isEmpty = !value.trim();
@@ -157,8 +171,14 @@ function ACTACard({ icon, shortLabel, value, onChange, placeholder, maxHeight = 
           "text-[10px] font-bold uppercase tracking-wider",
           isEmpty ? "text-muted-foreground/50" : "text-primary"
         )}>
-          {shortLabel}
+          <span className="text-xs">{shortLabel}</span> {longLabel}
         </span>
+        <span className="text-[9px] text-muted-foreground/60">({sublabel})</span>
+        {isNew && !value.trim() && (
+          <span className="text-[8px] bg-primary/15 text-primary px-1.5 py-0 rounded-full font-semibold ml-auto animate-pulse">
+            NEU
+          </span>
+        )}
         {!editing && !isEmpty && (
           <span className="ml-auto text-muted-foreground/40 text-xs">✏️</span>
         )}
@@ -343,6 +363,8 @@ export const ACTABuilder = ({
   const templateGroups = useMemo(() => getLibraryTemplates(scope), [scope]);
 
   const isExperte = mode === "experte";
+  const fieldConfig = isExperte ? RAKETE_FIELDS : ACTA_FIELDS;
+  const frameworkName = isExperte ? "RAKETE" : "ACTA";
   const ext = fields.extensions ?? EMPTY_EXTENSIONS;
   const updateExtensions = (updated: ACTAExtensions) => {
     onFieldsChange({ ...fields, extensions: updated });
@@ -537,7 +559,7 @@ export const ACTABuilder = ({
             "w-4 h-4 text-muted-foreground transition-transform shrink-0",
             !expanded && "-rotate-90"
           )} />
-          <span className="text-xs font-bold">ACTA</span>
+          <span className="text-xs font-bold">{frameworkName}</span>
           {sourceTitle && (
             <span className="text-xs text-primary font-medium truncate max-w-[200px]">{sourceTitle}</span>
           )}
@@ -619,18 +641,49 @@ export const ACTABuilder = ({
               </div>
             )}
 
-            {/* 4 ACTA Cards */}
-            <div data-tour="acta-fields" className="flex gap-2">
-              {CARD_CONFIG.map((card) => (
-                <ACTACard
-                  key={card.key}
-                  icon={card.icon}
-                  shortLabel={card.shortLabel}
-                  value={fields[card.key]}
-                  onChange={(v) => updateField(card.key, v)}
-                  placeholder={card.placeholder}
-                />
-              ))}
+            {/* ACTA/RAKETE Cards */}
+            <div
+              data-tour="acta-fields"
+              className={cn(
+                "grid gap-2",
+                isExperte ? "grid-cols-3" : "grid-cols-4"
+              )}
+            >
+              {fieldConfig.map((field) => {
+                const isExtField = "isExtension" in field && field.isExtension;
+                const isNewField = "isNew" in field && field.isNew;
+                let value: string;
+                let onChange: (val: string) => void;
+                if (isExtField && field.key === "verification") {
+                  value = ext.verificationNote || "";
+                  onChange = (val) => {
+                    updateExtensions({
+                      ...ext,
+                      verification: val.trim().length > 0,
+                      verificationNote: val,
+                    });
+                  };
+                } else if (isExtField && field.key === "negatives") {
+                  value = ext.negatives || "";
+                  onChange = (val) => updateExtensions({ ...ext, negatives: val });
+                } else {
+                  value = fields[field.key as keyof typeof fields] || "";
+                  onChange = (val) => updateField(field.key as "act" | "context" | "task" | "ausgabe", val);
+                }
+                return (
+                  <ACTACard
+                    key={field.key}
+                    icon={field.icon}
+                    shortLabel={field.letter}
+                    longLabel={field.label}
+                    sublabel={field.sublabel}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={field.placeholder}
+                    isNew={isNewField}
+                  />
+                );
+              })}
             </div>
 
             {/* ═══ NUDGE BAR — Was als nächstes? ═══ */}
@@ -807,9 +860,12 @@ export const ACTABuilder = ({
             {/* ═══ EXTENSIONS — nur wenn aufgeklappt ═══ */}
             {isExperte && extensionsOpen && (
               <div className="bg-muted/30 border border-border rounded-lg p-2.5 space-y-2">
-                {/* Extension Chips */}
+                {/* Extension Chips — in Experte mode, hide verification/negatives (they are cards now) */}
                 <div className="flex gap-1 flex-wrap" data-tour="acta-extensions">
-                  {EXTENSION_CHIPS.map((chip) => {
+                  {(isExperte
+                    ? EXTENSION_CHIPS.filter(c => c.key !== "verification" && c.key !== "negatives")
+                    : EXTENSION_CHIPS
+                  ).map((chip) => {
                     const active = isChipActive(chip.key);
                     return (
                       <button
