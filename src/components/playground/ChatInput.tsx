@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Square, Brain, Plus, Paperclip } from "lucide-react";
+import { Send, Square, Brain, Plus, Paperclip, Link2, ClipboardPaste, Settings2 } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ModelSelectGroups } from "./ModelSelect";
@@ -35,6 +35,7 @@ export const ChatInput = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const initialConsumed = useRef(false);
   const [plusOpen, setPlusOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (initialValue && !initialConsumed.current) {
@@ -65,14 +66,14 @@ export const ChatInput = ({
   }, [input]);
 
   return (
-    <div className="border-[1.5px] border-border rounded-xl bg-muted/30 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+    <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
       {/* Textarea */}
       <textarea
         ref={textareaRef}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Prompt eingeben..."
+        placeholder="Nachricht eingeben…"
         className="w-full px-3 pt-2.5 pb-1 text-sm resize-none border-none bg-transparent focus:outline-none placeholder:text-muted-foreground/60"
         rows={1}
         disabled={disabled}
@@ -88,91 +89,129 @@ export const ChatInput = ({
               <button
                 type="button"
                 className={cn(
-                  "w-6 h-6 rounded-full border flex items-center justify-center text-sm transition-colors",
-                  plusOpen ? "bg-primary/10 border-primary/30 text-primary" : "border-border text-muted-foreground hover:border-primary/30"
+                  "w-7 h-7 rounded-lg border flex items-center justify-center transition-all",
+                  plusOpen ? "bg-primary/10 border-primary/30 text-primary rotate-45" : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
                 )}
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4 transition-transform" />
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" side="top" className="w-auto p-1 mb-1">
-              <button className="flex items-center gap-2.5 w-full px-3 py-1.5 text-xs rounded-md hover:bg-muted transition-colors">
-                <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium">Datei anhängen</div>
-                  <div className="text-[10px] text-muted-foreground">PDF, Bild, Dokument</div>
-                </div>
-              </button>
+            <PopoverContent align="start" side="top" className="w-[200px] p-1.5 mb-1">
+              <div className="space-y-0.5">
+                <button
+                  onClick={() => { setPlusOpen(false); /* TODO: Datei-Dialog */ }}
+                  className="flex items-center gap-3 w-full px-3 py-2 text-[13px] rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <Paperclip className="w-4 h-4 text-muted-foreground shrink-0" />
+                  Datei anhängen
+                </button>
+                <button
+                  onClick={() => { setPlusOpen(false); /* TODO: URL-Import */ }}
+                  className="flex items-center gap-3 w-full px-3 py-2 text-[13px] rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                  URL importieren
+                </button>
+                <button
+                  onClick={() => {
+                    setPlusOpen(false);
+                    navigator.clipboard.readText().then(t => { if (t.trim()) setInput(prev => prev + t); });
+                  }}
+                  className="flex items-center gap-3 w-full px-3 py-2 text-[13px] rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <ClipboardPaste className="w-4 h-4 text-muted-foreground shrink-0" />
+                  Aus Zwischenablage
+                </button>
+              </div>
             </PopoverContent>
           </Popover>
         )}
 
-        {/* Model selector — nur Experte */}
-        {isExperte && selectedModel && onModelChange && (
-          <Popover>
+        {/* KI-Settings — nur Experte */}
+        {isExperte && (selectedModel || onThinkingChange) && (
+          <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
             <PopoverTrigger asChild>
-              <button className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-card border border-border text-[11px] font-medium text-foreground hover:bg-muted/50 transition-colors">
-                {aiTier === "internal" ? "🏢" : "☁️"} {getModelLabel(selectedModel)}
-                <span className="text-[8px] text-muted-foreground">▾</span>
+              <button className={cn(
+                "flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-medium transition-all",
+                settingsOpen
+                  ? "bg-primary/10 border-primary/30 text-primary"
+                  : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+              )}>
+                {aiTier === "internal" ? "🏢" : "☁️"} {selectedModel ? getModelLabel(selectedModel) : "Modell"}
+                {thinkingEnabled && <Brain className="w-3 h-3 text-primary" />}
+                <span className="text-[8px]">▾</span>
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" side="top" className="w-64 p-3 space-y-3 mb-1">
-              <h4 className="text-xs font-semibold">Modell</h4>
-              <Select value={selectedModel} onValueChange={onModelChange}>
-                <SelectTrigger className="w-full text-xs h-8">
-                  <span className="truncate">{getModelLabel(selectedModel)}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {aiTier === "internal" ? (
-                    <SelectGroup>
-                      <SelectLabel>🏢 Interne KI</SelectLabel>
-                      {aiRouting?.internalModel ? (
-                        <SelectItem value={aiRouting.internalModel}>{aiRouting.internalModel}</SelectItem>
+            <PopoverContent align="start" side="top" className="w-[260px] p-3 mb-1 space-y-3">
+              {/* Modell-Auswahl */}
+              {selectedModel && onModelChange && (
+                <div>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">Modell</label>
+                  <Select value={selectedModel} onValueChange={onModelChange}>
+                    <SelectTrigger className="w-full text-xs h-8">
+                      <span className="truncate">{getModelLabel(selectedModel)}</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {aiTier === "internal" ? (
+                        <SelectGroup>
+                          <SelectLabel>🏢 Interne KI</SelectLabel>
+                          {aiRouting?.internalModel ? (
+                            <SelectItem value={aiRouting.internalModel}>{aiRouting.internalModel}</SelectItem>
+                          ) : (
+                            <SelectItem value="internal-default" disabled>Nicht konfiguriert</SelectItem>
+                          )}
+                        </SelectGroup>
                       ) : (
-                        <SelectItem value="internal-default" disabled>Nicht konfiguriert</SelectItem>
+                        <ModelSelectGroups />
                       )}
-                    </SelectGroup>
-                  ) : (
-                    <ModelSelectGroups />
-                  )}
-                </SelectContent>
-              </Select>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {/* Tier-Toggle */}
               {onAiTierChange && (
-                <div className="flex rounded-lg border border-border overflow-hidden">
-                  <button onClick={() => onAiTierChange("internal")}
-                    className={cn("flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
-                      aiTier === "internal" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/50")}>
-                    🏢 Intern
-                  </button>
-                  <button onClick={() => canUseExternal && onAiTierChange("external")}
-                    disabled={!canUseExternal}
-                    className={cn("flex-1 px-2 py-1 text-[10px] font-medium transition-colors",
-                      aiTier === "external" && canUseExternal ? "bg-primary text-primary-foreground"
-                        : canUseExternal ? "text-muted-foreground hover:bg-muted/50"
-                        : "text-muted-foreground/30 cursor-not-allowed")}>
-                    ☁️ Extern
+                <div>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">KI-Quelle</label>
+                  <div className="flex rounded-lg border border-border overflow-hidden">
+                    <button onClick={() => onAiTierChange("internal")}
+                      className={cn("flex-1 px-3 py-1.5 text-xs font-medium transition-colors",
+                        aiTier === "internal" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/50")}>
+                      🏢 Intern
+                    </button>
+                    <button onClick={() => canUseExternal && onAiTierChange("external")}
+                      disabled={!canUseExternal}
+                      className={cn("flex-1 px-3 py-1.5 text-xs font-medium transition-colors",
+                        aiTier === "external" && canUseExternal ? "bg-primary text-primary-foreground"
+                          : canUseExternal ? "text-muted-foreground hover:bg-muted/50"
+                          : "text-muted-foreground/30 cursor-not-allowed")}>
+                      ☁️ Extern
+                    </button>
+                  </div>
+                </div>
+              )}
+              {/* Denken Toggle */}
+              {onThinkingChange && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-[13px]">Denken</span>
+                  </div>
+                  <button
+                    onClick={() => onThinkingChange(!thinkingEnabled)}
+                    className={cn(
+                      "relative w-9 h-5 rounded-full transition-colors",
+                      thinkingEnabled ? "bg-primary" : "bg-border"
+                    )}
+                  >
+                    <span className={cn(
+                      "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform",
+                      thinkingEnabled ? "left-[18px]" : "left-0.5"
+                    )} />
                   </button>
                 </div>
               )}
             </PopoverContent>
           </Popover>
-        )}
-
-        {/* Thinking toggle — nur Experte */}
-        {isExperte && onThinkingChange && (
-          <button
-            type="button"
-            onClick={() => onThinkingChange(!thinkingEnabled)}
-            className={cn(
-              "text-[11px] px-2 py-0.5 rounded-full border font-medium transition-colors flex items-center gap-1",
-              thinkingEnabled
-                ? "bg-primary/10 border-primary/30 text-primary"
-                : "border-border text-muted-foreground hover:border-primary/30"
-            )}
-          >
-            <Brain className="w-3 h-3" />
-            {thinkingEnabled ? "Denken an" : "Denken"}
-          </button>
         )}
 
         <div className="flex-1" />
