@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Send, Square, Brain, Plus, Paperclip, Link2, ClipboardPaste, Settings2 } from "lucide-react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger } from "@/components/ui/select";
@@ -6,6 +7,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ModelSelectGroups } from "./ModelSelect";
 import { getModelLabel } from "@/data/models";
 import { cn } from "@/lib/utils";
+import { getActiveRuleCount } from "@/lib/contextBuilder";
+import { loadKIContext } from "@/services/kiContextService";
+import { getActiveConstraints } from "@/services/constraintService";
 import type { AIRoutingConfig } from "@/types";
 
 export interface ChatInputProps {
@@ -65,8 +69,28 @@ export const ChatInput = ({
     }
   }, [input]);
 
+  const activeRuleCount = getActiveRuleCount();
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
+      {/* Active Rules Badge */}
+      {activeRuleCount > 0 && (
+        <div className="px-3 pt-2 pb-0">
+          <Popover open={rulesOpen} onOpenChange={setRulesOpen}>
+            <PopoverTrigger asChild>
+              <button className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground bg-muted rounded-full px-2.5 py-0.5 hover:bg-muted/80 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                {activeRuleCount} Regeln aktiv
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" side="top" className="w-[300px] p-3 mb-1">
+              <ActiveRulesPopover onNavigate={(path) => { setRulesOpen(false); navigate(path); }} />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
       {/* Textarea */}
       <textarea
         ref={textareaRef}
@@ -243,3 +267,46 @@ export const ChatInput = ({
     </div>
   );
 };
+
+function ActiveRulesPopover({ onNavigate }: { onNavigate: (path: string) => void }) {
+  const ctx = loadKIContext();
+  const activeWorkRules = ctx.workRules.filter((r) => r.active);
+  const activeConstraints = getActiveConstraints();
+
+  return (
+    <div className="space-y-3">
+      {activeWorkRules.length > 0 && (
+        <div>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Arbeitsregeln</p>
+          <div className="space-y-1">
+            {activeWorkRules.map((r) => (
+              <div key={r.id} className="flex items-start gap-2">
+                <p className="text-xs leading-relaxed flex-1">{r.text}</p>
+                <span className="text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5 shrink-0">{r.domain}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => onNavigate("/settings")} className="text-[11px] text-primary hover:underline mt-1.5">
+            Regeln bearbeiten
+          </button>
+        </div>
+      )}
+      {activeConstraints.length > 0 && (
+        <div>
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Qualitätsregeln</p>
+          <div className="space-y-1">
+            {activeConstraints.map((c) => (
+              <div key={c.id} className="flex items-start gap-2">
+                <p className="text-xs leading-relaxed flex-1">{c.rule}</p>
+                <span className="text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5 shrink-0">{c.domain}</span>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => onNavigate("/library?section=constraints")} className="text-[11px] text-primary hover:underline mt-1.5">
+            Regeln bearbeiten
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
