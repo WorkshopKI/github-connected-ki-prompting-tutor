@@ -112,7 +112,7 @@ function SidebarSections({
             label="Prompt-Check"
           >
             <div className="px-4 pb-4">
-              <PromptEvaluation prompt={lastUserPrompt} model={selectedModel} />
+              <PromptEvaluation prompt={lastUserPrompt} model={selectedModel} lastOutput={lastAssistantContent || undefined} />
             </div>
           </SidebarSection>
         )}
