@@ -145,7 +145,7 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
   ].filter(c => c.text.trim());
 
   return (
-    <div className="grid grid-cols-2 gap-1.5">
+    <div className="grid grid-cols-3 gap-1.5">
       {cards.map(card => (
         <div key={card.label} className="bg-primary/8 rounded-lg px-2.5 py-2 border border-primary/10">
           <div className="flex items-center gap-1.5 mb-1">
@@ -158,7 +158,7 @@ function ACTAMiniCards({ fields }: { fields: ACTAFields }) {
         </div>
       ))}
       {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).length > 0 && (
-        <div className="col-span-2 text-[10px] text-muted-foreground flex flex-wrap gap-1.5">
+        <div className="col-span-3 text-[10px] text-muted-foreground flex flex-wrap gap-1.5">
           {fields.extras.filter(e => !e.startsWith("Selbstprüfung: ") && !e.startsWith("WICHTIG — NICHT:")).map((e, i) => {
             const label = e.split(":")[0];
             return (
@@ -321,7 +321,7 @@ export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) =>
         {isUser ? (
           // ═══ USER MESSAGE ═══
           actaFields ? (
-            <div className="max-w-[90%]">
+            <div className="w-full">
               {/* Prompt header — "Dein Prompt" + kleiner Avatar */}
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
