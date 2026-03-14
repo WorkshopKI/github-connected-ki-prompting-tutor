@@ -295,7 +295,7 @@ const Playground = () => {
                   />
                 </div>
 
-                <div className="flex-1 min-h-0 bg-secondary/30 dark:bg-muted/10">
+                <div className="flex-1 min-h-0 bg-secondary/15 dark:bg-muted/5">
                   <div className="h-full px-0 pt-0 pb-0">
                     <PlaygroundContent
                         messages={chat.messages}

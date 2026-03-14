@@ -192,7 +192,7 @@ function SectionedResponse({ sections, fullContent, isStreaming }: { sections: S
               <List className="w-3 h-3" /> Abschnitte
             </button>
           </div>
-          <div className={cn("bg-muted/30 rounded-lg p-4", PROSE_CLASSES)}>
+          <div className={cn("bg-card rounded-lg p-4 border border-border/40 shadow-sm", PROSE_CLASSES)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{fullContent}</ReactMarkdown>
             {isStreaming && (
               <span className="inline-block w-2 h-4 ml-1 bg-foreground/60 animate-pulse rounded-sm" />
@@ -245,7 +245,7 @@ function SectionedResponse({ sections, fullContent, isStreaming }: { sections: S
           <ResizableHandle className="mx-0.5 opacity-40 hover:opacity-80 transition-opacity" />
           {/* Content rechts */}
           <ResizablePanel defaultSize={72} minSize={55} className="min-w-0 pl-1">
-            <div className="bg-muted/30 rounded-lg p-3 flex flex-col h-full">
+            <div className="bg-card rounded-lg p-3 flex flex-col h-full border border-border/40 shadow-sm">
               <div className="text-sm font-bold text-foreground mb-2">
                 {activeSection + 1}. {sections[activeSection].title}
               </div>
@@ -328,7 +328,7 @@ export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) =>
                 <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Dein Prompt</span>
               </div>
               {/* Cards Container */}
-              <div className="border border-border/60 bg-muted/30 rounded-xl p-2">
+              <div className="border border-border/60 bg-card rounded-xl p-2 shadow-sm">
                 <ACTAMiniCards fields={actaFields} />
               </div>
             </div>
@@ -342,7 +342,7 @@ export const ChatMessage = ({ role, content, isStreaming }: ChatMessageProps) =>
           sections ? (
             <SectionedResponse sections={sections} fullContent={content} isStreaming={isStreaming} />
           ) : (
-            <div className="bg-muted/50 rounded-2xl rounded-bl-sm px-4 py-3">
+            <div className="bg-card rounded-2xl rounded-bl-sm px-4 py-3 border border-border/40 shadow-sm">
               <div className={PROSE_CLASSES}>
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
                 {isStreaming && (
