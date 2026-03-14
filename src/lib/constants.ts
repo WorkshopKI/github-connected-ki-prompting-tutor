@@ -45,6 +45,7 @@ export const LS_KEYS = {
   CONSTRAINTS: "ps-constraints",
   REJECTION_NUDGE_COOLDOWN: "ps-rejection-nudge-cooldown",
   LERNPFAD_PROGRESS: "ps-lernpfad-progress",
+  COMPARISON_HISTORY: "ps-comparison-history",
 } as const;
 
 /* ── Semantische Badge-Farben (3-Stufen) ──
