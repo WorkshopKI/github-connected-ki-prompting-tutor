@@ -4,75 +4,53 @@ import { RAKETEQuickChallenge } from "@/components/RAKETEQuickChallenge";
 export const RAKETEIntroduction = () => {
   return (
     <div className="space-y-10">
-      {/* Teil 1: Von ACTA zu RAKETE */}
+      {/* Teil 1: Warum RAKETE? Der Unterschied zu ACTA */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Von ACTA zu RAKETE</h3>
+        <h3 className="text-lg font-bold mb-4">Warum RAKETE?</h3>
         <p className="text-sm text-muted-foreground mb-6">
-          Du kennst bereits die 4 ACTA-Felder: Act (Rolle), Context (Hintergrund), Task (Aufgabe) und Ausgabe (Format).
-          Die RAKETE-Methode erweitert ACTA um zwei Felder, die deine Prompts noch präziser machen.
+          Du kennst die ACTA-Methode — vier Felder für gute Prompts. RAKETE erweitert
+          das um zwei entscheidende Qualitäts-Felder: <strong>Teste</strong> und{" "}
+          <strong>Einschränkungen</strong>. Damit sagst du der KI nicht nur was sie tun soll,
+          sondern auch was sie <em>prüfen</em> und was sie <em>vermeiden</em> soll.
         </p>
+        {/* Vorher/Nachher Vergleich */}
         <div className="grid md:grid-cols-2 gap-4 mb-6">
           <div className="bg-muted/30 border border-border rounded-xl p-5">
-            <div className="text-xs font-semibold text-muted-foreground mb-3">ACTA — 4 Felder</div>
-            <div className="space-y-2">
-              {["Rolle", "Aufgabe", "Kontext", "Ergebnisformat"].map((field) => (
-                <div key={field} className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
-                  <span className="text-sm">{field}</span>
-                </div>
-              ))}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-semibold text-muted-foreground">ACTA — 4 Felder</span>
             </div>
+            <p className="text-sm font-mono text-muted-foreground italic">
+              "Erstelle eine Pressemitteilung über das Bürgerservice-Portal.
+              Max. 300 Wörter, Lead + Details + Zitat."
+            </p>
+            <p className="text-xs text-muted-foreground mt-3">
+              → KI liefert brauchbares Ergebnis, aber mit Fachsprache und ohne Selbstprüfung.
+            </p>
           </div>
           <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
-            <div className="text-xs font-semibold text-primary mb-3">RAKETE — 6 Felder</div>
-            <div className="space-y-2">
-              {[
-                { name: "Rolle", isNew: false },
-                { name: "Aufgabe", isNew: false },
-                { name: "Kontext", isNew: false },
-                { name: "Einschränkungen", isNew: true },
-                { name: "Teste", isNew: true },
-                { name: "Ergebnisformat", isNew: false },
-              ].map((field) => (
-                <div key={field.name} className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${field.isNew ? "bg-primary" : "bg-primary/50"}`} />
-                  <span className={`text-sm ${field.isNew ? "font-semibold text-primary" : ""}`}>
-                    {field.name}
-                    {field.isNew && <span className="text-[10px] ml-1.5 bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">neu</span>}
-                  </span>
-                </div>
-              ))}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-semibold text-primary">RAKETE — 6 Felder</span>
             </div>
-          </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-muted/30 border border-border rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-base">🚫</span>
-              <h4 className="font-semibold text-sm">Einschränkungen</h4>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Sage der KI explizit, was sie <strong>nicht</strong> tun soll.
-              Das verhindert typische Probleme wie ungewollte Fachsprache, Spekulationen oder zu lange Antworten.
+            <p className="text-sm font-mono text-muted-foreground italic">
+              "... + Prüfe ob alle W-Fragen im Lead beantwortet sind.
+              Keine Verwaltungsfachsprache, kein Konjunktiv."
             </p>
-          </div>
-          <div className="bg-muted/30 border border-border rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-base">🧪</span>
-              <h4 className="font-semibold text-sm">Teste</h4>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Bitte die KI, ihre eigene Antwort zu überprüfen.
-              Das verbessert die Qualität, weil die KI Fehler und Lücken selbst erkennt und korrigiert.
+            <p className="text-xs text-primary mt-3">
+              → Bürgernah, vollständig, selbstgeprüft — beim ersten Versuch.
             </p>
           </div>
         </div>
+        <p className="text-sm text-muted-foreground">
+          Die ersten vier Buchstaben von RAKETE sind dieselben Felder wie ACTA — nur umbenannt:
+          <strong> R</strong>olle, <strong>A</strong>ufgabe, <strong>K</strong>ontext, <strong>E</strong>rgebnis.
+          Neu dazu kommen <strong>T</strong>este und <strong>E</strong>inschränkungen.
+        </p>
       </div>
 
-      {/* Teil 2: Die 6 RAKETE-Felder im Detail */}
+      {/* Teil 2: Die RAKETE-Methode im Detail */}
       <RAKETESection />
 
-      {/* Teil 3: RAKETE-Challenge */}
+      {/* Teil 3: Challenge */}
       <RAKETEQuickChallenge />
     </div>
   );
