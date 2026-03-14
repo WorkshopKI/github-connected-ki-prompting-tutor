@@ -129,9 +129,11 @@ const Playground = () => {
         context: match.actaFields.context || "",
         task: match.actaFields.task || "",
         ausgabe: match.actaFields.ausgabe || "",
+        extensions: match.actaFields.extensions ? { ...match.actaFields.extensions } : undefined,
       });
     } else {
-      setActaFields(splitPromptToACTA(match.prompt, match.title));
+      const fallback = splitPromptToACTA(match.prompt, match.title);
+      setActaFields({ act: fallback.act, context: fallback.context, task: fallback.task, ausgabe: fallback.ausgabe, extensions: undefined });
     }
 
     if (match.confidentiality) {
@@ -192,7 +194,7 @@ const Playground = () => {
 
   // --- ACTA Reset handler ---
   const handleACTAReset = () => {
-    setActaFields({ act: "", context: "", task: "", ausgabe: "" });
+    setActaFields({ act: "", context: "", task: "", ausgabe: "", extensions: undefined });
     setSourcePromptTitle(null);
     setPromptConfidentiality("open");
   };
@@ -208,10 +210,11 @@ const Playground = () => {
         context: found.actaFields.context || "",
         task: found.actaFields.task || "",
         ausgabe: found.actaFields.ausgabe || "",
+        extensions: found.actaFields.extensions ? { ...found.actaFields.extensions } : undefined,
       });
     } else {
       const fallback = splitPromptToACTA(found.prompt, found.title);
-      setActaFields({ act: fallback.act, context: fallback.context, task: fallback.task, ausgabe: fallback.ausgabe });
+      setActaFields({ act: fallback.act, context: fallback.context, task: fallback.task, ausgabe: fallback.ausgabe, extensions: undefined });
     }
     if (found.confidentiality) setPromptConfidentiality(found.confidentiality);
     setActaExpanded(true);

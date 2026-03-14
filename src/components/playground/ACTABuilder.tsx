@@ -427,10 +427,13 @@ export const ACTABuilder = ({
   };
 
   // Variablen-Erkennung
-  const allFieldsText = `${fields.act} ${fields.context} ${fields.task} ${fields.ausgabe}`;
+  const allFieldsText = `${fields.act} ${fields.context} ${fields.task} ${fields.ausgabe} ${ext.verificationNote || ""} ${ext.negatives || ""}`;
   const variables = useMemo(() => extractVariables(allFieldsText), [allFieldsText]);
   const [variableValues, setVariableValues] = useState<Record<string, string>>({});
   const hasUnfilledVars = variables.length > 0 && variables.some(v => !variableValues[v]?.trim());
+  const hasEmptyRaketeFields = isExperte && (
+    !(ext.verificationNote || "").trim() || !(ext.negatives || "").trim()
+  );
 
   const filledCount = FIELD_CONFIG.filter((f) => fields[f.key].trim().length > 10).length;
   const assembled = assembleACTAPrompt(fields, variableValues);
@@ -588,7 +591,7 @@ export const ACTABuilder = ({
               type="button"
               onClick={(e) => { e.stopPropagation(); onReset(); }}
               className="text-[10px] text-muted-foreground hover:text-foreground font-medium flex items-center gap-1 transition-colors ml-auto mr-1"
-              title="ACTA-Felder leeren und neu beginnen"
+              title={`${frameworkName}-Felder leeren und neu beginnen`}
             >
               <RotateCcw className="w-3 h-3" /> Neu
             </button>
@@ -635,7 +638,7 @@ export const ACTABuilder = ({
                   {aiLoading ? (
                     <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
                   ) : (
-                    <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
+                    <><Wand2 className="w-3 h-3 mr-1" /> {frameworkName} generieren</>
                   )}
                 </Button>
               </div>
@@ -687,10 +690,10 @@ export const ACTABuilder = ({
             </div>
 
             {/* ═══ NUDGE BAR — Was als nächstes? ═══ */}
-            {variables.length > 0 && (
+            {(variables.length > 0 || isExperte) && (
               <div className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg border-l-[3px] transition-all",
-                hasUnfilledVars
+                (hasUnfilledVars || hasEmptyRaketeFields)
                   ? "bg-primary/5 border-l-primary"
                   : "bg-primary/5 border-l-primary"
               )}>
@@ -701,6 +704,20 @@ export const ACTABuilder = ({
                       Noch {variables.filter(v => !variableValues[v]?.trim()).length} {variables.filter(v => !variableValues[v]?.trim()).length === 1 ? "Angabe" : "Angaben"} offen
                     </span>
                     <span className="text-xs text-muted-foreground">— fülle die Felder unten aus</span>
+                  </>
+                ) : hasEmptyRaketeFields ? (
+                  <>
+                    <span className="text-sm">💡</span>
+                    <span className="text-xs font-semibold text-foreground">
+                      RAKETE-Tipp: Fülle auch
+                      {!(ext.verificationNote || "").trim() && !(ext.negatives || "").trim()
+                        ? ' „Teste" und „Einschränkungen"'
+                        : !(ext.verificationNote || "").trim()
+                          ? ' „Teste"'
+                          : ' „Einschränkungen"'
+                      }
+                      {" "}für bessere Ergebnisse
+                    </span>
                   </>
                 ) : (
                   <>
@@ -754,7 +771,7 @@ export const ACTABuilder = ({
                     variant="outline"
                     size="sm"
                     className="text-xs h-7 gap-1"
-                    title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
+                    title={`KI füllt ${frameworkName}-Felder basierend auf deiner Beschreibung aus`}
                     onClick={() => setShowSuggest(!showSuggest)}
                   >
                     <Wand2 className="w-3 h-3" /> Vorschlagen
@@ -991,7 +1008,7 @@ export const ACTABuilder = ({
             className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
           >
             <Wand2 className="w-3 h-3" />
-            KI: ACTA-Felder vorschlagen lassen
+            KI: {frameworkName}-Felder vorschlagen lassen
           </button>
           {showSuggest && (
             <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 space-y-2">
@@ -1030,7 +1047,7 @@ export const ACTABuilder = ({
                 {aiLoading ? (
                   <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generiert...</>
                 ) : (
-                  <><Wand2 className="w-3 h-3 mr-1" /> ACTA generieren</>
+                  <><Wand2 className="w-3 h-3 mr-1" /> {frameworkName} generieren</>
                 )}
               </Button>
             </div>
@@ -1164,10 +1181,10 @@ export const ACTABuilder = ({
             variant="outline"
             size="sm"
             className="gap-1"
-            title="KI füllt ACTA-Felder basierend auf deiner Beschreibung aus"
+            title={`KI füllt ${frameworkName}-Felder basierend auf deiner Beschreibung aus`}
             onClick={() => setShowSuggest(!showSuggest)}
           >
-            <Wand2 className="w-3 h-3" /> ACTA Inhalte vorschlagen
+            <Wand2 className="w-3 h-3" /> {frameworkName} Inhalte vorschlagen
           </Button>
         )}
         {isExperte && hasContent && (
@@ -1269,7 +1286,7 @@ export const ACTABuilder = ({
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">ACTA-Baukasten</span>
+            <span className="font-semibold text-sm">{frameworkName}-Baukasten</span>
             <Badge variant="secondary" className="text-xs">
               {filledCount}/4{hasActiveExtensions ? " +" : ""}
             </Badge>
