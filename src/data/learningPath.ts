@@ -96,3 +96,66 @@ export const bonusModules: LearningModule[] = [
 
 // Alle Module zusammen (für Fortschrittsberechnung)
 export const learningModules: LearningModule[] = [...requiredModules, ...bonusModules];
+
+// ── NEU: Lernpfad-Stufen ──
+
+export interface LernpfadStufe {
+  nr: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  color: string;
+  iconName: string;
+  modules?: LearningModule[];
+  bonusModules?: LearningModule[];
+  features?: string[];
+}
+
+export const lernpfadStufen: LernpfadStufe[] = [
+  {
+    nr: 1,
+    title: "Formulieren",
+    subtitle: "Klare Anweisungen geben",
+    description: "Du lernst, KI-Prompts strukturiert und präzise zu formulieren — mit der ACTA-Methode, der RAKETE-Formel und Beispielen aus der Prompt-Sammlung.",
+    color: "blue",
+    iconName: "PenLine",
+    modules: undefined,
+    bonusModules: undefined,
+  },
+  {
+    nr: 2,
+    title: "Bewerten",
+    subtitle: "Outputs kritisch prüfen",
+    description: "Du lernst, KI-Outputs systematisch zu bewerten — nicht nur ‚klingt gut', sondern anhand konkreter Kriterien wie Genauigkeit, Vollständigkeit und Fachlichkeit.",
+    color: "violet",
+    iconName: "ShieldCheck",
+    features: ["Prüfen-Funktion in der Werkstatt", "Spot the Flaw Übungen", "Tagesaufgaben"],
+  },
+  {
+    nr: 3,
+    title: "Unterscheiden",
+    subtitle: "70% von 100% trennen",
+    description: "Du trainierst das Gespür für den Unterschied zwischen ‚sieht professionell aus' und ‚ist professionell'. Das ist die Kernkompetenz, die KI nicht für dich übernehmen kann.",
+    color: "amber",
+    iconName: "Eye",
+    features: ["Erkenne den Unterschied"],
+  },
+  {
+    nr: 4,
+    title: "Artikulieren",
+    subtitle: "Schwächen benennen können",
+    description: "Du lernst, präzise zu beschreiben warum ein Output nicht gut genug ist — so dass andere (und die KI) aus deiner Erkenntnis lernen können.",
+    color: "emerald",
+    iconName: "Lightbulb",
+    features: ["Qualitätsregel-Workflow in der Werkstatt"],
+  },
+  {
+    nr: 5,
+    title: "Systematisieren",
+    subtitle: "Wissen dauerhaft kodieren",
+    description: "Du baust dir einen persönlichen Qualitätsstandard auf — Arbeitsregeln und Qualitätsregeln, die bei jeder KI-Anfrage automatisch angewendet werden.",
+    color: "slate",
+    iconName: "Layers",
+    features: ["Mein KI-Kontext", "Qualitätsregeln"],
+  },
+];
