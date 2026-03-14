@@ -38,7 +38,13 @@ export function TourOverlay({
   useEffect(() => {
     const el = document.querySelector<HTMLElement>(`[data-tour="${step.target}"]`);
     if (!el) {
-      onNext();
+      // Fallback: zentriert anzeigen statt überspringen
+      setTargetRect({
+        top: window.innerHeight / 2 - 100,
+        left: window.innerWidth / 2 - 100,
+        width: 200,
+        height: 50,
+      });
       return;
     }
 
