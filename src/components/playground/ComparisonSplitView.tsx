@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Send, Square, Scale } from "lucide-react";
 import type { Msg } from "@/types";
@@ -64,6 +63,21 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
   const modelCRef = useRef(modelC);
   threeWayRef.current = threeWay;
   modelCRef.current = modelC;
+
+  // Auto-resize textarea refs (match ChatInput pattern)
+  const textareaMainRef = useRef<HTMLTextAreaElement>(null);
+  const textareaARef = useRef<HTMLTextAreaElement>(null);
+  const textareaBRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResize = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 160) + "px";
+  };
+
+  useEffect(() => { autoResize(textareaMainRef.current); }, [promptText]);
+  useEffect(() => { autoResize(textareaARef.current); }, [promptA]);
+  useEffect(() => { autoResize(textareaBRef.current); }, [promptB]);
 
   const handleCompare = useCallback(() => {
     const pA = decoupled ? promptA.trim() : promptText.trim();
@@ -320,13 +334,15 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
             <div>
               <label className="text-[10px] font-semibold text-primary mb-1 block">Prompt A</label>
               <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
-                <Textarea
+                <textarea
+                  ref={textareaARef}
                   value={promptA}
                   onChange={(e) => setPromptA(e.target.value)}
                   placeholder="Prompt für Modell A…"
-                  className="text-sm min-h-[44px] resize-y border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
-                  rows={2}
+                  className="w-full text-sm resize-none border-none bg-transparent px-3 py-2.5 focus:outline-none placeholder:text-muted-foreground/60"
+                  rows={1}
                   disabled={isRunning}
+                  style={{ minHeight: 36, maxHeight: 160 }}
                 />
               </div>
             </div>
@@ -335,26 +351,30 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
                 Prompt B
               </label>
               <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
-                <Textarea
+                <textarea
+                  ref={textareaBRef}
                   value={promptB}
                   onChange={(e) => setPromptB(e.target.value)}
                   placeholder="Prompt für Modell B…"
-                  className="text-sm min-h-[44px] resize-y border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
-                  rows={2}
+                  className="w-full text-sm resize-none border-none bg-transparent px-3 py-2.5 focus:outline-none placeholder:text-muted-foreground/60"
+                  rows={1}
                   disabled={isRunning}
+                  style={{ minHeight: 36, maxHeight: 160 }}
                 />
               </div>
             </div>
           </div>
         ) : (
           <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
-            <Textarea
+            <textarea
+              ref={textareaMainRef}
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               placeholder="Prompt zum Vergleichen eingeben…"
-              className="text-sm min-h-[40px] resize-none border-none shadow-none focus-visible:ring-0 bg-transparent px-3 py-2.5"
+              className="w-full text-sm resize-none border-none bg-transparent px-3 py-2.5 focus:outline-none placeholder:text-muted-foreground/60"
               rows={1}
               disabled={isRunning}
+              style={{ minHeight: 36, maxHeight: 160 }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
