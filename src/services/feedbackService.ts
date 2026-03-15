@@ -92,7 +92,7 @@ export async function updateFeedback(
 ): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("feedback").update(updates).eq("id", id);
+    const { error } = await supabase.from("feedback" as any).update(updates).eq("id", id);
     if (error) throw new Error(`Feedback aktualisieren fehlgeschlagen: ${error.message}`);
   } else {
     const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
