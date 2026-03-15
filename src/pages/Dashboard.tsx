@@ -210,7 +210,7 @@ const Dashboard = () => {
         {/* Links (2/3) */}
         <div className="lg:col-span-2 space-y-5">
           {/* Heute üben */}
-          <div>
+          <div className="bg-card rounded-xl p-4 border border-border shadow-sm">
             <h2 className="text-sm font-semibold mb-2">Heute üben</h2>
             <div className="space-y-1">
               <button
@@ -247,7 +247,7 @@ const Dashboard = () => {
           </div>
 
           {/* Beliebte Vorlagen */}
-          <div>
+          <div className="bg-card rounded-xl p-4 border border-border shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold">Beliebte Vorlagen</h2>
               <Button
