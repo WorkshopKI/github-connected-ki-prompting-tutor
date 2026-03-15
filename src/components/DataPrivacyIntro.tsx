@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Lock, ShieldAlert } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { Badge } from "@/components/ui/badge";
 import { ALERT_COLORS } from "@/lib/constants";
 import { RedactionExercise } from "@/components/RedactionExercise";
 import { redactionDrills } from "@/data/redactionDrills";
@@ -30,7 +30,7 @@ export const DataPrivacyIntro = () => {
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           <Card className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <ConfidentialityBadge level="open" />
+              <Badge className="bg-muted text-muted-foreground text-[10px]">Offen</Badge>
             </div>
             <p className="text-xs text-muted-foreground">
               Keine sensiblen Daten im Prompt. Externe KI darf genutzt werden.
@@ -39,7 +39,9 @@ export const DataPrivacyIntro = () => {
           </Card>
           <Card className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <ConfidentialityBadge level="internal" />
+              <Badge className="bg-muted text-muted-foreground text-[10px] gap-1">
+                <Lock className="w-3 h-3" /> Intern
+              </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
               Interne Informationen, aber keine personenbezogenen Daten.
@@ -48,7 +50,9 @@ export const DataPrivacyIntro = () => {
           </Card>
           <Card className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <ConfidentialityBadge level="confidential" />
+              <Badge className="bg-foreground/10 text-foreground text-[10px] gap-1">
+                <ShieldAlert className="w-3 h-3" /> Vertraulich
+              </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
               Personenbezogene Daten, Verträge, Bescheide. NUR interne KI.
