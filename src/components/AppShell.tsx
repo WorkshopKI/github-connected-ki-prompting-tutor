@@ -92,8 +92,8 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="p-3">
-          <UserMenu />
+        <SidebarFooter className="p-2">
+          <UserMenu scopeLabel={isDepartment ? scopeLabel : undefined} />
         </SidebarFooter>
       </Sidebar>
 
