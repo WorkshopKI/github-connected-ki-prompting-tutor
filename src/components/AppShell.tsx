@@ -64,11 +64,9 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           >
             <Logo size="sm" variant="sidebar" />
           </button>
-          {isDepartment && (
-            <div className="text-[10px] text-sidebar-foreground/50 mt-1 ml-0.5 truncate">
-              {scopeLabel}
-            </div>
-          )}
+          <div className="text-[10px] text-sidebar-foreground/50 mt-1 ml-0.5">
+            Souverän arbeiten mit KI
+          </div>
         </SidebarHeader>
 
         <SidebarContent>
