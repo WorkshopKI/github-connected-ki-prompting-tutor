@@ -17,10 +17,11 @@ import { setApiKey as setStandaloneKey, hasApiKey, clearApiKey } from "@/service
 import { useAppMode } from "@/contexts/AppModeContext";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
+import { MeinBereichSection } from "@/components/settings/MeinBereichSection";
 
-export const ProfileContent = ({ children }: { children?: React.ReactNode }) => {
+export const ProfileContent = () => {
   const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile, signOut } = useAuthContext();
-  const { exercises, completedLessons, challengeCards, syncStatus } = useSyncContext();
+  const { syncStatus } = useSyncContext();
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState(profile?.display_name ?? "");
@@ -179,14 +180,6 @@ export const ProfileContent = ({ children }: { children?: React.ReactNode }) => 
     }
   };
 
-  const bestScores = exercises.reduce((acc, e) => {
-    acc[e.exercise_id] = Math.max(acc[e.exercise_id] ?? 0, e.score);
-    return acc;
-  }, {} as Record<number, number>);
-  const avgScore = Object.values(bestScores).length > 0
-    ? Math.round(Object.values(bestScores).reduce((a, b) => a + b, 0) / Object.values(bestScores).length)
-    : 0;
-
   return (
     <div className="space-y-6">
       {/* Guest upgrade banner */}
@@ -251,8 +244,7 @@ export const ProfileContent = ({ children }: { children?: React.ReactNode }) => 
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        {/* Linke Spalte: Konto + children (MeinBereich) + Abmelden */}
-        <div className="space-y-4">
+        {/* Linke Spalte: Konto + MeinBereich + Abmelden */}
         <Card className="card-section space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm flex items-center gap-2">
@@ -278,37 +270,17 @@ export const ProfileContent = ({ children }: { children?: React.ReactNode }) => 
             </div>
           </div>
 
-          <div className="border-t border-border pt-3">
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-xs font-semibold text-muted-foreground">Fortschritt</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold text-primary">{Object.keys(bestScores).length}</span>
-                <span className="text-[10px] text-muted-foreground">Übungen</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold text-primary">{completedLessons.length}</span>
-                <span className="text-[10px] text-muted-foreground">Lektionen</span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold text-primary">{challengeCards.length}</span>
-                <span className="text-[10px] text-muted-foreground">Challenges</span>
-              </div>
-              {avgScore > 0 && (
-                <div className="flex items-baseline gap-1 ml-auto">
-                  <span className="text-[10px] text-muted-foreground">Ø Bewertung</span>
-                  <span className="text-base font-bold text-primary">{avgScore}%</span>
-                </div>
-              )}
-            </div>
+          <MeinBereichSection />
+
+          <div className="border-t border-border pt-3 flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              {isStandalone ? "Standalone" : authMethod === "guest" ? "Gast-Konto" : "E-Mail-Konto"}
+            </span>
+            <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1.5" onClick={() => signOut()}>
+              <LogOut className="h-3.5 w-3.5" /> Abmelden
+            </Button>
           </div>
         </Card>
-        {children}
-        <div className="flex justify-end">
-          <Button variant="ghost" className="text-muted-foreground gap-2" onClick={() => signOut()}>
-            <LogOut className="h-4 w-4" /> Abmelden
-          </Button>
-        </div>
-        </div>
 
         {/* Card 2: KI & Modell */}
         <Card className="card-section space-y-4">

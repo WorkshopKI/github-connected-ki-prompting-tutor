@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Building2 } from "lucide-react";
 import { ProfileContent } from "@/pages/Profile";
-import { MeinBereichSection } from "@/components/settings/MeinBereichSection";
 import { GeneralSettings } from "@/components/settings/GeneralSettings";
 import { AIRoutingSettings } from "@/components/settings/AIRoutingSettings";
 import { ComplianceSettingsTab } from "@/components/settings/ComplianceSettingsTab";
@@ -29,12 +28,10 @@ const Settings = () => {
         </TabsList>
 
         <TabsContent value="profil" className="space-y-6">
-          {/* Kontoinformationen + KI-Einstellungen (aus Profile.tsx) */}
-          <ProfileContent>
-            <MeinBereichSection />
-          </ProfileContent>
-          {/* KI-Kontext Editor */}
+          {/* KI-Kontext Editor — häufig editiert, daher ganz oben */}
           <KIContextEditor />
+          {/* Kontoinformationen + KI-Einstellungen (aus Profile.tsx) */}
+          <ProfileContent />
         </TabsContent>
 
         {isWorkshop && (
