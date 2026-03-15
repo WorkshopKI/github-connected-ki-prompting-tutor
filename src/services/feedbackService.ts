@@ -34,19 +34,33 @@ export async function submitFeedback(
   };
 
   if (isWorkshopMode()) {
-    const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("feedback").insert({
-      id: item.id,
-      category: item.category,
-      stars: item.stars ?? null,
-      text: item.text,
-      context: item.context,
-      user_id: item.user_id,
-      user_display_name: item.user_display_name ?? null,
-      screen_ref: item.screen_ref ?? null,
-      admin_status: item.admin_status,
-    });
-    if (error) throw new Error(`Feedback speichern fehlgeschlagen: ${error.message}`);
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.from("feedback").insert({
+        id: item.id,
+        category: item.category,
+        stars: item.stars ?? null,
+        text: item.text,
+        context: item.context,
+        user_id: item.user_id,
+        user_display_name: item.user_display_name ?? null,
+        screen_ref: item.screen_ref ?? null,
+        admin_status: item.admin_status,
+      });
+      if (error) {
+        // Tabelle existiert möglicherweise noch nicht — Fallback auf localStorage
+        console.warn("Supabase-Feedback fehlgeschlagen, Fallback auf localStorage:", error.message);
+        const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
+        items.unshift(item);
+        saveToStorage(LS_KEYS.FEEDBACK_ITEMS, items);
+      }
+    } catch (e) {
+      // Netzwerk-/Verbindungsfehler — Fallback auf localStorage
+      console.warn("Supabase nicht erreichbar, Fallback auf localStorage:", e);
+      const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
+      items.unshift(item);
+      saveToStorage(LS_KEYS.FEEDBACK_ITEMS, items);
+    }
   } else {
     const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
     items.unshift(item);

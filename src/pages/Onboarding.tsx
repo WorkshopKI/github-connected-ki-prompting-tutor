@@ -375,7 +375,7 @@ const Onboarding = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-feedback-ref="onboarding.seite" data-feedback-label="Onboarding-Seite">
       {/* Header */}
       <div>
         <p className="text-sm text-muted-foreground mb-4">
@@ -419,7 +419,7 @@ const Onboarding = () => {
       </div>
 
       {/* Timeline */}
-      <div className="relative">
+      <div className="relative" data-feedback-ref="onboarding.lernpfad" data-feedback-label="Lernpfad-Timeline">
         {lernpfadStufen.map((stufe, i) => {
           const sp = stufeProgress[i];
           const styles = STUFE_STYLES[stufe.color] || STUFE_STYLES.slate;
@@ -494,7 +494,7 @@ const Onboarding = () => {
 
                 {/* Expandierter Inhalt */}
                 {isExpanded && !isLocked && (
-                  <Card className="mt-3 border border-border">
+                  <Card className="mt-3 border border-border" data-feedback-ref={`onboarding.stufe-${stufe.nr}`} data-feedback-label={`Stufe ${stufe.nr}: ${stufe.title}`}>
                     <div className="p-4">
                       <p className="text-sm text-muted-foreground mb-4">{stufe.description}</p>
                       {renderStufeContent(stufe, sp)}
