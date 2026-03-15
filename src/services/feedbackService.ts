@@ -81,7 +81,7 @@ export async function getFeedbackList(filters?: FeedbackFilters): Promise<Feedba
 
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    let query = supabase.from("feedback").select("*").order("created_at", { ascending: false });
+    let query = supabase.from("feedback" as any).select("*").order("created_at", { ascending: false });
 
     if (filters?.category) query = query.eq("category", filters.category);
     if (filters?.status) query = query.eq("admin_status", filters.status);
@@ -89,7 +89,7 @@ export async function getFeedbackList(filters?: FeedbackFilters): Promise<Feedba
 
     const { data, error } = await query;
     if (error) throw new Error(`Feedback laden fehlgeschlagen: ${error.message}`);
-    items = (data ?? []).map(mapFromRow);
+    items = ((data as any[]) ?? []).map(mapFromRow);
   } else {
     items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
     if (filters?.category) items = items.filter((i) => i.category === filters.category);
@@ -106,7 +106,7 @@ export async function updateFeedback(
 ): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("feedback").update(updates).eq("id", id);
+    const { error } = await supabase.from("feedback" as any).update(updates).eq("id", id);
     if (error) throw new Error(`Feedback aktualisieren fehlgeschlagen: ${error.message}`);
   } else {
     const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
@@ -123,12 +123,13 @@ export async function updateFeedback(
 export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { data } = await supabase.from("feedback_config").select("*").eq("id", 1).single();
+    const { data } = await supabase.from("feedback_config" as any).select("*").eq("id", 1 as any).single();
     if (data) {
+      const row = data as any;
       return {
-        llm_model: data.llm_model ?? DEFAULT_CONFIG.llm_model,
-        proactive_triggers: data.proactive_triggers ?? DEFAULT_CONFIG.proactive_triggers,
-        max_chatbot_turns: data.max_chatbot_turns ?? DEFAULT_CONFIG.max_chatbot_turns,
+        llm_model: row.llm_model ?? DEFAULT_CONFIG.llm_model,
+        proactive_triggers: row.proactive_triggers ?? DEFAULT_CONFIG.proactive_triggers,
+        max_chatbot_turns: row.max_chatbot_turns ?? DEFAULT_CONFIG.max_chatbot_turns,
       };
     }
   }
@@ -138,12 +139,12 @@ export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
 export async function saveFeedbackConfig(config: FeedbackConfig): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("feedback_config").update({
+    const { error } = await supabase.from("feedback_config" as any).update({
       llm_model: config.llm_model,
       proactive_triggers: config.proactive_triggers,
       max_chatbot_turns: config.max_chatbot_turns,
       updated_at: new Date().toISOString(),
-    }).eq("id", 1);
+    }).eq("id", 1 as any);
     if (error) throw new Error(`Config speichern fehlgeschlagen: ${error.message}`);
   } else {
     saveToStorage(LS_KEYS.FEEDBACK_CONFIG, config);

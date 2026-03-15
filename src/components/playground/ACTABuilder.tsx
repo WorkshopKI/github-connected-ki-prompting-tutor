@@ -677,7 +677,7 @@ export const ACTABuilder = ({
                   value = ext.negatives || "";
                   onChange = (val) => updateExtensions({ ...ext, negatives: val });
                 } else {
-                  value = fields[field.key as keyof typeof fields] || "";
+                  value = (fields[field.key as keyof typeof fields] as string) || "";
                   onChange = (val) => updateField(field.key as "act" | "context" | "task" | "ausgabe", val);
                 }
                 return (
@@ -1080,7 +1080,7 @@ export const ACTABuilder = ({
           value = ext.negatives || "";
           onChange = (val) => updateExtensions({ ...ext, negatives: val });
         } else {
-          value = fields[field.key as keyof typeof fields] || "";
+          value = (fields[field.key as keyof typeof fields] as string) || "";
           onChange = (val) => updateField(field.key as "act" | "context" | "task" | "ausgabe", val);
         }
         const Icon = "icon" in field && typeof field.icon === "function" ? field.icon : null;
@@ -1177,7 +1177,7 @@ export const ACTABuilder = ({
           } else if (isExtField && field.key === "negatives") {
             filled = (ext.negatives || "").trim().length > 10;
           } else {
-            filled = (fields[field.key as keyof typeof fields] || "").trim().length > 10;
+            filled = ((fields[field.key as keyof typeof fields] as string) || "").trim().length > 10;
           }
           const stepLabel = "label" in field ? field.label : field.key;
           return (
