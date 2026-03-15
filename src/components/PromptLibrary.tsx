@@ -547,21 +547,16 @@ export const PromptLibrary = () => {
               className="p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               onClick={() => handlePromptClick(prompt)}
             >
-              {/* Zeile 1: Titel + Badges */}
-              <div className="flex items-start justify-between gap-3 mb-1.5">
-                <h4 className="font-semibold text-sm">{prompt.title}</h4>
-                <div className="flex items-center gap-1 shrink-0">
-                  {prompt.official && (
-                    <Badge className="bg-primary/10 text-primary text-xs">Verifiziert</Badge>
-                  )}
-                  <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
-                </div>
-              </div>
-              {/* Zeile 2: Kategorie + Actions — eine Zeile */}
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[11px] text-muted-foreground">
-                  {prompt.category}{prompt.level ? ` · ${prompt.level}` : ""}{prompt.type === "blueprint" ? " · Blueprint" : ""}{prompt.needsWeb ? " · Websuche" : ""}{prompt.department ? ` · ${prompt.department}` : ""}
-                </p>
+              {/* Einzeilig: Titel + Kategorie + Badge + Actions */}
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-semibold text-sm truncate flex-1 min-w-0">{prompt.title}</h4>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
+                  {prompt.category}
+                </span>
+                {prompt.official && (
+                  <Badge className="bg-primary/10 text-primary text-[10px] shrink-0">Verifiziert</Badge>
+                )}
+                <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     onClick={(e) => { e.stopPropagation(); copyToClipboard(prompt.prompt, index); }}
@@ -589,7 +584,7 @@ export const PromptLibrary = () => {
                 {prompt.prompt}
               </div>
               {/* "mehr/weniger" Toggle — nur wenn Text abgeschnitten wird */}
-              {prompt.prompt.length > 350 && (
+              {prompt.prompt.length > 550 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
