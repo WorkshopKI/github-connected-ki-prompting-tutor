@@ -64,7 +64,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           >
             <Logo size="sm" variant="sidebar" />
           </button>
-          <div className="text-[10px] text-sidebar-foreground/50 mt-0 ml-0.5">
+          <div className="text-[10px] text-sidebar-foreground/50 -mt-0.5 ml-0.5">
             Souverän arbeiten mit KI
           </div>
         </SidebarHeader>
