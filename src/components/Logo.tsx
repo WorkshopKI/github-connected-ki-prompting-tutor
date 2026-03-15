@@ -24,9 +24,9 @@ export const Logo = ({ size = "md", variant = "default", className }: LogoProps)
         ⟨P⟩
       </span>
       <span className={cn("font-bold tracking-tight", textSizes[size])}>
-        <span className={isSidebar ? "text-sidebar-foreground" : "text-foreground"}>KI</span>
+        <span className={cn("font-normal", isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground")}>KI</span>
         <span className={isSidebar ? "text-sidebar-primary" : "text-primary"}>-</span>
-        <span className={cn("font-normal", isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground")}>Praxis</span>
+        <span className={isSidebar ? "text-sidebar-foreground" : "text-foreground"}>Praxis</span>
       </span>
     </div>
   );
