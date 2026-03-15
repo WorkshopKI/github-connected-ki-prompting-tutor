@@ -77,7 +77,7 @@ src/
 │   ├── ACTASection.tsx             # ACTA-Methode Erklärung
 │   ├── AdvancedPromptingSection.tsx # Fortgeschrittene Techniken
 │   ├── AnalyticsSection.tsx        # Dashboard Analytics & Insights (Collapsible)
-│   ├── AppShell.tsx                # Sidebar-Layout mit Navigation (5 Nav-Items)
+│   ├── AppShell.tsx                # Sidebar-Layout mit Navigation (4 Nav-Items)
 │   ├── BudgetDialog.tsx            # LLM Budget Info
 │   ├── ConfidentialityBadge.tsx    # 🟢🟡🔴 Vertraulichkeits-Badges
 │   ├── CreditsDialog.tsx           # Credits/Impressum Dialog
@@ -180,7 +180,7 @@ supabase/
 - **AppShell** (Sidebar + Content) für alle Seiten außer Login und Playground
 - **PlatformLayout** wrapper in `App.tsx`: `<AppShell>` + `<GuestBanner>` + children
 - **Playground:** Eigenes Layout OHNE AppShell, mit eigenem sticky Top-Bar
-- **Sidebar:** 5 Nav-Items: Dashboard, Prompt Library, Prompt-Labor, Onboarding, Einstellungen
+- **Sidebar:** 4 Kern-Seiten: Dashboard, Onboarding, Prompt Sammlung, Prompt Werkstatt. Einstellungen, Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
 
 ### Provider Hierarchy
 `QueryClientProvider` → `TooltipProvider` → `BrowserRouter` → `AuthProvider` → `SyncProvider` → `OrgProvider` → Routes
