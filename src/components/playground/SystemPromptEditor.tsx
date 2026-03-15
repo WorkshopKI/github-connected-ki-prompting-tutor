@@ -12,7 +12,7 @@ export const SystemPromptEditor = ({ value, onChange }: SystemPromptEditorProps)
   const [open, setOpen] = useState(false);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
+    <Collapsible open={open} onOpenChange={setOpen} data-feedback-ref="prompt-labor.system-prompt" data-feedback-label="System-Prompt">
       <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors w-full px-3 py-2 rounded-md hover:bg-accent">
         <Settings className="w-4 h-4" />
         <span>System-Prompt (optional)</span>

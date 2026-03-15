@@ -286,7 +286,7 @@ export const PromptLibrary = () => {
   };
 
   return (
-    <section>
+    <section data-feedback-ref="prompt-sammlung.bibliothek" data-feedback-label="Prompt-Bibliothek">
       <div className="mb-5">
         {/* Einzeilig: Suche + Abteilung + Kategorien + Filter */}
         <div className="flex items-center gap-1.5 flex-wrap">

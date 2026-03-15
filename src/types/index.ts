@@ -248,3 +248,73 @@ export interface ComplianceSettings {
   approvedModelsOnly: boolean;
 }
 
+/* ── Feedback-System ── */
+
+export type FeedbackCategory = "praise" | "problem" | "idea" | "question";
+
+export type FeedbackStatus =
+  | "neu"
+  | "in_bearbeitung"
+  | "umgesetzt"
+  | "abgelehnt"
+  | "archiviert";
+
+export const FEEDBACK_CATEGORY_LABELS: Record<FeedbackCategory, string> = {
+  praise: "Lob",
+  problem: "Problem",
+  idea: "Idee",
+  question: "Frage",
+};
+
+export interface FeedbackContext {
+  route: string;
+  page: string;
+  mode: string;
+  lastFeature: string;
+  lastAction: string;
+  viewport: string;
+  device: string;
+  timestamp: string;
+  errors: string[];
+  sessionDuration: number;
+}
+
+export interface FeedbackItem {
+  id: string;
+  category: FeedbackCategory;
+  stars?: number;
+  text: string;
+  context: FeedbackContext;
+  llm_summary?: string;
+  llm_classification?: {
+    category: string;
+    summary: string;
+    details: string;
+    affectedArea: string;
+    priority_suggestion: number;
+    relevant_files?: string[];
+  };
+  user_confirmed?: boolean;
+  screen_ref?: string;
+  admin_status: FeedbackStatus;
+  admin_notes?: string;
+  admin_priority?: number;
+  generated_prompt?: string;
+  user_id: string;
+  user_display_name?: string;
+  created_at: string;
+}
+
+export interface FeedbackTrigger {
+  event: string;
+  delay: number;
+  message: string;
+  category?: FeedbackCategory;
+}
+
+export interface FeedbackConfig {
+  llm_model: string;
+  proactive_triggers: boolean;
+  max_chatbot_turns: number;
+}
+

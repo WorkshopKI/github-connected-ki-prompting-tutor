@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { LogOut, Users, Coins, Settings, ArrowLeftRight, ClipboardCheck } from "lucide-react";
+import { LogOut, Users, Coins, Settings, ArrowLeftRight, ClipboardCheck, MessageSquare } from "lucide-react";
 import { CreditsDialog } from "@/components/CreditsDialog";
 import { useAppMode } from "@/contexts/AppModeContext";
 import { useSyncContext } from "@/contexts/SyncContext";
@@ -44,7 +44,7 @@ export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
   const courseId = profile?.course_id;
 
   return (
-    <>
+    <div data-feedback-ref="navigation.user-menu" data-feedback-label="Benutzer-Menü">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2.5 w-full rounded-lg px-2 py-2 hover:bg-sidebar-accent transition-colors text-left">
@@ -108,10 +108,16 @@ export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
             </DropdownMenuItem>
           )}
           {profile?.is_admin && (
-            <DropdownMenuItem onClick={() => navigate("/admin/teilnehmer")}>
-              <Users className="mr-2 h-4 w-4" />
-              Teilnehmer
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem onClick={() => navigate("/admin/teilnehmer")}>
+                <Users className="mr-2 h-4 w-4" />
+                Teilnehmer
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/admin/feedback")}>
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Feedback
+              </DropdownMenuItem>
+            </>
           )}
           <DropdownMenuSeparator />
           {isStandalone ? (
@@ -133,6 +139,6 @@ export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
         </DropdownMenuContent>
       </DropdownMenu>
       <CreditsDialog open={creditsOpen} onOpenChange={setCreditsOpen} />
-    </>
+    </div>
   );
 };

@@ -988,7 +988,7 @@ export const ACTABuilder = ({
 
   // ── Vertical layout (existing sidebar / mobile) ──
   const verticalContent = (
-    <div className="px-4 pb-4 space-y-4">
+    <div className="px-4 pb-4 space-y-4" data-feedback-ref="prompt-labor.acta-baukasten" data-feedback-label="ACTA-Baukasten">
       <div data-tour="acta-template-select">
       <Select onValueChange={handleTemplateSelect}>
         <SelectTrigger className="w-full text-xs">
@@ -1326,7 +1326,7 @@ export const ACTABuilder = ({
   if (bare) return verticalContent;
 
   return (
-    <Collapsible open={effectiveOpen} onOpenChange={effectiveToggle}>
+    <Collapsible open={effectiveOpen} onOpenChange={effectiveToggle} data-feedback-ref="prompt-labor.acta-baukasten" data-feedback-label="ACTA-Baukasten">
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">

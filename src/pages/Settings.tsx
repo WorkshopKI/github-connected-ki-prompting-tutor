@@ -76,7 +76,7 @@ const Settings = () => {
   const { isWorkshop } = useAppMode();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-feedback-ref="einstellungen.tabs" data-feedback-label="Einstellungen">
       <Tabs defaultValue="profil" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profil" className="gap-1.5">

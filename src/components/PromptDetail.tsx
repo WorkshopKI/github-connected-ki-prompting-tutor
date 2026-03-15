@@ -74,7 +74,7 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" data-feedback-ref="prompt-sammlung.detail" data-feedback-label="Prompt-Detail">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <DialogTitle className="text-xl">{prompt.title}</DialogTitle>

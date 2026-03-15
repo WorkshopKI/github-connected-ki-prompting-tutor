@@ -288,6 +288,28 @@ All colors MUST be HSL.
   .page-title {
     @apply text-2xl font-bold tracking-tight;
   }
+  /* Feedback Screen-Ref Modus: markiert referenzierbare Elemente */
+  .feedback-ref-mode {
+    cursor: crosshair !important;
+    outline: 2px dashed hsl(var(--primary)) !important;
+    outline-offset: 2px;
+    opacity: 0.9;
+    transition: all 0.15s ease;
+  }
+  .feedback-ref-highlight {
+    outline-style: solid !important;
+    background: hsl(var(--primary) / 0.05) !important;
+  }
+  .feedback-ref-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+  }
+  .feedback-ref-overlay > * {
+    pointer-events: auto;
+  }
 }
 
 /* Schmale Overlay-Scrollbar — nimmt keinen Layout-Platz ein, verhindert Breitensprünge */

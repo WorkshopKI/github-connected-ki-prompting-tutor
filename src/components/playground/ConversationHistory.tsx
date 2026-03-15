@@ -152,7 +152,7 @@ export const ConversationHistory = ({
   if (bare) return content;
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
+    <Collapsible open={open} onOpenChange={setOpen} data-feedback-ref="prompt-labor.verlauf" data-feedback-label="Gesprächsverlauf">
       <div className="bg-gradient-card rounded-xl border border-border shadow-lg">
         <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-accent/50 rounded-t-xl transition-colors">
           <div className="flex items-center gap-2">
