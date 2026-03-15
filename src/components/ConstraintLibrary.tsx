@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Plus, ChevronDown, ChevronRight, Sparkles, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -13,6 +14,7 @@ import {
   deleteConstraint,
   toggleConstraintActive,
 } from "@/services/constraintService";
+import { ComplianceReport } from "@/components/ComplianceReport";
 import type { Constraint } from "@/types";
 
 const DOMAIN_OPTIONS = ["Allgemein", "Recht", "Kommunikation", "Personal", "IT"];
@@ -24,6 +26,7 @@ export function ConstraintLibrary() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [showExample, setShowExample] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   // Form state
   const [newTitle, setNewTitle] = useState("");
@@ -106,6 +109,14 @@ export function ConstraintLibrary() {
           <StatBadge value={activeCount} label="aktiv" />
           {rejectionCount > 0 && <StatBadge value={rejectionCount} label="aus Ablehnungen" />}
           <div className="flex-1" />
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 text-xs h-7"
+            onClick={() => setReportOpen(true)}
+          >
+            <FileText className="w-3.5 h-3.5" /> Kompetenznachweis
+          </Button>
           <Button size="sm" className="gap-1 text-xs h-7" onClick={() => setAdding(true)}>
             <Plus className="w-3 h-3" />
             Regel hinzufügen
@@ -282,6 +293,18 @@ export function ConstraintLibrary() {
           );
         })}
       </div>
+
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>KI-Kompetenznachweis</DialogTitle>
+            <DialogDescription>
+              Exportiere deinen Kompetenznachweis gemäß EU AI Act Art. 4.
+            </DialogDescription>
+          </DialogHeader>
+          <ComplianceReport />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
