@@ -75,7 +75,7 @@ export async function getFeedbackList(filters?: FeedbackFilters): Promise<Feedba
 
     const { data, error } = await query;
     if (error) throw new Error(`Feedback laden fehlgeschlagen: ${error.message}`);
-    items = (data ?? []).map(mapFromRow);
+    items = ((data as any[]) ?? []).map(mapFromRow);
   } else {
     items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
     if (filters?.category) items = items.filter((i) => i.category === filters.category);
