@@ -4,6 +4,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { LogOut, Users, Coins, Settings, ArrowLeftRight, ClipboardCheck } from "lucide-react";
 import { CreditsDialog } from "@/components/CreditsDialog";
 import { useAppMode } from "@/contexts/AppModeContext";
+import { useSyncContext } from "@/contexts/SyncContext";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,6 +18,7 @@ import { Button } from "@/components/ui/button";
 export const UserMenu = () => {
   const { isLoggedIn, isLoading, profile, user, signOut } = useAuthContext();
   const { isStandalone, isWorkshop, setMode } = useAppMode();
+  const { syncStatus } = useSyncContext();
   const navigate = useNavigate();
   const [creditsOpen, setCreditsOpen] = useState(false);
 
@@ -58,6 +60,20 @@ export const UserMenu = () => {
               </p>
               {courseId && (
                 <p className="text-xs text-muted-foreground">{courseId}</p>
+              )}
+              {isWorkshop && syncStatus && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    syncStatus === "synced" ? "bg-emerald-500" :
+                    syncStatus === "syncing" ? "bg-amber-500 animate-pulse" :
+                    syncStatus === "error" ? "bg-red-500" :
+                    "bg-muted-foreground/30"
+                  }`} />
+                  {syncStatus === "synced" ? "Synchronisiert" :
+                   syncStatus === "syncing" ? "Wird synchronisiert…" :
+                   syncStatus === "error" ? "Sync-Fehler" :
+                   "Offline"}
+                </p>
               )}
             </div>
           </DropdownMenuLabel>
