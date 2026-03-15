@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -76,7 +77,10 @@ export function ScreenRefMode({ onSelect, onCancel }: Props) {
     };
   }, [handleClick, handleMouseOver, handleMouseOut, handleKeyDown]);
 
-  return (
+  // Portal zu document.body — damit der Referenz-Modus außerhalb
+  // des Sheet-Portals (Radix Dialog) gerendert wird und Klicks
+  // auf die Seiten-Elemente ankommen.
+  return createPortal(
     <div className="feedback-ref-overlay">
       {/* Toolbar oben */}
       <div className="fixed top-0 inset-x-0 z-[10000] flex items-center justify-between bg-card border-b border-border px-4 py-2 shadow-sm">
@@ -96,6 +100,7 @@ export function ScreenRefMode({ onSelect, onCancel }: Props) {
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
