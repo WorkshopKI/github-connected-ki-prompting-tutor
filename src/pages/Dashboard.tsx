@@ -1,17 +1,13 @@
 import { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  BookOpen,
-  Bookmark,
   ArrowRight,
   Target,
   Flame,
   CheckCircle2,
-  ShieldCheck,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +18,6 @@ import {
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useSyncContext } from "@/contexts/SyncContext";
 import { useOrgContext } from "@/contexts/OrgContext";
-import { useMySkills } from "@/hooks/useMySkills";
 import { useLernpfadProgress } from "@/hooks/useLernpfadProgress";
 import { useDailyChallenge } from "@/hooks/useDailyChallenge";
 import { lernpfadStufen, requiredModules } from "@/data/learningPath";
@@ -31,7 +26,7 @@ import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
 import { ComparisonExercise } from "@/components/ComparisonExercise";
 import { comparisonExercises } from "@/data/comparisonExercises";
-import { loadConstraints, getActiveConstraints } from "@/services/constraintService";
+import { loadConstraints } from "@/services/constraintService";
 import { loadKIContext } from "@/services/kiContextService";
 import { getActiveRuleCount } from "@/lib/contextBuilder";
 import { LS_KEYS } from "@/lib/constants";
@@ -49,7 +44,6 @@ const Dashboard = () => {
   const { profile } = useAuthContext();
   const { scope, isDepartment, scopeLabel } = useOrgContext();
   const { completedLessons } = useSyncContext();
-  const { skills: mySkills } = useMySkills();
   const { isCompleted: dailyCompleted, streak: dailyStreak } = useDailyChallenge();
 
   const displayName = profile?.display_name;
@@ -61,7 +55,6 @@ const Dashboard = () => {
 
   // Constraints & KI-Kontext
   const constraints = loadConstraints();
-  const activeConstraintCount = getActiveConstraints().length;
   const constraintCount = constraints.length;
   const kiContext = loadKIContext();
   const activeRuleCount = getActiveRuleCount();
@@ -181,7 +174,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* 1. Welcome + Inline Stats */}
+      {/* 1. Begrüßung */}
       <div>
         <div className="flex items-baseline gap-2 flex-wrap">
           <h1 className="text-xl font-bold tracking-tight">
@@ -192,160 +185,70 @@ const Dashboard = () => {
             <span className="text-sm text-muted-foreground">{scopeLabel}</span>
           )}
         </div>
-        <div className="flex items-center gap-4 mt-3 flex-wrap">
-          <button
-            onClick={() => navigate("/onboarding")}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
-            style={{
-              backgroundColor: `var(--stufe-${currentProgress.nr}-light)`,
-            }}
-          >
-            <span
-              className="text-xs font-bold"
-              style={{ color: `var(--stufe-${currentProgress.nr})` }}
-            >
-              Stufe {currentProgress.nr}
-            </span>
-            <span
-              className="text-xs"
-              style={{ color: `var(--stufe-${currentProgress.nr})` }}
-            >
-              {currentStufeDef.title}
-            </span>
-            {currentProgress.progress > 0 && (
-              <span className="text-[10px] text-muted-foreground">
-                {currentProgress.progress}%
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => navigate("/library?section=constraints")}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium">
-              {constraintCount} Qualitätsregeln
-            </span>
-            {activeConstraintCount > 0 && (
-              <span className="text-[10px] text-muted-foreground">
-                {activeConstraintCount} aktiv
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => navigate("/library?tab=skills")}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-          >
-            <Bookmark className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium">
-              {mySkills.length} Skills
-            </span>
-          </button>
-        </div>
       </div>
 
-      {/* 2. Main: 2-column layout */}
+      {/* 2. Nächster Schritt Banner (volle Breite) */}
+      {nextStep && (
+        <div
+          className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/30 border-l-4"
+          style={{ borderLeftColor: `var(--stufe-${currentProgress.nr})` }}
+        >
+          <div className="min-w-0">
+            <p className="text-[11px] font-medium text-muted-foreground mb-0.5">
+              Dein nächster Schritt · {nextStep.label}
+            </p>
+            <p className="text-sm font-semibold">{nextStep.title}</p>
+          </div>
+          <Button size="sm" className="shrink-0 gap-1.5" onClick={nextStep.action}>
+            {nextStep.actionLabel} <ArrowRight className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      )}
+
+      {/* 3. Zwei-Spalten Layout */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left column */}
+        {/* Links (2/3) */}
         <div className="lg:col-span-2 space-y-5">
-          {/* Next step */}
-          {nextStep && (
-            <Card className="p-4 border border-border shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium text-muted-foreground mb-0.5">
-                    Dein nächster Schritt
-                  </p>
-                  <p className="text-[11px] text-muted-foreground mb-0.5">
-                    {nextStep.label}
-                  </p>
-                  <p className="text-sm font-semibold truncate">
-                    {nextStep.title}
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  className="shrink-0 gap-1.5"
-                  onClick={nextStep.action}
-                >
-                  {nextStep.actionLabel}{" "}
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            </Card>
-          )}
-
-          {/* Exercises side by side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Tagesaufgabe Preview */}
-            <Card
-              className="p-4 border border-border shadow-sm cursor-pointer hover:border-primary/30 transition-colors"
-              onClick={() => setDailyDialogOpen(true)}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <Flame className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold">Tagesaufgabe</span>
+          {/* Heute üben */}
+          <div>
+            <h2 className="text-sm font-semibold mb-2">Heute üben</h2>
+            <div className="space-y-1">
+              <button
+                onClick={() => setDailyDialogOpen(true)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+              >
+                <Flame className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-sm flex-1">Tagesaufgabe</span>
                 {dailyStreak > 0 && (
-                  <Badge className="bg-primary/10 text-primary text-[10px] ml-auto">
-                    {dailyStreak} Tage
-                  </Badge>
+                  <span className="text-[10px] text-muted-foreground">{dailyStreak} Tage</span>
                 )}
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {dailyCompleted
-                  ? "Heute erledigt! Morgen gibt's eine neue Aufgabe."
-                  : "Finde die Probleme im KI-Output und trainiere dein Urteil."}
-              </p>
-              {!dailyCompleted && (
-                <Button size="sm" variant="outline" className="mt-3 text-xs">
-                  Starten
-                </Button>
-              )}
-            </Card>
-
-            {/* Erkenne den Unterschied Preview */}
-            <Card
-              className="p-4 border border-border shadow-sm cursor-pointer hover:border-primary/30 transition-colors"
-              onClick={() => !allCompCompleted && setCompDialogOpen(true)}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <Target className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold">
-                  Erkenne den Unterschied
-                </span>
-                <Badge className="bg-primary/10 text-primary text-[10px] ml-auto">
+                {dailyCompleted ? (
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                ) : (
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                )}
+              </button>
+              <button
+                onClick={() => !allCompCompleted ? setCompDialogOpen(true) : handleResetComparison()}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+              >
+                <Target className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-sm flex-1">Erkenne den Unterschied</span>
+                <span className="text-[10px] text-muted-foreground">
                   {compLocalHistory.length}/{comparisonExercises.length}
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {allCompCompleted
-                  ? "Alle Übungen abgeschlossen!"
-                  : `${nextCompExercise?.domain} — Trainiere 70% vs. 100% Qualitätsurteil.`}
-              </p>
-              {!allCompCompleted && (
-                <Button size="sm" variant="outline" className="mt-3 text-xs">
-                  Starten
-                </Button>
-              )}
-              {allCompCompleted && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-3 text-xs"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleResetComparison();
-                  }}
-                >
-                  Erneut üben
-                </Button>
-              )}
-            </Card>
+                </span>
+                {allCompCompleted ? (
+                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                ) : (
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                )}
+              </button>
+            </div>
           </div>
 
-          {/* Popular templates */}
+          {/* Beliebte Vorlagen */}
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <h2 className="text-sm font-semibold">Beliebte Vorlagen</h2>
               <Button
                 variant="ghost"
@@ -356,38 +259,27 @@ const Dashboard = () => {
                 Alle <ArrowRight className="w-3 h-3" />
               </Button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="space-y-0.5">
               {popularPrompts.slice(0, 4).map((prompt, i) => (
-                <Card
+                <button
                   key={i}
-                  className="p-3 border border-border shadow-sm cursor-pointer hover:border-primary/30 transition-colors"
-                  onClick={() =>
-                    navigate(
-                      `/playground?libraryTitle=${encodeURIComponent(prompt.title)}`
-                    )
-                  }
+                  onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
                 >
-                  <p className="text-xs font-medium line-clamp-2 mb-1.5">
-                    {prompt.title}
-                  </p>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                      {prompt.category}
-                    </span>
-                    <ConfidentialityBadge
-                      level={prompt.confidentiality || "open"}
-                      compact
-                    />
-                  </div>
-                </Card>
+                  <span className="text-sm flex-1 truncate">{prompt.title}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
+                    {prompt.category}
+                  </span>
+                  <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
+                </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right column */}
+        {/* Rechts (1/3) */}
         <div className="flex flex-col gap-4">
-          {/* Mini learning path */}
+          {/* Mini-Lernpfad — immer sichtbar */}
           <Card className="p-4 border border-border shadow-sm">
             <h2 className="text-xs font-semibold mb-3">Lernpfad</h2>
             <div className="space-y-2">
@@ -438,79 +330,77 @@ const Dashboard = () => {
             </Button>
           </Card>
 
-          {/* KI Context */}
-          <Card className="p-4 border border-border shadow-sm">
-            <h2 className="text-xs font-semibold mb-2">Mein KI-Kontext</h2>
-            {kiContext.profile.abteilung ? (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  {kiContext.profile.abteilung}
-                </p>
-                {activeRuleCount > 0 && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    <span className="text-[11px] text-muted-foreground">
-                      {activeRuleCount} Regeln aktiv
-                    </span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Noch nicht eingerichtet.
-              </p>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2 text-xs gap-1 text-primary h-7"
-              onClick={() => navigate("/settings")}
-            >
-              {kiContext.profile.abteilung ? "Bearbeiten" : "Einrichten"}{" "}
-              <ArrowRight className="w-3 h-3" />
-            </Button>
-          </Card>
-
-          {/* Quality rules */}
-          <Card className="p-4 border border-border shadow-sm">
-            <h2 className="text-xs font-semibold mb-2">Qualitätsregeln</h2>
-            {constraintCount > 0 ? (
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  {constraintCount} Regeln
-                </p>
-                {constraints.filter((c) => c.source === "rejection").length >
-                  0 && (
-                  <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                    {
-                      constraints.filter((c) => c.source === "rejection")
-                        .length
-                    }{" "}
-                    aus Ablehnungen gelernt
+          {/* KI-Kontext — nur wenn eingerichtet oder Stufe >= 4 */}
+          {(kiContext.profile.abteilung || currentProgress.nr >= 4) && (
+            <Card className="p-4 border border-border shadow-sm">
+              <h2 className="text-xs font-semibold mb-2">Mein KI-Kontext</h2>
+              {kiContext.profile.abteilung ? (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    {kiContext.profile.abteilung}
                   </p>
-                )}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Noch keine Regeln erstellt.
-              </p>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2 text-xs gap-1 text-primary h-7"
-              onClick={() => navigate("/library?section=constraints")}
-            >
-              {constraintCount > 0
-                ? "Ansehen"
-                : "Erste Regel erstellen"}{" "}
-              <ArrowRight className="w-3 h-3" />
-            </Button>
-          </Card>
+                  {activeRuleCount > 0 && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-[11px] text-muted-foreground">
+                        {activeRuleCount} Regeln aktiv
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Noch nicht eingerichtet.
+                </p>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2 text-xs gap-1 text-primary h-7"
+                onClick={() => navigate("/settings")}
+              >
+                {kiContext.profile.abteilung ? "Bearbeiten" : "Einrichten"}{" "}
+                <ArrowRight className="w-3 h-3" />
+              </Button>
+            </Card>
+          )}
+
+          {/* Qualitätsregeln — nur wenn >= 1 existiert oder Stufe >= 3 */}
+          {(constraintCount > 0 || currentProgress.nr >= 3) && (
+            <Card className="p-4 border border-border shadow-sm">
+              <h2 className="text-xs font-semibold mb-2">Qualitätsregeln</h2>
+              {constraintCount > 0 ? (
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">
+                    {constraintCount} Regeln
+                  </p>
+                  {constraints.filter((c) => c.source === "rejection").length > 0 && (
+                    <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                      {constraints.filter((c) => c.source === "rejection").length}{" "}
+                      aus Ablehnungen gelernt
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Noch keine Regeln erstellt.
+                </p>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2 text-xs gap-1 text-primary h-7"
+                onClick={() => navigate("/library?section=constraints")}
+              >
+                {constraintCount > 0 ? "Ansehen" : "Erste Regel erstellen"}{" "}
+                <ArrowRight className="w-3 h-3" />
+              </Button>
+            </Card>
+          )}
         </div>
       </div>
 
-      {/* Dialogs */}
+      {/* Dialoge */}
       <Dialog open={dailyDialogOpen} onOpenChange={setDailyDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
