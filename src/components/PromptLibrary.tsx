@@ -287,7 +287,7 @@ export const PromptLibrary = () => {
 
   return (
     <section>
-      <div className="mb-4">
+      <div className="mb-5">
         {/* Einzeilig: Suche + Abteilung + Kategorien + Filter */}
         <div className="flex items-center gap-1.5 flex-wrap">
           {/* Suche — kompakt, expandierbar */}
@@ -544,12 +544,13 @@ export const PromptLibrary = () => {
           {(showAll ? filteredPrompts : filteredPrompts.slice(0, 6)).map((prompt, index) => (
             <Card
               key={index}
-              className="p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+              className="p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               onClick={() => handlePromptClick(prompt)}
             >
-              {/* Einzeilig: Titel + Kategorie + Badge + Actions */}
-              <div className="flex items-center gap-2 mb-2">
-                <h4 className="font-semibold text-sm truncate flex-1 min-w-0">{prompt.title}</h4>
+              {/* Titel — volle Breite, kein Truncation */}
+              <h4 className="font-semibold text-sm mb-1">{prompt.title}</h4>
+              {/* Meta: Kategorie + Badges + Actions */}
+              <div className="flex items-center gap-1.5 mb-2.5">
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
                   {prompt.category}
                 </span>
@@ -557,6 +558,7 @@ export const PromptLibrary = () => {
                   <Badge className="bg-primary/10 text-primary text-[10px] shrink-0">Verifiziert</Badge>
                 )}
                 <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
+                <div className="flex-1" />
                 <div className="flex items-center gap-0.5 shrink-0">
                   <button
                     onClick={(e) => { e.stopPropagation(); copyToClipboard(prompt.prompt, index); }}
