@@ -109,12 +109,13 @@ export async function updateFeedback(
 export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { data } = await supabase.from("feedback_config").select("*").eq("id", 1).single();
+    const { data } = await supabase.from("feedback_config" as any).select("*").eq("id", 1 as any).single();
     if (data) {
+      const row = data as any;
       return {
-        llm_model: data.llm_model ?? DEFAULT_CONFIG.llm_model,
-        proactive_triggers: data.proactive_triggers ?? DEFAULT_CONFIG.proactive_triggers,
-        max_chatbot_turns: data.max_chatbot_turns ?? DEFAULT_CONFIG.max_chatbot_turns,
+        llm_model: row.llm_model ?? DEFAULT_CONFIG.llm_model,
+        proactive_triggers: row.proactive_triggers ?? DEFAULT_CONFIG.proactive_triggers,
+        max_chatbot_turns: row.max_chatbot_turns ?? DEFAULT_CONFIG.max_chatbot_turns,
       };
     }
   }
