@@ -145,7 +145,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage>{getPageTitle(location.pathname)}</BreadcrumbPage>
+                <BreadcrumbPage className="font-semibold">{getPageTitle(location.pathname)}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
