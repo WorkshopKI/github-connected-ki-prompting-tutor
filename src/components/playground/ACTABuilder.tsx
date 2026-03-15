@@ -1080,7 +1080,7 @@ export const ACTABuilder = ({
           value = ext.negatives || "";
           onChange = (val) => updateExtensions({ ...ext, negatives: val });
         } else {
-          value = fields[field.key as keyof typeof fields] || "";
+          value = (fields[field.key as keyof typeof fields] as string) || "";
           onChange = (val) => updateField(field.key as "act" | "context" | "task" | "ausgabe", val);
         }
         const Icon = "icon" in field && typeof field.icon === "function" ? field.icon : null;
