@@ -112,6 +112,87 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          admin_notes: string | null
+          admin_priority: number | null
+          admin_status: string
+          category: string
+          context: Json
+          created_at: string
+          generated_prompt: string | null
+          id: string
+          llm_classification: Json | null
+          llm_summary: string | null
+          screen_ref: string | null
+          stars: number | null
+          text: string
+          user_confirmed: boolean | null
+          user_display_name: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          admin_priority?: number | null
+          admin_status?: string
+          category?: string
+          context?: Json
+          created_at?: string
+          generated_prompt?: string | null
+          id: string
+          llm_classification?: Json | null
+          llm_summary?: string | null
+          screen_ref?: string | null
+          stars?: number | null
+          text?: string
+          user_confirmed?: boolean | null
+          user_display_name?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          admin_priority?: number | null
+          admin_status?: string
+          category?: string
+          context?: Json
+          created_at?: string
+          generated_prompt?: string | null
+          id?: string
+          llm_classification?: Json | null
+          llm_summary?: string | null
+          screen_ref?: string | null
+          stars?: number | null
+          text?: string
+          user_confirmed?: boolean | null
+          user_display_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      feedback_config: {
+        Row: {
+          id: number
+          llm_model: string
+          max_chatbot_turns: number
+          proactive_triggers: boolean
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          llm_model?: string
+          max_chatbot_turns?: number
+          proactive_triggers?: boolean
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          llm_model?: string
+          max_chatbot_turns?: number
+          proactive_triggers?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       guest_tokens: {
         Row: {
           course_id: string
