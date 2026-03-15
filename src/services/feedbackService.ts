@@ -67,7 +67,7 @@ export async function getFeedbackList(filters?: FeedbackFilters): Promise<Feedba
 
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    let query = supabase.from("feedback").select("*").order("created_at", { ascending: false });
+    let query = supabase.from("feedback" as any).select("*").order("created_at", { ascending: false });
 
     if (filters?.category) query = query.eq("category", filters.category);
     if (filters?.status) query = query.eq("admin_status", filters.status);
