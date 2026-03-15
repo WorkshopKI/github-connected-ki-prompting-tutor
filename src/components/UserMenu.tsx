@@ -13,9 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 
-export const UserMenu = () => {
+interface UserMenuProps {
+  scopeLabel?: string;
+}
+
+export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
   const { isLoggedIn, isLoading, profile, user, signOut } = useAuthContext();
   const { isStandalone, isWorkshop, setMode } = useAppMode();
   const { syncStatus } = useSyncContext();
@@ -44,13 +47,17 @@ export const UserMenu = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full h-9 w-9 bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-xs"
-          >
-            {initials}
-          </Button>
+          <button className="flex items-center gap-2.5 w-full rounded-lg px-2 py-2 hover:bg-sidebar-accent transition-colors text-left">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0">
+              {initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate leading-tight">{displayName}</p>
+              {scopeLabel && (
+                <p className="text-[10px] text-sidebar-foreground/50 truncate leading-tight">{scopeLabel}</p>
+              )}
+            </div>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel className="font-normal">
