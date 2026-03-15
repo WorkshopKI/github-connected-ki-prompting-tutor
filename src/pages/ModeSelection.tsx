@@ -28,7 +28,7 @@ const ModeSelection = () => {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Willkommen</h1>
           <p className="text-muted-foreground text-sm mt-2">
-            Wie möchtest du Prompting Studio nutzen?
+            Souverän arbeiten mit KI — wie möchtest du starten?
           </p>
         </div>
 

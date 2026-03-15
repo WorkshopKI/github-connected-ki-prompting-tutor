@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Prompting Studio — Enterprise Prompting Platform für Organisationen mit Compliance-Anforderungen. Sidebar-basiertes Multi-Page Layout mit Abteilungskontext und Zwei-Stufen KI-Routing.
+KI-Praxis — KI-Arbeitskompetenz-Plattform für Wissensarbeiter und Organisationen mit Compliance-Anforderungen. Sidebar-basiertes Multi-Page Layout mit Abteilungskontext und Zwei-Stufen KI-Routing.
 
 **Kernfeatures:**
 - 5 Haupt-Seiten: Dashboard, Prompt Library, Prompt-Labor (Playground), Onboarding, Einstellungen

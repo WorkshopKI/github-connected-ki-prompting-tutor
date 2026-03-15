@@ -10,7 +10,7 @@ export interface ConstraintCheckResult {
   explanation: string;
 }
 
-const SYSTEM_PROMPT = `Du bist ein KI-Prompting-Tutor. Der Benutzer übt, schlechte Prompts zu verbessern.
+const SYSTEM_PROMPT = `Du bist ein KI-Kompetenz-Tutor. Der Benutzer übt, KI-Prompts zu verbessern und KI-Outputs kritisch zu bewerten.
 Bewerte den verbesserten Prompt auf einer Skala von 0-100:
 - Kontext und Hintergrund (25%)
 - Spezifität und Klarheit (25%)

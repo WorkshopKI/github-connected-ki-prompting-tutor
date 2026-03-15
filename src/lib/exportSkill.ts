@@ -61,10 +61,10 @@ export function skillToMarkdown(skill: SavedSkill): string {
   // Quelle
   if (skill.sourceTitle !== skill.title) {
     lines.push("---");
-    lines.push(`*Basiert auf: ${skill.sourceTitle} (Prompting Studio)*`);
+    lines.push(`*Basiert auf: ${skill.sourceTitle} (KI-Praxis)*`);
   } else {
     lines.push("---");
-    lines.push(`*Erstellt mit Prompting Studio*`);
+    lines.push(`*Erstellt mit KI-Praxis*`);
   }
 
   return lines.join("\n");
@@ -131,7 +131,7 @@ export function skillToAgentSkillMd(skill: SavedSkill): string {
   lines.push(`description: ${descParts.join(" ").slice(0, 1024)}`);
 
   lines.push("metadata:");
-  lines.push("  author: prompting-studio");
+  lines.push("  author: ki-praxis");
   lines.push(`  version: "1.0"`);
   if (skill.category) lines.push(`  category: "${skill.category}"`);
   if (skill.targetDepartment) lines.push(`  department: "${skill.targetDepartment}"`);
