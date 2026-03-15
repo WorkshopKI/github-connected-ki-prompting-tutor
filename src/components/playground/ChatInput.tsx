@@ -74,7 +74,7 @@ export const ChatInput = ({
   const navigate = useNavigate();
 
   return (
-    <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">
+    <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all" data-feedback-ref="prompt-labor.eingabe" data-feedback-label="Chat-Eingabe">
       {/* Active Rules Badge */}
       {activeRuleCount > 0 && (
         <div className="px-3 pt-2 pb-0">

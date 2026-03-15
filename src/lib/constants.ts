@@ -12,6 +12,7 @@ export const ROUTES = {
   SETTINGS: "/settings",
   LOGIN: "/login",
   ADMIN_PARTICIPANTS: "/admin/teilnehmer",
+  ADMIN_FEEDBACK: "/admin/feedback",
 } as const;
 
 /* ── localStorage Keys ── */
@@ -46,6 +47,8 @@ export const LS_KEYS = {
   REJECTION_NUDGE_COOLDOWN: "ps-rejection-nudge-cooldown",
   LERNPFAD_PROGRESS: "ps-lernpfad-progress",
   COMPARISON_HISTORY: "ps-comparison-history",
+  FEEDBACK_ITEMS: "ps-feedback",
+  FEEDBACK_CONFIG: "ps-feedback-config",
 } as const;
 
 /* ── Semantische Badge-Farben (3-Stufen) ──
@@ -106,6 +109,23 @@ export const ALERT_COLORS = {
   /** 🔴 Gefahr — red */
   danger: "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400",
 } as const;
+
+/* ── Feedback-Kategorie-Farben ── */
+export const FEEDBACK_CATEGORY_COLORS: Record<string, string> = {
+  praise: BADGE_COLORS.low,
+  problem: BADGE_COLORS.high,
+  idea: BADGE_COLORS.neutral,
+  question: BADGE_COLORS.medium,
+};
+
+/* ── Feedback-Status-Farben ── */
+export const FEEDBACK_STATUS_COLORS: Record<string, string> = {
+  neu: BADGE_COLORS.medium,
+  in_bearbeitung: BADGE_COLORS.low,
+  umgesetzt: BADGE_COLORS.low,
+  abgelehnt: BADGE_COLORS.high,
+  archiviert: BADGE_COLORS.neutral,
+};
 
 /* ── Default-Modelle ── */
 export const DEFAULT_MODEL = "google/gemini-3-flash-preview";

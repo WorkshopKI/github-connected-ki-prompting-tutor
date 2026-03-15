@@ -124,7 +124,7 @@ Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"s
   };
 
   return (
-    <Card className="p-4 rounded-lg border border-border bg-card">
+    <Card className="p-4 rounded-lg border border-border bg-card" data-feedback-ref="prompt-labor.judge" data-feedback-label="Judge-Panel">
       <div className="flex items-center gap-2 mb-3">
         <Scale className="w-4 h-4 text-primary" />
         <span className="font-semibold text-sm">KI-Bewertung</span>

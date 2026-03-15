@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { streamChat } from "@/services/llmService";
 import { buildContextPrefix } from "@/lib/contextBuilder";
+import { trackAction } from "@/lib/actionTracker";
 import { toast } from "sonner";
 import type { Msg } from "@/types";
 
@@ -40,6 +41,7 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
   const sendMessage = useCallback(
     async (content: string) => {
       if (!content.trim() || isStreaming) return;
+      trackAction("ki-nachricht-gesendet");
 
       const userMsg: Msg = { role: "user", content };
       const newMessages = [...messages, userMsg];
@@ -88,6 +90,7 @@ export function useChat({ systemPrompt, selectedModel, thinkingEnabled, onBudget
           abortRef.current = null;
         },
         onError: (error, status) => {
+          trackAction("ki-fehler");
           setIsStreaming(false);
           setStreamingContent("");
           setThinkingContent("");

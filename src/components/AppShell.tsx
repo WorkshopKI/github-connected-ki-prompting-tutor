@@ -56,7 +56,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
         <SidebarHeader className="px-4 pt-5 pb-3">
           <button
             onClick={() => navigate("/")}

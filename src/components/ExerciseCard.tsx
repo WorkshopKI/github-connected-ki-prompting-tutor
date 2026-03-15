@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { trackAction } from "@/lib/actionTracker";
 import { Check, X, ChevronDown, ChevronUp, Copy, Loader2, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
@@ -78,7 +79,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
     : 0;
 
   return (
-    <div className="bg-gradient-card rounded-xl p-4 shadow-sm border border-border relative">
+    <div className="bg-gradient-card rounded-xl p-4 shadow-sm border border-border relative" data-feedback-ref="onboarding.uebung" data-feedback-label="Übungskarte">
       {bestScore !== null && bestScore !== undefined && (
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold ${
           bestScore === 3 ? "bg-primary/20 text-primary" :
@@ -112,7 +113,7 @@ export const ExerciseCard = ({ exercise, bestScore, onEvaluated }: ExerciseCardP
         />
 
         <div className="flex gap-1.5 flex-wrap">
-          <Button size="sm" onClick={() => evaluatePrompt(userPrompt)} className="gap-1.5" disabled={isEvaluating}>
+          <Button size="sm" onClick={() => { trackAction("uebung-abgegeben"); evaluatePrompt(userPrompt); }} className="gap-1.5" disabled={isEvaluating}>
             {isEvaluating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
             {isEvaluating ? "Wird bewertet..." : "Prompt bewerten"}
           </Button>

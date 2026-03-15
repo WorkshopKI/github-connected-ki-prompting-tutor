@@ -67,13 +67,15 @@ interface ModelSelectProps {
 /** Kompletter Model-Selector mit Trigger + Dropdown. */
 export function ModelSelect({ value, onValueChange, disabled, triggerClassName = "text-xs" }: ModelSelectProps) {
   return (
-    <Select value={value} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger className={triggerClassName}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <ModelSelectGroups />
-      </SelectContent>
-    </Select>
+    <div data-feedback-ref="prompt-labor.modell-auswahl" data-feedback-label="Modell-Auswahl">
+      <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+        <SelectTrigger className={triggerClassName}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <ModelSelectGroups />
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

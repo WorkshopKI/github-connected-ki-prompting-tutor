@@ -24,6 +24,8 @@ const Playground = lazy(() => import("./pages/Playground"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Settings = lazy(() => import("./pages/Settings"));
 const AdminParticipants = lazy(() => import("./pages/AdminParticipants"));
+const AdminFeedback = lazy(() => import("./pages/AdminFeedback"));
+const FeedbackButton = lazy(() => import("./components/feedback/FeedbackButton"));
 
 const queryClient = new QueryClient();
 
@@ -48,12 +50,14 @@ const WorkshopApp = () => (
             <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
             <Route path="/profil" element={<Navigate to="/settings" replace />} />
             <Route path="/admin/teilnehmer" element={<PlatformLayout><AdminParticipants /></PlatformLayout>} />
+            <Route path="/admin/feedback" element={<PlatformLayout><AdminFeedback /></PlatformLayout>} />
             <Route path="/team" element={<PlatformLayout><TeamMembers /></PlatformLayout>} />
             <Route path="/reviews" element={<PlatformLayout><PendingReviews /></PlatformLayout>} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <FeedbackButton />
         </Suspense>
       </OrgProvider>
     </SyncProvider>
@@ -70,10 +74,12 @@ const StandaloneApp = () => (
             <Route path="/library" element={<PlatformLayout><Library /></PlatformLayout>} />
             <Route path="/onboarding" element={<PlatformLayout><Onboarding /></PlatformLayout>} />
             <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
+            <Route path="/admin/feedback" element={<PlatformLayout><AdminFeedback /></PlatformLayout>} />
             <Route path="/playground" element={<Playground />} />
             <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <FeedbackButton />
         </Suspense>
       </OrgProvider>
     </StandaloneSyncProvider>

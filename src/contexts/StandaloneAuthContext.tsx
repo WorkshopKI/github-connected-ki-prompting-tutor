@@ -11,7 +11,7 @@ const defaultProfile: UserProfile = {
   display_name: null,
   auth_method: "email_otp",
   course_id: null,
-  is_admin: false,
+  is_admin: true,
   preferred_model: DEFAULT_MODEL,
 };
 

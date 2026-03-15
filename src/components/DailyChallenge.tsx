@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { trackAction } from "@/lib/actionTracker";
 import { Flame, CheckCircle2, Sparkles, Send } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ export const DailyChallengeCard = () => {
   const handleFlawComplete = (score: number) => {
     setResult({ score, feedback: `Du hast ${score}% der Fehler korrekt identifiziert.` });
     markCompleted(score);
+    trackAction("challenge-abgeschlossen");
     toast.success(`Fehler-Check: ${score}%`);
   };
 
@@ -72,6 +74,7 @@ export const DailyChallengeCard = () => {
 
       setResult({ score, feedback });
       markCompleted(score);
+      trackAction("challenge-abgeschlossen");
       toast.success(`Tagesaufgabe: ${score}%`);
     } catch {
       toast.error("Bewertung fehlgeschlagen");
@@ -81,7 +84,7 @@ export const DailyChallengeCard = () => {
   };
 
   return (
-    <Card className="p-5 bg-card rounded-xl border border-border shadow-sm">
+    <Card className="p-5 bg-card rounded-xl border border-border shadow-sm" data-feedback-ref="dashboard.challenge" data-feedback-label="Tagesaufgabe">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-semibold text-base">Tagesaufgabe</h2>
         {streak > 0 && (

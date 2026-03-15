@@ -122,7 +122,7 @@ export const AnalyticsSection = ({ completedLessons }: AnalyticsSectionProps) =>
   const maxRisk = Math.max(riskCounts.high, riskCounts.medium, riskCounts.low, 1);
 
   return (
-    <Collapsible defaultOpen={false}>
+    <Collapsible defaultOpen={false} data-feedback-ref="dashboard.analytics" data-feedback-label="Analytics">
       <CollapsibleTrigger className="flex items-center justify-between w-full text-left group">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4 text-muted-foreground" />
