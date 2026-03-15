@@ -1177,7 +1177,7 @@ export const ACTABuilder = ({
           } else if (isExtField && field.key === "negatives") {
             filled = (ext.negatives || "").trim().length > 10;
           } else {
-            filled = (fields[field.key as keyof typeof fields] || "").trim().length > 10;
+            filled = ((fields[field.key as keyof typeof fields] as string) || "").trim().length > 10;
           }
           const stepLabel = "label" in field ? field.label : field.key;
           return (

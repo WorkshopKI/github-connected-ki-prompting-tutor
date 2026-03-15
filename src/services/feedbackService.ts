@@ -125,12 +125,12 @@ export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
 export async function saveFeedbackConfig(config: FeedbackConfig): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await supabase.from("feedback_config").update({
+    const { error } = await supabase.from("feedback_config" as any).update({
       llm_model: config.llm_model,
       proactive_triggers: config.proactive_triggers,
       max_chatbot_turns: config.max_chatbot_turns,
       updated_at: new Date().toISOString(),
-    }).eq("id", 1);
+    }).eq("id", 1 as any);
     if (error) throw new Error(`Config speichern fehlgeschlagen: ${error.message}`);
   } else {
     saveToStorage(LS_KEYS.FEEDBACK_CONFIG, config);
