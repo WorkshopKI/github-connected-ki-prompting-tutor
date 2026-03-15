@@ -24,7 +24,7 @@ const Library = () => {
   const shortLabel = scopeLabel.replace("Abteilung ", "").replace("Fachabteilung ", "");
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Navigation: Tabs + Count + Neu-Button — alles in einer Zeile */}
       <div className="flex items-center gap-1 text-sm border-b border-border pb-2">
         <button
