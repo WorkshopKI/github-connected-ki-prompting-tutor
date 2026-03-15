@@ -36,16 +36,16 @@ const Settings = () => {
 
         {isWorkshop && (
           <TabsContent value="organisation" className="space-y-6">
-            {/* Allgemein — Org-Name, Sprache, Toggles */}
-            <GeneralSettings />
+            {/* Zeile 1: Plattform + Sicherheit & Compliance (nebeneinander) */}
+            <div className="grid lg:grid-cols-2 gap-6 items-start">
+              <GeneralSettings />
+              <ComplianceSettingsTab />
+            </div>
 
-            {/* KI-Konfiguration — Endpunkte + Routing */}
+            {/* Zeile 2: KI-Endpunkte (volle Breite, intern schon 2-spaltig) */}
             <AIRoutingSettings />
 
-            {/* Sicherheit & Compliance */}
-            <ComplianceSettingsTab />
-
-            {/* Rollen & Rechte */}
+            {/* Zeile 3: Rollen & Rechte (volle Breite) */}
             <RolesSettings />
           </TabsContent>
         )}
