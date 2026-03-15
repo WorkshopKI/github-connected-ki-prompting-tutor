@@ -9,18 +9,28 @@ import type { FeedbackTrigger, FeedbackCategory } from "@/types";
 const FADE_IN_DELAY = 30_000;
 const BUBBLE_DURATION = 8_000;
 
+// Globaler Timestamp für erstes Laden — überlebt Suspense-Remounts
+let globalMountTime: number | null = null;
+
 export default function FeedbackButton() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    if (globalMountTime && Date.now() - globalMountTime >= FADE_IN_DELAY) return true;
+    if (!globalMountTime) globalMountTime = Date.now();
+    return false;
+  });
   const [panelOpen, setPanelOpen] = useState(false);
   const [bubble, setBubble] = useState<FeedbackTrigger | null>(null);
   const [preselectedCategory, setPreselectedCategory] = useState<FeedbackCategory | undefined>();
   const location = useLocation();
 
-  // Sanftes Einblenden nach 30s
+  // Sanftes Einblenden nach 30s (überlebt Suspense-Remounts)
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), FADE_IN_DELAY);
+    if (visible) return;
+    const elapsed = globalMountTime ? Date.now() - globalMountTime : 0;
+    const remaining = Math.max(0, FADE_IN_DELAY - elapsed);
+    const timer = setTimeout(() => setVisible(true), remaining);
     return () => clearTimeout(timer);
-  }, []);
+  }, [visible]);
 
   // Sprechblase nach 8s ausblenden
   useEffect(() => {
