@@ -551,10 +551,8 @@ export const PromptLibrary = () => {
               <div className="flex items-start justify-between gap-3 mb-1.5">
                 <h4 className="font-semibold text-sm">{prompt.title}</h4>
                 <div className="flex items-center gap-1 shrink-0">
-                  {prompt.official ? (
+                  {prompt.official && (
                     <Badge className="bg-primary/10 text-primary text-xs">Verifiziert</Badge>
-                  ) : (
-                    <Badge variant="secondary" className="text-xs">Entwurf</Badge>
                   )}
                   <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} compact />
                 </div>

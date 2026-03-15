@@ -49,18 +49,18 @@ export const LS_KEYS = {
 } as const;
 
 /* ── Semantische Badge-Farben (3-Stufen) ──
- * Verwende diese Konstanten überall wo niedrig/mittel/hoch oder offen/intern/vertraulich
- * Badge-Farben benötigt werden. NICHT die Tailwind-Strings manuell kopieren!
- * Enthält jeweils korrekte dark:-Varianten.
+ * Verwende diese Konstanten für Risiko/Priorität/Severity-Badges.
+ * Confidentiality-Badges nutzen eigene Styles in ConfidentialityBadge.tsx.
+ * NICHT die Tailwind-Strings manuell kopieren!
  */
 export const BADGE_COLORS = {
-  /** 🟢 Niedrig / Offen / Primary */
+  /** Primary-Akzent für aktive Zustände */
   low: "bg-primary/10 text-primary",
-  /** 🟡 Mittel / Intern — amber mit dark:-Variante */
+  /** Neutral-Mittel für Klassifikation */
   medium: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  /** 🔴 Hoch / Vertraulich / Kritisch — red mit dark:-Variante */
+  /** Kräftiger für hohe Priorität — NICHT für Confidentiality */
   high: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
-  /** Neutral / Niedrig — muted */
+  /** Neutral */
   neutral: "bg-muted text-muted-foreground",
 } as const;
 

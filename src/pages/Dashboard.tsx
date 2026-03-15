@@ -199,7 +199,7 @@ const Dashboard = () => {
             </p>
             <p className="text-sm font-semibold">{nextStep.title}</p>
           </div>
-          <Button size="sm" className="shrink-0 gap-1.5" onClick={nextStep.action}>
+          <Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={nextStep.action}>
             {nextStep.actionLabel} <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </div>

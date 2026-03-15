@@ -1,30 +1,37 @@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BADGE_COLORS } from "@/lib/constants";
+import { Lock, ShieldAlert } from "lucide-react";
 
 type Level = "open" | "internal" | "confidential";
 
-const config: Record<Level, { icon: string; label: string; labelShort: string; className: string; tooltip: string }> = {
+const config: Record<Level, {
+  label: string;
+  labelShort: string;
+  className: string;
+  tooltip: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  hidden?: boolean;
+}> = {
   open: {
-    icon: "🟢",
     label: "Offen",
     labelShort: "Offen",
-    className: BADGE_COLORS.low,
+    className: "",
     tooltip: "Externe Business-API erlaubt. Keine vertraulichen Daten.",
+    hidden: true, // Default — nicht anzeigen
   },
   internal: {
-    icon: "🟡",
     label: "Intern",
     labelShort: "Intern",
-    className: BADGE_COLORS.medium,
+    className: "bg-muted text-muted-foreground",
     tooltip: "Interne KI empfohlen. Externe API nur ohne sensible Daten.",
+    icon: Lock,
   },
   confidential: {
-    icon: "🔴",
     label: "Vertraulich",
     labelShort: "Vertr.",
-    className: BADGE_COLORS.high,
+    className: "bg-foreground/10 text-foreground",
     tooltip: "NUR interne KI. Externe API blockiert.",
+    icon: ShieldAlert,
   },
 };
 
@@ -36,11 +43,18 @@ interface Props {
 
 export const ConfidentialityBadge = ({ level = "open", reason, compact = false }: Props) => {
   const c = config[level];
+
+  // "Offen" ist der Default — nicht anzeigen
+  if (c.hidden) return null;
+
+  const Icon = c.icon;
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Badge className={`${c.className} text-[10px] gap-1 cursor-help`}>
-          {c.icon} {compact ? c.labelShort : c.label}
+          {Icon && <Icon className="w-3 h-3" />}
+          {compact ? c.labelShort : c.label}
         </Badge>
       </TooltipTrigger>
       <TooltipContent className="max-w-xs text-xs">
