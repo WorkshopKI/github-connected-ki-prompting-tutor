@@ -14,13 +14,17 @@ interface Props {
   feedbackId: string;
   initialText: string;
   context: import("@/types").FeedbackContext;
+  screenRef?: import("./ScreenRefPicker").ScreenRef | null;
   onClose: () => void;
 }
 
-export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: Props) {
+export function FeedbackChatbot({ feedbackId, initialText, context, screenRef, onClose }: Props) {
   const [messages, setMessages] = useState<ChatMsg[]>(() => {
     const msgs: ChatMsg[] = [{ role: "system", content: buildFeedbackSystemPrompt(context) }];
-    if (initialText) msgs.push({ role: "user", content: initialText });
+    const userContent = screenRef
+      ? `${initialText}\n\n[Bereich: ${screenRef.label}]`
+      : initialText;
+    if (userContent) msgs.push({ role: "user", content: userContent });
     return msgs;
   });
   const [input, setInput] = useState("");

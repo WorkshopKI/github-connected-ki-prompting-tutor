@@ -290,7 +290,7 @@ export const PromptLibrary = () => {
     <section data-feedback-ref="prompt-sammlung.bibliothek" data-feedback-label="Prompt-Bibliothek">
       <div className="mb-5">
         {/* Einzeilig: Suche + Abteilung + Kategorien + Filter */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap" data-feedback-ref="prompt-sammlung.filter" data-feedback-label="Filter & Suche">
           {/* Suche — kompakt, expandierbar */}
           {searchOpen ? (
             <div className="relative w-48">

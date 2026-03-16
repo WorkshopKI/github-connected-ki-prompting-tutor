@@ -176,7 +176,7 @@ supabase/
 - `src/components/OrganizationUseCases.tsx` — Unbenutzte Use-Cases-Komponente
 - `src/components/LevelCard.tsx` — Unbenutzte Level-Karte
 - `src/components/SyncStatusIcon.tsx` — Unbenutzter Sync-Indikator
-- `src/components/feedback/ScreenRefMode.tsx` — War kaputt, wird in Phase 4 neu gebaut
+- `src/components/feedback/ScreenRefMode.tsx` — War kaputt, ersetzt durch `ScreenRefPicker.tsx`
 
 ### Große Dateien (Kandidaten für zukünftiges Splitting)
 - `src/components/playground/ACTABuilder.tsx` (1.346 Zeilen) — Enthält 5+ Sub-Komponenten
@@ -297,7 +297,7 @@ Sidebar-Label: "Onboarding". Route: /onboarding.
 - **Services:** `feedbackService.ts` (CRUD, Dual-Mode mit FeedbackRow-Typ), `feedbackLlm.ts` (System-Prompts, alle Parser: `parseFeedbackSummary` + `parseBotResponse` + `renderSimpleMarkdown`, `ChatMsg` Interface)
 - **Admin:** `FeedbackTicketList`, `FeedbackTicketDetail`, `FeedbackConfigPanel` in `src/components/admin/`
 - **DB:** `feedback` + `feedback_config` Tabellen (Migration: `20260315120000_feedback_tables.sql`)
-- **ScreenRefMode:** Gelöscht (war kaputt). `data-feedback-ref` Attribute an Komponenten bleiben als Vorbereitung für Phase 4. CSS-Klassen `.feedback-ref-mode`, `.feedback-ref-highlight`, `.feedback-ref-overlay` bleiben in `index.css` (mit TODO-Kommentar).
+- **ScreenRefPicker:** `src/components/feedback/ScreenRefPicker.tsx` — Overlay-Picker der alle `data-feedback-ref` Elemente hervorhebt. Basiert auf TourOverlay-Mechanismus (z-index Elevation via `getBoundingClientRect`). Elemente werden per z-index 102 über das Overlay (z-index 100) gehoben, klickbare Rahmen auf z-index 105. Erreichbar über "Bereich markieren" Button im FeedbackPanel (DetailsStep). Ersetzt die alte kaputte ScreenRefMode. CSS-Klassen `.feedback-ref-mode`, `.feedback-ref-highlight`, `.feedback-ref-overlay` bleiben in `index.css` (Legacy).
 - **Bekannte Einschränkung:** Supabase-Typen für `feedback`/`feedback_config` Tabellen noch nicht generiert — temporärer `FeedbackRow` Typ in `feedbackService.ts`. Supabase-Client-Calls nutzen weiterhin `as any` Cast auf `from()`.
 - **Phase 2 UI (2026-03-16):** Chatbot visuell überarbeitet — Chat-Bubbles (User rechts primary, Bot links muted), Online-Indikator Header, animierter Typing-Indikator (●●●), einfaches Markdown-Rendering (**fett**→strong), Bestätigungskarte mit primary/5% Hintergrund + primary/30% Border, grüner Bestätigungs-Button, Container-Höhe 400–520px
 - **Phase 3 UI (2026-03-16):** Admin-Dashboard visuell überarbeitet — Zwei-Spalten-Layout (Ticket-Liste links, Detail rechts) statt Tabelle+Sheet. Ticket-Liste als Karten mit Kategorie-Badge, ID, Datum, Summary, Kontext-Zeile. Ausgewähltes Ticket mit `border-l-primary + bg-primary/5`. Detail-Panel inline mit 2×2 Metadaten-Grid, Nutzer-Bestätigungsblock, Prompt-Ansicht mit Dark-Code-Block (`#1a1a2e`), Kopieren/Export-Buttons. Responsive: `grid-cols-1 lg:grid-cols-2`. Dezente Tab-Buttons statt große Tabs.
