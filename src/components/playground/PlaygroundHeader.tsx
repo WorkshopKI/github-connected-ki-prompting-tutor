@@ -30,7 +30,6 @@ export function PlaygroundHeader({
       <div className="flex items-center h-12 px-4">
         <div className="flex items-center gap-3">
           <SidebarTrigger />
-          <div className="h-5 w-px bg-border" />
           <h1 className="text-base font-bold tracking-tight">Prompt Werkstatt</h1>
           <div className="flex bg-muted rounded-lg p-0.5">
             <button
