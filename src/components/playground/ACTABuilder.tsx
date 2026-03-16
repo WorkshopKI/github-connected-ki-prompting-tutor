@@ -988,7 +988,7 @@ export const ACTABuilder = ({
 
   // ── Vertical layout (existing sidebar / mobile) ──
   const verticalContent = (
-    <div className="px-4 pb-4 space-y-4" data-feedback-ref="prompt-labor.acta-baukasten" data-feedback-label="ACTA-Baukasten">
+    <div className="px-4 pb-4 space-y-4" data-feedback-ref="prompt-labor.acta-baukasten.content" data-feedback-label="ACTA-Baukasten Inhalt">
       <div data-tour="acta-template-select">
       <Select onValueChange={handleTemplateSelect}>
         <SelectTrigger className="w-full text-xs">
