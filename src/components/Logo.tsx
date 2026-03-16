@@ -16,7 +16,7 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
   return (
     <div className={cn("select-none", className)}>
       <span className={cn("leading-none", textSize)}>
-        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800, letterSpacing: '0.05em' }}>
+        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800 }}>
           KI
         </span>
         <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 300 }}>
@@ -24,7 +24,7 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
         </span>
       </span>
       {!hideSubtitle && (
-        <div className={cn("-mt-0.5 tracking-wide", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
+        <div className={cn("-mt-0.5", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
           Souverän arbeiten mit KI
         </div>
       )}
