@@ -38,35 +38,28 @@ export function FeedbackConfirmCard({ classification, onConfirm, onReject }: Pro
   const badgeColor = FEEDBACK_CATEGORY_COLORS[CATEGORY_MAP[classification.category] ?? "question"];
 
   return (
-    <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 space-y-2.5">
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">
-        Zusammenfassung
+    <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 space-y-2">
+      {/* Titelzeile: Label + Badge + Bereich — alles in einer Zeile */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+          Zusammenfassung
+        </span>
+        <Badge className={badgeColor}>
+          {CATEGORY_LABELS[classification.category] ?? classification.category}
+        </Badge>
+        {classification.affectedArea && (
+          <code className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+            {classification.affectedArea}
+          </code>
+        )}
       </div>
-
-      <Badge className={badgeColor}>
-        {CATEGORY_LABELS[classification.category] ?? classification.category}
-      </Badge>
-
+      {/* Summary */}
       <p className="text-[13px] leading-[1.55]">{classification.summary}</p>
-
-      {classification.details && (
+      {/* Details — nur wenn vorhanden und unterscheidet sich von summary */}
+      {classification.details && classification.details !== classification.summary && (
         <p className="text-[12px] text-muted-foreground">{classification.details}</p>
       )}
-
-      {classification.affectedArea && (
-        <div className="text-[12px] text-muted-foreground">
-          Bereich: <code className="rounded bg-muted px-1 py-0.5 text-[11px] font-mono">{classification.affectedArea}</code>
-        </div>
-      )}
-
-      {classification.relevant_files && classification.relevant_files.length > 0 && (
-        <div className="text-[12px] text-muted-foreground">
-          Dateien: {classification.relevant_files.map((f) => (
-            <code key={f} className="mr-1 rounded bg-muted px-1 py-0.5 text-[11px] font-mono">{f}</code>
-          ))}
-        </div>
-      )}
-
+      {/* Buttons */}
       <div className="flex gap-2 pt-1">
         <Button
           size="sm"
