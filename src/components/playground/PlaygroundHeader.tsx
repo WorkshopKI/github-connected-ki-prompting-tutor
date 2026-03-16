@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { LS_KEYS } from "@/lib/constants";
 import type { AIRoutingConfig } from "@/types";
@@ -24,12 +24,13 @@ export function PlaygroundHeader({
   aiRouting,
 }: PlaygroundHeaderProps) {
   const tourCompleted = localStorage.getItem(LS_KEYS.TOUR_COMPLETED) === "true";
+  const { state } = useSidebar();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="flex items-center h-12 px-4">
         <div className="flex items-center gap-3">
-          <SidebarTrigger />
+          {state === "expanded" && <SidebarTrigger />}
           <h1 className="text-base font-bold tracking-tight">Prompt Werkstatt</h1>
           <div className="flex bg-muted rounded-lg p-0.5">
             <button

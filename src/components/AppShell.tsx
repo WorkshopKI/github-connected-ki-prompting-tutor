@@ -64,13 +64,16 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <Sidebar collapsible="icon" data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
-        <SidebarHeader className={`flex-row items-center border-b border-border group-data-[state=expanded]:pl-4 group-data-[state=expanded]:pr-4 ${isPlayground ? "h-12" : "h-14"}`}>
+        <SidebarHeader className={`flex-row items-center justify-center border-b border-border group-data-[state=expanded]:pl-4 group-data-[state=expanded]:pr-4 ${isPlayground ? "h-12" : "h-14"}`}>
           <button
             onClick={() => navigate("/")}
             className="flex items-center group-data-[state=collapsed]:hidden"
           >
             <Logo size="sm" variant="sidebar" className="translate-y-[2px]" />
           </button>
+          {isPlayground && (
+            <SidebarTrigger className="group-data-[state=expanded]:hidden" />
+          )}
         </SidebarHeader>
 
         <SidebarContent>
