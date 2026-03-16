@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   Breadcrumb,
@@ -45,6 +46,22 @@ function getPageTitle(pathname: string): string {
   if (pathname === "/team") return "Team";
   if (pathname === "/reviews") return "Reviews";
   return "Seite";
+}
+
+function AppHeader({ title }: { title: string }) {
+  const { state } = useSidebar();
+  return (
+    <header className="flex h-14 items-center gap-2 border-b border-border px-4">
+      {state === "expanded" && <SidebarTrigger />}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-semibold">{title}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    </header>
+  );
 }
 
 export const AppShell = ({ children }: { children: ReactNode }) => {
@@ -71,9 +88,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           >
             <Logo size="sm" variant="sidebar" className="translate-y-[2px]" />
           </button>
-          {isPlayground && (
-            <SidebarTrigger className="group-data-[state=expanded]:hidden" />
-          )}
+          <SidebarTrigger className="group-data-[state=expanded]:hidden" />
         </SidebarHeader>
 
         <SidebarContent>
@@ -103,18 +118,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
       </Sidebar>
 
       <SidebarInset className={isPlayground ? "h-svh min-h-0 overflow-hidden" : undefined}>
-        {!isPlayground && (
-          <header className="flex h-14 items-center gap-2 border-b border-border px-4">
-            <SidebarTrigger />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="font-semibold">{getPageTitle(location.pathname)}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </header>
-        )}
+        {!isPlayground && <AppHeader title={getPageTitle(location.pathname)} />}
         <div className={isPlayground ? "flex-1 min-h-0" : "flex-1 p-4 md:p-6 lg:p-8 max-w-7xl"}>
           {children}
         </div>
