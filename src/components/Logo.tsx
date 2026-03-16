@@ -11,7 +11,7 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
   const isSidebar = variant === "sidebar";
 
   const textSize = size === "sm" ? "text-[15px]" : "text-[17px]";
-  const subSize = size === "sm" ? "text-[10px]" : "text-[11px]";
+  const subSize = size === "sm" ? "text-[9.5px]" : "text-[10.5px]";
 
   return (
     <div className={cn("select-none", className)}>
