@@ -36,12 +36,12 @@ export async function submitFeedback(
   if (isWorkshopMode()) {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.from("feedback").insert({
+      const { error } = await (supabase.from("feedback") as any).insert({
         id: item.id,
         category: item.category,
         stars: item.stars ?? null,
         text: item.text,
-        context: item.context,
+        context: item.context as any,
         user_id: item.user_id,
         user_display_name: item.user_display_name ?? null,
         screen_ref: item.screen_ref ?? null,
