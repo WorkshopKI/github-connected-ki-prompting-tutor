@@ -9,7 +9,7 @@ KI-Praxis — KI-Arbeitskompetenz-Plattform für Wissensarbeiter und Organisatio
 - Abteilungskontext (OrgContext): Privatgebrauch, Gesamte Organisation, oder 5 Abteilungen (Legal, Öffentlichkeitsarbeit, HR, IT, Bauverfahren)
 - Zwei-Stufen KI-Routing: Interne KI vs. Externe Business-API mit Vertraulichkeitsklassifikation (open/internal/confidential)
 - 126+ Prompts (76 generische + 50 abteilungsspezifische) mit `targetDepartment` + `confidentiality` Feldern
-- Sidebar-Layout via AppShell für alle Seiten außer Login und Playground
+- Sidebar-Layout via AppShell für alle Seiten außer Login
 
 ## Tech Stack
 
@@ -144,7 +144,7 @@ src/
 ├── pages/
 │   ├── Dashboard.tsx               # Übersicht + DailyChallenge + Analytics (Collapsible)
 │   ├── Library.tsx                 # Tabs: Prompts | Use Cases | Meine Skills | Team | Reviews
-│   ├── Playground.tsx              # Chat mit Zwei-Stufen KI-Auswahl (eigenes Layout)
+│   ├── Playground.tsx              # Chat mit Zwei-Stufen KI-Auswahl (in AppShell, Sidebar collapsed)
 │   ├── Onboarding.tsx              # Lernpfad: 2 Pflicht + 5 Bonus Module
 │   ├── Settings.tsx                # Tabs: Mein Konto | Allgemein | Rollen | Compliance | KI-Konfiguration | Darstellung
 │   ├── Profile.tsx                 # Exportiert ProfileContent (eingebettet in Settings)
@@ -188,10 +188,10 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 ## Architecture
 
 ### Layout
-- **AppShell** (Sidebar + Content) für alle Seiten außer Login und Playground
+- **AppShell** (Sidebar + Content) für alle Seiten außer Login
 - **PlatformLayout** wrapper in `App.tsx`: `<AppShell>` + `<GuestBanner>` + children
-- **Playground:** Eigenes Layout OHNE AppShell, mit eigenem sticky Top-Bar
-- **Sidebar:** 4 Kern-Seiten: Dashboard, Onboarding, Prompt Sammlung, Prompt Werkstatt. Einstellungen, Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
+- **Sidebar:** `collapsible="icon"` auf allen Seiten. 4 Kern-Seiten: Dashboard, Onboarding, Prompt Sammlung, Prompt Werkstatt. Einstellungen, Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
+- **Playground:** In AppShell integriert, Sidebar startet collapsed (`defaultOpen={false}`). Eigener sticky Header (`PlaygroundHeader`) mit `SidebarTrigger`. AppShell-Header wird auf `/playground` ausgeblendet. `playground-root` nutzt `h-full` statt `h-screen`.
 
 ### Provider Hierarchy
 `QueryClientProvider` → `TooltipProvider` → `BrowserRouter` → `AuthProvider` → `SyncProvider` → `OrgProvider` → Routes
@@ -243,7 +243,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - Conversation-Management mit localStorage-Persistenz
 - **Geteilte Komponenten:** `ModelSelect.tsx` (Modell-Dropdown), `ComparisonColumn.tsx` (Vergleichsspalte)
 - **PROSE_CLASSES** Konstante in `ChatMessage.tsx` — Markdown-Styling nicht inline ändern!
-- **Layout-Kette:** `h-screen` → `flex-1 overflow-hidden` → `flex-col-layout` → `scroll-container`. Kommentare mit ⚠️ markieren kritische CSS-Stellen.
+- **Layout-Kette:** `h-full` (innerhalb SidebarInset) → `flex-1 overflow-hidden` → `flex-col-layout` → `scroll-container`. Kommentare mit ⚠️ markieren kritische CSS-Stellen.
 - **CSS Utilities** in `src/index.css`: `scroll-container`, `flex-col-layout`, `flex-col-fill`, `truncate-safe` bündeln fehleranfällige Flex/Overflow-Kombinationen
 
 ### Settings
@@ -396,7 +396,7 @@ Edge function secrets (set via Lovable, kein separates Supabase Dashboard):
 - `flex-col-fill` — flex + flex-col + flex-1 + min-h-0
 - `truncate-safe` — min-w-0 + truncate
 - `card-section` — p-5 + rounded-xl + border + border-border + shadow-sm
-- `playground-root` — h-screen + flex-col + overflow-hidden + bg-background
+- `playground-root` — h-full + flex-col + overflow-hidden + bg-background
 - `page-title` — text-2xl + font-bold + tracking-tight
 
 ### Dateigrößen

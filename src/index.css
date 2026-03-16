@@ -280,9 +280,10 @@ All colors MUST be HSL.
     @apply p-5 rounded-xl border border-border shadow-sm;
   }
   /* Playground-Root: Vollbild-Container ohne Body-Scroll.
-     ⚠️ Nur für Playground.tsx verwenden! */
+     ⚠️ Nur für Playground.tsx verwenden!
+     h-full statt h-screen, da Playground innerhalb von SidebarInset liegt. */
   .playground-root {
-    @apply h-screen flex flex-col overflow-hidden bg-background;
+    @apply h-full flex flex-col overflow-hidden bg-background;
   }
   /* Seiten-Titel: einheitlicher Titel für alle Seiten */
   .page-title {
