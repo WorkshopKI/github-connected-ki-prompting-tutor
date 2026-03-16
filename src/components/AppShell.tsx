@@ -57,14 +57,14 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider>
       <Sidebar data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
-        <SidebarHeader className="px-4 pt-5 pb-3">
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center"
-          >
-            <Logo size="sm" variant="sidebar" />
+        <SidebarHeader className="px-4 flex h-12 items-center border-b border-border">
+          <button onClick={() => navigate("/")} className="flex items-center">
+            <Logo size="sm" variant="sidebar" hideSubtitle />
           </button>
         </SidebarHeader>
+        <div className="px-4 pt-1.5 pb-3">
+          <span className="text-[11px] text-sidebar-foreground/50">Souverän arbeiten mit KI</span>
+        </div>
 
         <SidebarContent>
           <SidebarGroup>
