@@ -40,7 +40,7 @@ export async function streamChat({
           "Content-Type": "application/json",
           Authorization: `Bearer ${getApiKey()}`,
           "HTTP-Referer": window.location.origin,
-          "X-Title": "KI-Praxis",
+          "X-Title": "KI-Werkstatt",
         },
         body: JSON.stringify(body),
         signal,

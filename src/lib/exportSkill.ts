@@ -61,10 +61,10 @@ export function skillToMarkdown(skill: SavedSkill): string {
   // Quelle
   if (skill.sourceTitle !== skill.title) {
     lines.push("---");
-    lines.push(`*Basiert auf: ${skill.sourceTitle} (KI-Praxis)*`);
+    lines.push(`*Basiert auf: ${skill.sourceTitle} (KI-Werkstatt)*`);
   } else {
     lines.push("---");
-    lines.push(`*Erstellt mit KI-Praxis*`);
+    lines.push(`*Erstellt mit KI-Werkstatt*`);
   }
 
   return lines.join("\n");

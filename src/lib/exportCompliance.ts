@@ -74,7 +74,7 @@ export function collectReportData(
         month: "long",
         day: "numeric",
       }),
-      appVersion: "KI-Praxis 1.0",
+      appVersion: "KI-Werkstatt 1.0",
     },
     lernpfad: {
       aktuelleStufe: currentStufe?.nr ?? 1,

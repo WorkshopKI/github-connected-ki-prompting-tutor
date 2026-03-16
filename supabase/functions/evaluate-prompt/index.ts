@@ -113,7 +113,7 @@ JSON-Format:
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://prompting.studio",
-          "X-Title": "Prompting Studio",
+          "X-Title": "KI-Werkstatt",
         },
         body: JSON.stringify({
           model: judgeModel,
@@ -202,7 +202,7 @@ Gib konstruktives Feedback auf Deutsch. Sei ermutigend aber ehrlich.`;
         Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://prompting.studio",
-        "X-Title": "Prompting Studio",
+        "X-Title": "KI-Werkstatt",
       },
       body: JSON.stringify({
         model: selectedModel,
