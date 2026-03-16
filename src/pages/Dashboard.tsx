@@ -69,11 +69,11 @@ const Dashboard = () => {
       );
       candidates = [...deptPrompts, ...officialPrompts];
     }
-    if (candidates.length < 4) {
+    if (candidates.length < 6) {
       const remaining = promptLibrary.filter((p) => !candidates.includes(p));
       candidates = [...candidates, ...remaining];
     }
-    return candidates.slice(0, 4);
+    return candidates.slice(0, 6);
   }, [scope, isDepartment]);
 
   // Next step
@@ -268,11 +268,11 @@ const Dashboard = () => {
               </Button>
             </div>
             <div className="pl-1">
-              {popularPrompts.slice(0, 4).map((prompt, i) => (
+              {popularPrompts.slice(0, 6).map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
-                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < popularPrompts.slice(0, 4).length - 1 ? " border-b border-border" : ""}`}
+                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < popularPrompts.slice(0, 6).length - 1 ? " border-b border-border" : ""}`}
                 >
                   <span className="text-[13.5px] font-[450] flex-1 truncate">{prompt.title}</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
