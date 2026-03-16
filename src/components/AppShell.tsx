@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -55,13 +55,19 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   const isPlayground = location.pathname === "/playground";
   const isActive = (path: string) => location.pathname === path;
 
+  const [sidebarOpen, setSidebarOpen] = useState(!isPlayground);
+
+  useEffect(() => {
+    setSidebarOpen(!isPlayground);
+  }, [isPlayground]);
+
   return (
-    <SidebarProvider defaultOpen={!isPlayground}>
+    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <Sidebar collapsible="icon" data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
-        <SidebarHeader className="flex-row pl-4 pr-4 items-center h-14 border-b border-border">
+        <SidebarHeader className="flex-row items-center h-14 border-b border-border group-data-[state=expanded]:pl-4 group-data-[state=expanded]:pr-4">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center"
+            className="flex items-center group-data-[state=collapsed]:hidden"
           >
             <Logo size="sm" variant="sidebar" className="translate-y-[2px]" />
           </button>
