@@ -5,31 +5,14 @@ import { FeedbackPanel } from "./FeedbackPanel";
 import { emitTrigger, dismissTrigger } from "@/lib/feedbackTriggers";
 import type { FeedbackTrigger, FeedbackCategory } from "@/types";
 
-const FADE_IN_DELAY = 30_000;
 const BUBBLE_DURATION = 8_000;
 
-// Globaler Timestamp für erstes Laden — überlebt Suspense-Remounts
-let globalMountTime: number | null = null;
-
 export default function FeedbackButton() {
-  const [visible, setVisible] = useState(() => {
-    if (globalMountTime && Date.now() - globalMountTime >= FADE_IN_DELAY) return true;
-    if (!globalMountTime) globalMountTime = Date.now();
-    return false;
-  });
+  const [visible, setVisible] = useState(true);
   const [panelOpen, setPanelOpen] = useState(false);
   const [bubble, setBubble] = useState<FeedbackTrigger | null>(null);
   const [preselectedCategory, setPreselectedCategory] = useState<FeedbackCategory | undefined>();
   const location = useLocation();
-
-  // Sanftes Einblenden nach 30s (überlebt Suspense-Remounts)
-  useEffect(() => {
-    if (visible) return;
-    const elapsed = globalMountTime ? Date.now() - globalMountTime : 0;
-    const remaining = Math.max(0, FADE_IN_DELAY - elapsed);
-    const timer = setTimeout(() => setVisible(true), remaining);
-    return () => clearTimeout(timer);
-  }, [visible]);
 
   // Sprechblase nach 8s ausblenden
   useEffect(() => {
@@ -76,9 +59,9 @@ export default function FeedbackButton() {
     <>
       {/* Floating Action Button */}
       <div
-        className={`fixed right-6 z-50 transition-all duration-500 ${
+        className={`fixed right-6 z-50 animate-in fade-in duration-300 ${
           isPlayground ? "bottom-20" : "bottom-6"
-        } ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}
+        }`}
       >
         {/* Sprechblase */}
         {bubble && (
@@ -97,11 +80,11 @@ export default function FeedbackButton() {
         <button
           onClick={handleFabClick}
           className={`
-            group flex h-12 w-12 items-center justify-center rounded-full
+            group flex h-10 w-10 items-center justify-center rounded-full
             bg-primary text-primary-foreground
-            shadow-[0_4px_12px_hsl(var(--primary)/0.3)]
+            opacity-60 shadow-[0_4px_12px_hsl(var(--primary)/0.3)]
             transition-all duration-200 ease-out
-            hover:scale-110 hover:shadow-[0_6px_16px_hsl(var(--primary)/0.4)]
+            hover:opacity-100 hover:scale-110 hover:shadow-[0_6px_16px_hsl(var(--primary)/0.4)]
             active:scale-95
             ${bubble ? "animate-pulse" : ""}
           `}
