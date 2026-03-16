@@ -208,17 +208,22 @@ const Dashboard = () => {
       {/* 3. Zwei-Spalten Layout */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Links (2/3) */}
-        <div className="lg:col-span-2 space-y-5">
+        <div className="lg:col-span-2 space-y-8">
           {/* Heute üben */}
-          <div className="bg-muted/20 rounded-xl p-4">
-            <h2 className="text-sm font-semibold mb-2">Heute üben</h2>
-            <div className="space-y-1">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-[11px] font-bold tracking-[2.5px] uppercase text-primary whitespace-nowrap">
+                Heute üben
+              </h2>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="pl-1">
               <button
                 onClick={() => setDailyDialogOpen(true)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                className="w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary border-b border-border"
               >
                 <Flame className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-sm flex-1">Tagesaufgabe</span>
+                <span className="text-[13.5px] font-[450] flex-1">Tagesaufgabe</span>
                 {dailyStreak > 0 && (
                   <span className="text-[10px] text-muted-foreground">{dailyStreak} Tage</span>
                 )}
@@ -230,10 +235,10 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => !allCompCompleted ? setCompDialogOpen(true) : handleResetComparison()}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                className="w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary last:border-b-0"
               >
                 <Target className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-sm flex-1">Erkenne den Unterschied</span>
+                <span className="text-[13.5px] font-[450] flex-1">Erkenne den Unterschied</span>
                 <span className="text-[10px] text-muted-foreground">
                   {compLocalHistory.length}/{comparisonExercises.length}
                 </span>
@@ -247,26 +252,29 @@ const Dashboard = () => {
           </div>
 
           {/* Beliebte Vorlagen */}
-          <div className="bg-muted/20 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-sm font-semibold">Beliebte Vorlagen</h2>
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-[11px] font-bold tracking-[2.5px] uppercase text-primary whitespace-nowrap">
+                Beliebte Vorlagen
+              </h2>
+              <div className="flex-1 h-px bg-border" />
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs gap-1 text-primary h-7"
+                className="text-xs gap-1 text-primary h-7 whitespace-nowrap"
                 onClick={() => navigate("/library")}
               >
                 Alle <ArrowRight className="w-3 h-3" />
               </Button>
             </div>
-            <div className="space-y-0.5">
+            <div className="pl-1">
               {popularPrompts.slice(0, 4).map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < popularPrompts.slice(0, 4).length - 1 ? " border-b border-border" : ""}`}
                 >
-                  <span className="text-sm flex-1 truncate">{prompt.title}</span>
+                  <span className="text-[13.5px] font-[450] flex-1 truncate">{prompt.title}</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
                     {prompt.category}
                   </span>
