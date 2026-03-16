@@ -38,8 +38,8 @@ export function FeedbackConfirmCard({ classification, onConfirm, onReject }: Pro
   const badgeColor = FEEDBACK_CATEGORY_COLORS[CATEGORY_MAP[classification.category] ?? "question"];
 
   return (
-    <div className="card-section space-y-3">
-      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="rounded-xl border border-primary/30 bg-primary/5 p-3.5 space-y-2.5">
+      <div className="text-[11px] font-semibold uppercase tracking-wider text-primary">
         Zusammenfassung
       </div>
 
@@ -47,34 +47,38 @@ export function FeedbackConfirmCard({ classification, onConfirm, onReject }: Pro
         {CATEGORY_LABELS[classification.category] ?? classification.category}
       </Badge>
 
-      <p className="text-sm">{classification.summary}</p>
+      <p className="text-[13px] leading-[1.55]">{classification.summary}</p>
 
       {classification.details && (
-        <p className="text-xs text-muted-foreground">{classification.details}</p>
+        <p className="text-[12px] text-muted-foreground">{classification.details}</p>
       )}
 
       {classification.affectedArea && (
-        <div className="text-xs text-muted-foreground">
-          Bereich: <code className="rounded bg-muted px-1">{classification.affectedArea}</code>
+        <div className="text-[12px] text-muted-foreground">
+          Bereich: <code className="rounded bg-muted px-1 py-0.5 text-[11px] font-mono">{classification.affectedArea}</code>
         </div>
       )}
 
       {classification.relevant_files && classification.relevant_files.length > 0 && (
-        <div className="text-xs text-muted-foreground">
+        <div className="text-[12px] text-muted-foreground">
           Dateien: {classification.relevant_files.map((f) => (
-            <code key={f} className="mr-1 rounded bg-muted px-1">{f}</code>
+            <code key={f} className="mr-1 rounded bg-muted px-1 py-0.5 text-[11px] font-mono">{f}</code>
           ))}
         </div>
       )}
 
       <div className="flex gap-2 pt-1">
-        <Button size="sm" onClick={onConfirm}>
-          <Check className="mr-1 h-3 w-3" />
-          Ja, stimmt
+        <Button
+          size="sm"
+          onClick={onConfirm}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white text-[12px]"
+        >
+          <Check className="mr-1.5 h-3.5 w-3.5" />
+          Ja, genau das meine ich
         </Button>
-        <Button size="sm" variant="outline" onClick={onReject}>
-          <X className="mr-1 h-3 w-3" />
-          Nein, anders
+        <Button size="sm" variant="outline" onClick={onReject} className="text-[12px]">
+          <X className="mr-1.5 h-3.5 w-3.5" />
+          Nein, korrigieren
         </Button>
       </div>
     </div>
