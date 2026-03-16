@@ -280,6 +280,13 @@ Sidebar-Label: "Onboarding". Route: /onboarding.
 - **Budget Management:** Admins können Budget pro User oder Bulk für alle Teilnehmer setzen (via `UsageOverview`)
 - **Model Selection:** User wählt Modell auf Settings-Seite (Default: `google/gemini-3-flash-preview`)
 
+### Feedback-System
+- **Komponenten:** `src/components/feedback/` — FeedbackButton (FAB), FeedbackPanel (Wizard), FeedbackChatbot (LLM-Chat), FeedbackConfirmCard (Bestätigungskarte), ScreenRefMode
+- **Services:** `feedbackService.ts` (CRUD), `feedbackLlm.ts` (System-Prompts, Parsing)
+- **Admin:** `FeedbackTicketList`, `FeedbackTicketDetail`, `FeedbackConfigPanel` in `src/components/admin/`
+- **DB:** `feedback` + `feedback_config` Tabellen (Migration: `20260315120000_feedback_tables.sql`)
+- **Phase 2 UI (2026-03-16):** Chatbot visuell überarbeitet — Chat-Bubbles (User rechts primary, Bot links muted), Online-Indikator Header, animierter Typing-Indikator (●●●), einfaches Markdown-Rendering (**fett**→strong), Bestätigungskarte mit primary/5% Hintergrund + primary/30% Border, grüner Bestätigungs-Button, Container-Höhe 400–520px
+
 ### Database Schema (Supabase/Postgres)
 - `courses` — Kurs-Definitionen (id als Text PK, enrollment_open, max_participants, default_key_budget)
 - `enrollment_whitelist` — Email-Allowlist pro Kurs

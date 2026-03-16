@@ -16,6 +16,17 @@ interface Props {
   onClose: () => void;
 }
 
+/** Renders **bold** markdown as <strong> in plain text */
+function renderSimpleMarkdown(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: Props) {
   const [messages, setMessages] = useState<Msg[]>(() => {
     const msgs: Msg[] = [{ role: "system", content: buildFeedbackSystemPrompt(context) }];
@@ -124,34 +135,55 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
   const visibleMessages = messages.filter((m) => m.role !== "system");
 
   return (
-    <div className="flex-col-layout">
-      <div ref={scrollRef} className="scroll-container space-y-3 px-1">
+    <div className="flex flex-col h-full min-h-0">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border">
+        <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+        <span className="text-[13px] font-semibold text-foreground">Feedback-Assistent</span>
+        <span className="ml-auto text-[11px] text-muted-foreground">kennt App-Kontext</span>
+      </div>
+
+      {/* Messages */}
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-2.5">
         {visibleMessages.map((msg, i) => (
           <div
             key={i}
-            className={`rounded-lg px-3 py-2 text-sm ${
-              msg.role === "user"
-                ? "ml-8 bg-primary/10 text-foreground"
-                : "mr-8 bg-muted text-foreground"
-            }`}
+            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            {msg.content}
+            <div
+              className={`max-w-[80%] px-3.5 py-2.5 text-[13px] leading-[1.55] ${
+                msg.role === "user"
+                  ? "bg-primary text-primary-foreground rounded-xl rounded-br-sm"
+                  : "bg-muted text-foreground rounded-xl rounded-bl-sm"
+              }`}
+            >
+              {msg.role === "assistant" ? renderSimpleMarkdown(msg.content) : msg.content}
+            </div>
           </div>
         ))}
 
-        {streaming && streamingContent && (
-          <div className="mr-8 rounded-lg bg-muted px-3 py-2 text-sm text-foreground">
-            {streamingContent}
-            <span className="ml-1 inline-block animate-pulse">▊</span>
-          </div>
-        )}
-
+        {/* Typing indicator — animated dots */}
         {streaming && !streamingContent && (
-          <div className="mr-8 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-            Denkt nach...
+          <div className="flex justify-start">
+            <div className="bg-muted rounded-xl rounded-bl-sm px-3.5 py-2.5 flex items-center gap-1">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+            </div>
           </div>
         )}
 
+        {/* Streaming content */}
+        {streaming && streamingContent && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] bg-muted text-foreground rounded-xl rounded-bl-sm px-3.5 py-2.5 text-[13px] leading-[1.55]">
+              {renderSimpleMarkdown(streamingContent)}
+              <span className="ml-1 inline-block h-3.5 w-[2px] bg-foreground/60 animate-pulse" />
+            </div>
+          </div>
+        )}
+
+        {/* Confirmation card */}
         {classification && (
           <FeedbackConfirmCard
             classification={classification}
@@ -161,17 +193,23 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
         )}
       </div>
 
-      <div className="flex items-end gap-2 border-t pt-3 mt-auto">
+      {/* Input */}
+      <div className="flex items-end gap-2 border-t border-border px-3 py-2.5">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Nachricht eingeben..."
-          rows={2}
-          className="resize-none text-sm"
+          rows={1}
+          className="resize-none text-[13px] min-h-[36px] max-h-[80px]"
           disabled={streaming}
         />
-        <Button size="icon" onClick={handleSend} disabled={streaming || !input.trim()}>
+        <Button
+          size="icon"
+          onClick={handleSend}
+          disabled={streaming || !input.trim()}
+          className="h-9 w-9 shrink-0"
+        >
           <Send className="h-4 w-4" />
         </Button>
       </div>

@@ -182,7 +182,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
           )}
 
           {step === "chatbot" && submittedId && context && (
-            <div className="min-h-[300px]">
+            <div className="h-[420px] max-h-[520px] min-h-[400px]">
               <FeedbackChatbot
                 feedbackId={submittedId}
                 initialText={text}
