@@ -99,7 +99,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset>
+      <SidebarInset className={isPlayground ? "h-svh min-h-0 overflow-hidden" : undefined}>
         {!isPlayground && (
           <header className="flex h-14 items-center gap-2 border-b border-border px-4">
             <SidebarTrigger />
