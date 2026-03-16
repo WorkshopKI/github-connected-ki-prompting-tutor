@@ -53,7 +53,7 @@ const WorkshopApp = () => (
             <Route path="/admin/feedback" element={<PlatformLayout><AdminFeedback /></PlatformLayout>} />
             <Route path="/team" element={<PlatformLayout><TeamMembers /></PlatformLayout>} />
             <Route path="/reviews" element={<PlatformLayout><PendingReviews /></PlatformLayout>} />
-            <Route path="/playground" element={<Playground />} />
+            <Route path="/playground" element={<PlatformLayout><Playground /></PlatformLayout>} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -75,7 +75,7 @@ const StandaloneApp = () => (
             <Route path="/onboarding" element={<PlatformLayout><Onboarding /></PlatformLayout>} />
             <Route path="/settings" element={<PlatformLayout><Settings /></PlatformLayout>} />
             <Route path="/admin/feedback" element={<PlatformLayout><AdminFeedback /></PlatformLayout>} />
-            <Route path="/playground" element={<Playground />} />
+            <Route path="/playground" element={<PlatformLayout><Playground /></PlatformLayout>} />
             <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -52,11 +52,12 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const { scopeLabel, isDepartment } = useOrgContext();
 
+  const isPlayground = location.pathname === "/playground";
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <SidebarProvider>
-      <Sidebar data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
+    <SidebarProvider defaultOpen={!isPlayground}>
+      <Sidebar collapsible="icon" data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
         <SidebarHeader className="flex-row pl-4 pr-4 items-center h-14 border-b border-border">
           <button
             onClick={() => navigate("/")}
@@ -93,19 +94,21 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b border-border px-4">
-          <SidebarTrigger />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage className="font-semibold">{getPageTitle(location.pathname)}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl">
+        {!isPlayground && (
+          <header className="flex h-14 items-center gap-2 border-b border-border px-4">
+            <SidebarTrigger />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold">{getPageTitle(location.pathname)}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </header>
+        )}
+        <div className={isPlayground ? "flex-1 min-h-0" : "flex-1 p-4 md:p-6 lg:p-8 max-w-7xl"}>
           {children}
-        </main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

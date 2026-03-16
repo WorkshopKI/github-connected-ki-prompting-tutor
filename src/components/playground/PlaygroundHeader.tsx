@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { LS_KEYS } from "@/lib/constants";
 import type { AIRoutingConfig } from "@/types";
@@ -24,22 +23,13 @@ export function PlaygroundHeader({
   aiTier,
   aiRouting,
 }: PlaygroundHeaderProps) {
-  const navigate = useNavigate();
   const tourCompleted = localStorage.getItem(LS_KEYS.TOUR_COMPLETED) === "true";
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
       <div className="flex items-center h-12 px-4">
         <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="gap-1.5 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Zurück</span>
-          </Button>
+          <SidebarTrigger />
           <div className="h-5 w-px bg-border" />
           <h1 className="text-base font-bold tracking-tight">Prompt Werkstatt</h1>
           <div className="flex bg-muted rounded-lg p-0.5">
