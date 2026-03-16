@@ -62,7 +62,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
             onClick={() => navigate("/")}
             className="flex items-center"
           >
-            <Logo size="sm" variant="sidebar" />
+            <Logo size="sm" variant="sidebar" className="translate-y-[2px]" />
           </button>
         </SidebarHeader>
 
