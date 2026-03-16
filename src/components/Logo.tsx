@@ -4,26 +4,27 @@ interface LogoProps {
   size?: "sm" | "md";
   variant?: "default" | "sidebar";
   className?: string;
-  hideSubtitle?: boolean;
 }
 
-export const Logo = ({ size = "md", variant = "default", className, hideSubtitle = false }: LogoProps) => {
-  const isSidebar = variant === "sidebar";
-
-  const textSize = size === "sm" ? "text-[15px]" : "text-[17px]";
-  const subSize = size === "sm" ? "text-[9.5px]" : "text-[10.5px]";
+export const Logo = ({ size = "md", variant = "default", className }: LogoProps) => {
+  const width = size === "sm" ? 140 : 180;
+  const colorClass = variant === "sidebar" ? "text-sidebar-foreground" : "text-foreground";
 
   return (
-    <div className={cn("select-none", className)}>
-      <div className={cn("leading-none", textSize)}>
-        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800 }}>KI</span>
-        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 300 }}>-Werkstatt</span>
-      </div>
-      {!hideSubtitle && (
-        <div className={cn("leading-none", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
-          Souverän arbeiten mit KI
-        </div>
-      )}
-    </div>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 180 42"
+      fill="currentColor"
+      width={width}
+      className={cn("select-none", colorClass, className)}
+    >
+      <text x="0" y="22" fontFamily="'DM Sans', sans-serif" fontSize="28">
+        <tspan fontWeight="800">KI</tspan>
+        <tspan fontWeight="300">-Werkstatt</tspan>
+      </text>
+      <text x="0" y="38" fontFamily="'DM Sans', sans-serif" fontSize="12" fontWeight="400" opacity="0.5">
+        Souverän arbeiten mit KI
+      </text>
+    </svg>
   );
 };
