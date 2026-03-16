@@ -169,6 +169,10 @@ const Dashboard = () => {
     saveToStorage(LS_KEYS.COMPARISON_HISTORY, []);
   }, []);
 
+  // Template expand/collapse
+  const [showAllTemplates, setShowAllTemplates] = useState(false);
+  const visiblePrompts = showAllTemplates ? popularPrompts : popularPrompts.slice(0, 5);
+
   // Daily challenge dialog
   const [dailyDialogOpen, setDailyDialogOpen] = useState(false);
 
@@ -268,11 +272,11 @@ const Dashboard = () => {
               </Button>
             </div>
             <div className="pl-1">
-              {popularPrompts.slice(0, 6).map((prompt, i) => (
+              {visiblePrompts.map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
-                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < popularPrompts.slice(0, 6).length - 1 ? " border-b border-border" : ""}`}
+                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < visiblePrompts.length - 1 ? " border-b border-border" : ""}`}
                 >
                   <span className="text-[13.5px] font-[450] flex-1 truncate">{prompt.title}</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
@@ -281,6 +285,14 @@ const Dashboard = () => {
                   <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
                 </button>
               ))}
+              {popularPrompts.length > 5 && (
+                <button
+                  onClick={() => setShowAllTemplates(!showAllTemplates)}
+                  className="w-full pt-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {showAllTemplates ? "Weniger anzeigen" : `Alle ${popularPrompts.length} anzeigen`}
+                </button>
+              )}
             </div>
           </div>
         </div>
