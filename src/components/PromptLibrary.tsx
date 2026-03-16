@@ -17,7 +17,7 @@ import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
 import { useOrgContext } from "@/contexts/OrgContext";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
-import { extractVariables } from "@/lib/promptUtils";
+import { extractVariables, matchesCategory } from "@/lib/promptUtils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { orgUseCases } from "@/data/orgUseCases";
 import type { OrgUseCase } from "@/data/orgUseCases";
@@ -196,13 +196,14 @@ export const PromptLibrary = () => {
         prompt.prompt.toLowerCase().includes(searchQuery.toLowerCase()) ||
         prompt.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesCategory =
-        selectedCategory === null ||
-        (selectedCategory === "Büroalltag" && (prompt.level === "beruf" || prompt.type === "blueprint")) ||
-        (selectedCategory === "Recherche" && prompt.level === "websuche") ||
-        (selectedCategory === "Deep Research" && prompt.level === "research") ||
-        (selectedCategory === "Mini Apps" && prompt.level === "miniapps") ||
-        (selectedCategory === "Privat" && prompt.level === "alltag");
+      const categoryKey = selectedCategory === null ? "alle"
+        : selectedCategory === "Büroalltag" ? "bueroalltag"
+        : selectedCategory === "Recherche" ? "recherche"
+        : selectedCategory === "Deep Research" ? "deep-research"
+        : selectedCategory === "Mini Apps" ? "mini-apps"
+        : selectedCategory === "Privat" ? "privat"
+        : "alle";
+      const matchesCat = matchesCategory(prompt, categoryKey);
 
       const matchesDepartment = departmentFilter === "Alle" || prompt.department === departmentFilter;
       const matchesRisk = riskFilter === "Alle" || prompt.riskLevel === riskFilter;
@@ -216,7 +217,7 @@ export const PromptLibrary = () => {
             ? prompt.targetDepartment === scope
             : prompt.targetDepartment === departmentScopeToKey(departmentScope);
 
-      return matchesSearch && matchesCategory && matchesDepartment && matchesRisk && matchesVerified && matchesConf && matchesDepartmentScope;
+      return matchesSearch && matchesCat && matchesDepartment && matchesRisk && matchesVerified && matchesConf && matchesDepartmentScope;
     });
 
     if (sortByRating) {
