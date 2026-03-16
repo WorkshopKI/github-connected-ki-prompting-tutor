@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X, GripHorizontal } from "lucide-react";
+import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -189,10 +189,15 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
         {isChatbot && !isMobile && (
           <div
             onMouseDown={handleResizeStart}
-            className="absolute top-0 left-0 z-10 flex h-6 w-6 cursor-nw-resize items-center justify-center rounded-tl-2xl opacity-0 hover:opacity-100 transition-opacity"
+            className="absolute top-1.5 left-1.5 z-10 flex h-5 w-5 cursor-nw-resize items-center justify-center rounded text-muted-foreground opacity-40 transition-all hover:opacity-100 hover:bg-accent"
             title="Größe ändern"
           >
-            <GripHorizontal className="h-3 w-3 text-muted-foreground/50 -rotate-45" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <circle cx="3" cy="3" r="1.2"/>
+              <circle cx="7" cy="3" r="1.2"/>
+              <circle cx="3" cy="7" r="1.2"/>
+              <circle cx="7" cy="7" r="1.2"/>
+            </svg>
           </div>
         )}
 
