@@ -22,7 +22,7 @@ KI-Praxis — KI-Arbeitskompetenz-Plattform für Wissensarbeiter und Organisatio
 - **Backend:** Supabase (Postgres + Auth + Edge Functions)
 - **LLM:** OpenRouter / Lovable AI Gateway via `llm-proxy` edge function (streaming SSE)
 - **Icons:** lucide-react
-- **Forms:** React Hook Form + Zod
+- **Forms:** React Hook Form + Zod (installiert, aktuell nicht aktiv genutzt)
 - **Notifications:** Sonner (toast)
 - **Dark mode:** next-themes (class-based toggling)
 - **Package Manager:** npm (bun.lockb also present)
@@ -58,7 +58,6 @@ src/
 │   │   ├── JudgePanel.tsx          # Judge-Bewertung durch Referenz-KI
 │   │   ├── PlaygroundContent.tsx   # Gemeinsamer Tab-Content (Desktop/Mobile)
 │   │   ├── PlaygroundHeader.tsx    # Playground Top-Bar
-│   │   ├── PlaygroundSidebar.tsx   # Playground linke Sidebar
 │   │   ├── PromptEvaluation.tsx    # Prompt-Bewertung
 │   │   ├── SystemPromptEditor.tsx  # System-Prompt Editor
 │   │   ├── TechniquePanel.tsx      # Technik-Auswahl
@@ -76,7 +75,6 @@ src/
 │   ├── ACTAQuickChallenge.tsx      # Schnell-Challenge für ACTA-Methode
 │   ├── ACTASection.tsx             # ACTA-Methode Erklärung
 │   ├── AdvancedPromptingSection.tsx # Fortgeschrittene Techniken
-│   ├── AnalyticsSection.tsx        # Dashboard Analytics & Insights (Collapsible)
 │   ├── AppShell.tsx                # Sidebar-Layout mit Navigation (4 Nav-Items)
 │   ├── BudgetDialog.tsx            # LLM Budget Info
 │   ├── ConfidentialityBadge.tsx    # 🟢🟡🔴 Vertraulichkeits-Badges
@@ -88,20 +86,15 @@ src/
 │   ├── FlawExercise.tsx            # "Fehler finden" Übungstyp mit Checkboxen
 │   ├── Footer.tsx                  # Footer
 │   ├── GuestBanner.tsx             # Banner für Gast-Registrierung
-│   ├── LevelCard.tsx               # Level-Karte für Onboarding
 │   ├── Logo.tsx                    # Typografisches Logo mit sidebar-Variant
 │   ├── MySkills.tsx                # Persönliche Skill-Sammlung (speichern, bearbeiten, exportieren)
-│   ├── OrganizationUseCases.tsx    # Abteilungs-Use-Cases
 │   ├── PendingReviews.tsx          # Review-Workflow (Mock)
 │   ├── PracticeArea.tsx            # Übungs-Grid Container
 │   ├── PracticeAreaCompact.tsx     # Kompakte Version der Übungen für Onboarding
 │   ├── PromptDetail.tsx            # Prompt-Detail-Modal
-│   ├── PromptExamples.tsx          # Prompt-Beispiele
 │   ├── PromptLibrary.tsx           # Prompt-Bibliothek mit Abteilungs-Tabs
 │   ├── RedactionExercise.tsx       # Datenschutz-Übung: Sensible Daten erkennen
-│   ├── ResourcesSection.tsx        # Ressourcen & Links
 │   ├── StatCard.tsx                # Wiederverwendbare Statistik-Karte
-│   ├── SyncStatusIcon.tsx          # Cloud-Sync Indikator
 │   ├── TeamMembers.tsx             # Team-Mitglieder (Mock)
 │   ├── ThemePresetPicker.tsx       # Theme-Presets Auswahl
 │   ├── ThemeProvider.tsx           # Theme Provider
@@ -173,6 +166,24 @@ supabase/
     ├── save-user-key/              # Verschlüsselt Custom OpenRouter API Keys
     └── auth-email-hook/            # Custom Email-Templates für Supabase Auth
 ```
+
+### Gelöschte Dateien (Dead Code — NICHT wieder erstellen)
+- `src/data/prompts.generated.ts` — Generierte Prompt-Daten, ersetzt durch `prompts.ts`
+- `src/components/AnalyticsSection.tsx` — Unbenutztes Dashboard-Widget
+- `src/components/playground/PlaygroundSidebar.tsx` — Unbenutzte Playground-Sidebar
+- `src/components/ResourcesSection.tsx` — Unbenutzte Ressourcen-Sektion
+- `src/components/PromptExamples.tsx` — Unbenutzte Prompt-Beispiele
+- `src/components/OrganizationUseCases.tsx` — Unbenutzte Use-Cases-Komponente
+- `src/components/LevelCard.tsx` — Unbenutzte Level-Karte
+- `src/components/SyncStatusIcon.tsx` — Unbenutzter Sync-Indikator
+- `src/components/feedback/ScreenRefMode.tsx` — War kaputt, wird in Phase 4 neu gebaut
+
+### Große Dateien (Kandidaten für zukünftiges Splitting)
+- `src/components/playground/ACTABuilder.tsx` (1.346 Zeilen) — Enthält 5+ Sub-Komponenten
+- `src/data/prompts.ts` (3.204 Zeilen) — Statische Prompt-Daten, könnte lazy-loaded werden
+
+### shadcn/ui Komponenten
+Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwendet, bleiben aber für zukünftige Nutzung erhalten. Bei Bedarf mit `npx shadcn-ui@latest add <name>` neu generieren.
 
 ## Architecture
 
