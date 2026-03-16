@@ -15,10 +15,10 @@ export const Logo = ({ size = "md", variant = "default", className }: LogoProps)
   return (
     <div className={cn("select-none", className)}>
       <span className={cn("leading-none", textSize)}>
-        <span className={cn("font-extrabold tracking-wide", isSidebar ? "text-sidebar-foreground" : "text-foreground")}>
+        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800, letterSpacing: '0.05em' }}>
           KI
         </span>
-        <span className={cn("font-light tracking-normal", isSidebar ? "text-sidebar-foreground" : "text-foreground")}>
+        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 300 }}>
           -Werkstatt
         </span>
       </span>
