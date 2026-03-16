@@ -34,32 +34,42 @@ function renderSimpleMarkdown(text: string) {
 
 /** Parse bot response: options JSON, summary fallback, or plain text */
 function parseBotResponse(raw: string): { text: string; options?: string[] } {
-  // Case 1: JSON block embedded at end of free text
-  const jsonMatch = raw.match(/\{[\s\S]*"options"\s*:\s*\[[\s\S]*\]\s*\}\s*$/);
-  if (jsonMatch) {
+  let processed = raw;
+
+  // 1) Strip summary JSON (fenced or bare) so it doesn't appear as raw text
+  const summaryPatterns = [
+    /```json\s*\{[\s\S]*?"category"[\s\S]*?\}\s*```/g,
+    /```\s*\{[\s\S]*?"category"[\s\S]*?\}\s*```/g,
+    /\{[^{}]*"category"\s*:\s*"[^"]*"[^{}]*"summary"\s*:\s*"[^"]*"[\s\S]*?\}/g,
+  ];
+  for (const pattern of summaryPatterns) {
+    processed = processed.replace(pattern, "").trim();
+  }
+
+  // 2) Extract options JSON (embedded at end or standalone)
+  const optionsRegex = /\{[^{}]*"text"\s*:\s*"[^"]*"[^{}]*"options"\s*:\s*\[[^\]]*\][^{}]*\}/;
+  const optionsMatch = processed.match(optionsRegex);
+  if (optionsMatch) {
     try {
-      const parsed = JSON.parse(jsonMatch[0]);
-      if (parsed.text && Array.isArray(parsed.options) && parsed.options.length > 0) {
-        const textBefore = raw.slice(0, jsonMatch.index).trim();
+      const parsed = JSON.parse(optionsMatch[0]);
+      if (parsed.text && Array.isArray(parsed.options)) {
+        const textBefore = processed.slice(0, optionsMatch.index).trim();
         const fullText = textBefore ? `${textBefore}\n\n${parsed.text}` : parsed.text;
         return { text: fullText, options: parsed.options };
       }
-    } catch { /* not valid JSON — continue */ }
+    } catch { /* not valid JSON */ }
   }
-  // Case 2: Entire response is JSON
+
+  // 3) Entire response is pure JSON
   try {
-    const parsed = JSON.parse(raw);
-    if (parsed.text && Array.isArray(parsed.options) && parsed.options.length > 0) {
+    const parsed = JSON.parse(processed.trim());
+    if (parsed.text && Array.isArray(parsed.options)) {
       return { text: parsed.text, options: parsed.options };
     }
-    if (parsed.summary || parsed.details) {
-      const summary = parsed.summary || parsed.details || "";
-      const area = parsed.affectedArea ? `\n\nBetroffener Bereich: ${parsed.affectedArea}` : "";
-      return { text: `**Kurz zusammengefasst:** ${summary}${area}` };
-    }
   } catch { /* not JSON */ }
-  // Case 3: Plain text
-  return { text: raw };
+
+  // 4) Return cleaned text (summary JSON already stripped)
+  return { text: processed };
 }
 
 export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: Props) {
