@@ -137,7 +137,7 @@ src/
 ├── lib/
 │   ├── constants.ts                # LS_KEYS, ROUTES, BADGE_COLORS, PRIORITY_COLORS, RISK_COLORS, SEVERITY_COLORS, LEVEL_BADGE_COLORS, DEFAULT_MODEL
 │   ├── utils.ts                    # cn() Tailwind Class Merger
-│   ├── promptUtils.ts              # extractVariables() — zentralisiert
+│   ├── promptUtils.ts              # extractVariables(), matchesCategory() — zentralisiert
 │   ├── contextBuilder.ts           # Baut System-Prompt-Prefix aus KI-Kontext + Constraints
 │   ├── exportSkill.ts              # Markdown + Agent Skill (ZIP) Export
 │   └── storage.ts                  # Zentraler localStorage-Zugriff (Key-Registry im Header)
@@ -214,7 +214,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - Dynamischer Abteilungs-Tab wenn Abteilung gewählt
 - 6 Level: `alltag`, `beruf`, `websuche`, `research`, `blueprint`, `organisation`
 - Felder: `category`, `title`, `prompt`, `level`, `type`, `constraints`, `targetDepartment`, `confidentiality`, `riskLevel`, `official`
-- `extractVariables()` zentralisiert in `src/lib/promptUtils.ts`
+- `extractVariables()` und `matchesCategory()` zentralisiert in `src/lib/promptUtils.ts`
 
 ### Meine Skills
 - User speichert Prompts als persönliche Skills (localStorage `my_saved_skills`)
@@ -241,6 +241,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - IterationNudge: Vorschläge nach erster Antwort
 - JudgePanel: Referenz-KI bewertet Output (Sidebar)
 - Conversation-Management mit localStorage-Persistenz
+- **PromptBrowser:** Kategorie-Dropdown + Vorlagen/Skills-Toggle (gleiche Filterlogik wie PromptLibrary via `matchesCategory()`)
 - **Geteilte Komponenten:** `ModelSelect.tsx` (Modell-Dropdown), `ComparisonColumn.tsx` (Vergleichsspalte)
 - **PROSE_CLASSES** Konstante in `ChatMessage.tsx` — Markdown-Styling nicht inline ändern!
 - **Layout-Kette:** `h-full` (innerhalb SidebarInset) → `flex-1 overflow-hidden` → `flex-col-layout` → `scroll-container`. Kommentare mit ⚠️ markieren kritische CSS-Stellen.
@@ -409,7 +410,7 @@ Edge function secrets (set via Lovable, kein separates Supabase Dashboard):
 - Komponentenspezifische Props-Interfaces bleiben in der Komponentendatei
 
 ### Utility-Funktionen
-- `extractVariables()` → `src/lib/promptUtils.ts`
+- `extractVariables()`, `matchesCategory()` → `src/lib/promptUtils.ts`
 - `cn()` → `src/lib/utils.ts`
 - localStorage → `src/lib/storage.ts` (loadFromStorage, saveToStorage, etc.)
 - Export-Funktionen → `src/lib/exportSkill.ts`

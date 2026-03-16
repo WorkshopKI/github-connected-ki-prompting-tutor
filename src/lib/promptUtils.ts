@@ -1,3 +1,16 @@
+import type { PromptItem } from "@/data/prompts";
+
+/** Prüft ob ein Prompt zur gewählten Kategorie gehört. */
+export function matchesCategory(prompt: PromptItem, category: string): boolean {
+  if (category === "alle") return true;
+  if (category === "bueroalltag") return prompt.level === "beruf" || prompt.type === "blueprint";
+  if (category === "recherche") return prompt.level === "websuche";
+  if (category === "deep-research") return prompt.level === "research";
+  if (category === "mini-apps") return prompt.level === "miniapps";
+  if (category === "privat") return prompt.level === "alltag";
+  return true;
+}
+
 /** Extrahiert {{Platzhalter}} aus einem Prompt-Text. */
 export function extractVariables(text: string): string[] {
   const matches = text.match(/\{\{(.+?)\}\}/g);

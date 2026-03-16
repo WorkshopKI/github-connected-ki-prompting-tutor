@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,6 +8,7 @@ import { promptLibrary } from "@/data/prompts";
 import { useOrgContext, ORG_SCOPE_LABELS } from "@/contexts/OrgContext";
 import { useMySkills } from "@/hooks/useMySkills";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { matchesCategory } from "@/lib/promptUtils";
 import { ConversationHistory } from "./ConversationHistory";
 import type { SavedConversation, OrgScope } from "@/types";
 
@@ -22,8 +23,6 @@ export interface PromptBrowserProps {
   onRenameConversation: (id: string, title: string) => void;
 }
 
-type TabKey = "dept" | "all" | "skills";
-
 export const PromptBrowser = ({
   onSelectPrompt,
   activePromptTitle,
@@ -34,20 +33,12 @@ export const PromptBrowser = ({
   onDeleteConversation,
   onRenameConversation,
 }: PromptBrowserProps) => {
-  const { scope, setScope, isDepartment, scopeLabel } = useOrgContext();
+  const { scope, setScope, isDepartment } = useOrgContext();
   const { skills } = useMySkills();
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<TabKey>(isDepartment ? "dept" : "all");
+  const [category, setCategory] = useState("alle");
+  const [showSkills, setShowSkills] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
-
-  // Auto-switch away from dept tab when department is deselected
-  useEffect(() => {
-    if (isDepartment) {
-      setActiveTab("dept");
-    } else if (activeTab === "dept") {
-      setActiveTab("all");
-    }
-  }, [scope, isDepartment]);
 
   const deptPrompts = useMemo(
     () => promptLibrary.filter((p) => p.targetDepartment === scope),
@@ -56,14 +47,19 @@ export const PromptBrowser = ({
 
   const filteredPrompts = useMemo(() => {
     const q = search.toLowerCase().trim();
-    const source = activeTab === "dept" ? deptPrompts : promptLibrary;
+    let source = isDepartment ? deptPrompts : promptLibrary;
+
+    if (category !== "alle") {
+      source = source.filter((p) => matchesCategory(p, category));
+    }
+
     if (!q) return source;
     return source.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.category.toLowerCase().includes(q)
     );
-  }, [activeTab, search, deptPrompts]);
+  }, [search, deptPrompts, isDepartment, category]);
 
   const filteredSkills = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -75,20 +71,11 @@ export const PromptBrowser = ({
     );
   }, [search, skills]);
 
-  const tabs: { key: TabKey; label: string }[] = useMemo(() => {
-    const t: { key: TabKey; label: string }[] = [];
-    if (isDepartment) {
-      t.push({ key: "dept", label: scopeLabel });
-    }
-    t.push({ key: "all", label: "Alle" });
-    t.push({ key: "skills", label: "Skills" });
-    return t;
-  }, [isDepartment, scopeLabel]);
-
   return (
     <div data-tour="prompt-browser" className="h-full flex flex-col bg-muted/30 dark:bg-muted/20">
       {/* Header + Search */}
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
+        {/* Zeile 1: Abteilung + Suche */}
         <div className="flex items-center gap-1.5">
           <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
             <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 font-semibold shrink-0 w-[9.5rem]">
@@ -111,29 +98,50 @@ export const PromptBrowser = ({
             />
           </div>
         </div>
-        {/* Tab Segmented Control */}
-        <div className="flex rounded-md border border-border overflow-hidden">
-          {tabs.map((tab) => (
+        {/* Zeile 2: Kategorie-Dropdown + Vorlagen/Skills Toggle */}
+        <div className="flex items-center gap-1.5">
+          {!showSkills && (
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 shrink-0 flex-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alle" className="text-xs">Alle Kategorien</SelectItem>
+                <SelectItem value="bueroalltag" className="text-xs">Büroalltag</SelectItem>
+                <SelectItem value="recherche" className="text-xs">Recherche</SelectItem>
+                <SelectItem value="deep-research" className="text-xs">Deep Research</SelectItem>
+                <SelectItem value="mini-apps" className="text-xs">Mini Apps</SelectItem>
+                <SelectItem value="privat" className="text-xs">Privat</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+          <div className="flex rounded-md border border-border overflow-hidden ml-auto">
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => setShowSkills(false)}
               className={cn(
-                "flex-1 text-[10px] font-medium py-1 transition-colors truncate px-1",
-                activeTab === tab.key
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-muted/50"
+                "px-2.5 py-1 text-[10px] font-medium transition-colors",
+                !showSkills ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50"
               )}
             >
-              {tab.label}
+              Vorlagen
             </button>
-          ))}
+            <button
+              onClick={() => setShowSkills(true)}
+              className={cn(
+                "px-2.5 py-1 text-[10px] font-medium transition-colors",
+                showSkills ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50"
+              )}
+            >
+              Skills
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Prompt List */}
       <ScrollArea className="flex-1 min-h-0">
         <div className="px-1.5 py-1">
-          {activeTab === "skills" ? (
+          {showSkills ? (
             filteredSkills.length === 0 ? (
               <p className="text-[10px] text-muted-foreground text-center py-4">
                 Noch keine Skills gespeichert.
