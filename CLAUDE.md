@@ -286,6 +286,7 @@ Sidebar-Label: "Onboarding". Route: /onboarding.
 - **Admin:** `FeedbackTicketList`, `FeedbackTicketDetail`, `FeedbackConfigPanel` in `src/components/admin/`
 - **DB:** `feedback` + `feedback_config` Tabellen (Migration: `20260315120000_feedback_tables.sql`)
 - **Phase 2 UI (2026-03-16):** Chatbot visuell überarbeitet — Chat-Bubbles (User rechts primary, Bot links muted), Online-Indikator Header, animierter Typing-Indikator (●●●), einfaches Markdown-Rendering (**fett**→strong), Bestätigungskarte mit primary/5% Hintergrund + primary/30% Border, grüner Bestätigungs-Button, Container-Höhe 400–520px
+- **Phase 3 UI (2026-03-16):** Admin-Dashboard visuell überarbeitet — Zwei-Spalten-Layout (Ticket-Liste links, Detail rechts) statt Tabelle+Sheet. Ticket-Liste als Karten mit Kategorie-Badge, ID, Datum, Summary, Kontext-Zeile. Ausgewähltes Ticket mit `border-l-primary + bg-primary/5`. Detail-Panel inline mit 2×2 Metadaten-Grid, Nutzer-Bestätigungsblock, Prompt-Ansicht mit Dark-Code-Block (`#1a1a2e`), Kopieren/Export-Buttons. Responsive: `grid-cols-1 lg:grid-cols-2`. Dezente Tab-Buttons statt große Tabs.
 
 ### Database Schema (Supabase/Postgres)
 - `courses` — Kurs-Definitionen (id als Text PK, enrollment_open, max_participants, default_key_budget)
