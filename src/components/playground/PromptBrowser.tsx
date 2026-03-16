@@ -37,6 +37,16 @@ export const PromptBrowser = ({
   const { skills } = useMySkills();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("alle");
+
+  // Labels für Abteilungs-Dropdown im PromptBrowser (ohne "Privatgebrauch", mit neutralem "Alle Abteilungen")
+  const browserScopeLabels: Partial<Record<OrgScope, string>> = {
+    organisation: "Alle Abteilungen",
+    legal: ORG_SCOPE_LABELS.legal,
+    oeffentlichkeitsarbeit: ORG_SCOPE_LABELS.oeffentlichkeitsarbeit,
+    hr: ORG_SCOPE_LABELS.hr,
+    it: ORG_SCOPE_LABELS.it,
+    bauverfahren: ORG_SCOPE_LABELS.bauverfahren,
+  };
   const [showSkills, setShowSkills] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
 
@@ -77,12 +87,15 @@ export const PromptBrowser = ({
       <div className="px-3 pt-3 pb-2 space-y-2 border-b border-border">
         {/* Zeile 1: Abteilung + Suche */}
         <div className="flex items-center gap-1.5">
-          <Select value={scope} onValueChange={(v) => setScope(v as OrgScope)}>
+          <Select value={scope} onValueChange={(v) => {
+            setScope(v as OrgScope);
+            setCategory("alle");
+          }}>
             <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 font-semibold shrink-0 w-[9.5rem]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {(Object.entries(ORG_SCOPE_LABELS) as [OrgScope, string][]).map(([key, label]) => (
+              {(Object.entries(browserScopeLabels) as [OrgScope, string][]).map(([key, label]) => (
                 <SelectItem key={key} value={key} className="text-xs">{label}</SelectItem>
               ))}
             </SelectContent>
@@ -101,7 +114,12 @@ export const PromptBrowser = ({
         {/* Zeile 2: Kategorie-Dropdown + Vorlagen/Skills Toggle */}
         <div className="flex items-center gap-1.5">
           {!showSkills && (
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category} onValueChange={(v) => {
+              setCategory(v);
+              if (v !== "alle") {
+                setScope("organisation");
+              }
+            }}>
               <SelectTrigger className="h-7 text-[10px] border border-border shadow-none px-1.5 shrink-0 flex-1">
                 <SelectValue />
               </SelectTrigger>
