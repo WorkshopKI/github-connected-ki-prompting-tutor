@@ -34,21 +34,31 @@ function renderSimpleMarkdown(text: string) {
 
 /** Parse bot response: options JSON, summary fallback, or plain text */
 function parseBotResponse(raw: string): { text: string; options?: string[] } {
+  // Case 1: JSON block embedded at end of free text
+  const jsonMatch = raw.match(/\{[\s\S]*"options"\s*:\s*\[[\s\S]*\]\s*\}\s*$/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.text && Array.isArray(parsed.options) && parsed.options.length > 0) {
+        const textBefore = raw.slice(0, jsonMatch.index).trim();
+        const fullText = textBefore ? `${textBefore}\n\n${parsed.text}` : parsed.text;
+        return { text: fullText, options: parsed.options };
+      }
+    } catch { /* not valid JSON — continue */ }
+  }
+  // Case 2: Entire response is JSON
   try {
     const parsed = JSON.parse(raw);
-    // Case 1: Structured options for follow-up questions
     if (parsed.text && Array.isArray(parsed.options) && parsed.options.length > 0) {
       return { text: parsed.text, options: parsed.options };
     }
-    // Case 2: Summary JSON sent as raw (fallback rendering)
     if (parsed.summary || parsed.details) {
       const summary = parsed.summary || parsed.details || "";
       const area = parsed.affectedArea ? `\n\nBetroffener Bereich: ${parsed.affectedArea}` : "";
       return { text: `**Kurz zusammengefasst:** ${summary}${area}` };
     }
-  } catch {
-    // Not JSON — use raw text
-  }
+  } catch { /* not JSON */ }
+  // Case 3: Plain text
   return { text: raw };
 }
 
