@@ -4,9 +4,10 @@ interface LogoProps {
   size?: "sm" | "md";
   variant?: "default" | "sidebar";
   className?: string;
+  hideSubtitle?: boolean;
 }
 
-export const Logo = ({ size = "md", variant = "default", className }: LogoProps) => {
+export const Logo = ({ size = "md", variant = "default", className, hideSubtitle = false }: LogoProps) => {
   const isSidebar = variant === "sidebar";
 
   const textSize = size === "sm" ? "text-[15px]" : "text-[17px]";
@@ -22,9 +23,11 @@ export const Logo = ({ size = "md", variant = "default", className }: LogoProps)
           -Werkstatt
         </span>
       </span>
-      <div className={cn("mt-0.5 tracking-wide", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
-        Souverän arbeiten mit KI
-      </div>
+      {!hideSubtitle && (
+        <div className={cn("-mt-0.5 tracking-wide", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
+          Souverän arbeiten mit KI
+        </div>
+      )}
     </div>
   );
 };
