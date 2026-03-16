@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { MessageSquarePlus, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { FeedbackPanel } from "./FeedbackPanel";
 import { emitTrigger, dismissTrigger } from "@/lib/feedbackTriggers";
 import type { FeedbackTrigger, FeedbackCategory } from "@/types";
@@ -95,15 +94,20 @@ export default function FeedbackButton() {
           </div>
         )}
 
-        <Button
+        <button
           onClick={handleFabClick}
-          size="icon"
-          className={`h-12 w-12 rounded-full shadow-lg ${
-            bubble ? "animate-pulse" : ""
-          }`}
+          className={`
+            group flex h-12 w-12 items-center justify-center rounded-full
+            bg-primary text-primary-foreground
+            shadow-[0_4px_12px_hsl(var(--primary)/0.3)]
+            transition-all duration-200 ease-out
+            hover:scale-110 hover:shadow-[0_6px_16px_hsl(var(--primary)/0.4)]
+            active:scale-95
+            ${bubble ? "animate-pulse" : ""}
+          `}
         >
           <MessageSquarePlus className="h-5 w-5" />
-        </Button>
+        </button>
       </div>
 
       {/* Panel */}
