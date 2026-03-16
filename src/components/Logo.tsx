@@ -11,7 +11,7 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
   const isSidebar = variant === "sidebar";
 
   const textSize = size === "sm" ? "text-[15px]" : "text-[17px]";
-  const subSize = size === "sm" ? "text-[8.5px]" : "text-[9.5px]";
+  const subSize = size === "sm" ? "text-[10px]" : "text-[11px]";
 
   return (
     <div className={cn("select-none", className)}>
@@ -24,7 +24,7 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
         </span>
       </span>
       {!hideSubtitle && (
-        <div className={cn("-mt-0.5", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
+        <div className={cn("leading-tight mt-px", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
           Souverän arbeiten mit KI
         </div>
       )}
