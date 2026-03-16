@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X } from "lucide-react";
+import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X, GripHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { captureFeedbackContext } from "@/lib/feedbackContext";
 import { submitFeedback } from "@/services/feedbackService";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { FEEDBACK_CATEGORY_LABELS } from "@/types";
 import type { FeedbackCategory, FeedbackContext as FeedbackContextType } from "@/types";
 import { toast } from "sonner";
@@ -39,9 +40,14 @@ const CATEGORY_PILL: Record<FeedbackCategory, string> = {
   question: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
 };
 
+const MIN_W = 340;
+const MIN_H = 400;
+const MAX_W = 700;
+
 export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
   const { profile } = useAuthContext();
   const location = useLocation();
+  const isMobile = useIsMobile();
   const panelRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState<1 | 2 | 3 | "chatbot">(preselectedCategory ? 2 : 1);
   const [category, setCategory] = useState<FeedbackCategory | undefined>(preselectedCategory);
@@ -50,6 +56,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
   const [context, setContext] = useState<FeedbackContextType | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | undefined>();
+  const [panelSize, setPanelSize] = useState<{ width: number; height: number } | null>(null);
 
   const reset = useCallback(() => {
     setStep(1);
@@ -59,6 +66,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
     setContext(null);
     setSubmitting(false);
     setSubmittedId(undefined);
+    setPanelSize(null);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -84,7 +92,6 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
         handleClose();
       }
     };
-    // Delay to avoid closing immediately on the FAB click that opens it
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handler);
     }, 100);
@@ -122,29 +129,75 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
     }
   }, [category, context, text, stars, profile]);
 
+  // Manual resize handler — panel grows left/up from bottom-right anchor
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const el = panelRef.current;
+    if (!el) return;
+
+    const startW = el.offsetWidth;
+    const startH = el.offsetHeight;
+    const maxH = window.innerHeight * 0.8;
+
+    const onMove = (ev: MouseEvent) => {
+      setPanelSize({
+        width: Math.max(MIN_W, Math.min(MAX_W, startW - (ev.clientX - startX))),
+        height: Math.max(MIN_H, Math.min(maxH, startH - (ev.clientY - startY))),
+      });
+    };
+
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, []);
+
   const isPlayground = location.pathname === "/playground";
+  const isChatbot = step === "chatbot";
 
   if (!open) return null;
 
+  const panelStyle: React.CSSProperties = panelSize
+    ? { width: panelSize.width, height: panelSize.height }
+    : {};
+
   return (
     <>
-      {/* Backdrop — subtle on desktop, stronger on mobile */}
+      {/* Backdrop */}
       <div className="fixed inset-0 z-50 bg-black/10 dark:bg-black/20 sm:bg-transparent" />
 
       {/* Panel */}
       <div
         ref={panelRef}
         className={`
-          fixed z-50 right-6
+          fixed z-50 right-6 flex flex-col
           ${isPlayground ? "bottom-[calc(5rem+0.75rem)]" : "bottom-[calc(3rem+0.75rem)]"}
-          w-[calc(100vw-3rem)] ${step === "chatbot" ? "max-w-[440px]" : "max-w-[340px]"}
+          ${panelSize ? "" : `w-[calc(100vw-3rem)] ${isChatbot ? "max-w-[440px]" : "max-w-[340px]"}`}
           rounded-2xl border border-border bg-card text-card-foreground
           shadow-xl dark:shadow-2xl dark:shadow-black/30
           animate-in slide-in-from-bottom-4 fade-in duration-200
+          transition-[max-width] duration-200
         `}
+        style={panelStyle}
       >
+        {/* Resize grip — top-left corner, only for chatbot step on desktop */}
+        {isChatbot && !isMobile && (
+          <div
+            onMouseDown={handleResizeStart}
+            className="absolute top-0 left-0 z-10 flex h-6 w-6 cursor-nw-resize items-center justify-center rounded-tl-2xl opacity-0 hover:opacity-100 transition-opacity"
+            title="Größe ändern"
+          >
+            <GripHorizontal className="h-3 w-3 text-muted-foreground/50 -rotate-45" />
+          </div>
+        )}
+
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
           <span className="text-[13px] font-semibold">Feedback geben</span>
           <button
             onClick={handleClose}
@@ -155,7 +208,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
         </div>
 
         {/* Body */}
-        <div className="p-4">
+        <div className={`p-4 ${isChatbot ? "flex-1 min-h-0 flex flex-col" : ""}`}>
           {step === 1 && (
             <CategoryStep onSelect={handleCategorySelect} />
           )}
@@ -181,8 +234,8 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
             />
           )}
 
-          {step === "chatbot" && submittedId && context && (
-            <div className="h-[420px] max-h-[520px] min-h-[400px]">
+          {isChatbot && submittedId && context && (
+            <div className={`${panelSize ? "flex-1 min-h-0" : "h-[420px] max-h-[520px] min-h-[400px]"}`}>
               <FeedbackChatbot
                 feedbackId={submittedId}
                 initialText={text}
