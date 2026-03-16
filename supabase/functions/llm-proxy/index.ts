@@ -158,7 +158,7 @@ serve(async (req) => {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://prompting.studio",
-        "X-Title": "Prompting Studio",
+        "X-Title": "KI-Werkstatt",
       },
       body: JSON.stringify(llmBody),
     });

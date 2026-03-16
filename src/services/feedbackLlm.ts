@@ -13,7 +13,7 @@ export interface ChatMsg extends Msg {
 
 /** Builds the system prompt for the feedback chatbot, including current app context. */
 export function buildFeedbackSystemPrompt(context: FeedbackContext): string {
-  return `Du bist der Feedback-Assistent für Prompting Studio, eine Web-App zum Lernen von KI-Prompting.
+  return `Du bist der Feedback-Assistent für KI-Werkstatt, eine Web-App zum Lernen von KI-Prompting.
 
 DEIN WISSEN ÜBER DIE APP:
 - Seiten: Prompt-Labor (Hauptarbeitsbereich mit ACTA-Baukasten und Chat), Prompt-Sammlung (Bibliothek), Onboarding (Lernpfad), Dashboard, Einstellungen
