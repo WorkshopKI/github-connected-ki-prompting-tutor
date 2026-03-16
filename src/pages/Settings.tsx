@@ -91,7 +91,7 @@ const Settings = () => {
           )}
         </TabsList>
 
-        <TabsContent value="profil" className="space-y-6">
+        <TabsContent value="profil" className="space-y-6" data-feedback-ref="einstellungen.profil" data-feedback-label="Profil-Einstellungen">
           {/* KI-Kontext Editor — häufig editiert, daher ganz oben */}
           <KIContextEditor />
           {/* Darstellung — Theme + Dark Mode */}

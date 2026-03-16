@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X } from "lucide-react";
+import { Sparkles, Zap, Lightbulb, HelpCircle, Star, ChevronDown, Check, ArrowLeft, X, Crosshair } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -12,6 +12,8 @@ import { FEEDBACK_CATEGORY_LABELS } from "@/types";
 import type { FeedbackCategory, FeedbackContext as FeedbackContextType } from "@/types";
 import { toast } from "sonner";
 import { FeedbackChatbot } from "./FeedbackChatbot";
+import { ScreenRefPicker } from "./ScreenRefPicker";
+import type { ScreenRef } from "./ScreenRefPicker";
 
 interface Props {
   open: boolean;
@@ -57,6 +59,8 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | undefined>();
   const [panelSize, setPanelSize] = useState<{ width: number; height: number } | null>(null);
+  const [screenRef, setScreenRef] = useState<ScreenRef | null>(null);
+  const [showRefPicker, setShowRefPicker] = useState(false);
 
   const reset = useCallback(() => {
     setStep(1);
@@ -67,6 +71,8 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
     setSubmitting(false);
     setSubmittedId(undefined);
     setPanelSize(null);
+    setScreenRef(null);
+    setShowRefPicker(false);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -111,11 +117,14 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
     if (!category || !context) return;
     setSubmitting(true);
     try {
+      const submitContext = screenRef
+        ? { ...context, screenRef: screenRef.ref, screenRefLabel: screenRef.label }
+        : context;
       const item = await submitFeedback({
         category,
         stars: category === "praise" && stars > 0 ? stars : undefined,
         text,
-        context,
+        context: submitContext,
         user_id: profile?.id ?? "anonymous",
         user_display_name: profile?.display_name ?? undefined,
       });
@@ -225,10 +234,13 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
               stars={stars}
               context={context}
               submitting={submitting}
+              screenRef={screenRef}
               onBack={() => setStep(1)}
               onTextChange={setText}
               onStarsChange={setStars}
               onSubmit={handleSubmit}
+              onMarkArea={() => setShowRefPicker(true)}
+              onClearRef={() => setScreenRef(null)}
             />
           )}
 
@@ -245,12 +257,24 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
                 feedbackId={submittedId}
                 initialText={text}
                 context={context}
+                screenRef={screenRef}
                 onClose={handleClose}
               />
             </div>
           )}
         </div>
       </div>
+
+      {/* Screen-Ref Picker Overlay */}
+      {showRefPicker && (
+        <ScreenRefPicker
+          onSelect={(ref) => {
+            setScreenRef(ref);
+            setShowRefPicker(false);
+          }}
+          onCancel={() => setShowRefPicker(false)}
+        />
+      )}
     </>
   );
 }
@@ -289,20 +313,26 @@ function DetailsStep({
   stars,
   context,
   submitting,
+  screenRef,
   onBack,
   onTextChange,
   onStarsChange,
   onSubmit,
+  onMarkArea,
+  onClearRef,
 }: {
   category: FeedbackCategory;
   text: string;
   stars: number;
   context: FeedbackContextType | null;
   submitting: boolean;
+  screenRef: ScreenRef | null;
   onBack: () => void;
   onTextChange: (v: string) => void;
   onStarsChange: (v: number) => void;
   onSubmit: () => void;
+  onMarkArea: () => void;
+  onClearRef: () => void;
 }) {
   const catInfo = CATEGORIES.find((c) => c.key === category);
   const CatIcon = catInfo?.icon ?? HelpCircle;
@@ -352,6 +382,32 @@ function DetailsStep({
         className="resize-none rounded-lg text-[12px]"
         autoFocus
       />
+
+      {/* Bereich markieren */}
+      <div className="flex items-center gap-2">
+        {screenRef ? (
+          <div className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2.5 py-1 text-[11px] text-primary">
+            <Crosshair className="h-3 w-3" />
+            <span className="font-medium">{screenRef.label}</span>
+            <button
+              onClick={onClearRef}
+              className="ml-0.5 rounded p-0.5 hover:bg-primary/10 transition-colors"
+            >
+              <X className="h-2.5 w-2.5" />
+            </button>
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onMarkArea}
+            className="text-[12px] gap-1.5 h-7"
+          >
+            <Crosshair className="h-3.5 w-3.5" />
+            Bereich markieren
+          </Button>
+        )}
+      </div>
 
       {/* Context collapsible */}
       {context && (
