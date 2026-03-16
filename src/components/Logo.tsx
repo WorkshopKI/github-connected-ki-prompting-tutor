@@ -15,16 +15,12 @@ export const Logo = ({ size = "md", variant = "default", className, hideSubtitle
 
   return (
     <div className={cn("select-none", className)}>
-      <span className={cn("leading-none", textSize)}>
-        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800 }}>
-          KI
-        </span>
-        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 300 }}>
-          -Werkstatt
-        </span>
-      </span>
+      <div className={cn("leading-none", textSize)}>
+        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 800 }}>KI</span>
+        <span className={cn(isSidebar ? "text-sidebar-foreground" : "text-foreground")} style={{ fontWeight: 300 }}>-Werkstatt</span>
+      </div>
       {!hideSubtitle && (
-        <div className={cn("leading-tight mt-px", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
+        <div className={cn("leading-none", subSize, isSidebar ? "text-sidebar-foreground/60" : "text-muted-foreground/60")}>
           Souverän arbeiten mit KI
         </div>
       )}
