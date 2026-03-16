@@ -474,16 +474,12 @@ const Onboarding = () => {
                       </span>
                       {renderStatusBadge(sp, styles)}
                     </div>
-                    <h3 className={`font-semibold text-base mt-0.5 ${
+                    <h3 className={`text-base mt-0.5 ${
                       isLocked ? "text-muted-foreground/70" : ""
                     }`}>
-                      {stufe.title}
+                      <span className="font-bold">{stufe.title}</span>
+                      <span className={`font-normal ${isLocked ? "text-muted-foreground/50" : "text-muted-foreground"}`}> — {stufe.subtitle}</span>
                     </h3>
-                    <p className={`text-sm mt-0.5 ${
-                      isLocked ? "text-muted-foreground/50" : "text-muted-foreground"
-                    }`}>
-                      {stufe.subtitle}
-                    </p>
                   </div>
                   {!isLocked && (
                     <ChevronDown className={`w-4 h-4 mt-1 text-muted-foreground transition-transform shrink-0 ${
