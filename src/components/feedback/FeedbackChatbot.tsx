@@ -37,14 +37,9 @@ function parseBotResponse(raw: string): { text: string; options?: string[] } {
   let processed = raw;
 
   // 1) Strip summary JSON (fenced or bare) so it doesn't appear as raw text
-  const summaryPatterns = [
-    /```json\s*\{[\s\S]*?"category"[\s\S]*?\}\s*```/g,
-    /```\s*\{[\s\S]*?"category"[\s\S]*?\}\s*```/g,
-    /\{[^{}]*"category"\s*:\s*"[^"]*"[^{}]*"summary"\s*:\s*"[^"]*"[\s\S]*?\}/g,
-  ];
-  for (const pattern of summaryPatterns) {
-    processed = processed.replace(pattern, "").trim();
-  }
+  // Einfaches Pattern — gleich wie parseFeedbackSummary, das nachweislich funktioniert
+  processed = processed.replace(/```json\s*[\s\S]*?```/g, "").trim();
+  processed = processed.replace(/```\s*\{[\s\S]*?\}\s*```/g, "").trim();
 
   // 2) Extract options JSON (embedded at end or standalone)
   const optionsRegex = /\{[^{}]*"text"\s*:\s*"[^"]*"[^{}]*"options"\s*:\s*\[[^\]]*\][^{}]*\}/;

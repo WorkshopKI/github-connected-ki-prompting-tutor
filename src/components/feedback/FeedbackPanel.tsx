@@ -203,7 +203,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
-          <span className="text-[13px] font-semibold">Feedback geben</span>
+          <span className="text-[13px] font-semibold pl-6">Feedback geben</span>
           <button
             onClick={handleClose}
             className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
