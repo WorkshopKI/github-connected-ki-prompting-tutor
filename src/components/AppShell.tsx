@@ -112,7 +112,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter className="p-2">
+        <SidebarFooter className="p-2 group-data-[state=collapsed]:pl-0 group-data-[state=collapsed]:-ml-[2px]">
           <UserMenu scopeLabel={isDepartment ? scopeLabel : undefined} />
         </SidebarFooter>
       </Sidebar>
