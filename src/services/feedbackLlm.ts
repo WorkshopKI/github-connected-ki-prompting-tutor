@@ -46,7 +46,15 @@ WICHTIG:
 - Antworte auf Deutsch
 - Sei freundlich und konkret
 - Wenn der Nutzer einen Bereich der App referenziert, bestätige welchen du meinst
-- Nach max. 3 Rückfragen: Zusammenfassung erstellen`;
+- Nach max. 3 Rückfragen: Zusammenfassung erstellen
+
+ANTWORT-FORMAT FÜR RÜCKFRAGEN:
+- Wenn du dem Nutzer Optionen oder Rückfragen gibst, antworte in diesem JSON-Format (OHNE \`\`\`json Block):
+{"text": "Deine Frage oder Nachricht", "options": ["Option A", "Option B"]}
+- Maximal 4 Optionen, jede max. 10 Wörter
+- Letzte Option kann "Etwas anderes" sein
+- Wenn du KEINE Optionen brauchst, antworte nur mit normalem Text
+- Die finale Zusammenfassung mit dem \`\`\`json Block ist IMMER normaler Text — NIEMALS das options-Format verwenden`;
 }
 
 /** Versucht JSON aus LLM-Output zu extrahieren */

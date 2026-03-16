@@ -137,7 +137,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
         className={`
           fixed z-50 right-6
           ${isPlayground ? "bottom-[calc(5rem+0.75rem)]" : "bottom-[calc(3rem+0.75rem)]"}
-          w-[calc(100vw-3rem)] max-w-[340px]
+          w-[calc(100vw-3rem)] ${step === "chatbot" ? "max-w-[440px]" : "max-w-[340px]"}
           rounded-2xl border border-border bg-card text-card-foreground
           shadow-xl dark:shadow-2xl dark:shadow-black/30
           animate-in slide-in-from-bottom-4 fade-in duration-200
