@@ -278,7 +278,7 @@ const Playground = () => {
           <>
             {/* Desktop layout (≥ lg): 3-Panel, resizable */}
             <ResizablePanelGroup direction="horizontal" className="hidden lg:flex h-full">
-              <ResizablePanel defaultSize={22} minSize={14} maxSize={35} className="min-w-0 overflow-hidden">
+              <ResizablePanel defaultSize={24} minSize={14} maxSize={35} className="min-w-0 overflow-hidden">
                 <PromptBrowser
                   onSelectPrompt={handleBrowserSelect}
                   activePromptTitle={sourcePromptTitle}
