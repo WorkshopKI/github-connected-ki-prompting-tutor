@@ -9,6 +9,11 @@ import { FeedbackConfirmCard } from "./FeedbackConfirmCard";
 import type { Msg, FeedbackContext } from "@/types";
 import { toast } from "sonner";
 
+/** Extended message type with optional answer options (local to this component) */
+interface ChatMsg extends Msg {
+  options?: string[];
+}
+
 interface Props {
   feedbackId: string;
   initialText: string;
@@ -17,8 +22,8 @@ interface Props {
 }
 
 export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: Props) {
-  const [messages, setMessages] = useState<Msg[]>(() => {
-    const msgs: Msg[] = [{ role: "system", content: buildFeedbackSystemPrompt(context) }];
+  const [messages, setMessages] = useState<ChatMsg[]>(() => {
+    const msgs: ChatMsg[] = [{ role: "system", content: buildFeedbackSystemPrompt(context) }];
     if (initialText) msgs.push({ role: "user", content: initialText });
     return msgs;
   });
@@ -47,7 +52,7 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const sendToLLM = useCallback(async (msgs: Msg[]) => {
+  const sendToLLM = useCallback(async (msgs: ChatMsg[]) => {
     setStreaming(true);
     setStreamingContent("");
     const controller = new AbortController();
@@ -55,8 +60,11 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
 
     let accumulated = "";
 
+    // Strip options field before sending to API
+    const apiMsgs: Msg[] = msgs.map(({ options, ...rest }) => rest);
+
     await streamChat({
-      messages: msgs,
+      messages: apiMsgs,
       model,
       signal: controller.signal,
       onDelta: (text) => {
@@ -64,14 +72,25 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
         setStreamingContent(accumulated);
       },
       onDone: () => {
-        const assistantMsg: Msg = { role: "assistant", content: accumulated };
+        let assistantMsg: ChatMsg = { role: "assistant", content: accumulated };
+
+        // Try to parse structured options JSON
+        try {
+          const parsed = JSON.parse(accumulated);
+          if (parsed.text && Array.isArray(parsed.options) && parsed.options.length > 0) {
+            assistantMsg = { role: "assistant", content: parsed.text, options: parsed.options };
+          }
+        } catch {
+          // Not JSON — use raw text as-is
+        }
+
         setMessages((prev) => [...prev, assistantMsg]);
         setStreamingContent("");
         setStreaming(false);
 
         // Prüfen ob die Antwort eine Zusammenfassung enthält
-        const parsed = parseFeedbackSummary(accumulated);
-        if (parsed) setClassification(parsed);
+        const summaryParsed = parseFeedbackSummary(accumulated);
+        if (summaryParsed) setClassification(summaryParsed);
       },
       onError: (error) => {
         setStreaming(false);
@@ -85,13 +104,23 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
     const trimmed = input.trim();
     if (!trimmed || streaming) return;
 
-    const userMsg: Msg = { role: "user", content: trimmed };
+    const userMsg: ChatMsg = { role: "user", content: trimmed };
     const newMsgs = [...messages, userMsg];
     setMessages(newMsgs);
     setInput("");
     setClassification(null);
     sendToLLM(newMsgs);
   }, [input, streaming, messages, sendToLLM]);
+
+  const handleOptionClick = useCallback((optionText: string) => {
+    if (streaming) return;
+    const userMsg: ChatMsg = { role: "user", content: optionText };
+    const newMsgs = [...messages, userMsg];
+    setMessages(newMsgs);
+    setInput("");
+    setClassification(null);
+    sendToLLM(newMsgs);
+  }, [streaming, messages, sendToLLM]);
 
   const handleConfirm = useCallback(async () => {
     if (!classification) return;
@@ -126,18 +155,47 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
   return (
     <div className="flex-col-layout">
       <div ref={scrollRef} className="scroll-container space-y-3 px-1">
-        {visibleMessages.map((msg, i) => (
-          <div
-            key={i}
-            className={`rounded-lg px-3 py-2 text-sm ${
-              msg.role === "user"
-                ? "ml-8 bg-primary/10 text-foreground"
-                : "mr-8 bg-muted text-foreground"
-            }`}
-          >
-            {msg.content}
-          </div>
-        ))}
+        {visibleMessages.map((msg, i) => {
+          const isLastAssistant =
+            msg.role === "assistant" &&
+            !visibleMessages.slice(i + 1).some((m) => m.role === "user");
+
+          return (
+            <div key={i}>
+              <div
+                className={`rounded-lg px-3 py-2 text-sm ${
+                  msg.role === "user"
+                    ? "ml-8 bg-primary/10 text-foreground"
+                    : "mr-8 bg-muted text-foreground"
+                }`}
+              >
+                {msg.content}
+              </div>
+
+              {msg.role === "assistant" && msg.options && msg.options.length > 0 && (
+                <div className="mr-8 mt-1.5 flex flex-wrap gap-1.5">
+                  {msg.options.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => isLastAssistant && handleOptionClick(opt)}
+                      disabled={!isLastAssistant || streaming}
+                      className={`
+                        rounded-full border border-border px-3 py-1.5 text-xs
+                        transition-colors duration-150
+                        ${isLastAssistant && !streaming
+                          ? "hover:border-primary hover:bg-primary/5 cursor-pointer"
+                          : "opacity-50 cursor-default"
+                        }
+                      `}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {streaming && streamingContent && (
           <div className="mr-8 rounded-lg bg-muted px-3 py-2 text-sm text-foreground">
