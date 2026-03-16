@@ -57,7 +57,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider>
       <Sidebar data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
-        <SidebarHeader className="px-4 flex items-center h-12 border-b border-border">
+        <SidebarHeader className="pl-[18px] pr-4 flex items-center h-12 border-b border-border">
           <button
             onClick={() => navigate("/")}
             className="flex items-center"
