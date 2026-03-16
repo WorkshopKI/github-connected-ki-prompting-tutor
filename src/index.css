@@ -288,7 +288,7 @@ All colors MUST be HSL.
   .page-title {
     @apply text-2xl font-bold tracking-tight;
   }
-  /* Feedback Screen-Ref Modus: markiert referenzierbare Elemente */
+  /* TODO: Wird für Phase 4 Screen-Ref benötigt — aktuell nicht aktiv */
   .feedback-ref-mode {
     cursor: crosshair !important;
     outline: 2px dashed hsl(var(--primary)) !important;

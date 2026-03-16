@@ -3,9 +3,15 @@
  * Nutzt streamChat() aus llmService.ts direkt.
  */
 
-import type { FeedbackContext } from "@/types";
+import { createElement } from "react";
+import type { FeedbackContext, Msg } from "@/types";
 
-/** System-Prompt für den Feedback-Chatbot */
+/** Extended message type with optional answer options (used by FeedbackChatbot) */
+export interface ChatMsg extends Msg {
+  options?: string[];
+}
+
+/** Builds the system prompt for the feedback chatbot, including current app context. */
 export function buildFeedbackSystemPrompt(context: FeedbackContext): string {
   return `Du bist der Feedback-Assistent für Prompting Studio, eine Web-App zum Lernen von KI-Prompting.
 
@@ -58,7 +64,11 @@ ANTWORT-FORMAT FÜR RÜCKFRAGEN:
 - Die finale Zusammenfassung mit dem \`\`\`json Block ist IMMER normaler Text — NIEMALS das options-Format verwenden`;
 }
 
-/** Versucht JSON aus LLM-Output zu extrahieren */
+/**
+ * Extracts a structured feedback summary from the LLM output.
+ * Looks for a fenced ```json block containing category, summary, details etc.
+ * @returns Parsed classification object, or null if no valid summary found.
+ */
 export function parseFeedbackSummary(
   llmOutput: string
 ): {
@@ -88,4 +98,62 @@ export function parseFeedbackSummary(
     // JSON-Parsing fehlgeschlagen
   }
   return null;
+}
+
+/**
+ * Parst eine Bot-Antwort: entfernt Summary-JSON aus dem Text und extrahiert Optionen.
+ *
+ * Der Bot kann antworten in drei Formaten:
+ * 1. Reiner Text (normaler Chat)
+ * 2. Text + ```json {...} ``` Block (Zusammenfassung am Ende)
+ * 3. Text + {"text": "...", "options": [...]} (Rückfrage mit Optionen)
+ *
+ * Format 2 wird hier entfernt (die Bestätigungs-Karte parst es separat via parseFeedbackSummary).
+ * Format 3 wird extrahiert und als options[] zurückgegeben.
+ */
+export function parseBotResponse(raw: string): { text: string; options?: string[] } {
+  // Schritt 1: Fenced JSON-Blöcke entfernen (```json...```)
+  // Gleicher Ansatz wie parseFeedbackSummary — nachweislich funktionierend
+  let cleaned = raw.replace(/```(?:json)?\s*\{[\s\S]*?\}\s*```/g, "").trim();
+
+  // Schritt 2: Optionen-JSON suchen (unfenced)
+  // Suche nach dem LETZTEN {...} Block der "text" und "options" enthält
+  const jsonBlocks = [...cleaned.matchAll(/\{[^{}]*"text"[^{}]*"options"[^{}]*\}/g)];
+  const lastJsonBlock = jsonBlocks[jsonBlocks.length - 1];
+  if (lastJsonBlock) {
+    try {
+      const parsed = JSON.parse(lastJsonBlock[0]);
+      if (typeof parsed.text === "string" && Array.isArray(parsed.options)) {
+        const textBefore = cleaned.slice(0, lastJsonBlock.index).trim();
+        return {
+          text: textBefore ? `${textBefore}\n\n${parsed.text}` : parsed.text,
+          options: parsed.options,
+        };
+      }
+    } catch { /* kein valides JSON */ }
+  }
+
+  // Schritt 3: Gesamter String als JSON (Bot antwortet nur mit JSON)
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (typeof parsed.text === "string" && Array.isArray(parsed.options)) {
+      return { text: parsed.text, options: parsed.options };
+    }
+  } catch { /* kein JSON */ }
+
+  return { text: cleaned };
+}
+
+/**
+ * Renders **bold** markdown as <strong> in plain text.
+ * Returns React elements for use in JSX.
+ */
+export function renderSimpleMarkdown(text: string): React.ReactNode[] {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return createElement("strong", { key: i }, part.slice(2, -2));
+    }
+    return createElement("span", { key: i }, part);
+  });
 }

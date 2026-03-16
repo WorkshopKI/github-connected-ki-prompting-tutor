@@ -5,6 +5,11 @@
 import type { FeedbackItem } from "@/types";
 import { FEEDBACK_CATEGORY_LABELS } from "@/types";
 
+/**
+ * Generiert einen strukturierten Claude Code Prompt aus einem Feedback-Ticket.
+ * Enthält Kontext, Anforderung, automatisch erfasste Daten, betroffene Dateien und Constraints.
+ * Wird im Admin-Dashboard über den "Prompt generieren"-Button aufgerufen.
+ */
 export function generateClaudeCodePrompt(ticket: FeedbackItem): string {
   const categoryLabel = FEEDBACK_CATEGORY_LABELS[ticket.category] ?? ticket.category;
   const classification = ticket.llm_classification;

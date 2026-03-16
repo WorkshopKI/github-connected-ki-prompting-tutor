@@ -3,68 +3,18 @@ import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { streamChat } from "@/services/llmService";
-import { buildFeedbackSystemPrompt, parseFeedbackSummary } from "@/services/feedbackLlm";
+import { buildFeedbackSystemPrompt, parseFeedbackSummary, parseBotResponse, renderSimpleMarkdown } from "@/services/feedbackLlm";
+import type { ChatMsg } from "@/services/feedbackLlm";
 import { loadFeedbackConfig, updateFeedback } from "@/services/feedbackService";
 import { FeedbackConfirmCard } from "./FeedbackConfirmCard";
-import type { Msg, FeedbackContext } from "@/types";
+import type { Msg } from "@/types";
 import { toast } from "sonner";
-
-/** Extended message type with optional answer options (local to this component) */
-interface ChatMsg extends Msg {
-  options?: string[];
-}
 
 interface Props {
   feedbackId: string;
   initialText: string;
-  context: FeedbackContext;
+  context: import("@/types").FeedbackContext;
   onClose: () => void;
-}
-
-/** Renders **bold** markdown as <strong> in plain text */
-function renderSimpleMarkdown(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return <span key={i}>{part}</span>;
-  });
-}
-
-/** Parse bot response: options JSON, summary fallback, or plain text */
-function parseBotResponse(raw: string): { text: string; options?: string[] } {
-  let processed = raw;
-
-  // 1) Strip summary JSON (fenced or bare) so it doesn't appear as raw text
-  // Einfaches Pattern — gleich wie parseFeedbackSummary, das nachweislich funktioniert
-  processed = processed.replace(/```json\s*[\s\S]*?```/g, "").trim();
-  processed = processed.replace(/```\s*\{[\s\S]*?\}\s*```/g, "").trim();
-
-  // 2) Extract options JSON (embedded at end or standalone)
-  const optionsRegex = /\{[^{}]*"text"\s*:\s*"[^"]*"[^{}]*"options"\s*:\s*\[[^\]]*\][^{}]*\}/;
-  const optionsMatch = processed.match(optionsRegex);
-  if (optionsMatch) {
-    try {
-      const parsed = JSON.parse(optionsMatch[0]);
-      if (parsed.text && Array.isArray(parsed.options)) {
-        const textBefore = processed.slice(0, optionsMatch.index).trim();
-        const fullText = textBefore ? `${textBefore}\n\n${parsed.text}` : parsed.text;
-        return { text: fullText, options: parsed.options };
-      }
-    } catch { /* not valid JSON */ }
-  }
-
-  // 3) Entire response is pure JSON
-  try {
-    const parsed = JSON.parse(processed.trim());
-    if (parsed.text && Array.isArray(parsed.options)) {
-      return { text: parsed.text, options: parsed.options };
-    }
-  } catch { /* not JSON */ }
-
-  // 4) Return cleaned text (summary JSON already stripped)
-  return { text: processed };
 }
 
 export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: Props) {
