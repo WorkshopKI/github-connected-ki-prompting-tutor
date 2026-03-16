@@ -177,7 +177,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
         className={`
           fixed z-50 right-6 flex flex-col
           ${isPlayground ? "bottom-[calc(5rem+0.75rem)]" : "bottom-[calc(3rem+0.75rem)]"}
-          ${panelSize ? "" : `w-[calc(100vw-3rem)] ${isChatbot ? "max-w-[440px]" : "max-w-[340px]"}`}
+          ${panelSize ? "" : `w-[calc(100vw-3rem)] ${isChatbot ? "max-w-[540px]" : "max-w-[340px]"}`}
           rounded-2xl border border-border bg-card text-card-foreground
           shadow-xl dark:shadow-2xl dark:shadow-black/30
           animate-in slide-in-from-bottom-4 fade-in duration-200
@@ -203,7 +203,7 @@ export function FeedbackPanel({ open, onClose, preselectedCategory }: Props) {
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
-          <span className="text-[13px] font-semibold pl-6">Feedback geben</span>
+          <span className="text-[13px] font-semibold pl-4">Feedback geben</span>
           <button
             onClick={handleClose}
             className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"

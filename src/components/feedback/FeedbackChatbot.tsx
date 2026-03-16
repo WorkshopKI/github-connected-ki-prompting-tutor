@@ -199,8 +199,8 @@ export function FeedbackChatbot({ feedbackId, initialText, context, onClose }: P
               <div
                 className={`rounded-lg px-3 py-2 text-sm ${
                   msg.role === "user"
-                    ? "ml-8 bg-primary/10 text-foreground"
-                    : "mr-8 bg-muted text-foreground"
+                    ? "ml-8 bg-primary text-primary-foreground rounded-lg rounded-br-sm"
+                    : "mr-8 bg-muted text-foreground rounded-lg rounded-bl-sm"
                 }`}
               >
                 {renderSimpleMarkdown(msg.content)}
