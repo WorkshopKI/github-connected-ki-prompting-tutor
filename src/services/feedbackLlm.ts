@@ -29,7 +29,7 @@ DEINE AUFGABE:
 3. Stelle max. 2-3 gezielte Rückfragen falls unklar
 4. Erstelle eine strukturierte Zusammenfassung
 
-Wenn du genug Informationen hast, erstelle eine JSON-Zusammenfassung im folgenden Format (in einem \`\`\`json Block):
+Wenn du genug Informationen hast, schreibe NUR einen kurzen Übergangssatz wie "Alles klar, hier meine Zusammenfassung:" oder "Danke, ich fasse zusammen:" — KEINE inhaltliche Wiederholung. Dann direkt den \`\`\`json Block:
 
 \`\`\`json
 {
