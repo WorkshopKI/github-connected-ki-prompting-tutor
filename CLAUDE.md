@@ -425,6 +425,16 @@ Edge function secrets (set via Lovable, kein separates Supabase Dashboard):
 - Rückgabewert als Interface dokumentieren
 - localStorage-Keys aus `LS_KEYS` importieren
 
+## Prozess (aus dem Baukasten)
+
+Gemeinsamer Ablauf mit den anderen Apps unter `C:\01b_genAI_Code`; die Dateien kommen aus dem Baukasten (`C:\01b_genAI_Code\baukasten`, siehe `baukasten.lock.json`) und werden dort geändert, nicht hier. App-Eigenes steht in den `lokal`-Blöcken.
+
+- **Vorhaben schärfen:** Skill `grillen` (Rückfragen gebündelt, jede mit Empfehlung). Begriffe in [CONTEXT.md](CONTEXT.md).
+- **Ab der Schwelle eine Spec** nach [docs/specs/README.md](docs/specs/README.md): `## 0. Anlass`, Abnahmekriterien vor dem Bauen, S0 Gerüst.
+- **Gate:** `npm run check` (Stufen in `scripts/check.mjs`; nie mit `| tail` kürzen). Offen: `typecheck` und `lint` sind rot und kommen ins Gate, sobald sie grün sind.
+- **Gegenprobe:** Agent `gegenprobe` prüft den Beleg einer Erfolgsmeldung gegen die Kriterien.
+- **Shell:** Der Hook `scripts/hooks/bash-guard.mjs` blockt Heredocs, `git add` ohne Pfad und verwerfende Git-Befehle.
+
 ## Notes
 
 - Lovable-managed project with `lovable-tagger` plugin active in dev

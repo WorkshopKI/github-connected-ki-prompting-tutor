@@ -1,0 +1,11 @@
+{
+  "baukasten": "0.1.0",
+  "dateien": {
+    ".claude/agents/gegenprobe.md": "db2ec4b74f6a009e",
+    ".claude/skills/grillen/SKILL.md": "d27925ab14a01e5e",
+    "docs/specs/README.md": "1b5afd78b3478453",
+    "scripts/hooks/bash-guard.mjs": "ba695a460edc67df",
+    "scripts/check.d.mts": "16862a775839a72a",
+    "scripts/check.mjs": "99a71c838508380b"
+  }
+}
