@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { KursLayout } from "@/components/kurs/KursLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { KURS_MODULE, DISZIPLIN_LABEL, type KursModul } from "@/data/kurs/lernpfad";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { ArrowRight, ClipboardCheck, FileText, GraduationCap, PlayCircle } from "lucide-react";
 
 const DISZIPLINEN = [
   { nr: 1, name: "Fragen", text: "Präzise fragen mit ACTA", tag: "Tag 1" },
@@ -77,6 +77,23 @@ export default function KursHome() {
             <div className="grid gap-3">{tag2.map((m, i) => <ModulKarte key={m.id} m={m} nr={tag1.length + i + 1} />)}</div>
           </section>
         </div>
+
+        <section aria-labelledby="mehr">
+          <h2 id="mehr" className="eyebrow mb-3">Üben und wiederholen</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { to: "/kurs/uebungen", icon: GraduationCap, titel: "Übungen", text: "Zu jedem Modul, mit Musterlösung, ohne Anmeldung" },
+              { to: "/kurs/check", icon: ClipboardCheck, titel: "Wissenscheck", text: "Sechs Fragen am Ende jedes Kurstags" },
+              { to: "/kurs/spickzettel", icon: FileText, titel: "Spickzettel", text: "Das Wichtigste auf einer Seite zum Ausdrucken" },
+            ].map((k) => (
+              <Link key={k.to} to={k.to} className="rounded-lg border border-border bg-card p-4 transition-shadow hover:border-input hover:shadow-sm">
+                <k.icon className="mb-2 h-5 w-5 text-brand-ink" strokeWidth={1.75} />
+                <div className="font-semibold">{k.titel}</div>
+                <div className="text-sm text-muted-foreground">{k.text}</div>
+              </Link>
+            ))}
+          </div>
+        </section>
       </div>
     </KursLayout>
   );

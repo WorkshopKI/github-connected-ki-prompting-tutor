@@ -18,7 +18,7 @@ const NAV = [
 export function KursLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-card">
+      <header className="sticky top-0 z-20 border-b border-border bg-card print:hidden">
         <div className="mx-auto flex max-w-[70rem] flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3 lg:px-8">
           <Link to="/kurs" className="leading-tight" aria-label="KI-Werkstatt, zur Kursübersicht">
             <span className="block font-serif text-xl font-semibold">KI-Werkstatt</span>
@@ -53,7 +53,7 @@ export function KursLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-[70rem] px-4 py-8 lg:px-8">{children}</main>
+      <main className="mx-auto max-w-[70rem] px-4 py-8 lg:px-8 print:max-w-none print:p-0">{children}</main>
     </div>
   );
 }
