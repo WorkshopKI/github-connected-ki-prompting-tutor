@@ -1,3 +1,4 @@
+import { formatEuro, KURS_BUDGET_USD } from "@/lib/budget";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -36,7 +37,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
     custom_key_active: boolean;
     active_key_source: string;
   } | null>(null);
-  const [maxBudget, setMaxBudget] = useState(5.0);
+  const [maxBudget, setMaxBudget] = useState(KURS_BUDGET_USD);
   const [usage, setUsage] = useState<UsageStats | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +115,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
                 <div className="flex items-center justify-between text-sm mb-1.5">
                   <span className="text-muted-foreground">Verbleibendes Budget</span>
                   <span className="font-semibold">
-                    ${budgetValue.toFixed(2)} / ${maxBudget.toFixed(2)}
+                    {formatEuro(budgetValue)} / {formatEuro(maxBudget)}
                   </span>
                 </div>
                 <Progress value={budgetPercent} className="h-2" />

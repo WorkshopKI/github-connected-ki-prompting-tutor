@@ -9,6 +9,10 @@ const corsHeaders = {
 
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
+// Startbudget pro Teilnehmer in US-Dollar (OpenRouter rechnet in USD ab).
+// 1,15 $ = 1 € (Stand 22.11.2026), gleicher Wert wie KURS_BUDGET_USD in src/lib/budget.ts.
+const DEFAULT_BUDGET_USD = 1.15;
+
 /* ── Grobe Kosten-Schätzung pro 1M Tokens (input/output) ── */
 const MODEL_COSTS: Record<string, { input: number; output: number }> = {
   // USD pro 1 Mio. Tokens, Listenpreise OpenRouter, Stand 22.11.2026
@@ -97,7 +101,7 @@ serve(async (req) => {
         .eq("id", userId)
         .maybeSingle();
 
-      let defaultBudget = 5.0;
+      let defaultBudget = DEFAULT_BUDGET_USD;
       if (profileData?.course_id) {
         const { data: course } = await admin
           .from("courses")
@@ -114,7 +118,7 @@ serve(async (req) => {
     }
 
     const activeSource = keyRow?.active_key_source ?? "provisioned";
-    const budget = keyRow?.provisioned_key_budget ?? 5.0;
+    const budget = keyRow?.provisioned_key_budget ?? DEFAULT_BUDGET_USD;
 
     /* ── Determine which key to use ── */
     let apiKey: string;

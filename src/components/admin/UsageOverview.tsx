@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatEuro, eurZuUsd, usdZuEur, MIN_BUDGET_EUR } from "@/lib/budget";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -105,11 +106,12 @@ export const UsageOverview = ({ courseId }: Props) => {
 
   /* ── Budget für einzelnen User setzen ── */
   const saveBudget = async (userId: string) => {
-    const value = parseFloat(editValue);
-    if (isNaN(value) || value < 1) {
-      toast.error("Budget muss mindestens $1.00 sein.");
+    const eur = parseFloat(editValue.replace(",", "."));
+    if (isNaN(eur) || eur < MIN_BUDGET_EUR) {
+      toast.error(`Budget muss mindestens ${formatEuro(eurZuUsd(MIN_BUDGET_EUR))} sein.`);
       return;
     }
+    const value = eurZuUsd(eur);
 
     // Prüfen ob Zeile existiert
     const { data: existing } = await supabase
@@ -137,18 +139,19 @@ export const UsageOverview = ({ courseId }: Props) => {
       }
     }
 
-    toast.success(`Budget auf $${value.toFixed(2)} gesetzt.`);
+    toast.success(`Budget auf ${formatEuro(value)} gesetzt.`);
     setEditingUserId(null);
     setRefreshKey((k) => k + 1);
   };
 
   /* ── Budget für alle User setzen ── */
   const setBulkBudgetForAll = async () => {
-    const value = parseFloat(bulkBudget);
-    if (isNaN(value) || value < 1) {
-      toast.error("Budget muss mindestens $1.00 sein.");
+    const eur = parseFloat(bulkBudget.replace(",", "."));
+    if (isNaN(eur) || eur < MIN_BUDGET_EUR) {
+      toast.error(`Budget muss mindestens ${formatEuro(eurZuUsd(MIN_BUDGET_EUR))} sein.`);
       return;
     }
+    const value = eurZuUsd(eur);
 
     let successCount = 0;
     for (const u of userUsage) {
@@ -172,7 +175,7 @@ export const UsageOverview = ({ courseId }: Props) => {
       }
     }
 
-    toast.success(`Budget für ${successCount} Teilnehmer auf $${value.toFixed(2)} gesetzt.`);
+    toast.success(`Budget für ${successCount} Teilnehmer auf ${formatEuro(value)} gesetzt.`);
     setBulkBudget("");
     setRefreshKey((k) => k + 1);
   };
@@ -193,7 +196,7 @@ export const UsageOverview = ({ courseId }: Props) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${totalCost.toFixed(3)}</p>
+            <p className="text-xl font-bold">{formatEuro(totalCost, 3)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -246,12 +249,12 @@ export const UsageOverview = ({ courseId }: Props) => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">$</span>
+            <span className="text-sm text-muted-foreground">€</span>
             <Input
               type="number"
-              min={1}
-              step={1}
-              placeholder="z.B. 5"
+              min={MIN_BUDGET_EUR}
+              step={0.5}
+              placeholder="z.B. 1"
               value={bulkBudget}
               onChange={(e) => setBulkBudget(e.target.value)}
               className="w-32"
@@ -266,7 +269,7 @@ export const UsageOverview = ({ courseId }: Props) => {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-1.5">
-            Mindestens $1.00. Überschreibt das aktuelle Budget aller Teilnehmer im Kurs.
+            Betrag in Euro, mindestens 0,50 €. Abgerechnet wird bei OpenRouter in US-Dollar. Überschreibt das aktuelle Budget aller Teilnehmer im Kurs.
           </p>
         </CardContent>
       </Card>
@@ -307,15 +310,15 @@ export const UsageOverview = ({ courseId }: Props) => {
                         ? `${(u.totalTokens / 1000).toFixed(1)}k`
                         : u.totalTokens}
                     </TableCell>
-                    <TableCell className="text-right">${u.estimatedCost.toFixed(3)}</TableCell>
+                    <TableCell className="text-right">{formatEuro(u.estimatedCost, 3)}</TableCell>
                     <TableCell className="text-right">
                       {editingUserId === u.userId ? (
                         <div className="flex items-center justify-end gap-1">
-                          <span className="text-xs">$</span>
+                          <span className="text-xs">€</span>
                           <Input
                             type="number"
-                            min={1}
-                            step={1}
+                            min={MIN_BUDGET_EUR}
+                            step={0.5}
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                             className="w-20 h-7 text-sm"
@@ -345,9 +348,9 @@ export const UsageOverview = ({ courseId }: Props) => {
                       ) : (
                         <div className="flex items-center justify-end gap-1">
                           <Badge
-                            variant={u.remainingBudget <= 0 ? "destructive" : u.remainingBudget < 1 ? "secondary" : "outline"}
+                            variant={u.remainingBudget <= 0 ? "destructive" : u.remainingBudget < eurZuUsd(0.25) ? "secondary" : "outline"}
                           >
-                            ${u.remainingBudget.toFixed(2)}
+                            {formatEuro(u.remainingBudget)}
                           </Badge>
                           <Button
                             variant="ghost"
@@ -355,7 +358,7 @@ export const UsageOverview = ({ courseId }: Props) => {
                             className="h-7 w-7"
                             onClick={() => {
                               setEditingUserId(u.userId);
-                              setEditValue(u.remainingBudget.toFixed(2));
+                              setEditValue(usdZuEur(u.remainingBudget).toFixed(2));
                             }}
                           >
                             <Pencil className="h-3 w-3 text-muted-foreground" />

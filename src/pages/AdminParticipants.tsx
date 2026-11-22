@@ -1,3 +1,4 @@
+import { formatEuro } from "@/lib/budget";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -250,7 +251,7 @@ const AdminParticipants = () => {
                     <CardTitle className="text-sm font-medium text-muted-foreground">Budget pro User</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">${currentCourse.default_key_budget.toFixed(2)}</div>
+                    <div className="text-2xl font-bold">{formatEuro(currentCourse.default_key_budget)}</div>
                   </CardContent>
                 </Card>
               </div>

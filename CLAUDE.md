@@ -298,6 +298,7 @@ Sidebar-Label: "Lernpfad" (Kurs: "Übungen"). Route: /onboarding.
 - **Usage Tracking:** `llm-proxy` loggt jeden Request in `api_usage_log` (Tokens, geschätzte Kosten). Admin-Dashboard (`UsageOverview`) zeigt aggregierte Statistiken pro Teilnehmer.
 - **Key Sources:** Provisioned (OpenRouter via `OPENROUTER_API_KEY`, Budget/User) oder Custom OpenRouter Key (AES-256-GCM verschlüsselt)
 - **Budget Management:** Admins können Budget pro User oder Bulk für alle Teilnehmer setzen (via `UsageOverview`)
+- **Budget-Einheit:** Startbudget 1 € pro Teilnehmer. DB und `llm-proxy` rechnen in US-Dollar (1,15 $), Anzeige und Eingabe in Euro über `src/lib/budget.ts` (`formatEuro`, `eurZuUsd`, `USD_PRO_EUR`). Kurs bei Bedarf dort und in `DEFAULT_BUDGET_USD` (`llm-proxy`) mitziehen.
 - **Model Selection:** User wählt Modell auf Settings-Seite (Default: `DEFAULT_MODEL` = `openai/gpt-6-luna`)
 
 ### Feedback-System
