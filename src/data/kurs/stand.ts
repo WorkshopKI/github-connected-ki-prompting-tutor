@@ -46,7 +46,7 @@ export const NEUIGKEITEN: Neuigkeit[] = [
   { datum: "09.11.2026", text: "Anthropic veröffentlicht Claude Fable 5.2; für die meisten Aufgaben empfiehlt Anthropic weiter Opus 5.5.", quelle: "https://sdtimes.com/?p=61724" },
   { datum: "22.09.2026", text: "Claude Opus 5.5 erscheint: Niveau von Fable 5.1, deutlich günstiger.", quelle: "https://anthropic.com/news/claude-opus-5-5" },
   { datum: "11.09.2026", text: "OpenAI rät bei GPT-6 zu schlankeren Prompts und Skills.", quelle: "https://developers.openai.com/de-DE/blog/rethinking-skills-and-prompts-for-gpt-6-astra" },
-  { datum: "27.07.2026", text: "KI-Omnibus in Kraft: Art. 4 abgeschwächt, Kennzeichnungspflicht ab 02.12.2026.", quelle: "https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act" },
+  { datum: "27.07.2026", text: "KI-Omnibus in Kraft: Art. 4 abgeschwächt, Hochrisiko-Pflichten verschoben; Art. 50 gilt seit 02.08.2026, technische Markierung älterer Systeme bis 02.12.2026.", quelle: "https://www.whitecase.com/insight-alert/eu-ai-omnibus-enters-force-amending-ai-act" },
   { datum: "09.07.2026", text: "ChatGPT Work: Agent für längere Aufgaben, der fertige Dateien erstellt.", quelle: "https://openai.com/de-DE/index/chatgpt-for-your-most-ambitious-work/" },
   { datum: "28.05.2026", text: "Mistral benennt Le Chat in Vibe um und ergänzt den Work Mode.", quelle: "https://skill-sprinters.de/blog/news/mistral-medium-3-5-work-mode-eu-souveraen/" },
   { datum: "26.04.2026", text: "OpenAI stellt die Video-App Sora ein.", quelle: "https://help.openai.com/de-de/articles/20001152" },

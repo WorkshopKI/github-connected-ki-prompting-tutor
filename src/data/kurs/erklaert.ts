@@ -23,16 +23,15 @@ export const ERKLAERT: ErklaerEintrag[] = [
   { slug: "halluzination", nr: 12, titel: "Halluzination", frage: "Warum klingt auch Falsches so überzeugend?", gruppe: "Sicher arbeiten", komponente: lazy(() => import("@/components/erklaert/animations/Halluzination")) },
   { slug: "daten", nr: 15, titel: "Wohin gehen meine Daten?", frage: "Was passiert mit dem, was ich eintippe?", gruppe: "Sicher arbeiten", komponente: lazy(() => import("@/components/erklaert/animations/DatenWeg")) },
   { slug: "agenten-schleife", nr: 9, titel: "Agenten und Prompt-Injection", frage: "Wie arbeitet ein Agent, und wie kann man ihn austricksen?", gruppe: "Arbeiten mit Agenten", komponente: lazy(() => import("@/components/erklaert/animations/AgentenSchleife")) },
-  // In Arbeit
-  { slug: "temperatur", nr: 4, titel: "Temperatur", frage: "Warum gibt es verschiedene Antworten auf dieselbe Frage?", gruppe: "Wie KI rechnet" },
-  { slug: "training", nr: 5, titel: "Training in Phasen", frage: "Wie wird aus Text ein Assistent?", gruppe: "Wie KI rechnet" },
-  { slug: "kontextfenster", nr: 6, titel: "Kontextfenster und Gedächtnis", frage: "Was vergisst die KI?", gruppe: "Wie KI rechnet" },
-  { slug: "reasoning", nr: 7, titel: "Reasoning", frage: "Was passiert, wenn ein Modell „nachdenkt“?", gruppe: "Wie KI rechnet" },
-  { slug: "websuche", nr: 8, titel: "Websuche und Quellen", frage: "Wie kommt die KI an aktuelles Wissen?", gruppe: "Sicher arbeiten" },
-  { slug: "diffusion", nr: 10, titel: "Wie Bilder entstehen", frage: "Wie wird aus Rauschen ein Bild?", gruppe: "Wie KI rechnet" },
-  { slug: "bedeutungsraum", nr: 13, titel: "Bedeutungsraum", frage: "Wie ordnet ein Modell Begriffe?", gruppe: "Wie KI rechnet" },
-  { slug: "bias", nr: 16, titel: "Verzerrungen", frage: "Warum sind KI-Bilder von Ärzten meist Männer?", gruppe: "Sicher arbeiten" },
-  { slug: "kennzeichnung", nr: 17, titel: "KI-Inhalte erkennen", frage: "Wie erkennt man KI-Inhalte, und was muss gekennzeichnet werden?", gruppe: "Sicher arbeiten" },
+  { slug: "temperatur", nr: 4, titel: "Temperatur", frage: "Warum gibt es verschiedene Antworten auf dieselbe Frage?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Temperatur")) },
+  { slug: "training", nr: 5, titel: "Training in Phasen", frage: "Wie wird aus Text ein Assistent?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Training")) },
+  { slug: "kontextfenster", nr: 6, titel: "Kontextfenster und Gedächtnis", frage: "Was vergisst die KI?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Kontextfenster")) },
+  { slug: "reasoning", nr: 7, titel: "Reasoning", frage: "Was passiert, wenn ein Modell „nachdenkt“?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Reasoning")) },
+  { slug: "websuche", nr: 8, titel: "Websuche und Quellen", frage: "Wie kommt die KI an aktuelles Wissen?", gruppe: "Sicher arbeiten", komponente: lazy(() => import("@/components/erklaert/animations/Websuche")) },
+  { slug: "diffusion", nr: 10, titel: "Wie Bilder entstehen", frage: "Wie wird aus Rauschen ein Bild?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Diffusion")) },
+  { slug: "bedeutungsraum", nr: 13, titel: "Bedeutungsraum", frage: "Wie ordnet ein Modell Begriffe?", gruppe: "Wie KI rechnet", komponente: lazy(() => import("@/components/erklaert/animations/Bedeutungsraum")) },
+  { slug: "bias", nr: 16, titel: "Verzerrungen", frage: "Warum sind KI-Bilder von Ärzten meist Männer?", gruppe: "Sicher arbeiten", komponente: lazy(() => import("@/components/erklaert/animations/Bias")) },
+  { slug: "kennzeichnung", nr: 17, titel: "KI-Inhalte erkennen", frage: "Wie erkennt man KI-Inhalte, und was muss gekennzeichnet werden?", gruppe: "Sicher arbeiten", komponente: lazy(() => import("@/components/erklaert/animations/Kennzeichnung")) },
 ];
 
 export const erklaertBySlug = (slug: string) => ERKLAERT.find((e) => e.slug === slug);

@@ -24,7 +24,9 @@ Entscheidungen:
 | `/kurs/stand` | Aktuelle Modelle, Tools, Neuigkeiten (monatlich pflegen) | `pages/kurs/KursStand.tsx`, `data/kurs/stand.ts` |
 | `/erklaert`, `/erklaert/:slug` | Erklär-Animationen | `pages/kurs/Erklaert.tsx`, Register `data/kurs/erklaert.ts`, Bausteine `components/erklaert/` |
 
-Fertige Animationen: 1 Nächstes Wort, 2 Tokens, 3 Aufmerksamkeit, 9+14 Agenten und Prompt-Injection, 11 Was das Modell sieht, 12 Halluzination, 15 Wohin gehen meine Daten. In Vorbereitung (im Register ohne `komponente`): 4, 5, 6, 7, 8, 10, 13, 16, 17.
+Alle 16 Animationen sind fertig: 1 Nächstes Wort, 2 Tokens, 3 Aufmerksamkeit, 4 Temperatur, 5 Training in Phasen, 6 Kontextfenster und Gedächtnis, 7 Reasoning, 8 Websuche und Quellen, 9+14 Agenten und Prompt-Injection, 10 Wie Bilder entstehen, 11 Was das Modell sieht, 12 Halluzination, 13 Bedeutungsraum, 15 Wohin gehen meine Daten, 16 Verzerrungen, 17 KI-Inhalte erkennen.
+
+Gruppenübungen (`data/kurs/gruppenarbeit.ts`): je Übung Phasen mit Minuten, Rollen, Startprompt, Prüfkriterien, leichtere/schwerere Variante, Plan B ohne Abo, Vorlage für den Padlet-Beitrag.
 
 Neue Animation anlegen: Komponente unter `components/erklaert/animations/` mit `StepPlayer`, Eintrag mit `lazy(() => import(...))` in `data/kurs/erklaert.ts`, Slug ggf. im Modul (`erklaert: [...]`) verlinken.
 
@@ -38,4 +40,3 @@ Neue Animation anlegen: Komponente unter `components/erklaert/animations/` mit `
 
 - Hauptdomain für den Kurs-Auftritt festlegen.
 - Organisations-Auftritt später als eigener Build mit eigener Domain, wenn die Codepfade auseinanderlaufen.
-- Weitere neun Animationen.

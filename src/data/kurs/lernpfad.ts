@@ -51,7 +51,7 @@ export const KURS_MODULE: KursModul[] = [
       "Kontext im Prompt verschiebt die Wahrscheinlichkeiten. Darum wirkt gutes Prompting.",
       "Seit 2024 denken viele Modelle vor der Antwort in Zwischenschritten (Reasoning). Das Grundprinzip bleibt gleich.",
     ],
-    erklaert: ["naechstes-wort", "tokens", "aufmerksamkeit"],
+    erklaert: ["naechstes-wort", "tokens", "aufmerksamkeit", "bedeutungsraum", "temperatur", "training"],
   },
   {
     id: "fragen-mit-acta",
@@ -93,7 +93,7 @@ export const KURS_MODULE: KursModul[] = [
       "Quellen sind nur so gut wie ihre Prüfung: Zwei bis drei Links öffnen und Zahlen vergleichen.",
       "Gute Rechercheaufträge nennen Zeitraum, Gliederung, Mindestzahl an Quellen und gewünschte Quellenarten.",
     ],
-    erklaert: ["halluzination"],
+    erklaert: ["websuche", "reasoning", "halluzination"],
     prompts: [
       { titel: "Vergleichsstudie", text: "Vergleiche Offshore- und Onshore-Windkraft in Europa nach Kosten pro MWh, Umweltauswirkungen, Genehmigungsdauer und Akzeptanz. Nutze nur Quellen ab 2024, nenne mindestens vier Studien und stelle die Ergebnisse zuerst als Tabelle dar." },
       { titel: "Literaturüberblick", text: "Fasse den Forschungsstand seit 2022 zum Einfluss von KI-gestütztem Unterricht auf die Lesekompetenz von Grundschulkindern zusammen. Gliederung: Methodik, Hauptergebnisse, Forschungslücken. Am Ende ein kommentiertes Literaturverzeichnis mit Links." },
@@ -112,9 +112,9 @@ export const KURS_MODULE: KursModul[] = [
       "Verzerrungen: Muster aus den Trainingsdaten tauchen in Texten und Bildern wieder auf.",
       "Keine personenbezogenen oder vertraulichen Daten in private KI-Konten. Im Beruf nur freigegebene Tarife nutzen.",
       "EU-KI-Verordnung: Pflicht zur KI-Kompetenz seit 02/2025, durch den KI-Omnibus (in Kraft seit 27.07.2026) als Handlungspflicht gefasst.",
-      "Ab 02.12.2026 müssen KI-erzeugte Inhalte gekennzeichnet sein (Art. 50).",
+      "Seit 02.08.2026 gelten Kennzeichnungspflichten (Art. 50): Chatbots geben sich zu erkennen, Deepfakes werden gekennzeichnet. Ältere KI-Systeme müssen ihre Inhalte bis 02.12.2026 technisch markieren.",
     ],
-    erklaert: ["halluzination", "daten"],
+    erklaert: ["halluzination", "daten", "bias", "kennzeichnung"],
     uebung: { aufgabe: "Erkenne in Beispiel-Prompts die sensiblen Daten und schwärze sie.", link: "/onboarding", linkLabel: "Datenschutz-Übung starten" },
   },
   {
@@ -123,7 +123,7 @@ export const KURS_MODULE: KursModul[] = [
     disziplin: "fragen",
     titel: "Bilder im Dialog erstellen",
     dauer: "45 Min",
-    ziel: "Du beschreibst Bilder mit der 4-S-Methode und verbessern sie im Gespräch statt mit immer längeren Prompts.",
+    ziel: "Du beschreibst Bilder mit der 4-S-Methode und verbesserst sie im Gespräch statt mit immer längeren Prompts.",
     kernpunkte: [
       "Subjekt: Was steht im Vordergrund?",
       "Szene: Was passiert?",
@@ -131,6 +131,7 @@ export const KURS_MODULE: KursModul[] = [
       "Stil: Foto, Aquarell, 3D-Rendering, Comic …",
       "Aktuelle Bildmodelle (ChatGPT Bilder, Gemini mit Nano Banana) verstehen Änderungswünsche im Dialog: „Mach den Himmel abendlich“ statt alles neu zu beschreiben.",
     ],
+    erklaert: ["diffusion", "bias"],
     prompts: [
       { titel: "Schritt für Schritt", text: "Ein Roboter-Lehrer unterrichtet Kinder im Regenwald, Hyper-Realismus, warmes Morgenlicht." },
       { titel: "Im Dialog nachbessern", text: "Behalte die Szene bei, aber mach den Roboter freundlicher, mit runden Formen, und füge eine Tafel mit der Aufschrift „Natur“ hinzu." },
@@ -152,7 +153,7 @@ export const KURS_MODULE: KursModul[] = [
       "Skills sind gespeicherte Anleitungen für wiederkehrende Aufgaben. Sie werden nur geladen, wenn sie passen.",
       "Gedächtnis kann helfen und stören: regelmäßig prüfen, was gespeichert ist.",
     ],
-    erklaert: ["kontext-stapel"],
+    erklaert: ["kontext-stapel", "kontextfenster"],
     prompts: [
       { titel: "Vorlage: eigene Anweisungen", text: "Ich arbeite als {Beruf} in {Branche}. Meine Leserinnen und Leser sind {Zielgruppe}.\nAntworte auf Deutsch, sachlich und knapp. Nutze Aufzählungen nur bei echten Listen.\nWenn dir Informationen fehlen, frage kurz nach, statt zu raten.\nNenne bei Fakten zu Gesetzen, Preisen und Personen eine Quelle." },
     ],
