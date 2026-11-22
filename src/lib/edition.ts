@@ -26,7 +26,7 @@ export function getEdition(): Edition {
 export const isKursEdition = () => getEdition() === "kurs";
 
 /** Öffentliche Bereiche ohne Login und ohne Moduswahl. */
-export const PUBLIC_PREFIXES = ["/kurs", "/erklaert"];
+export const PUBLIC_PREFIXES = ["/kurs", "/erklaert", "/live", "/f"];
 export const isPublicPath = (pathname: string) =>
   PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { KursLayout } from "@/components/kurs/KursLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { GRUPPENAUFGABEN, dauerMin, type Gruppenaufgabe } from "@/data/kurs/gruppenarbeit";
@@ -89,6 +90,15 @@ function Aufgabe({ g }: { g: Gruppenaufgabe }) {
 }
 
 export default function KursGruppen() {
+  /* Kurzlinks aus Folien und Fahrplan zeigen per #id auf eine Übung: aufklappen und hinscrollen. */
+  const { hash } = useLocation();
+  const offen = hash.replace("#", "");
+  useEffect(() => {
+    if (!offen) return;
+    const t = window.setTimeout(() => document.getElementById(offen)?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    return () => window.clearTimeout(t);
+  }, [offen]);
+
   return (
     <KursLayout>
       <PageHeader
@@ -100,9 +110,9 @@ export default function KursGruppen() {
       {[1, 2].map((tag) => (
         <section key={tag} className="mb-10">
           <h2 className="mb-3 text-xl font-semibold">Tag {tag}</h2>
-          <Accordion type="multiple" className="grid gap-3">
+          <Accordion key={offen} type="multiple" defaultValue={offen ? [offen] : []} className="grid gap-3">
             {GRUPPENAUFGABEN.filter((g) => g.tag === tag).map((g) => (
-              <AccordionItem key={g.id} value={g.id} className="rounded-lg border border-border bg-card px-4">
+              <AccordionItem key={g.id} id={g.id} value={g.id} className="scroll-mt-24 rounded-lg border border-border bg-card px-4">
                 <AccordionTrigger className="text-left hover:no-underline">
                   <span>
                     <span className="block font-semibold">{g.titel}</span>
