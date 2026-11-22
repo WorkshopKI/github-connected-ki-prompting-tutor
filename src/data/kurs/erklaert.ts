@@ -1,4 +1,5 @@
-import { lazy, type ComponentType, type LazyExoticComponent } from "react";
+import { type ComponentType, type LazyExoticComponent } from "react";
+import { lazyWithRetry as lazy } from "@/lib/lazyWithRetry";
 
 /* ── Register der Erklär-Animationen ──
  * Jede Animation ist ein eigenständiger Baustein unter /erklaert/<slug>:

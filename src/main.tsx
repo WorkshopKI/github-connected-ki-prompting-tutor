@@ -3,8 +3,14 @@ import App from "./App.tsx";
 import "./index.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { initErrorCapture } from "@/lib/actionTracker";
+import { reloadOnceForStaleChunk } from "@/lib/lazyWithRetry";
 
 initErrorCapture();
+
+// Veraltete Chunk-Dateien nach einem Deploy: einmal neu laden statt weißer Seite.
+window.addEventListener("vite:preloadError", (event) => {
+  if (reloadOnceForStaleChunk()) event.preventDefault();
+});
 
 // Ein helles Theme aus dem Design-System (Werte in :root, src/index.css).
 // Die früheren Presets (Stone, Moss, Silber, …-dark) werden auf "light" umgestellt.
