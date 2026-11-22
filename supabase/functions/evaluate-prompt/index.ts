@@ -10,9 +10,8 @@ const corsHeaders = {
 const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
 /* ── Usage-Logging Helper (fire-and-forget, kein Budget-Abzug) ── */
-// deno-lint-ignore no-explicit-any
 async function logUsage(
-  admin: any,
+  admin: ReturnType<typeof createClient>,
   userId: string,
   model: string,
   usage: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number } | undefined,
@@ -106,7 +105,7 @@ JSON-Format:
 
       const judgeUser = `## Prompt der an die KI gesendet wurde:\n${prompt}\n\n## Output der KI (Modell: ${model || "unbekannt"}):\n${output}${criteria ? `\n\n## Zusätzliche Bewertungskriterien:\n${criteria}` : ""}\n\nBewerte jetzt.`;
 
-      const judgeModel = "google/gemini-3-flash-preview";
+      const judgeModel = "openai/gpt-6-luna";
       const judgeResponse = await fetch(OPENROUTER_ENDPOINT, {
         method: "POST",
         headers: {
@@ -173,7 +172,7 @@ JSON-Format:
 
     // --- Original Prompt-Evaluation Mode ---
     const { userPrompt, badPrompt, context, goodExample, improvementHints, model } = body;
-    const selectedModel = model || "google/gemini-3-flash-preview";
+    const selectedModel = model || "openai/gpt-6-luna";
 
     if (!userPrompt || !badPrompt) {
       return new Response(

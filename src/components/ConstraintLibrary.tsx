@@ -235,7 +235,7 @@ export function ConstraintLibrary() {
                       {c.domain}
                     </span>
                     {c.source === "rejection" && (
-                      <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400 rounded px-1.5 py-0.5">
+                      <span className="inline-flex items-center gap-1 text-[10px] bg-warning-soft text-warning rounded px-1.5 py-0.5">
                         <Sparkles className="w-[13px] h-[13px]" />
                         aus Ablehnung gelernt
                       </span>
@@ -250,7 +250,7 @@ export function ConstraintLibrary() {
                 <div className="flex items-center gap-2 shrink-0">
                   <span className={cn(
                     "text-[11px]",
-                    c.active ? "text-emerald-700 dark:text-emerald-400" : "text-muted-foreground"
+                    c.active ? "text-success" : "text-muted-foreground"
                   )}>
                     {c.active ? "aktiv" : "inaktiv"}
                   </span>
@@ -266,10 +266,10 @@ export function ConstraintLibrary() {
                 <div className="mt-3 pt-3 border-t border-border bg-muted/30 -mx-5 -mb-5 px-5 pb-5 rounded-b-xl">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Beispiel</p>
                   <div className="space-y-2">
-                    <div className="border-l-2 border-red-400 pl-3 py-1.5 bg-red-50/50 dark:bg-red-950/20 rounded-r">
+                    <div className="border-l-2 border-danger/60 pl-3 py-1.5 bg-danger/50 rounded-r">
                       <p className="text-sm">{c.example.before}</p>
                     </div>
-                    <div className="border-l-2 border-emerald-400 pl-3 py-1.5 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-r">
+                    <div className="border-l-2 border-success/60 pl-3 py-1.5 bg-success/50 rounded-r">
                       <p className="text-sm">{c.example.after}</p>
                     </div>
                   </div>

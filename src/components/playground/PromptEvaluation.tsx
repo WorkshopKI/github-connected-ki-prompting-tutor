@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { evaluateWithConstraints, type ConstraintCheckResult } from "@/services/evaluationService";
 import { getActiveConstraints } from "@/services/constraintService";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export interface EvaluationResult {
   hasContext: boolean;
@@ -28,7 +29,7 @@ function CriterionBar({ label, met }: { label: string; met: boolean }) {
         <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
         <span className={cn(
           "text-[11px] font-semibold",
-          met ? "text-primary" : "text-red-600 dark:text-red-400"
+          met ? "text-primary" : "text-danger"
         )}>
           {met ? "✓ Gut" : "✗ Fehlt"}
         </span>
@@ -37,7 +38,7 @@ function CriterionBar({ label, met }: { label: string; met: boolean }) {
         <div
           className={cn(
             "h-full rounded-full transition-all duration-500",
-            met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]"
+            met ? "bg-primary w-full" : "bg-danger/60 w-[15%]"
           )}
         />
       </div>
@@ -86,7 +87,7 @@ export const PromptEvaluation = ({ prompt, model, lastOutput }: PromptEvaluation
               "Spezifischer werden",
               "Constraints definieren",
             ],
-            model: model || "google/gemini-3-flash-preview",
+            model: model || DEFAULT_MODEL,
           }),
         }
       );
@@ -153,7 +154,7 @@ export const PromptEvaluation = ({ prompt, model, lastOutput }: PromptEvaluation
             <span className="text-xs font-semibold">Prompt-Check</span>
             <span className={cn(
               "text-xs font-bold",
-              score === 3 ? "text-primary" : score >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+              score === 3 ? "text-primary" : score >= 2 ? "text-warning" : "text-danger"
             )}>
               {score}/3
             </span>
@@ -179,8 +180,8 @@ export const PromptEvaluation = ({ prompt, model, lastOutput }: PromptEvaluation
             <span className={cn(
               "text-xs font-bold",
               constraintResults.every(c => c.met)
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-amber-600 dark:text-amber-400"
+                ? "text-success"
+                : "text-warning"
             )}>
               {constraintResults.filter(c => c.met).length}/{constraintResults.length}
             </span>
@@ -194,8 +195,8 @@ export const PromptEvaluation = ({ prompt, model, lastOutput }: PromptEvaluation
                 <span className={cn(
                   "font-semibold shrink-0 mt-0.5",
                   check.met
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-red-600 dark:text-red-400"
+                    ? "text-success"
+                    : "text-danger"
                 )}>
                   {check.met ? "\u2713" : "\u2717"}
                 </span>

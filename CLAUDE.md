@@ -96,11 +96,12 @@ src/
 │   ├── RedactionExercise.tsx       # Datenschutz-Übung: Sensible Daten erkennen
 │   ├── StatCard.tsx                # Wiederverwendbare Statistik-Karte
 │   ├── TeamMembers.tsx             # Team-Mitglieder (Mock)
-│   ├── ThemePresetPicker.tsx       # Theme-Presets Auswahl
+│   ├── PageHeader.tsx              # Seitenkopf (title-1 Serif, eyebrow, Aktionen) — Design-System
+│   ├── ThemePresetPicker.tsx       # Unbenutzt seit Design-System (nur ein Theme)
 │   ├── ThemeProvider.tsx           # Theme Provider
 │   ├── ThemeToggle.tsx             # Dark/Light Toggle
 │   ├── UserMenu.tsx                # Dropdown mit Profil/Admin/Logout
-│   └── themePresets.ts             # Theme-Preset Definitionen
+│   └── themePresets.ts             # Unbenutzt seit Design-System
 ├── contexts/
 │   ├── AuthContext.tsx              # Auth State, OTP Login, Guest Login, Session
 │   ├── SyncContext.tsx              # Progress Sync (localStorage ↔ Supabase)
@@ -190,7 +191,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 ### Layout
 - **AppShell** (Sidebar + Content) für alle Seiten außer Login
 - **PlatformLayout** wrapper in `App.tsx`: `<AppShell>` + `<GuestBanner>` + children
-- **Sidebar:** `collapsible="icon"` auf allen Seiten. 4 Kern-Seiten: Dashboard, Onboarding, Prompt Sammlung, Prompt Werkstatt. Einstellungen, Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
+- **Sidebar:** `collapsible="icon"` auf allen Seiten. 5 Kern-Seiten mit Glossar-Namen: Start (/), Lernpfad (/onboarding), Vorlagen (/library), Werkstatt (/playground), KI erklärt (/erklaert); im Kurs-Auftritt Kurs + Übungen statt Start + Lernpfad. Einstellungen als sichtbarer Eintrag im Sidebar-Fuß. Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
 - **Playground:** In AppShell integriert, Sidebar startet collapsed (`defaultOpen={false}`). Eigener sticky Header (`PlaygroundHeader`) mit `SidebarTrigger`. AppShell-Header wird auf `/playground` ausgeblendet. `playground-root` nutzt `h-full` statt `h-screen`.
 
 ### Provider Hierarchy
@@ -270,7 +271,7 @@ Die Onboarding-Seite zeigt einen 5-stufigen Lernpfad als vertikale Timeline:
 
 Fortschritt wird über `useLernpfadProgress` Hook berechnet.
 Stufen-Daten in `src/data/learningPath.ts` (lernpfadStufen).
-Sidebar-Label: "Onboarding". Route: /onboarding.
+Sidebar-Label: "Lernpfad" (Kurs: "Übungen"). Route: /onboarding.
 
 ### Auth System (`AuthContext`)
 - **Email OTP:** Kurscode + Email → `check-enrollment` validiert → Supabase sendet OTP → 8-stelliger Code
@@ -298,9 +299,9 @@ Sidebar-Label: "Onboarding". Route: /onboarding.
 - **Admin:** `FeedbackTicketList`, `FeedbackTicketDetail`, `FeedbackConfigPanel` in `src/components/admin/`
 - **DB:** `feedback` + `feedback_config` Tabellen (Migration: `20260315120000_feedback_tables.sql`)
 - **ScreenRefPicker:** `src/components/feedback/ScreenRefPicker.tsx` — Overlay-Picker der alle `data-feedback-ref` Elemente hervorhebt. Basiert auf TourOverlay-Mechanismus (z-index Elevation via `getBoundingClientRect`). Elemente werden per z-index 102 über das Overlay (z-index 100) gehoben, klickbare Rahmen auf z-index 105. Erreichbar über "Bereich markieren" Button im FeedbackPanel (DetailsStep). Ersetzt die alte kaputte ScreenRefMode. CSS-Klassen `.feedback-ref-mode`, `.feedback-ref-highlight`, `.feedback-ref-overlay` bleiben in `index.css` (Legacy).
-- **Bekannte Einschränkung:** Supabase-Typen für `feedback`/`feedback_config` Tabellen noch nicht generiert — temporärer `FeedbackRow` Typ in `feedbackService.ts`. Supabase-Client-Calls nutzen weiterhin `as any` Cast auf `from()`.
+- **Typen:** `feedback`/`feedback_config` stehen in den generierten Supabase-Typen; `FeedbackRow` = `Tables<"feedback">`. Die JSON-Spalten `context`/`llm_classification` werden beim Mappen per `as unknown as` auf die App-Typen gecastet.
 - **Phase 2 UI (2026-03-16):** Chatbot visuell überarbeitet — Chat-Bubbles (User rechts primary, Bot links muted), Online-Indikator Header, animierter Typing-Indikator (●●●), einfaches Markdown-Rendering (**fett**→strong), Bestätigungskarte mit primary/5% Hintergrund + primary/30% Border, grüner Bestätigungs-Button, Container-Höhe 400–520px
-- **Phase 3 UI (2026-03-16):** Admin-Dashboard visuell überarbeitet — Zwei-Spalten-Layout (Ticket-Liste links, Detail rechts) statt Tabelle+Sheet. Ticket-Liste als Karten mit Kategorie-Badge, ID, Datum, Summary, Kontext-Zeile. Ausgewähltes Ticket mit `border-l-primary + bg-primary/5`. Detail-Panel inline mit 2×2 Metadaten-Grid, Nutzer-Bestätigungsblock, Prompt-Ansicht mit Dark-Code-Block (`#1a1a2e`), Kopieren/Export-Buttons. Responsive: `grid-cols-1 lg:grid-cols-2`. Dezente Tab-Buttons statt große Tabs.
+- **Phase 3 UI (2026-03-16):** Admin-Dashboard visuell überarbeitet — Zwei-Spalten-Layout (Ticket-Liste links, Detail rechts) statt Tabelle+Sheet. Ticket-Liste als Karten mit Kategorie-Badge, ID, Datum, Summary, Kontext-Zeile. Ausgewähltes Ticket mit `border-l-primary + bg-primary/5`. Detail-Panel inline mit 2×2 Metadaten-Grid, Nutzer-Bestätigungsblock, Prompt-Ansicht mit Code-Block auf `bg-sidebar`, Kopieren/Export-Buttons. Responsive: `grid-cols-1 lg:grid-cols-2`. Dezente Tab-Buttons statt große Tabs.
 
 ### Database Schema (Supabase/Postgres)
 - `courses` — Kurs-Definitionen (id als Text PK, enrollment_open, max_participants, default_key_budget)
@@ -317,19 +318,22 @@ Sidebar-Label: "Onboarding". Route: /onboarding.
 ## Design System
 
 Farben als HSL CSS Variables in `src/index.css`:
-- **Primary:** Terracotta/Orange (`--primary: 15 55% 52%`)
-- **Background:** Warmes Beige (`--background: 48 33% 97%`)
-- **Foreground:** Dunkles Braun (`--foreground: 48 20% 20%`)
-- **Sidebar:** Dunkles warmes Braun (`--sidebar: 30 15% 18%`)
-- **Sidebar Hover:** `bg-primary/8` (Tailwind-Klasse, dezente Aufhellung)
-- **Sidebar Active:** `bg-primary/15 text-primary` (Tailwind-Klassen, klar sichtbar)
+Quelle: Design-System-Artefakt **KI-Werkstatt** (https://claude.ai/artifact/FgYyF7stErVf5riMiMkwYt) — Brand Book, User Journey, Umsetzung, Komponenten. Alle Textpaare halten 4.5:1.
+- **Primary (brand, Ziegel):** `--primary: 16 59.4% 42.5%` — nur für die EINE Primäraktion pro Ansicht
+- **Background (canvas):** warmes Papier `--background: 40 25% 95.3%`; Karten auf `--card` (weiß) mit border, ohne Schatten
+- **Foreground (ink):** `--foreground: 34 13.7% 10%`; Sekundärtext `text-muted-foreground`, Metadaten `text-ink-subtle`
+- **Semantik (Tailwind):** `text-brand-ink`, `bg-brand-soft`/`text-brand-soft-ink`, `success(-soft)`, `warning(-soft)`, `danger(-soft)`, `info(-soft)`, `confidential(-foreground)`
+- **Sidebar:** dunkel (`--sidebar: 30 11.5% 10.2%`), Hover `bg-sidebar-hover`, Aktiv `bg-sidebar-accent text-sidebar-accent-foreground`
+- **Schrift:** Source Serif 4 (nur Seitentitel, `font-serif`), Source Sans 3 (Oberfläche), Source Code Pro (Prompts, `font-mono`). Nie unter 12px.
+- **Lernpfad-Stufen:** keine eigenen Farben mehr; `--stufe-*` sind Legacy-Aliase auf die Marke, den Zustand (erledigt/aktuell/gesperrt) zeigt die Komponente
 
 **Badges — IMMER aus `BADGE_COLORS` importieren (`src/lib/constants.ts`):**
 ```ts
 import { BADGE_COLORS, PRIORITY_COLORS, RISK_COLORS, SEVERITY_COLORS } from "@/lib/constants";
-// BADGE_COLORS.low     → 🟢 bg-primary/10 text-primary
-// BADGE_COLORS.medium  → 🟡 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400
-// BADGE_COLORS.high    → 🔴 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400
+// BADGE_COLORS.low     → bg-brand-soft text-brand-soft-ink
+// BADGE_COLORS.medium  → bg-warning-soft text-warning
+// BADGE_COLORS.high    → bg-danger-soft text-danger
+// BADGE_COLORS.success → bg-success-soft text-success
 // BADGE_COLORS.neutral → bg-muted text-muted-foreground
 // PRIORITY_COLORS      → { niedrig, mittel, hoch } → Badge-Farben
 // RISK_COLORS          → { niedrig, mittel, hoch, kritisch } → Badge-Farben
@@ -339,7 +343,7 @@ NIEMALS die Tailwind-Strings manuell kopieren! Immer aus Constants importieren.
 
 **Vertraulichkeits-Badges:** `ConfidentialityBadge.tsx` Komponente nutzen (nutzt intern `BADGE_COLORS`).
 
-**Theme Presets:** muted-stone-contrast, muted-moss-light, silber
+**Theme:** ein helles Theme (`light`, Werte in `:root`); `.dark` ist definiert, aber in `main.tsx` nicht freigeschaltet. Die Presets Stone/Moss/Silber sind entfernt (gespeicherte Werte werden auf `light` migriert).
 
 **Einheitliche Komponenten:**
 - `StatCard` — Wiederverwendbar für alle Statistik-Karten
@@ -396,9 +400,10 @@ Edge function secrets (set via Lovable, kein separates Supabase Dashboard):
 - `flex-col-layout` — flex + flex-col + h-full + min-h-0
 - `flex-col-fill` — flex + flex-col + flex-1 + min-h-0
 - `truncate-safe` — min-w-0 + truncate
-- `card-section` — p-5 + rounded-xl + border + border-border + shadow-sm
+- `card-section` — p-5 + rounded-lg + border + border-border + bg-card (kein Schatten)
 - `playground-root` — h-full + flex-col + overflow-hidden + bg-background
-- `page-title` — text-2xl + font-bold + tracking-tight
+- `page-title` — Source Serif 4, 30/36px, 600 (Stil title-1); besser `<PageHeader>` nutzen
+- `eyebrow` — 12px, 600, Versalien, 0.08em, brand-ink (Kategorie-Label über Titeln; NICHT `overline` nennen, das ist eine Tailwind-Utility)
 
 ### Dateigrößen
 - Neue Komponenten sollten unter 250 Zeilen bleiben
@@ -431,7 +436,7 @@ Gemeinsamer Ablauf mit den anderen Apps unter `C:\01b_genAI_Code`; die Dateien k
 
 - **Vorhaben schärfen:** Skill `grillen` (Rückfragen gebündelt, jede mit Empfehlung). Begriffe in [CONTEXT.md](CONTEXT.md).
 - **Ab der Schwelle eine Spec** nach [docs/specs/README.md](docs/specs/README.md): `## 0. Anlass`, Abnahmekriterien vor dem Bauen, S0 Gerüst.
-- **Gate:** `npm run check` (Stufen in `scripts/check.mjs`; nie mit `| tail` kürzen). Offen: `typecheck` und `lint` sind rot und kommen ins Gate, sobald sie grün sind.
+- **Gate:** `npm run check` (Stufen `build`, `typecheck`, `lint` in `scripts/check.mjs`; nie mit `| tail` kürzen). Lint-Warnungen sind erlaubt, Fehler nicht.
 - **Gegenprobe:** Agent `gegenprobe` prüft den Beleg einer Erfolgsmeldung gegen die Kriterien.
 - **Shell:** Der Hook `scripts/hooks/bash-guard.mjs` blockt Heredocs, `git add` ohne Pfad und verwerfende Git-Befehle.
 

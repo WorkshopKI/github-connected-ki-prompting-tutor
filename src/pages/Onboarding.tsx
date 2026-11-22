@@ -352,7 +352,7 @@ const Onboarding = () => {
   const renderStatusBadge = (sp: StufeProgress, styles: typeof STUFE_STYLES.blue) => {
     if (sp.progress === 100) {
       return (
-        <span className="text-[10px] rounded-full px-2 py-0.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+        <span className="text-[10px] rounded-full px-2 py-0.5 bg-success-soft text-success">
           Abgeschlossen
         </span>
       );

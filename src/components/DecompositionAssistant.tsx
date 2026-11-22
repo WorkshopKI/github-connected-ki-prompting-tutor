@@ -9,6 +9,7 @@ import { streamChat } from "@/services/llmService";
 import type { Msg } from "@/types";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { staticDecompositionResults } from "@/data/decompositionExamples";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 const exampleProjects = [
   {
@@ -101,7 +102,7 @@ export const DecompositionAssistant = () => {
     let accumulated = "";
     await streamChat({
       messages: [systemMsg, userMsg],
-      model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
+      model: profile?.preferred_model ?? DEFAULT_MODEL,
       onDelta: (text) => {
         accumulated += text;
         setResult(accumulated);
@@ -148,7 +149,7 @@ Zeige die Verbesserungen klar markiert an. Antworte auf Deutsch.`
 
     await streamChat({
       messages: [systemMsg, userMsg],
-      model: profile?.preferred_model ?? "google/gemini-3-flash-preview",
+      model: profile?.preferred_model ?? DEFAULT_MODEL,
       onDelta: (text) => {
         accumulated += text;
         setResult(baseResult + accumulated);

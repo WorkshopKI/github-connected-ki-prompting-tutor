@@ -74,9 +74,9 @@ export const FlawExercise = ({ challenge, onComplete, compact }: Props) => {
           ? opt.isReal && selectedFlaws.has(opt.id)
             ? "border-primary bg-primary/5"
             : opt.isReal && !selectedFlaws.has(opt.id)
-            ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950"
+            ? "border-danger/30 bg-danger-soft"
             : !opt.isReal && selectedFlaws.has(opt.id)
-            ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950"
+            ? "border-danger/30 bg-danger-soft"
             : "border-border opacity-50"
           : selectedFlaws.has(opt.id)
           ? "border-primary bg-primary/5"
@@ -94,8 +94,8 @@ export const FlawExercise = ({ challenge, onComplete, compact }: Props) => {
         {submitted && (
           <span className="ml-2">
             {opt.isReal && selectedFlaws.has(opt.id) && <CheckCircle2 className="inline w-4 h-4 text-primary" />}
-            {opt.isReal && !selectedFlaws.has(opt.id) && <XCircle className="inline w-4 h-4 text-red-500" />}
-            {!opt.isReal && selectedFlaws.has(opt.id) && <XCircle className="inline w-4 h-4 text-red-500" />}
+            {opt.isReal && !selectedFlaws.has(opt.id) && <XCircle className="inline w-4 h-4 text-danger" />}
+            {!opt.isReal && selectedFlaws.has(opt.id) && <XCircle className="inline w-4 h-4 text-danger" />}
           </span>
         )}
       </div>

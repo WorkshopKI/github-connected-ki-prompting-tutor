@@ -234,7 +234,7 @@ function SectionedResponse({ sections, fullContent, isStreaming }: { sections: S
                       <span className="flex items-center gap-1">
                         <span className="text-[10px] opacity-50 shrink-0">{i + 1}.</span>
                         <span className="truncate">{fullTitle}</span>
-                        {hasWarning && <span className="text-[8px] text-amber-600 shrink-0">⚠</span>}
+                        {hasWarning && <span className="text-[8px] text-warning shrink-0">⚠</span>}
                       </span>
                     </button>
                   );

@@ -127,11 +127,11 @@ Erstelle jetzt die Qualitätsregel.`;
   // Phase: saved
   if (phase === "saved") {
     return (
-      <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
-          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+      <div className="rounded-xl bg-success-soft border border-success/30 p-4 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-success-soft flex items-center justify-center shrink-0">
+          <Check className="w-4 h-4 text-success" />
         </div>
-        <p className="text-sm text-emerald-700 dark:text-emerald-300">
+        <p className="text-sm text-success">
           Qualitätsregel gespeichert und in deinem KI-Kontext aktiviert.
         </p>
       </div>
@@ -178,11 +178,11 @@ Erstelle jetzt die Qualitätsregel.`;
 
             {constraint.example && !editMode && (
               <div className="space-y-1.5 text-xs">
-                <div className="border-l-2 border-red-400 bg-red-50/50 dark:bg-red-950/20 pl-3 py-1.5 rounded-r">
+                <div className="border-l-2 border-danger/60 bg-danger/50 pl-3 py-1.5 rounded-r">
                   <span className="text-muted-foreground">Vorher: </span>
                   <span>{constraint.example.before}</span>
                 </div>
-                <div className="border-l-2 border-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 pl-3 py-1.5 rounded-r">
+                <div className="border-l-2 border-success/60 bg-success/50 pl-3 py-1.5 rounded-r">
                   <span className="text-muted-foreground">Nachher: </span>
                   <span>{constraint.example.after}</span>
                 </div>
@@ -193,7 +193,7 @@ Erstelle jetzt die Qualitätsregel.`;
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                 {constraint.domain}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-warning-soft text-warning">
                 aus Ablehnung gelernt
               </span>
             </div>
@@ -229,12 +229,12 @@ Erstelle jetzt die Qualitätsregel.`;
   // Phase: reason
   if (phase === "reason") {
     return (
-      <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 space-y-3">
-        <label className="text-sm font-medium text-amber-800 dark:text-amber-400">
+      <div className="rounded-xl bg-warning-soft border border-warning/30 p-4 space-y-3">
+        <label className="text-sm font-medium text-warning">
           Was genau war nicht gut genug?
         </label>
         <textarea
-          className="w-full px-3 py-2 text-sm rounded-lg border border-amber-200 dark:border-amber-700 bg-background min-h-[72px] placeholder:text-muted-foreground/60"
+          className="w-full px-3 py-2 text-sm rounded-lg border border-warning/30 bg-background min-h-[72px] placeholder:text-muted-foreground/60"
           placeholder="z.B. Die Frist war zu vage, es fehlte die Rechtsgrundlage..."
           value={reason}
           onChange={(e) => setReason(e.target.value)}
@@ -244,13 +244,13 @@ Erstelle jetzt die Qualitätsregel.`;
           <button
             onClick={handleDerive}
             disabled={reason.trim().length < 10}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-700 dark:bg-amber-600 text-white hover:bg-amber-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-warning text-white hover:bg-warning/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Regel ableiten
           </button>
           <button
             onClick={() => { setPhase("nudge"); setDismissed(true); }}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-warning/30 text-warning hover:bg-warning-soft transition-colors"
           >
             Abbrechen
           </button>
@@ -261,27 +261,27 @@ Erstelle jetzt die Qualitätsregel.`;
 
   // Phase: nudge (default)
   return (
-    <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 flex items-start gap-3">
-      <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0 mt-0.5">
-        <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+    <div className="rounded-xl bg-warning-soft border border-warning/30 p-4 flex items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-warning-soft flex items-center justify-center shrink-0 mt-0.5">
+        <Lightbulb className="w-4 h-4 text-warning" />
       </div>
       <div className="flex-1 space-y-2">
-        <p className="font-semibold text-sm text-amber-800 dark:text-amber-400">
+        <p className="font-semibold text-sm text-warning">
           Du hast nachgebessert
         </p>
-        <p className="text-sm text-amber-700 dark:text-amber-300">
+        <p className="text-sm text-warning">
           Was war am ersten Output nicht gut genug? Wenn du es kurz beschreibst, kann ich daraus eine Qualitätsregel ableiten.
         </p>
         <div className="flex items-center gap-2 pt-1">
           <button
             onClick={() => setPhase("reason")}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-700 dark:bg-amber-600 text-white hover:bg-amber-800 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-warning text-white hover:bg-warning/90 transition-colors"
           >
             Ja, Regel ableiten
           </button>
           <button
             onClick={() => setDismissed(true)}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-warning/30 text-warning hover:bg-warning-soft transition-colors"
           >
             Nicht jetzt
           </button>

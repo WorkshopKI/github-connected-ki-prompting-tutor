@@ -30,7 +30,7 @@ export function FeedbackChatbot({ feedbackId, initialText, context, screenRef, o
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
   const [classification, setClassification] = useState<ReturnType<typeof parseFeedbackSummary>>(null);
-  const [model, setModel] = useState("anthropic/claude-sonnet-4.6");
+  const [model, setModel] = useState("anthropic/claude-sonnet-5.5");
   const abortRef = useRef<AbortController | null>(null);
   const responseBuffer = useRef("");
   const scrollRef = useRef<HTMLDivElement>(null);

@@ -114,7 +114,7 @@ export function FeedbackTicketDetail({ ticket, onClose, onUpdated }: Props) {
         </div>
 
         <div className="p-4 space-y-3">
-          <pre className="rounded-lg bg-[#1a1a2e] p-4 text-[11.5px] text-slate-200 font-mono leading-[1.7] overflow-x-auto max-h-[50vh] overflow-y-auto whitespace-pre-wrap">
+          <pre className="rounded-lg bg-sidebar p-4 text-xs text-sidebar-foreground font-mono leading-[1.7] overflow-x-auto max-h-[50vh] overflow-y-auto whitespace-pre-wrap">
             {prompt}
           </pre>
 
@@ -122,7 +122,7 @@ export function FeedbackTicketDetail({ ticket, onClose, onUpdated }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="gap-1.5 text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950"
+              className="gap-1.5 text-success border-success/30 hover:bg-success-soft"
               onClick={handleCopyPrompt}
             >
               <Copy className="h-3.5 w-3.5" /> Kopieren
@@ -131,7 +131,7 @@ export function FeedbackTicketDetail({ ticket, onClose, onUpdated }: Props) {
               <Download className="h-3.5 w-3.5" /> Als .md exportieren
             </Button>
             <span className="ml-auto text-[11px] text-muted-foreground flex items-center gap-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="inline-block w-2 h-2 rounded-full bg-success" />
               CLAUDE.md eingebunden
             </span>
           </div>
@@ -199,7 +199,7 @@ export function FeedbackTicketDetail({ ticket, onClose, onUpdated }: Props) {
         {/* User confirmation */}
         {ticket.user_confirmed && ticket.llm_summary && (
           <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex items-start gap-2">
-            <div className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center">
+            <div className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full bg-success flex items-center justify-center">
               <Check className="h-2.5 w-2.5 text-white" />
             </div>
             <div>

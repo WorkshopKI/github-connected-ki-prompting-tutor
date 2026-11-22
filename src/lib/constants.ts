@@ -57,13 +57,15 @@ export const LS_KEYS = {
  * NICHT die Tailwind-Strings manuell kopieren!
  */
 export const BADGE_COLORS = {
-  /** Primary-Akzent für aktive Zustände */
-  low: "bg-primary/10 text-primary",
-  /** Neutral-Mittel für Klassifikation */
-  medium: "bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  /** Kräftiger für hohe Priorität — NICHT für Confidentiality */
-  high: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
-  /** Neutral */
+  /** Marken-Akzent für aktive Zustände */
+  low: "bg-brand-soft text-brand-soft-ink",
+  /** Hinweis / mittleres Risiko */
+  medium: "bg-warning-soft text-warning",
+  /** Hohe Priorität / Fehler — NICHT für Confidentiality */
+  high: "bg-danger-soft text-danger",
+  /** Erfolg / abgeschlossen */
+  success: "bg-success-soft text-success",
+  /** Neutral (Einordnung, z. B. Prompt-Level) */
   neutral: "bg-muted text-muted-foreground",
 } as const;
 
@@ -90,13 +92,14 @@ export const SEVERITY_COLORS: Record<string, string> = {
 };
 
 /* ── Badge-Farben für Prompt-Level ── */
+// Level ist eine Einordnung, kein Risiko — daher durchgehend neutral (Design-System: Badge).
 export const LEVEL_BADGE_COLORS: Record<string, string> = {
-  alltag: BADGE_COLORS.low,
-  beruf: BADGE_COLORS.low,
-  websuche: BADGE_COLORS.medium,
-  research: BADGE_COLORS.medium,
-  blueprint: BADGE_COLORS.high,
-  organisation: BADGE_COLORS.high,
+  alltag: BADGE_COLORS.neutral,
+  beruf: BADGE_COLORS.neutral,
+  websuche: BADGE_COLORS.neutral,
+  research: BADGE_COLORS.neutral,
+  blueprint: BADGE_COLORS.neutral,
+  organisation: BADGE_COLORS.neutral,
 };
 
 /* ── Alert/Warning-Card Farben ──
@@ -105,9 +108,13 @@ export const LEVEL_BADGE_COLORS: Record<string, string> = {
  */
 export const ALERT_COLORS = {
   /** 🟡 Warnung — amber */
-  warning: "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400",
-  /** 🔴 Gefahr — red */
-  danger: "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400",
+  warning: "border-warning/30 bg-warning-soft text-warning",
+  /** 🔴 Gefahr */
+  danger: "border-danger/30 bg-danger-soft text-danger",
+  /** Information / Tipp */
+  info: "border-info/30 bg-info-soft text-info",
+  /** Erfolg */
+  success: "border-success/30 bg-success-soft text-success",
 } as const;
 
 /* ── Feedback-Kategorie-Farben ── */
@@ -128,5 +135,5 @@ export const FEEDBACK_STATUS_COLORS: Record<string, string> = {
 };
 
 /* ── Default-Modelle ── */
-export const DEFAULT_MODEL = "google/gemini-3-flash-preview";
-export const SECONDARY_MODEL = "openai/gpt-5";
+export const DEFAULT_MODEL = "openai/gpt-6-luna";
+export const SECONDARY_MODEL = "anthropic/claude-haiku-5.5";

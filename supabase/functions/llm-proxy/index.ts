@@ -11,23 +11,26 @@ const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
 /* ── Grobe Kosten-Schätzung pro 1M Tokens (input/output) ── */
 const MODEL_COSTS: Record<string, { input: number; output: number }> = {
-  "google/gemini-3-flash-preview":     { input: 0.10, output: 0.40 },
-  "google/gemini-3.1-pro-preview":     { input: 1.25, output: 5.00 },
-  "google/gemini-2.5-pro":            { input: 1.25, output: 5.00 },
-  "google/gemini-2.5-flash":          { input: 0.15, output: 0.60 },
-  "google/gemini-2.5-flash-lite":     { input: 0.08, output: 0.30 },
-  "openai/gpt-5":                     { input: 2.50, output: 10.00 },
-  "openai/gpt-5.4":                   { input: 3.00, output: 12.00 },
-  "openai/gpt-5-mini":               { input: 0.40, output: 1.60 },
-  "openai/gpt-5-nano":               { input: 0.10, output: 0.40 },
-  "anthropic/claude-sonnet-4.6":   { input: 3.00, output: 15.00 },
-  "anthropic/claude-opus-4.6":     { input: 15.00, output: 75.00 },
-  "anthropic/claude-haiku-3.5":      { input: 0.80, output: 4.00 },
-  "mistral/mistral-large":           { input: 2.00, output: 6.00 },
-  "mistral/mistral-small":           { input: 0.10, output: 0.30 },
-  "mistral/codestral":               { input: 0.30, output: 0.90 },
+  // USD pro 1 Mio. Tokens, Listenpreise OpenRouter, Stand 22.11.2026
+  "openai/gpt-6-luna":                { input: 0.10, output: 0.50 },
+  "anthropic/claude-haiku-5.5":       { input: 0.10, output: 0.50 },
+  "google/gemini-3.8-flash":          { input: 0.83, output: 4.13 },
+  "openai/gpt-6.2-sol":               { input: 2.00, output: 10.00 },
+  "anthropic/claude-sonnet-5.5":      { input: 2.00, output: 10.00 },
+  "google/gemini-4-hydrogen":         { input: 1.50, output: 7.50 },
+  "mistralai/mistral-medium-3-5":     { input: 1.50, output: 7.50 },
+  "openai/gpt-6.2-astra":             { input: 8.00, output: 40.00 },
+  "anthropic/claude-opus-5.5":        { input: 4.00, output: 20.00 },
+  "google/gemini-4-neon":             { input: 3.00, output: 15.00 },
+  "openai/gpt-oss-120b":              { input: 0.09, output: 0.36 },
+  "mistralai/mistral-large-4-0":      { input: 0.70, output: 2.10 },
+  "mistralai/mistral-small-2603":     { input: 0.15, output: 0.60 },
+  "deepseek/deepseek-v4.1-flash":     { input: 0.05, output: 0.20 },
+  // Altmodelle, solange sie noch in Profilen gespeichert sein können
+  "google/gemini-3-flash-preview":    { input: 0.50, output: 3.00 },
+  "google/gemini-3.1-pro-preview":    { input: 2.00, output: 12.00 },
 };
-const DEFAULT_COST = { input: 1.00, output: 4.00 }; // konservativer Fallback
+const DEFAULT_COST = { input: 2.00, output: 10.00 }; // konservativer Fallback
 
 function estimateCost(model: string, promptTokens: number, completionTokens: number): number {
   const costs = MODEL_COSTS[model] ?? DEFAULT_COST;
@@ -143,7 +146,7 @@ serve(async (req) => {
     }
 
     /* ── Call LLM (always OpenRouter) ── */
-    const llmModel = model || "google/gemini-3-flash-preview";
+    const llmModel = model || "openai/gpt-6-luna";
     const llmBody: Record<string, unknown> = {
       model: llmModel,
       messages,

@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 import type { AuthContextType } from "./AuthContext";
+import type { User } from "@supabase/supabase-js";
 import type { UserProfile } from "@/types";
 import { loadFromStorage } from "@/lib/storage";
 import { LS_KEYS } from "@/lib/constants";
@@ -19,7 +20,7 @@ export const StandaloneAuthProvider = ({ children }: { children: ReactNode }) =>
   const profile = loadFromStorage<UserProfile>(LS_KEYS.STANDALONE_PROFILE, defaultProfile);
 
   const value: AuthContextType = {
-    user: { id: "standalone-user" } as any,
+    user: { id: "standalone-user" } as unknown as User,
     session: null,
     profile,
     isLoading: false,

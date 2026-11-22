@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Coins, Key, ArrowRight, Bot, BarChart3, Zap } from "lucide-react";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export interface CreditsDialogProps {
   open: boolean;
@@ -63,7 +64,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
       }
 
       // Usage stats
-      const { data: usageData } = await (supabase as any)
+      const { data: usageData } = await supabase
         .from("api_usage_log")
         .select("estimated_cost, total_tokens, created_at")
         .eq("user_id", user.id);
@@ -88,7 +89,7 @@ export const CreditsDialog = ({ open, onOpenChange }: CreditsDialogProps) => {
   const isCustom = budget?.active_key_source === "custom";
   const budgetValue = budget?.provisioned_key_budget ?? 0;
   const budgetPercent = Math.min((budgetValue / maxBudget) * 100, 100);
-  const currentModel = profile?.preferred_model ?? "google/gemini-3-flash-preview";
+  const currentModel = profile?.preferred_model ?? DEFAULT_MODEL;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

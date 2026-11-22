@@ -64,7 +64,7 @@ export function FeedbackConfirmCard({ classification, onConfirm, onReject }: Pro
         <Button
           size="sm"
           onClick={onConfirm}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white text-[12px]"
+          className="bg-success hover:bg-success/90 text-white text-[12px]"
         >
           <Check className="mr-1.5 h-3.5 w-3.5" />
           Ja, genau das meine ich

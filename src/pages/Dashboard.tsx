@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Target,
-  Flame,
+  CalendarCheck,
   CheckCircle2,
+  ChevronRight,
+  Check,
+  Lock,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +26,7 @@ import { useDailyChallenge } from "@/hooks/useDailyChallenge";
 import { lernpfadStufen, requiredModules } from "@/data/learningPath";
 import { promptLibrary } from "@/data/prompts";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { PageHeader } from "@/components/PageHeader";
 import { DailyChallengeCard } from "@/components/DailyChallenge";
 import { ComparisonExercise } from "@/components/ComparisonExercise";
 import { comparisonExercises } from "@/data/comparisonExercises";
@@ -178,35 +182,35 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* 1. Begrüßung */}
-      <div>
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <h1 className="text-xl font-bold tracking-tight">
-            {getGreeting()}
-            {displayName ? `, ${displayName}` : ""}
-          </h1>
-          {isDepartment && (
-            <span className="text-sm text-muted-foreground">{scopeLabel}</span>
-          )}
-        </div>
-      </div>
+      {/* 1. Begrüßung — als Seitentitel, nicht kleiner als andere Titel */}
+      <PageHeader
+        eyebrow={isDepartment ? scopeLabel : undefined}
+        title={`${getGreeting()}${displayName ? `, ${displayName}` : ""}`}
+        description="Hier siehst du deinen nächsten Schritt, die Übungen für heute und deinen Fortschritt."
+      />
 
-      {/* 2. Nächster Schritt Banner (volle Breite) */}
+      {/* 2. Nächster Schritt — die eine Primäraktion der Startseite */}
       {nextStep && (
-        <div
-          className="flex items-center justify-between gap-4 p-4 rounded-lg bg-muted/30 border-l-4"
-          style={{ borderLeftColor: `var(--stufe-${currentProgress.nr})` }}
+        <section
+          aria-label="Dein nächster Schritt"
+          className="flex flex-col gap-4 rounded-lg border border-border bg-brand-soft px-6 py-5 sm:flex-row sm:items-center sm:gap-6"
         >
-          <div className="min-w-0">
-            <p className="text-[11px] font-medium text-muted-foreground mb-0.5">
-              Dein nächster Schritt · {nextStep.label}
-            </p>
-            <p className="text-sm font-semibold">{nextStep.title}</p>
+          <div className="min-w-0 flex-1">
+            <p className="eyebrow text-brand-soft-ink">Dein nächster Schritt · {nextStep.label}</p>
+            <h2 className="mt-1 text-xl font-semibold leading-7">{nextStep.title}</h2>
+            {currentProgress.progress > 0 && currentProgress.progress < 100 && (
+              <div className="mt-3 flex max-w-xs items-center gap-3">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-card" role="progressbar" aria-valuenow={currentProgress.progress} aria-valuemin={0} aria-valuemax={100} aria-label="Fortschritt der Stufe">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${currentProgress.progress}%` }} />
+                </div>
+                <span className="text-sm font-semibold tabular-nums">{currentProgress.progress} %</span>
+              </div>
+            )}
           </div>
-          <Button variant="outline" size="sm" className="shrink-0 gap-1.5" onClick={nextStep.action}>
-            {nextStep.actionLabel} <ArrowRight className="w-3.5 h-3.5" />
+          <Button className="shrink-0 gap-1.5" onClick={nextStep.action}>
+            {nextStep.actionLabel} <ArrowRight className="w-4 h-4" />
           </Button>
-        </div>
+        </section>
       )}
 
       {/* 3. Zwei-Spalten Layout */}
@@ -214,209 +218,189 @@ const Dashboard = () => {
         {/* Links (2/3) */}
         <div className="lg:col-span-2 space-y-8">
           {/* Heute üben */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-[11px] font-bold tracking-[2.5px] uppercase text-primary whitespace-nowrap">
-                Heute üben
-              </h2>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            <div className="pl-1">
+          <section>
+            <h2 className="eyebrow mb-3">Heute üben</h2>
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
               <button
                 onClick={() => setDailyDialogOpen(true)}
-                className="w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary border-b border-border"
+                className="flex w-full items-center gap-3.5 border-b border-border px-4 py-3 text-left transition-colors hover:bg-accent"
               >
-                <Flame className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-[13.5px] font-[450] flex-1">Tagesaufgabe</span>
-                {dailyStreak > 0 && (
-                  <span className="text-[10px] text-muted-foreground">{dailyStreak} Tage</span>
-                )}
+                <CalendarCheck className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.75} />
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[15px] font-semibold leading-6">Tagesaufgabe</span>
+                  <span className="block text-sm text-muted-foreground">
+                    {dailyCompleted ? "Für heute erledigt" : "Eine kurze Aufgabe, jeden Tag neu"}
+                    {dailyStreak > 0 && ` · ${dailyStreak} Tage in Folge`}
+                  </span>
+                </span>
                 {dailyCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-success shrink-0" strokeWidth={1.75} aria-label="Erledigt" />
                 ) : (
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-ink-subtle shrink-0" />
                 )}
               </button>
               <button
                 onClick={() => !allCompCompleted ? setCompDialogOpen(true) : handleResetComparison()}
-                className="w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary last:border-b-0"
+                className="flex w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-accent"
               >
-                <Target className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-[13.5px] font-[450] flex-1">Erkenne den Unterschied</span>
-                <span className="text-[10px] text-muted-foreground">
-                  {compLocalHistory.length}/{comparisonExercises.length}
+                <Target className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.75} />
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[15px] font-semibold leading-6">Erkenne den Unterschied</span>
+                  <span className="block text-sm text-muted-foreground">
+                    {allCompCompleted
+                      ? "Alle Vergleiche gelöst · erneut starten"
+                      : `${compLocalHistory.length} von ${comparisonExercises.length} Vergleichen gelöst`}
+                  </span>
                 </span>
                 {allCompCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-success shrink-0" strokeWidth={1.75} aria-label="Erledigt" />
                 ) : (
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-ink-subtle shrink-0" />
                 )}
               </button>
             </div>
-          </div>
+          </section>
 
-          {/* Beliebte Vorlagen */}
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-[11px] font-bold tracking-[2.5px] uppercase text-primary whitespace-nowrap">
-                Beliebte Vorlagen
-              </h2>
-              <div className="flex-1 h-px bg-border" />
+          {/* Häufig genutzte Vorlagen */}
+          <section>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="eyebrow">Häufig genutzte Vorlagen</h2>
               <Button
-                variant="ghost"
+                variant="link"
                 size="sm"
-                className="text-xs gap-1 text-primary h-7 whitespace-nowrap"
+                className="h-auto gap-1 p-0 text-sm text-brand-ink"
                 onClick={() => navigate("/library")}
               >
-                Alle <ArrowRight className="w-3 h-3" />
+                Alle Vorlagen <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </div>
-            <div className="pl-1">
+            <div className="overflow-hidden rounded-lg border border-border bg-card">
               {visiblePrompts.map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => navigate(`/playground?libraryTitle=${encodeURIComponent(prompt.title)}`)}
-                  className={`w-full flex items-center gap-3.5 py-3.5 text-left transition-colors hover:text-primary${i < visiblePrompts.length - 1 ? " border-b border-border" : ""}`}
+                  className={`flex w-full items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-accent${i < visiblePrompts.length - 1 ? " border-b border-border" : ""}`}
                 >
-                  <span className="text-[13.5px] font-[450] flex-1 truncate">{prompt.title}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
-                    {prompt.category}
-                  </span>
+                  <span className="flex-1 truncate text-[15px] font-semibold leading-6">{prompt.title}</span>
+                  <span className="hidden shrink-0 text-[13px] text-muted-foreground sm:inline">{prompt.category}</span>
                   <ConfidentialityBadge level={prompt.confidentiality || "open"} compact />
+                  <ChevronRight className="w-4 h-4 text-ink-subtle shrink-0" />
                 </button>
               ))}
-              {popularPrompts.length > 5 && (
-                <button
-                  onClick={() => setShowAllTemplates(!showAllTemplates)}
-                  className="w-full pt-2 text-xs text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {showAllTemplates ? "Weniger anzeigen" : `Alle ${popularPrompts.length} anzeigen`}
-                </button>
-              )}
             </div>
-          </div>
+            {popularPrompts.length > 5 && (
+              <button
+                onClick={() => setShowAllTemplates(!showAllTemplates)}
+                className="mt-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {showAllTemplates ? "Weniger anzeigen" : `Alle ${popularPrompts.length} anzeigen`}
+              </button>
+            )}
+          </section>
         </div>
 
-        {/* Rechts (1/3) */}
+        {/* Rechts (1/3) — alle Karten immer sichtbar, kein Springen */}
         <div className="flex flex-col gap-4">
-          {/* Mini-Lernpfad — immer sichtbar */}
-          <Card className="p-4 border border-border shadow-sm">
-            <h2 className="text-xs font-semibold mb-3">Lernpfad</h2>
-            <div className="space-y-2">
+          {/* Lernpfad: Farbe zeigt Zustand (erledigt / aktuell / offen / gesperrt), nicht die Stufe */}
+          <Card className="card-section p-4">
+            <h2 className="mb-3 text-base font-semibold">Lernpfad</h2>
+            <ol className="space-y-2.5">
               {lernpfadStufen.map((stufe, i) => {
                 const sp = stufeProgress[i];
+                const done = sp.progress === 100;
+                const locked = !sp.unlocked && !sp.isCurrent && !done;
                 return (
-                  <div key={stufe.nr} className="flex items-center gap-2.5">
-                    {sp.isCurrent || sp.progress === 100 ? (
-                      <div
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
-                        style={{
-                          backgroundColor: `var(--stufe-${stufe.nr})`,
-                        }}
-                      />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full shrink-0 bg-border" />
-                    )}
+                  <li key={stufe.nr} className="flex items-center gap-2.5" aria-current={sp.isCurrent ? "step" : undefined}>
                     <span
-                      className={`text-xs flex-1 ${
-                        sp.isCurrent
-                          ? "font-semibold"
-                          : sp.unlocked
-                            ? ""
-                            : "text-muted-foreground/50"
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] text-[11px] font-semibold ${
+                        done
+                          ? "border-success bg-success text-card"
+                          : sp.isCurrent
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : locked
+                              ? "border-dashed border-input text-ink-subtle"
+                              : "border-input text-muted-foreground"
                       }`}
                     >
+                      {done ? <Check className="h-3 w-3" strokeWidth={2.5} /> : locked ? <Lock className="h-2.5 w-2.5" /> : stufe.nr}
+                    </span>
+                    <span className={`flex-1 text-sm ${sp.isCurrent ? "font-semibold" : locked ? "text-ink-subtle" : ""}`}>
                       {stufe.title}
                     </span>
-                    {sp.progress > 0 && sp.progress < 100 && (
-                      <span className="text-[10px] text-muted-foreground">
-                        {sp.progress}%
-                      </span>
+                    {sp.isCurrent && sp.progress > 0 && sp.progress < 100 && (
+                      <span className="text-[13px] font-semibold tabular-nums text-brand-ink">{sp.progress} %</span>
                     )}
-                    {sp.progress === 100 && (
-                      <CheckCircle2 className="w-3 h-3 text-primary" />
-                    )}
-                  </div>
+                    {done && <span className="text-[13px] text-success">Erledigt</span>}
+                  </li>
                 );
               })}
-            </div>
+            </ol>
             <Button
               variant="ghost"
               size="sm"
-              className="w-full mt-3 text-xs gap-1 text-primary h-7"
+              className="mt-3 w-full gap-1 text-sm"
               onClick={() => navigate("/onboarding")}
             >
-              Zum Lernpfad <ArrowRight className="w-3 h-3" />
+              Zum Lernpfad <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Card>
 
-          {/* KI-Kontext — nur wenn eingerichtet oder Stufe >= 4 */}
-          {(kiContext.profile.abteilung || currentProgress.nr >= 4) && (
-            <Card className="p-4 border border-border shadow-sm">
-              <h2 className="text-xs font-semibold mb-2">Mein KI-Kontext</h2>
-              {kiContext.profile.abteilung ? (
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">
-                    {kiContext.profile.abteilung}
+          {/* KI-Kontext */}
+          <Card className="card-section p-4">
+            <h2 className="mb-1 text-base font-semibold">Mein KI-Kontext</h2>
+            {kiContext.profile.abteilung ? (
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">{kiContext.profile.abteilung}</p>
+                {activeRuleCount > 0 && (
+                  <p className="flex items-center gap-1.5 text-[13px] text-success">
+                    <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    {activeRuleCount} Regeln aktiv
                   </p>
-                  {activeRuleCount > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      <span className="text-[11px] text-muted-foreground">
-                        {activeRuleCount} Regeln aktiv
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Noch nicht eingerichtet.
-                </p>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full mt-2 text-xs gap-1 text-primary h-7"
-                onClick={() => navigate("/settings")}
-              >
-                {kiContext.profile.abteilung ? "Bearbeiten" : "Einrichten"}{" "}
-                <ArrowRight className="w-3 h-3" />
-              </Button>
-            </Card>
-          )}
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Sag der KI einmal, wer du bist und wie du arbeitest – sie berücksichtigt es dann bei jeder Anfrage.
+                {currentProgress.nr < 4 && <span className="mt-1 block text-[13px] text-ink-subtle">Empfohlen ab Stufe 4 · Artikulieren</span>}
+              </p>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-3 w-full gap-1 text-sm"
+              onClick={() => navigate("/settings")}
+            >
+              {kiContext.profile.abteilung ? "Bearbeiten" : "KI-Kontext einrichten"}
+            </Button>
+          </Card>
 
-          {/* Qualitätsregeln — nur wenn >= 1 existiert oder Stufe >= 3 */}
-          {(constraintCount > 0 || currentProgress.nr >= 3) && (
-            <Card className="p-4 border border-border shadow-sm">
-              <h2 className="text-xs font-semibold mb-2">Qualitätsregeln</h2>
-              {constraintCount > 0 ? (
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">
-                    {constraintCount} Regeln
+          {/* Qualitätsregeln */}
+          <Card className="card-section p-4">
+            <h2 className="mb-1 text-base font-semibold">Qualitätsregeln</h2>
+            {constraintCount > 0 ? (
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">{constraintCount} Regeln gespeichert</p>
+                {constraints.filter((c) => c.source === "rejection").length > 0 && (
+                  <p className="text-[13px] text-muted-foreground">
+                    {constraints.filter((c) => c.source === "rejection").length} davon aus abgelehnten Antworten gelernt
                   </p>
-                  {constraints.filter((c) => c.source === "rejection").length > 0 && (
-                    <p className="text-[11px] text-amber-700 dark:text-amber-400">
-                      {constraints.filter((c) => c.source === "rejection").length}{" "}
-                      aus Ablehnungen gelernt
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Noch keine Regeln erstellt.
-                </p>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full mt-2 text-xs gap-1 text-primary h-7"
-                onClick={() => navigate("/library?section=constraints")}
-              >
-                {constraintCount > 0 ? "Ansehen" : "Erste Regel erstellen"}{" "}
-                <ArrowRight className="w-3 h-3" />
-              </Button>
-            </Card>
-          )}
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Regeln entstehen aus Antworten, die du ablehnst. Sie sorgen dafür, dass derselbe Fehler nicht zweimal passiert.
+                {currentProgress.nr < 3 && <span className="mt-1 block text-[13px] text-ink-subtle">Empfohlen ab Stufe 3 · Unterscheiden</span>}
+              </p>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-3 w-full gap-1 text-sm"
+              onClick={() => navigate("/library?section=constraints")}
+            >
+              {constraintCount > 0 ? "Regeln ansehen" : "Erste Regel erstellen"}
+            </Button>
+          </Card>
         </div>
       </div>
 

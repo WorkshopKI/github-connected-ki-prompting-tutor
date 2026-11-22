@@ -16,6 +16,7 @@ import { useOrgContext } from "@/contexts/OrgContext";
 import { useACTAAssist } from "@/hooks/useACTAAssist";
 import { extractVariables } from "@/lib/promptUtils";
 import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export interface ACTABuilderProps {
   fields: ACTAFields;
@@ -417,7 +418,7 @@ export const ACTABuilder = ({
             context: "Freie Prompt-Bewertung im Playground",
             goodExample: "",
             improvementHints: ["Kontext hinzufügen", "Spezifischer werden", "Constraints definieren"],
-            model: "google/gemini-3-flash-preview",
+            model: DEFAULT_MODEL,
           }),
         }
       );
@@ -585,7 +586,7 @@ export const ACTABuilder = ({
           )}
           {/* Offene Variablen-Warnung — nur collapsed */}
           {!expanded && variables.length > 0 && hasUnfilledVars && (
-            <Badge variant="outline" className="text-[10px] text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-600">
+            <Badge variant="outline" className="text-[10px] text-warning border-warning/30">
               {variables.filter(v => !variableValues[v]?.trim()).length} offen
             </Badge>
           )}
@@ -701,7 +702,7 @@ export const ACTABuilder = ({
               <div className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg border-l-[3px] transition-all",
                 (hasUnfilledVars || hasEmptyRaketeFields)
-                  ? "bg-amber-50 dark:bg-amber-950/30 border-l-amber-500 dark:border-l-amber-400"
+                  ? "bg-warning-soft border-l-warning"
                   : "bg-primary/10 border-l-primary"
               )}>
                 {hasUnfilledVars ? (
@@ -811,7 +812,7 @@ export const ACTABuilder = ({
                             <span className="text-xs font-semibold">Prompt-Check</span>
                             <span className={cn(
                               "text-xs font-bold",
-                              evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                              evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-warning" : "text-danger"
                             )}>
                               {evalScore}/{evalMaxScore}
                             </span>
@@ -828,12 +829,12 @@ export const ACTABuilder = ({
                             <div key={c.label}>
                               <div className="flex justify-between items-center mb-1">
                                 <span className="text-[11px] font-medium text-muted-foreground">{c.label}</span>
-                                <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-red-600 dark:text-red-400")}>
+                                <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-danger")}>
                                   {c.met ? "✓ Gut" : "✗ Fehlt"}
                                 </span>
                               </div>
                               <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                                <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]")} />
+                                <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-danger/60 w-[15%]")} />
                               </div>
                             </div>
                           ))}
@@ -1207,7 +1208,7 @@ export const ACTABuilder = ({
         <Card data-tour="acta-preview" className="p-3 bg-background/50">
           <p className="text-xs font-medium text-muted-foreground mb-1">Vorschau:</p>
           {hasUnfilledVars && (
-            <p className="text-[10px] text-amber-600 dark:text-amber-400 mb-1.5">
+            <p className="text-[10px] text-warning mb-1.5">
               {variables.filter(v => !variableValues[v]?.trim()).length} Angabe{variables.filter(v => !variableValues[v]?.trim()).length > 1 ? "n" : ""} noch offen
             </p>
           )}
@@ -1253,7 +1254,7 @@ export const ACTABuilder = ({
                     <span className="text-xs font-semibold">Prompt-Check</span>
                     <span className={cn(
                       "text-xs font-bold",
-                      evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400"
+                      evalScore === evalMaxScore ? "text-primary" : evalScore >= 2 ? "text-warning" : "text-danger"
                     )}>
                       {evalScore}/{evalMaxScore}
                     </span>
@@ -1270,12 +1271,12 @@ export const ACTABuilder = ({
                     <div key={c.label}>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-[11px] font-medium text-muted-foreground">{c.label}</span>
-                        <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-red-600 dark:text-red-400")}>
+                        <span className={cn("text-[11px] font-semibold", c.met ? "text-primary" : "text-danger")}>
                           {c.met ? "✓ Gut" : "✗ Fehlt"}
                         </span>
                       </div>
                       <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                        <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-red-500/60 w-[15%]")} />
+                        <div className={cn("h-full rounded-full transition-all duration-500", c.met ? "bg-primary w-full" : "bg-danger/60 w-[15%]")} />
                       </div>
                     </div>
                   ))}

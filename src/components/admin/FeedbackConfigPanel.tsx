@@ -11,14 +11,14 @@ import type { FeedbackConfig } from "@/types";
 import { toast } from "sonner";
 
 const MODEL_OPTIONS = [
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6" },
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash" },
-  { value: "openai/gpt-5-mini", label: "GPT-5 Mini" },
+  { value: "anthropic/claude-sonnet-5.5", label: "Claude Sonnet 5.5" },
+  { value: "openai/gpt-6-luna", label: "GPT-6 Luna" },
+  { value: "anthropic/claude-haiku-5.5", label: "Claude Haiku 5.5" },
 ];
 
 export function FeedbackConfigPanel() {
   const [config, setConfig] = useState<FeedbackConfig>({
-    llm_model: "anthropic/claude-sonnet-4.6",
+    llm_model: "anthropic/claude-sonnet-5.5",
     proactive_triggers: true,
     max_chatbot_turns: 6,
   });
