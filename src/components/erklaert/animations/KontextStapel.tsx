@@ -47,7 +47,7 @@ export default function KontextStapel() {
               {SCHICHTEN.slice(0, sichtbar).map((s, i) => (
                 <div
                   key={s.name}
-                  className={`flex items-start gap-3 rounded-lg border p-3 transition-all motion-reduce:transition-none ${i === sichtbar - 1 && !ende ? "border-input bg-brand-soft" : "border-border bg-card"}`}
+                  className={`flex min-w-0 items-start gap-3 rounded-lg border p-3 transition-all motion-reduce:transition-none ${i === sichtbar - 1 && !ende ? "border-input bg-brand-soft" : "border-border bg-card"}`}
                 >
                   <span className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${FARBEN[i]}`} />
                   <div className="min-w-0">

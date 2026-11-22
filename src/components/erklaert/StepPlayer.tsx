@@ -69,7 +69,7 @@ export function StepPlayer({ captions, children, controls, onStepChange }: StepP
         </span>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <div className="min-w-0">{children(step)}</div>
         <aside className="rounded-lg border border-border bg-card p-5" aria-live="polite">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Was gerade passiert</h2>
