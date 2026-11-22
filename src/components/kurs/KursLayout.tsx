@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { BookOpen, GraduationCap, LayoutDashboard, Map as MapIcon, PlayCircle, Users, Layers, Wrench } from "lucide-react";
+import { BookOpen, GraduationCap, LayoutDashboard, Map as MapIcon, MonitorPlay, PlayCircle, Users, Layers, Wrench } from "lucide-react";
+import { FahrplanLeiste } from "@/components/kurs/live/FahrplanLeiste";
+import { LiveBand } from "@/components/kurs/live/LiveBand";
 import { isKursEdition } from "@/lib/edition";
 
 /**
@@ -15,6 +17,7 @@ const KURS = isKursEdition();
 const NAV = [
   ...(KURS ? [] : [{ to: "/", label: "Start", icon: LayoutDashboard, end: true }]),
   { to: "/kurs", label: "Kurs", icon: MapIcon, end: true },
+  { to: "/kurs/folien", label: "Folien", icon: MonitorPlay },
   { to: "/erklaert", label: "KI erklärt", icon: PlayCircle },
   { to: "/kurs/vorlagen", label: "Vorlagen", icon: BookOpen },
   { to: "/kurs/gruppen", label: "Gruppenarbeit", icon: Users },
@@ -25,6 +28,7 @@ const NAV = [
 export function KursLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <LiveBand />
       <header className="z-20 border-b border-border bg-card md:sticky md:top-0 print:hidden">
         <div className="mx-auto flex max-w-[70rem] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 max-md:gap-x-3 lg:px-8">
           <Link to={KURS ? "/kurs" : "/"} className="leading-tight" aria-label={KURS ? "KI-Werkstatt, zur Kursübersicht" : "KI-Werkstatt, zur Startseite"}>
@@ -61,7 +65,10 @@ export function KursLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-[70rem] px-4 py-8 lg:px-8 print:max-w-none print:p-0">{children}</main>
+      <main className="mx-auto max-w-[70rem] px-4 py-8 lg:px-8 print:max-w-none print:p-0">
+        <FahrplanLeiste />
+        {children}
+      </main>
     </div>
   );
 }

@@ -14,6 +14,7 @@ import { GuestBanner } from "@/components/GuestBanner";
 import { AppShell } from "@/components/AppShell";
 import { TeamMembers } from "@/components/TeamMembers";
 import { PendingReviews } from "@/components/PendingReviews";
+import { LiveBand } from "@/components/kurs/live/LiveBand";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import Login from "./pages/Login";
@@ -28,6 +29,11 @@ const KursStand = lazy(() => import("./pages/kurs/KursStand"));
 const KursGruppen = lazy(() => import("./pages/kurs/KursGruppen"));
 const KursVorlagen = lazy(() => import("./pages/kurs/KursVorlagen"));
 const KursProfi = lazy(() => import("./pages/kurs/KursProfi"));
+const KursFolien = lazy(() => import("./pages/kurs/KursFolien"));
+const KursPraesentation = lazy(() => import("./pages/kurs/KursPraesentation"));
+const KursLeitstand = lazy(() => import("./pages/kurs/KursLeitstand"));
+const KursLive = lazy(() => import("./pages/kurs/KursLive"));
+const KurzlinkFolie = lazy(() => import("./pages/kurs/KurzlinkFolie"));
 const KursUebungen = lazy(() => import("./pages/kurs/KursUebungen"));
 const KursCheck = lazy(() => import("./pages/kurs/KursCheck"));
 const KursSpickzettel = lazy(() => import("./pages/kurs/KursSpickzettel"));
@@ -45,6 +51,7 @@ const queryClient = new QueryClient();
 
 const PlatformLayout = ({ children }: { children: React.ReactNode }) => (
   <AppShell>
+    <LiveBand />
     <GuestBanner />
     {children}
   </AppShell>
@@ -111,6 +118,12 @@ const PublicApp = () => (
       <Route path="/kurs/uebungen" element={<KursUebungen />} />
       <Route path="/kurs/check" element={<KursCheck />} />
       <Route path="/kurs/spickzettel" element={<KursSpickzettel />} />
+      <Route path="/kurs/folien" element={<KursFolien />} />
+      <Route path="/kurs/praesentation" element={<KursPraesentation />} />
+      <Route path="/kurs/leitstand" element={<KursLeitstand />} />
+      <Route path="/live" element={<KursLive />} />
+      <Route path="/live/:code" element={<KursLive />} />
+      <Route path="/f/:nr" element={<KurzlinkFolie />} />
       <Route path="/kurs/:id" element={<KursModulPage />} />
       <Route path="/erklaert" element={<ErklaertIndex />} />
       <Route path="/erklaert/:slug" element={<ErklaertDetail />} />
