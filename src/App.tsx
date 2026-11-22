@@ -139,10 +139,11 @@ const AppContent = () => {
   const alt = LEGACY_REDIRECTS[location.pathname.replace(/\/$/, "")];
   if (alt) return <Navigate to={alt} replace />;
   if (isPublicPath(location.pathname)) return <PublicApp />;
+  // Kurs-Auftritt: Startseite ist immer die Kursübersicht, auch wenn im Browser schon ein Modus
+  // gewählt wurde (das Dashboard steht dort nicht in der Navigation). Moduswahl erst bei den Übungen.
+  if (isKursEdition() && location.pathname === "/") return <Navigate to="/kurs" replace />;
 
   if (!isChosen) {
-    // Kurs-Auftritt: Startseite ist die Kursübersicht, Moduswahl erst bei den Übungen
-    if (isKursEdition() && location.pathname === "/") return <Navigate to="/kurs" replace />;
     return (
       <Routes>
         <Route path="*" element={<ModeSelection />} />
