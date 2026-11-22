@@ -55,4 +55,4 @@ Alte Pfade leiten weiter (`LEGACY_REDIRECTS` in `lib/edition.ts`), sobald die al
 ## 4 Offen
 
 - ~~Hauptdomain für den Kurs-Auftritt festlegen.~~ Entschieden 22.11.2026: `prompting-studio.kilab.org` (steht in `KURS_HOSTS`).
-- Organisations-Auftritt braucht jetzt eine eigene Domain (oder Build mit `VITE_APP_EDITION=organisation`), da die Hauptdomain den Kurs zeigt.
+- Organisations-Auftritt auf der Hauptdomain unter `/org` (22.11.2026): setzt die Wahl im Browser (`LS_KEYS.EDITION`), `/org/<pfad>` springt direkt dorthin, `/org/aus` zurück zum Kurs. Später ggf. eigene Domain.

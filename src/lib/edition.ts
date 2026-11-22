@@ -1,17 +1,20 @@
+import { LS_KEYS } from "@/lib/constants";
+
 /* ── Auftritt (Edition) ──
  * Eine Codebasis, zwei Auftritte:
  * - "kurs": VHS-/Kursteilnehmende. Startet auf /kurs, ohne Abteilungen und Rollen.
  * - "organisation": die KI-Werkstatt für Organisationen (bisheriges Verhalten).
  *
- * Reihenfolge: VITE_APP_EDITION (Build) → Hostname → "organisation".
+ * Reihenfolge: VITE_APP_EDITION (Build) → Wahl im Browser (/org, siehe editionWahl.ts) → Hostname → "organisation".
  * So kann derselbe Build unter zwei Domains laufen, oder je Auftritt ein eigener Build.
+ * Auf der Kurs-Domain öffnet /org die Organisationsversion (gemerkt im Browser), /org/aus schaltet zurück.
  * Spec: docs/specs/2026-11-22-kurs-auftritt.md
  */
 export type Edition = "kurs" | "organisation";
 
 /** Domains, die automatisch den Kurs-Auftritt zeigen.
  *  Hauptdomain (festgelegt 22.11.2026): prompting-studio.kilab.org; auf sie zeigen auch die QR-Codes der Folien.
- *  Der Organisations-Auftritt braucht damit eine eigene Domain oder einen Build mit VITE_APP_EDITION=organisation. */
+ *  Der Organisations-Auftritt ist dort über /org erreichbar (siehe editionWahl.ts). */
 export const KURS_HAUPTDOMAIN = "prompting-studio.kilab.org";
 export const KURS_HOSTS = [
   KURS_HAUPTDOMAIN,
@@ -20,9 +23,20 @@ export const KURS_HOSTS = [
   "lernen.kilab.org",
 ];
 
+/** Pfad, der in diesem Browser die Organisationsversion einschaltet; ORG_PFAD + "/aus" schaltet zurück. */
+export const ORG_PFAD = "/org";
+
+const istEdition = (x: unknown): x is Edition => x === "kurs" || x === "organisation";
+
 export function getEdition(): Edition {
   const env = import.meta.env.VITE_APP_EDITION as string | undefined;
-  if (env === "kurs" || env === "organisation") return env;
+  if (istEdition(env)) return env;
+  try {
+    const gewaehlt = typeof localStorage !== "undefined" ? localStorage.getItem(LS_KEYS.EDITION) : null;
+    if (istEdition(gewaehlt)) return gewaehlt;
+  } catch {
+    /* localStorage nicht verfügbar */
+  }
   if (typeof window !== "undefined" && KURS_HOSTS.includes(window.location.hostname)) return "kurs";
   return "organisation";
 }

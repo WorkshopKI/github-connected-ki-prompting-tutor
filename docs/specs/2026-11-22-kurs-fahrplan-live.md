@@ -65,4 +65,4 @@ Realtime muss im Supabase-Projekt für öffentliche Kanäle erlaubt sein (Standa
 - Der Code ist kein Passwort: Wer ihn kennt, könnte einen Leitungs-Stand vortäuschen (ohne Token aber nichts am Beamer steuern). Für VHS-Kurse vertretbar; sonst Realtime Authorization mit privaten Kanälen.
 - Sprechernotizen sind öffentlich abrufbar; keine vertraulichen Angaben hineinschreiben.
 - Folienbilder rendert LibreOffice; Schriften müssen installiert sein (Source Sans/Serif).
-- Hauptdomain festgelegt (22.11.2026): `prompting-studio.kilab.org` zeigt den Kurs-Auftritt. Der Organisations-Auftritt (KI-Werkstatt) braucht eine eigene Domain oder einen Build mit `VITE_APP_EDITION=organisation`.
+- Hauptdomain festgelegt (22.11.2026): `prompting-studio.kilab.org` zeigt den Kurs-Auftritt. Der Organisations-Auftritt (KI-Werkstatt) ist dort über `/org` erreichbar (je Browser gemerkt, `/org/aus` schaltet zurück; `src/lib/editionWahl.ts`).
