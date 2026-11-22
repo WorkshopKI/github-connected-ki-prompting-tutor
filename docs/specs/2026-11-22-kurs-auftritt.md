@@ -23,6 +23,9 @@ Entscheidungen:
 | `/kurs/gruppen` | Gruppenübungen und Mini-Projekte | `pages/kurs/KursGruppen.tsx`, `data/kurs/gruppenarbeit.ts` |
 | `/kurs/vorlagen` | 49 Beispiel-Prompts in drei Stufen (Alltagshelfer, Juniorassistent, Forschungsassistent), Suche, Checkliste | `pages/kurs/KursVorlagen.tsx`, `data/kurs/vorlagen.ts` |
 | `/kurs/profi` | Neun Profi-Techniken mit Einordnung 2026 | `pages/kurs/KursProfi.tsx`, `data/kurs/vorlagen.ts` |
+| `/kurs/uebungen` | Übungen je Modul ohne Login: Selbstcheck, Musterlösung, Prüfprompt | `pages/kurs/KursUebungen.tsx`, `data/kurs/uebungen.ts` |
+| `/kurs/check` | Wissenscheck je Kurstag | `pages/kurs/KursCheck.tsx`, `data/kurs/wissenscheck.ts` |
+| `/kurs/spickzettel` | Spickzettel, druckbar (A4) | `pages/kurs/KursSpickzettel.tsx` |
 | `/kurs/stand` | Aktuelle Modelle, Tools, Neuigkeiten (monatlich pflegen) | `pages/kurs/KursStand.tsx`, `data/kurs/stand.ts` |
 | `/erklaert`, `/erklaert/:slug` | Erklär-Animationen | `pages/kurs/Erklaert.tsx`, Register `data/kurs/erklaert.ts`, Bausteine `components/erklaert/` |
 
