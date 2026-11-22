@@ -9,8 +9,12 @@
  */
 export type Edition = "kurs" | "organisation";
 
-/** Domains, die automatisch den Kurs-Auftritt zeigen. */
+/** Domains, die automatisch den Kurs-Auftritt zeigen.
+ *  Hauptdomain (festgelegt 22.11.2026): prompting-studio.kilab.org; auf sie zeigen auch die QR-Codes der Folien.
+ *  Der Organisations-Auftritt braucht damit eine eigene Domain oder einen Build mit VITE_APP_EDITION=organisation. */
+export const KURS_HAUPTDOMAIN = "prompting-studio.kilab.org";
 export const KURS_HOSTS = [
+  KURS_HAUPTDOMAIN,
   "prompting-tutor.kilab.org",
   "prompt-tutor.kilab.org",
   "lernen.kilab.org",

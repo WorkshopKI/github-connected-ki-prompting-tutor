@@ -58,11 +58,11 @@ python scripts/folien/folien.py export --pptx v27.pptx --pdf Kursfolien_v27.pdf
 
 `bauen` ersetzt vorhandene Stempel und Animationen, läuft also auch auf v27 erneut. Ändern sich Foliennummern, `fahrplan.json` (Stationen, `links`, `animationen`, `qr`) und `aufbau.json` mitziehen; `bauen` warnt, wenn ein Folientitel nicht mehr passt.
 
-Realtime muss im Supabase-Projekt für öffentliche Kanäle erlaubt sein (Standard). Die QR-Codes zeigen auf `prompting-studio.kilab.org`; nach Festlegung der Hauptdomain mit `--basis-url` neu bauen.
+Realtime muss im Supabase-Projekt für öffentliche Kanäle erlaubt sein (Standard). Hauptdomain ist `prompting-studio.kilab.org` (`KURS_HAUPTDOMAIN` in `src/lib/edition.ts`, Standard von `--basis-url`); dorthin zeigen die QR-Codes.
 
 ## 4. Grenzen und offen
 
 - Der Code ist kein Passwort: Wer ihn kennt, könnte einen Leitungs-Stand vortäuschen (ohne Token aber nichts am Beamer steuern). Für VHS-Kurse vertretbar; sonst Realtime Authorization mit privaten Kanälen.
 - Sprechernotizen sind öffentlich abrufbar; keine vertraulichen Angaben hineinschreiben.
 - Folienbilder rendert LibreOffice; Schriften müssen installiert sein (Source Sans/Serif).
-- Hauptdomain für QR-Codes und `KURS_HOSTS` weiter offen.
+- Hauptdomain festgelegt (22.11.2026): `prompting-studio.kilab.org` zeigt den Kurs-Auftritt. Der Organisations-Auftritt (KI-Werkstatt) braucht eine eigene Domain oder einen Build mit `VITE_APP_EDITION=organisation`.

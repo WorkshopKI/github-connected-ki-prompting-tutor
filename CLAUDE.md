@@ -195,7 +195,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - **Playground:** In AppShell integriert, Sidebar startet collapsed (`defaultOpen={false}`). Eigener sticky Header (`PlaygroundHeader`) mit `SidebarTrigger`. AppShell-Header wird auf `/playground` ausgeblendet. `playground-root` nutzt `h-full` statt `h-screen`.
 
 ### Kurs-Auftritt und „KI erklärt“ (Spec: `docs/specs/2026-11-22-kurs-auftritt.md`)
-- **Edition:** `getEdition()` in `src/lib/edition.ts` → `"kurs"` (VITE_APP_EDITION oder Host in `KURS_HOSTS`) oder `"organisation"`. Im Kurs-Auftritt startet `/` auf `/kurs`; im Organisations-Auftritt zeigt `KursLayout` zusätzlich „Start“ → `/`.
+- **Edition:** `getEdition()` in `src/lib/edition.ts` → `"kurs"` (VITE_APP_EDITION oder Host in `KURS_HOSTS`, Hauptdomain `prompting-studio.kilab.org`) oder `"organisation"`. Im Kurs-Auftritt startet `/` auf `/kurs`; im Organisations-Auftritt zeigt `KursLayout` zusätzlich „Start“ → `/`.
 - **Kursdaten** in `src/data/kurs/`: `lernpfad.ts` (12 Module, zwei Tage, vier Disziplinen), `uebungen.ts` (Kurs-Übungen `verbessern`/`finden`, Prüfprompt zum Kopieren), `vorlagen.ts` (49 Prompts in drei Stufen, Profi-Techniken, Checkliste), `gruppenarbeit.ts`, `wissenscheck.ts`, `stand.ts`, `erklaert.ts` (Register der 16 Animationen).
 - **Kurs-Übungen** laufen ohne Login und ohne KI (Selbstcheck, Musterlösung); Fortschritt in `LS_KEYS.KURS_UEBUNGEN`, Wissenscheck in `LS_KEYS.KURS_CHECK`.
 - **Animationen:** `src/components/erklaert/StepPlayer.tsx` + `animations/*.tsx`, ohne Live-KI, Pfeiltasten-Steuerung. Neue Animation = Komponente + Eintrag mit `komponente: lazy(...)` in `erklaert.ts`.

@@ -42,7 +42,7 @@ Neue Animation anlegen: Komponente unter `components/erklaert/animations/` mit `
 | prompting-tutor.kilab.org | 4 Disziplinen, Projekt-Zerlegung | Kurs-Module `/kurs/:id` |
 | prompt-tutor.kilab.org | Bibliothek (49 Prompts, aktualisiert), drei Stufen, Advanced-Techniken, Ressourcen-Checkliste | `/kurs/vorlagen`, `/kurs/profi` |
 | miniprojekte.lovable.app | Gruppenübungen und Mini-Projekte | `/kurs/gruppen` |
-| prompting-studio.kilab.org | ist diese App | – |
+| prompting-studio.kilab.org | ist diese App, Hauptdomain des Kurs-Auftritts | – |
 
 Alte Pfade leiten weiter (`LEGACY_REDIRECTS` in `lib/edition.ts`), sobald die alten Domains auf dieses Lovable-Projekt zeigen: `/bibliothek`, `/ressourcen` → `/kurs/vorlagen`; `/lernen/alltagshelfer|junior|forschung` → `/kurs/vorlagen?stufe=…`; `/advanced` → `/kurs/profi`; `/acta` → `/kurs/fragen-mit-acta`; `/ueben` → `/onboarding`. Die Domains stehen in `KURS_HOSTS` und zeigen damit automatisch den Kurs-Auftritt. miniprojekte.lovable.app ist eine Lovable-Subdomain; dort die Startseite durch einen Hinweis mit Link auf `/kurs/gruppen` ersetzen.
 
@@ -54,5 +54,5 @@ Alte Pfade leiten weiter (`LEGACY_REDIRECTS` in `lib/edition.ts`), sobald die al
 
 ## 4 Offen
 
-- Hauptdomain für den Kurs-Auftritt festlegen.
-- Organisations-Auftritt später als eigener Build mit eigener Domain, wenn die Codepfade auseinanderlaufen.
+- ~~Hauptdomain für den Kurs-Auftritt festlegen.~~ Entschieden 22.11.2026: `prompting-studio.kilab.org` (steht in `KURS_HOSTS`).
+- Organisations-Auftritt braucht jetzt eine eigene Domain (oder Build mit `VITE_APP_EDITION=organisation`), da die Hauptdomain den Kurs zeigt.
