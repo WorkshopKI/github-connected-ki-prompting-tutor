@@ -45,7 +45,7 @@ export function KursLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
           <Link
-            to="/onboarding"
+            to="/kurs/uebungen"
             className="ml-auto inline-flex items-center gap-2 rounded-md border border-input px-3 py-1.5 text-sm font-semibold hover:bg-accent"
           >
             <GraduationCap className="h-4 w-4" strokeWidth={1.75} />

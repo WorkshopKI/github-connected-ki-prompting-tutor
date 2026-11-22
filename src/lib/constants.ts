@@ -47,6 +47,8 @@ export const LS_KEYS = {
   REJECTION_NUDGE_COOLDOWN: "ps-rejection-nudge-cooldown",
   LERNPFAD_PROGRESS: "ps-lernpfad-progress",
   COMPARISON_HISTORY: "ps-comparison-history",
+  KURS_UEBUNGEN: "kurs-uebungen-erledigt",
+  KURS_CHECK: "kurs-wissenscheck",
   FEEDBACK_ITEMS: "ps-feedback",
   FEEDBACK_CONFIG: "ps-feedback-config",
 } as const;

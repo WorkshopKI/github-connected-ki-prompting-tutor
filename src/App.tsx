@@ -28,6 +28,7 @@ const KursStand = lazy(() => import("./pages/kurs/KursStand"));
 const KursGruppen = lazy(() => import("./pages/kurs/KursGruppen"));
 const KursVorlagen = lazy(() => import("./pages/kurs/KursVorlagen"));
 const KursProfi = lazy(() => import("./pages/kurs/KursProfi"));
+const KursUebungen = lazy(() => import("./pages/kurs/KursUebungen"));
 const ErklaertIndex = lazy(() => import("./pages/kurs/Erklaert").then((m) => ({ default: m.ErklaertIndex })));
 const ErklaertDetail = lazy(() => import("./pages/kurs/Erklaert").then((m) => ({ default: m.ErklaertDetail })));
 
@@ -105,6 +106,7 @@ const PublicApp = () => (
       <Route path="/kurs/gruppen" element={<KursGruppen />} />
       <Route path="/kurs/vorlagen" element={<KursVorlagen />} />
       <Route path="/kurs/profi" element={<KursProfi />} />
+      <Route path="/kurs/uebungen" element={<KursUebungen />} />
       <Route path="/kurs/:id" element={<KursModulPage />} />
       <Route path="/erklaert" element={<ErklaertIndex />} />
       <Route path="/erklaert/:slug" element={<ErklaertDetail />} />
