@@ -27,10 +27,12 @@ export interface ToolEintrag {
 export const TOOLS: ToolEintrag[] = [
   { name: "ChatGPT", anbieter: "OpenAI · USA", url: "https://chatgpt.com", kurz: "Allrounder mit Agent „Work“, Bildern, Sprachmodus und Apps" },
   { name: "Claude", anbieter: "Anthropic · USA", url: "https://claude.ai", kurz: "Stark bei Texten, Analysen und Programmieren" },
-  { name: "Gemini", anbieter: "Google · USA", url: "https://gemini.google.com", kurz: "In Google-Dienste eingebunden, Videos mit Gemini Omni (im EWR ohne Video-Upload)" },
+  { name: "Gemini", anbieter: "Google · USA", url: "https://gemini.google.com", kurz: "In Google-Dienste eingebunden; Videos mit Gemini Omni nur im Abo, im EWR ohne Bearbeitung eigener Videos" },
   { name: "Mistral Vibe", anbieter: "Mistral · Frankreich", url: "https://chat.mistral.ai", kurz: "Ehemals Le Chat, europäische Datenhaltung, Work Mode" },
   { name: "Perplexity", anbieter: "Perplexity · USA", url: "https://perplexity.ai", kurz: "Antwortmaschine mit Quellenangaben" },
-  { name: "NotebookLM", anbieter: "Google · USA", url: "https://notebooklm.google", kurz: "Arbeitet nur mit deinen Quellen, erstellt Audio- und Video-Überblicke auf Deutsch" },
+  { name: "NotebookLM", anbieter: "Google · USA", url: "https://notebooklm.google", kurz: "Arbeitet nur mit deinen Quellen, Audio- und Video-Überblicke kostenlos auf Deutsch (Tageslimit)" },
+  { name: "Suno", anbieter: "Suno · USA", url: "https://suno.com", kurz: "Songs aus Text; kostenlos 50 Credits am Tag, nur private Nutzung" },
+  { name: "Flow Music", anbieter: "Google · USA", url: "https://www.flowmusic.app", kurz: "Songs im Dialog bearbeiten (Lyria 3.5); Teile nur mit Google-AI-Abo" },
 ];
 
 export interface Neuigkeit {
