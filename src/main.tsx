@@ -1,3 +1,5 @@
+// Muss zuerst laden: /org bzw. /org/aus legt den Auftritt fest, bevor App & Co. ihn lesen.
+import "@/lib/editionWahl";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
