@@ -3,6 +3,8 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { LS_KEYS } from "@/lib/constants";
 import type { AIRoutingConfig } from "@/types";
+import { ConfidentialityBadge } from "@/components/ConfidentialityBadge";
+import { isKursEdition } from "@/lib/edition";
 
 interface PlaygroundHeaderProps {
   mode: "einsteiger" | "experte";
@@ -31,7 +33,7 @@ export function PlaygroundHeader({
       <div className="flex items-center h-12 px-4">
         <div className="flex items-center gap-3">
           {state === "expanded" && <SidebarTrigger />}
-          <h1 className="text-base font-bold tracking-tight">Prompt Werkstatt</h1>
+          <h1 className="font-serif text-lg font-semibold tracking-[-0.01em]">Werkstatt</h1>
           <div className="flex bg-muted rounded-lg p-0.5">
             <button
               onClick={() => onModeChange("einsteiger")}
@@ -53,7 +55,17 @@ export function PlaygroundHeader({
             </button>
           </div>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          {/* Vertraulichkeit der aktuellen Vorlage — hier immer sichtbar, auch „Offen“ */}
+          {/* Kurs-Auftritt zeigt keine Vertraulichkeitsstufen (Spec 2026-11-22-kurs-auftritt) */}
+          {!isKursEdition() && <span className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
+            {aiTier === "internal" ? "Interne KI" : "Externe API"}
+            <ConfidentialityBadge
+              level={promptConfidentiality}
+              showOpen
+              reason={!canUseExternal ? "Externe API für diese Vorlage gesperrt – sie läuft nur auf der internen KI." : undefined}
+            />
+          </span>}
           {onStartTour && (
             <Button
               variant="outline"

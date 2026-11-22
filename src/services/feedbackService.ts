@@ -6,29 +6,10 @@
 import { LS_KEYS } from "@/lib/constants";
 import { loadArrayFromStorage, saveToStorage, loadFromStorage } from "@/lib/storage";
 import type { FeedbackItem, FeedbackConfig, FeedbackStatus } from "@/types";
+import type { Json, Tables } from "@/integrations/supabase/types";
 
-/**
- * Temporäre Typdefinition für die Supabase `feedback` Tabelle.
- * Kann entfernt werden sobald `supabase gen types` die Tabelle enthält.
- */
-interface FeedbackRow {
-  id: string;
-  created_at: string;
-  user_id: string;
-  category: string;
-  stars: number | null;
-  text: string | null;
-  context: Record<string, unknown>;
-  llm_summary: string | null;
-  llm_classification: Record<string, unknown> | null;
-  user_confirmed: boolean | null;
-  screen_ref: string | null;
-  admin_status: string;
-  admin_notes: string | null;
-  admin_priority: number | null;
-  generated_prompt: string | null;
-  user_display_name: string | null;
-}
+/** Zeile der Supabase-Tabelle `feedback` (aus den generierten Typen). */
+type FeedbackRow = Tables<"feedback">;
 
 function isWorkshopMode(): boolean {
   return localStorage.getItem(LS_KEYS.APP_MODE) === "workshop";
@@ -39,7 +20,7 @@ function generateId(): string {
 }
 
 const DEFAULT_CONFIG: FeedbackConfig = {
-  llm_model: "anthropic/claude-sonnet-4.6",
+  llm_model: "anthropic/claude-sonnet-5.5",
   proactive_triggers: true,
   max_chatbot_turns: 6,
 };
@@ -64,12 +45,12 @@ export async function submitFeedback(
   if (isWorkshopMode()) {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await (supabase.from("feedback") as any).insert({
+      const { error } = await supabase.from("feedback").insert({
         id: item.id,
         category: item.category,
         stars: item.stars ?? null,
         text: item.text,
-        context: item.context,
+        context: item.context as unknown as Json,
         user_id: item.user_id,
         user_display_name: item.user_display_name ?? null,
         screen_ref: item.screen_ref ?? null,
@@ -108,7 +89,7 @@ export async function getFeedbackList(filters?: FeedbackFilters): Promise<Feedba
 
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    let query = (supabase.from("feedback") as any).select("*").order("created_at", { ascending: false });
+    let query = supabase.from("feedback").select("*").order("created_at", { ascending: false });
 
     if (filters?.category) query = query.eq("category", filters.category);
     if (filters?.status) query = query.eq("admin_status", filters.status);
@@ -138,7 +119,7 @@ export async function updateFeedback(
 ): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await (supabase.from("feedback") as any).update(updates).eq("id", id);
+    const { error } = await supabase.from("feedback").update(updates).eq("id", id);
     if (error) throw new Error(`Feedback aktualisieren fehlgeschlagen: ${error.message}`);
   } else {
     const items = loadArrayFromStorage<FeedbackItem>(LS_KEYS.FEEDBACK_ITEMS);
@@ -160,7 +141,7 @@ export async function updateFeedback(
 export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { data } = await (supabase.from("feedback_config") as any).select("*").eq("id", 1).single();
+    const { data } = await supabase.from("feedback_config").select("*").eq("id", 1).single();
     if (data) {
       const row = data as Record<string, unknown>;
       return {
@@ -181,7 +162,7 @@ export async function loadFeedbackConfig(): Promise<FeedbackConfig> {
 export async function saveFeedbackConfig(config: FeedbackConfig): Promise<void> {
   if (isWorkshopMode()) {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { error } = await (supabase.from("feedback_config") as any).update({
+    const { error } = await supabase.from("feedback_config").update({
       llm_model: config.llm_model,
       proactive_triggers: config.proactive_triggers,
       max_chatbot_turns: config.max_chatbot_turns,
@@ -209,9 +190,9 @@ function mapFromRow(row: FeedbackRow): FeedbackItem {
     category: row.category as FeedbackItem["category"],
     stars: row.stars ?? undefined,
     text: row.text ?? "",
-    context: row.context as FeedbackItem["context"],
+    context: row.context as unknown as FeedbackItem["context"],
     llm_summary: row.llm_summary ?? undefined,
-    llm_classification: row.llm_classification as FeedbackItem["llm_classification"],
+    llm_classification: (row.llm_classification ?? undefined) as unknown as FeedbackItem["llm_classification"],
     user_confirmed: row.user_confirmed ?? undefined,
     screen_ref: row.screen_ref ?? undefined,
     admin_status: (row.admin_status as FeedbackStatus) ?? "neu",

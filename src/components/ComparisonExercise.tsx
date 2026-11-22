@@ -101,9 +101,9 @@ export function ComparisonExercise({ exercise, onComplete }: Props) {
                   ? "border-2 border-foreground shadow-md"
                   : "border border-border",
                 phase === "reveal" && output.quality === 100 &&
-                  "border-2 border-emerald-400 dark:border-emerald-600",
+                  "border-2 border-success/60",
                 phase === "reveal" && output.quality === 70 &&
-                  "border-2 border-amber-400 dark:border-amber-600"
+                  "border-2 border-warning/60"
               )}
               onClick={() => {
                 if (phase === "choose") setSelected(label);
@@ -118,12 +118,12 @@ export function ComparisonExercise({ exercise, onComplete }: Props) {
                 </Badge>
                 <span className="text-sm font-medium">Output {label}</span>
                 {showQuality && output.quality === 100 && (
-                  <Badge className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 text-xs ml-auto">
+                  <Badge className="bg-success-soft text-success text-xs ml-auto">
                     Professionell
                   </Badge>
                 )}
                 {showQuality && output.quality === 70 && (
-                  <Badge className="bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400 text-xs ml-auto">
+                  <Badge className="bg-warning-soft text-warning text-xs ml-auto">
                     Oberflächlich
                   </Badge>
                 )}
@@ -175,14 +175,14 @@ export function ComparisonExercise({ exercise, onComplete }: Props) {
             className={cn(
               "p-4 rounded-lg border flex items-start gap-3",
               isCorrect
-                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800"
-                : "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800"
+                ? "bg-success-soft border-success/30"
+                : "bg-danger-soft border-danger/30"
             )}
           >
             {isCorrect ? (
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-success mt-0.5 shrink-0" />
             ) : (
-              <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+              <XCircle className="h-5 w-5 text-danger mt-0.5 shrink-0" />
             )}
             <div>
               <p className="font-medium text-sm">
@@ -221,9 +221,9 @@ export function ComparisonExercise({ exercise, onComplete }: Props) {
 
           {/* Constraint nudge */}
           {!showRuleOffer && !rulesSaved && (
-            <Card className="p-5 border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 space-y-3">
+            <Card className="p-5 border border-warning/30 bg-warning/50 space-y-3">
               <div className="flex items-start gap-3">
-                <Lightbulb className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <Lightbulb className="h-5 w-5 text-warning mt-0.5 shrink-0" />
                 <div>
                   <p className="font-medium text-sm">
                     Erkenntnis festhalten?
@@ -293,7 +293,7 @@ export function ComparisonExercise({ exercise, onComplete }: Props) {
           )}
 
           {rulesSaved && showRuleOffer && (
-            <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-2 text-sm text-success">
               <CheckCircle2 className="h-4 w-4" />
               Regeln gespeichert — du findest sie in deiner Constraint Library.
             </div>

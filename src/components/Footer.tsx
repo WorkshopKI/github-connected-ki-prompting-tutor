@@ -1,5 +1,4 @@
 import { Logo } from "./Logo";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Footer = () => (
   <footer className="border-t border-border bg-card/50 mt-16">
@@ -12,7 +11,6 @@ export const Footer = () => (
         <p className="text-xs text-muted-foreground/60">
           © {new Date().getFullYear()} · Erstellt mit React, Tailwind und viel ☕
         </p>
-        <ThemeToggle />
       </div>
     </div>
   </footer>

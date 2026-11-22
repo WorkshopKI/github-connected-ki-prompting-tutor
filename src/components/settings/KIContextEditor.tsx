@@ -94,8 +94,8 @@ export function KIContextEditor() {
         <div className="flex items-center gap-3">
           <h3 className="text-base font-semibold">Mein KI-Kontext</h3>
           {activeCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 rounded-full px-2.5 py-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-success bg-success-soft rounded-full px-2.5 py-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-success" />
               {activeCount} Arbeitsregeln aktiv
             </span>
           )}

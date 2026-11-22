@@ -114,7 +114,7 @@ export function parseFeedbackSummary(
 export function parseBotResponse(raw: string): { text: string; options?: string[] } {
   // Schritt 1: Fenced JSON-Blöcke entfernen (```json...```)
   // Gleicher Ansatz wie parseFeedbackSummary — nachweislich funktionierend
-  let cleaned = raw.replace(/```(?:json)?\s*\{[\s\S]*?\}\s*```/g, "").trim();
+  const cleaned = raw.replace(/```(?:json)?\s*\{[\s\S]*?\}\s*```/g, "").trim();
 
   // Schritt 2: Optionen-JSON suchen (unfenced)
   // Suche nach dem LETZTEN {...} Block der "text" und "options" enthält

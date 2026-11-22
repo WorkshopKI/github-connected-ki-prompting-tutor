@@ -4,8 +4,12 @@ import {
   LayoutDashboard,
   BookOpen,
   GraduationCap,
-  Sparkles,
+  Wrench,
+  Settings2,
+  PlayCircle,
+  Map as MapIcon,
 } from "lucide-react";
+import { isKursEdition } from "@/lib/edition";
 import { Logo } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { useOrgContext } from "@/contexts/OrgContext";
@@ -31,12 +35,25 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 
-const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
-  { label: "Onboarding", icon: GraduationCap, path: "/onboarding" },
-  { label: "Prompt Sammlung", icon: BookOpen, path: "/library" },
-  { label: "Prompt Werkstatt", icon: Sparkles, path: "/playground" },
+// Glossar aus dem Design-System: Start, Lernpfad, Vorlagen, Werkstatt, KI erklärt.
+const baseNavItems = [
+  { label: "Start", icon: LayoutDashboard, path: "/" },
+  { label: "Lernpfad", icon: GraduationCap, path: "/onboarding" },
+  { label: "Vorlagen", icon: BookOpen, path: "/library" },
+  { label: "Werkstatt", icon: Wrench, path: "/playground" },
+  { label: "KI erklärt", icon: PlayCircle, path: "/erklaert" },
 ];
+
+// Kurs-Auftritt: Kursübersicht zuerst, Übungen heißen "Übungen" statt "Lernpfad"
+const navItems = isKursEdition()
+  ? [
+      { label: "Kurs", icon: MapIcon, path: "/kurs" },
+      { label: "Übungen", icon: GraduationCap, path: "/onboarding" },
+      { label: "Vorlagen", icon: BookOpen, path: "/library" },
+      { label: "Werkstatt", icon: Wrench, path: "/playground" },
+      { label: "KI erklärt", icon: PlayCircle, path: "/erklaert" },
+    ]
+  : baseNavItems;
 
 function getPageTitle(pathname: string): string {
   const match = navItems.find((item) => item.path === pathname);
@@ -81,7 +98,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <Sidebar collapsible="icon" data-feedback-ref="navigation.sidebar" data-feedback-label="Sidebar">
-        <SidebarHeader className={`flex-row items-center justify-center border-b border-border group-data-[state=expanded]:justify-start group-data-[state=expanded]:pl-4 group-data-[state=expanded]:pr-4 ${isPlayground ? "h-12" : "h-14"}`}>
+        <SidebarHeader className={`flex-row items-center justify-center border-b border-sidebar-border group-data-[state=expanded]:justify-start group-data-[state=expanded]:pl-4 group-data-[state=expanded]:pr-4 ${isPlayground ? "h-12" : "h-14"}`}>
           <button
             onClick={() => navigate("/")}
             className="flex items-center group-data-[state=collapsed]:hidden"
@@ -113,7 +130,20 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         </SidebarContent>
 
         <SidebarFooter className="p-2 group-data-[state=collapsed]:pl-0 group-data-[state=collapsed]:-ml-[2px]">
-          <UserMenu scopeLabel={isDepartment ? scopeLabel : undefined} />
+          {/* Einstellungen sichtbar, nicht nur im Avatar-Menü */}
+          <SidebarMenu className="border-t border-sidebar-border pt-2">
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                isActive={isActive("/settings")}
+                tooltip="Einstellungen"
+                onClick={() => navigate("/settings")}
+              >
+                <Settings2 className="h-4 w-4" />
+                <span>Einstellungen</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+          <UserMenu scopeLabel={isDepartment && !isKursEdition() ? scopeLabel : undefined} />
         </SidebarFooter>
       </Sidebar>
 

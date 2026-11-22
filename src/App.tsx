@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AppModeProvider, useAppMode } from "@/contexts/AppModeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { StandaloneAuthProvider } from "@/contexts/StandaloneAuthContext";
@@ -19,6 +19,17 @@ import Library from "./pages/Library";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ModeSelection from "./pages/ModeSelection";
+import { isKursEdition, isPublicPath, LEGACY_REDIRECTS } from "@/lib/edition";
+
+// Öffentlicher Kursbereich: ohne Login, ohne Moduswahl (Spec: docs/specs/2026-11-22-kurs-auftritt.md)
+const KursHome = lazy(() => import("./pages/kurs/KursHome"));
+const KursModulPage = lazy(() => import("./pages/kurs/KursModulPage"));
+const KursStand = lazy(() => import("./pages/kurs/KursStand"));
+const KursGruppen = lazy(() => import("./pages/kurs/KursGruppen"));
+const KursVorlagen = lazy(() => import("./pages/kurs/KursVorlagen"));
+const KursProfi = lazy(() => import("./pages/kurs/KursProfi"));
+const ErklaertIndex = lazy(() => import("./pages/kurs/Erklaert").then((m) => ({ default: m.ErklaertIndex })));
+const ErklaertDetail = lazy(() => import("./pages/kurs/Erklaert").then((m) => ({ default: m.ErklaertDetail })));
 
 const Playground = lazy(() => import("./pages/Playground"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -86,10 +97,32 @@ const StandaloneApp = () => (
   </StandaloneAuthProvider>
 );
 
+const PublicApp = () => (
+  <Suspense fallback={null}>
+    <Routes>
+      <Route path="/kurs" element={<KursHome />} />
+      <Route path="/kurs/stand" element={<KursStand />} />
+      <Route path="/kurs/gruppen" element={<KursGruppen />} />
+      <Route path="/kurs/vorlagen" element={<KursVorlagen />} />
+      <Route path="/kurs/profi" element={<KursProfi />} />
+      <Route path="/kurs/:id" element={<KursModulPage />} />
+      <Route path="/erklaert" element={<ErklaertIndex />} />
+      <Route path="/erklaert/:slug" element={<ErklaertDetail />} />
+    </Routes>
+  </Suspense>
+);
+
 const AppContent = () => {
   const { mode, isChosen } = useAppMode();
+  const location = useLocation();
+
+  const alt = LEGACY_REDIRECTS[location.pathname.replace(/\/$/, "")];
+  if (alt) return <Navigate to={alt} replace />;
+  if (isPublicPath(location.pathname)) return <PublicApp />;
 
   if (!isChosen) {
+    // Kurs-Auftritt: Startseite ist die Kursübersicht, Moduswahl erst bei den Übungen
+    if (isKursEdition() && location.pathname === "/") return <Navigate to="/kurs" replace />;
     return (
       <Routes>
         <Route path="*" element={<ModeSelection />} />

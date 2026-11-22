@@ -31,8 +31,8 @@ const dimensionLabels: Record<string, string> = {
 
 function scoreColor(score: number) {
   if (score >= 80) return "text-primary";
-  if (score >= 60) return "text-amber-600 dark:text-amber-400";
-  return "text-red-600 dark:text-red-400";
+  if (score >= 60) return "text-warning";
+  return "text-danger";
 }
 
 export const JudgePanel = ({ prompt, output, model }: Props) => {
@@ -190,7 +190,7 @@ Antworte NUR mit JSON: {"overallScore": <0-100>, "dimensions": {"structure": {"s
             <div className="space-y-1">
               {result.issues.map((issue, i) => (
                 <div key={i} className="flex items-start gap-2 text-xs">
-                  <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
                   <span className="text-muted-foreground">{issue}</span>
                 </div>
               ))}

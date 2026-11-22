@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, type React
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 import type { UserProfile } from "@/types";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export type { UserProfile } from "@/types";
 
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         ...data,
         auth_method: data.auth_method as "email_otp" | "guest",
         is_admin: !!roleData,
-        preferred_model: (data as Record<string, unknown>).preferred_model as string ?? "google/gemini-3-flash-preview",
+        preferred_model: (data as Record<string, unknown>).preferred_model as string ?? DEFAULT_MODEL,
       });
     }
   }, []);

@@ -105,9 +105,9 @@ export const RedactionExercise = ({ drill, onComplete }: Props) => {
                   ? span.isSensitive && selected.has(span.text)
                     ? "border-primary bg-primary/5"
                     : span.isSensitive && !selected.has(span.text)
-                    ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950"
+                    ? "border-danger/30 bg-danger-soft"
                     : !span.isSensitive && selected.has(span.text)
-                    ? "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950"
+                    ? "border-danger/30 bg-danger-soft"
                     : "border-border opacity-50"
                   : selected.has(span.text)
                   ? "border-primary bg-primary/5"
@@ -121,8 +121,8 @@ export const RedactionExercise = ({ drill, onComplete }: Props) => {
                 {submitted && (
                   <span className="ml-2">
                     {span.isSensitive && selected.has(span.text) && <CheckCircle2 className="inline w-4 h-4 text-primary" />}
-                    {span.isSensitive && !selected.has(span.text) && <XCircle className="inline w-4 h-4 text-red-500" />}
-                    {!span.isSensitive && selected.has(span.text) && <XCircle className="inline w-4 h-4 text-red-500" />}
+                    {span.isSensitive && !selected.has(span.text) && <XCircle className="inline w-4 h-4 text-danger" />}
+                    {!span.isSensitive && selected.has(span.text) && <XCircle className="inline w-4 h-4 text-danger" />}
                   </span>
                 )}
                 {submitted && span.isSensitive && (

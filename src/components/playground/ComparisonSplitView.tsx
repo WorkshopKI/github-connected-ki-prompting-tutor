@@ -169,12 +169,12 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
           <ModelSelect value={modelA} onValueChange={setModelA} disabled={isRunning} />
         </div>
         <div className={cn("flex-1 px-3 py-1.5 flex items-center gap-2", threeWay ? "border-r border-border" : "")}>
-          <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">B</span>
+          <span className="text-[10px] font-bold text-info">B</span>
           <ModelSelect value={modelB} onValueChange={setModelB} disabled={isRunning} />
         </div>
         {threeWay ? (
           <div className="flex-1 px-3 py-1.5 flex items-center gap-2">
-            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">C</span>
+            <span className="text-[10px] font-bold text-warning">C</span>
             <ModelSelect value={modelC || ""} onValueChange={setModelC} disabled={isRunning} />
             <button
               onClick={() => { setThreeWay(false); setModelC(null); }}
@@ -347,7 +347,7 @@ export const ComparisonSplitView = ({ systemPrompt, onBudgetExhausted, selectedM
               </div>
             </div>
             <div>
-              <label className="text-[10px] font-semibold text-violet-600 dark:text-violet-400 mb-1 block">
+              <label className="text-[10px] font-semibold text-info mb-1 block">
                 Prompt B
               </label>
               <div className="border border-border rounded-xl bg-card shadow-sm focus-within:border-primary/40 focus-within:shadow-md transition-all">

@@ -78,7 +78,7 @@ export const PromptDetail = ({ prompt, open, onOpenChange }: PromptDetailProps) 
         <DialogHeader>
           <div className="flex items-center gap-2">
             <DialogTitle className="text-xl">{prompt.title}</DialogTitle>
-            <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} />
+            <ConfidentialityBadge level={prompt.confidentiality || "open"} reason={prompt.confidentialityReason} showOpen />
           </div>
         </DialogHeader>
 

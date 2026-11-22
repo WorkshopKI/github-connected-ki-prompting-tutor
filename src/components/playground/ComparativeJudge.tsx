@@ -44,8 +44,8 @@ const dimensionLabels: Record<string, string> = {
 
 function scoreColor(score: number) {
   if (score >= 80) return "text-primary";
-  if (score >= 60) return "text-amber-600 dark:text-amber-400";
-  return "text-red-600 dark:text-red-400";
+  if (score >= 60) return "text-warning";
+  return "text-danger";
 }
 
 function DualBar({ label, scoreA, scoreB, note }: { label: string; scoreA: number; scoreB: number; note: string }) {
@@ -66,7 +66,7 @@ function DualBar({ label, scoreA, scoreB, note }: { label: string; scoreA: numbe
         <div className="flex-1">
           <div className="h-1.5 rounded-full bg-muted overflow-hidden">
             <div
-              className="h-full rounded-full bg-violet-500 transition-all duration-500"
+              className="h-full rounded-full bg-info transition-all duration-500"
               style={{ width: `${scoreB}%` }}
             />
           </div>
@@ -243,7 +243,7 @@ Bewerte jetzt.`;
           <span className="w-2 h-2 rounded-full bg-primary" /> {labelA}
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-violet-500" /> {labelB}
+          <span className="w-2 h-2 rounded-full bg-info" /> {labelB}
         </span>
       </div>
 
@@ -262,12 +262,12 @@ Bewerte jetzt.`;
 
       {/* Gaps */}
       {result.gaps.length > 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-3 space-y-1">
-          <span className="text-[10px] font-semibold text-amber-800 dark:text-amber-400">
+        <div className="bg-warning-soft border border-warning/30 rounded-lg p-3 space-y-1">
+          <span className="text-[10px] font-semibold text-warning">
             Hauptlücken Modell A
           </span>
           {result.gaps.map((gap, i) => (
-            <p key={i} className="text-[10px] text-amber-700 dark:text-amber-300">
+            <p key={i} className="text-[10px] text-warning">
               • {gap}
             </p>
           ))}

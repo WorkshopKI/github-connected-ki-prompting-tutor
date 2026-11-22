@@ -25,39 +25,36 @@ export function saveAIRouting(config: AIRoutingConfig) {
 }
 
 /**
- * Standard-Modelle — empfohlene aktuelle Versionen für den Alltagsgebrauch.
- * Bei neuen Releases hier die Model-IDs aktualisieren.
+ * Modellklassen (Stand: 22.11.2026, IDs geprüft gegen openrouter.ai/api/v1/models).
+ * Im Kurs werden Klassen gelehrt, nicht Namen: schnell & günstig · ausgewogen · stark.
+ * Bei neuen Releases hier die Model-IDs aktualisieren und MODEL_COSTS in
+ * supabase/functions/llm-proxy/index.ts mitziehen.
  */
+
+/** Schnell & günstig — Standard für Übungen und Alltagsaufgaben. */
 export const STANDARD_MODELS: ModelOption[] = [
-  { value: "google/gemini-3-flash-preview", label: "Gemini 3 Flash (latest)", isLatest: true, tier: "external" },
-  { value: "openai/gpt-5", label: "GPT-5 (latest)", isLatest: true, tier: "external" },
-  { value: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", tier: "external" },
+  { value: "openai/gpt-6-luna", label: "GPT-6 Luna (schnell)", isLatest: true, tier: "external" },
+  { value: "anthropic/claude-haiku-5.5", label: "Claude Haiku 5.5 (schnell)", isLatest: true, tier: "external" },
+  { value: "google/gemini-3.8-flash", label: "Gemini 3.8 Flash (schnell)", isLatest: true, tier: "external" },
 ];
 
-/**
- * Premium-Modelle — leistungsstärkere (und teurere) Modelle für anspruchsvolle Aufgaben.
- * Bei neuen Releases hier die Model-IDs aktualisieren.
- */
+/** Ausgewogen und stark — für anspruchsvolle Aufgaben, Modellvergleich und Judge. */
 export const PREMIUM_MODELS: ModelOption[] = [
-  { value: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (latest)", isPremium: true, isLatest: true, tier: "external" },
-  { value: "google/gemini-2.5-pro", label: "Gemini 2.5 Pro", isPremium: true, tier: "external" },
-  { value: "openai/gpt-5.4", label: "GPT-5.4 (latest)", isPremium: true, isLatest: true, tier: "external" },
-  { value: "anthropic/claude-sonnet-4.6", label: "Claude Sonnet 4.6", isPremium: true, tier: "external" },
-  { value: "anthropic/claude-opus-4.6", label: "Claude Opus 4.6", isPremium: true, tier: "external" },
-  { value: "anthropic/claude-haiku-3.5", label: "Claude Haiku 3.5", tier: "external" },
+  { value: "openai/gpt-6.2-sol", label: "GPT-6.2 Sol (ausgewogen)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "anthropic/claude-sonnet-5.5", label: "Claude Sonnet 5.5 (ausgewogen)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "google/gemini-4-hydrogen", label: "Gemini 4 Hydrogen (ausgewogen)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "mistralai/mistral-medium-3-5", label: "Mistral Medium 3.5 (ausgewogen, EU)", isPremium: true, tier: "external" },
+  { value: "openai/gpt-6.2-astra", label: "GPT-6.2 Astra (stark)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "anthropic/claude-opus-5.5", label: "Claude Opus 5.5 (stark)", isPremium: true, isLatest: true, tier: "external" },
+  { value: "google/gemini-4-neon", label: "Gemini 4 Neon (stark)", isPremium: true, isLatest: true, tier: "external" },
 ];
 
-/**
- * Weitere Modelle — kleinere/schnellere Varianten.
- */
+/** Offene und europäische Modelle — günstig, teils selbst betreibbar. */
 export const OPEN_SOURCE_MODELS: ModelOption[] = [
-  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", tier: "external" },
-  { value: "openai/gpt-5-nano", label: "GPT-5 Nano", tier: "external" },
-  { value: "google/gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite", tier: "external" },
-  { value: "mistral/mistral-large", label: "Mistral Large", tier: "external" },
-  { value: "mistral/mistral-small", label: "Mistral Small", tier: "external" },
-  { value: "mistral/codestral", label: "Codestral", tier: "external" },
-  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B (Open Source)", tier: "external" },
+  { value: "openai/gpt-oss-120b", label: "GPT-OSS 120B (Open Weights)", isOpenSource: true, tier: "external" },
+  { value: "mistralai/mistral-large-4-0", label: "Mistral Large 4 (Open Weights, EU)", isOpenSource: true, tier: "external" },
+  { value: "mistralai/mistral-small-2603", label: "Mistral Small 4 (EU)", isOpenSource: true, tier: "external" },
+  { value: "deepseek/deepseek-v4.1-flash", label: "DeepSeek V4.1 Flash", isOpenSource: true, tier: "external" },
 ];
 
 export { DEFAULT_MODEL } from "@/lib/constants";

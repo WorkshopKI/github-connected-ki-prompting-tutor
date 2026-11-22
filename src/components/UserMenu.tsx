@@ -47,14 +47,14 @@ export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
     <div data-feedback-ref="navigation.user-menu" data-feedback-label="Benutzer-Menü">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2.5 w-full rounded-lg px-2 py-2 hover:bg-sidebar-accent transition-colors text-left">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-xs shrink-0">
+          <button className="flex items-center gap-2.5 w-full rounded-md px-2 py-2 text-sidebar-foreground hover:bg-sidebar-hover transition-colors text-left">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sidebar-accent text-sidebar-accent-foreground font-semibold text-xs shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate leading-tight">{displayName}</p>
               {scopeLabel && (
-                <p className="text-[10px] text-sidebar-foreground/50 truncate leading-tight">{scopeLabel}</p>
+                <p className="text-xs text-sidebar-muted truncate leading-tight">{scopeLabel}</p>
               )}
             </div>
           </button>
@@ -71,9 +71,9 @@ export const UserMenu = ({ scopeLabel }: UserMenuProps) => {
               {isWorkshop && syncStatus && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <span className={`w-1.5 h-1.5 rounded-full ${
-                    syncStatus === "synced" ? "bg-emerald-500" :
-                    syncStatus === "syncing" ? "bg-amber-500 animate-pulse" :
-                    syncStatus === "error" ? "bg-red-500" :
+                    syncStatus === "synced" ? "bg-success" :
+                    syncStatus === "syncing" ? "bg-warning animate-pulse" :
+                    syncStatus === "error" ? "bg-danger" :
                     "bg-muted-foreground/30"
                   }`} />
                   {syncStatus === "synced" ? "Synchronisiert" :

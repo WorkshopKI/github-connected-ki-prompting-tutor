@@ -18,6 +18,7 @@ import { useAppMode } from "@/contexts/AppModeContext";
 import { STANDARD_MODELS, PREMIUM_MODELS, OPEN_SOURCE_MODELS } from "@/data/models";
 import { useCustomModels } from "@/hooks/useCustomModels";
 import { MeinBereichSection } from "@/components/settings/MeinBereichSection";
+import { DEFAULT_MODEL } from "@/lib/constants";
 
 export const ProfileContent = () => {
   const { user, profile, isLoggedIn, isLoading, authMethod, upgradeGuestToEmail, verifyOTP, refreshProfile, signOut } = useAuthContext();
@@ -30,7 +31,7 @@ export const ProfileContent = () => {
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeStep, setUpgradeStep] = useState<"email" | "otp">("email");
   const [otpCode, setOtpCode] = useState("");
-  const [selectedModel, setSelectedModel] = useState(profile?.preferred_model ?? "google/gemini-3-flash-preview");
+  const [selectedModel, setSelectedModel] = useState(profile?.preferred_model ?? DEFAULT_MODEL);
   const [savingModel, setSavingModel] = useState(false);
   const [budget, setBudget] = useState<{ provisioned_key_budget: number; custom_key_active: boolean; active_key_source: string } | null>(null);
   const [customApiKey, setCustomApiKey] = useState("");

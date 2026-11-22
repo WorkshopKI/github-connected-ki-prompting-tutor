@@ -22,24 +22,24 @@ interface Props {
 }
 
 const CATEGORIES: { key: FeedbackCategory; icon: typeof Sparkles; colorClass: string }[] = [
-  { key: "praise", icon: Sparkles, colorClass: "text-emerald-600 dark:text-emerald-400" },
-  { key: "problem", icon: Zap, colorClass: "text-red-500 dark:text-red-400" },
+  { key: "praise", icon: Sparkles, colorClass: "text-success" },
+  { key: "problem", icon: Zap, colorClass: "text-danger" },
   { key: "idea", icon: Lightbulb, colorClass: "text-primary" },
-  { key: "question", icon: HelpCircle, colorClass: "text-amber-500 dark:text-amber-400" },
+  { key: "question", icon: HelpCircle, colorClass: "text-warning" },
 ];
 
 const CATEGORY_HOVER: Record<FeedbackCategory, string> = {
-  praise: "hover:border-emerald-400 hover:bg-emerald-500/5 dark:hover:border-emerald-500 dark:hover:bg-emerald-500/10",
-  problem: "hover:border-red-400 hover:bg-red-500/5 dark:hover:border-red-500 dark:hover:bg-red-500/10",
+  praise: "hover:border-success/60 hover:bg-success/5",
+  problem: "hover:border-danger/60 hover:bg-danger/5",
   idea: "hover:border-primary hover:bg-primary/5",
-  question: "hover:border-amber-400 hover:bg-amber-500/5 dark:hover:border-amber-500 dark:hover:bg-amber-500/10",
+  question: "hover:border-warning/60 hover:bg-warning/5",
 };
 
 const CATEGORY_PILL: Record<FeedbackCategory, string> = {
-  praise: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  problem: "bg-red-500/10 text-red-600 dark:text-red-400",
+  praise: "bg-success/10 text-success",
+  problem: "bg-danger/10 text-danger",
   idea: "bg-primary/10 text-primary",
-  question: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  question: "bg-warning/10 text-warning",
 };
 
 const MIN_W = 340;
@@ -364,7 +364,7 @@ function DetailsStep({
               <Star
                 className={`h-5 w-5 transition-colors ${
                   n <= stars
-                    ? "fill-amber-400 text-amber-400"
+                    ? "fill-warning text-warning"
                     : "text-muted-foreground/40 hover:text-muted-foreground"
                 }`}
               />
