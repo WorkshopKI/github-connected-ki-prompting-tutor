@@ -13,6 +13,11 @@ export const ROUTES = {
   LOGIN: "/login",
   ADMIN_PARTICIPANTS: "/admin/teilnehmer",
   ADMIN_FEEDBACK: "/admin/feedback",
+  KURS: "/kurs",
+  KURS_FOLIEN: "/kurs/folien",
+  KURS_PRAESENTATION: "/kurs/praesentation",
+  KURS_LEITSTAND: "/kurs/leitstand",
+  LIVE: "/live",
 } as const;
 
 /* ── localStorage Keys ── */
@@ -47,6 +52,10 @@ export const LS_KEYS = {
   REJECTION_NUDGE_COOLDOWN: "ps-rejection-nudge-cooldown",
   LERNPFAD_PROGRESS: "ps-lernpfad-progress",
   COMPARISON_HISTORY: "ps-comparison-history",
+  KURS_UEBUNGEN: "kurs-uebungen-erledigt",
+  KURS_CHECK: "kurs-wissenscheck",
+  KURS_LIVE: "kurs-live",
+  KURS_LEITSTAND: "kurs-leitstand",
   FEEDBACK_ITEMS: "ps-feedback",
   FEEDBACK_CONFIG: "ps-feedback-config",
 } as const;

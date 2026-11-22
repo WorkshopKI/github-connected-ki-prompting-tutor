@@ -17,14 +17,14 @@ KI-Praxis — KI-Arbeitskompetenz-Plattform für Wissensarbeiter und Organisatio
 - **Build:** Vite 5 (SWC plugin, dev server on port 8080)
 - **Styling:** Tailwind CSS 3 with CSS variables design system in `src/index.css`
 - **Components:** shadcn-ui (Radix UI primitives) in `src/components/ui/`
-- **Routing:** React Router DOM 6 — Sidebar-Layout via AppShell. Routes: `/` (Dashboard), `/library`, `/playground`, `/onboarding`, `/settings`, `/login`, `/admin/teilnehmer`. Legacy redirects: `/workspace` → `/library`, `/analytics` → `/`, `/profil` → `/settings`
+- **Routing:** React Router DOM 6 — Sidebar-Layout via AppShell. Routes: `/` (Dashboard), `/library`, `/playground`, `/onboarding`, `/settings`, `/login`, `/admin/teilnehmer`. Legacy redirects: `/workspace` → `/library`, `/analytics` → `/`, `/profil` → `/settings`. Öffentlich ohne Login (PublicApp, `KursLayout`): `/kurs`, `/kurs/:id`, `/kurs/uebungen`, `/kurs/vorlagen`, `/kurs/profi`, `/kurs/gruppen`, `/kurs/stand`, `/kurs/check`, `/kurs/spickzettel`, `/kurs/folien`, `/kurs/praesentation`, `/kurs/leitstand`, `/live`, `/live/:code`, `/f/:nr`, `/erklaert`, `/erklaert/:slug`. Alte prompt-tutor-Pfade leiten über `LEGACY_REDIRECTS` (`src/lib/edition.ts`) weiter.
 - **State:** React Context (`AuthContext`, `SyncContext`, `OrgContext`), local `useState`, React Query
 - **Backend:** Supabase (Postgres + Auth + Edge Functions)
 - **LLM:** OpenRouter / Lovable AI Gateway via `llm-proxy` edge function (streaming SSE)
 - **Icons:** lucide-react
 - **Forms:** React Hook Form + Zod (installiert, aktuell nicht aktiv genutzt)
 - **Notifications:** Sonner (toast)
-- **Dark mode:** next-themes (class-based toggling)
+- **Theme:** nur helles Theme (`THEMES=["light"]` in `main.tsx`); Dark Mode ist bewusst entfernt
 - **Package Manager:** npm (bun.lockb also present)
 
 ## Commands
@@ -194,6 +194,14 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - **Sidebar:** `collapsible="icon"` auf allen Seiten. 5 Kern-Seiten mit Glossar-Namen: Start (/), Lernpfad (/onboarding), Vorlagen (/library), Werkstatt (/playground), KI erklärt (/erklaert); im Kurs-Auftritt Kurs + Übungen statt Start + Lernpfad. Einstellungen als sichtbarer Eintrag im Sidebar-Fuß. Team, Reviews, Credits, Teilnehmer sind über das UserMenu (Avatar links unten) erreichbar. Routen bleiben alle bestehen: /, /onboarding, /library, /playground, /settings, /team, /reviews, /admin/teilnehmer.
 - **Playground:** In AppShell integriert, Sidebar startet collapsed (`defaultOpen={false}`). Eigener sticky Header (`PlaygroundHeader`) mit `SidebarTrigger`. AppShell-Header wird auf `/playground` ausgeblendet. `playground-root` nutzt `h-full` statt `h-screen`.
 
+### Kurs-Auftritt und „KI erklärt“ (Spec: `docs/specs/2026-11-22-kurs-auftritt.md`)
+- **Edition:** `getEdition()` in `src/lib/edition.ts` → `"kurs"` (VITE_APP_EDITION oder Host in `KURS_HOSTS`, Hauptdomain `prompting-studio.kilab.org`) oder `"organisation"`. Im Kurs-Auftritt startet `/` auf `/kurs`; im Organisations-Auftritt zeigt `KursLayout` zusätzlich „Start“ → `/`.
+- **Kursdaten** in `src/data/kurs/`: `lernpfad.ts` (12 Module, zwei Tage, vier Disziplinen), `uebungen.ts` (Kurs-Übungen `verbessern`/`finden`, Prüfprompt zum Kopieren), `vorlagen.ts` (49 Prompts in drei Stufen, Profi-Techniken, Checkliste), `gruppenarbeit.ts`, `wissenscheck.ts`, `stand.ts`, `erklaert.ts` (Register der 16 Animationen).
+- **Kurs-Übungen** laufen ohne Login und ohne KI (Selbstcheck, Musterlösung); Fortschritt in `LS_KEYS.KURS_UEBUNGEN`, Wissenscheck in `LS_KEYS.KURS_CHECK`.
+- **Animationen:** `src/components/erklaert/StepPlayer.tsx` + `animations/*.tsx`, ohne Live-KI, Pfeiltasten-Steuerung. Neue Animation = Komponente + Eintrag mit `komponente: lazy(...)` in `erklaert.ts`.
+- **Fahrplan, Präsentieren, Live (Spec: `docs/specs/2026-11-22-kurs-fahrplan-live.md`):** `src/data/kurs/fahrplan.json` ist die eine Quelle für Tage → Blöcke → Stationen → Folien (auch für `scripts/folien/folien.py`). Präsentieren aus der App unter `/kurs/praesentation` (Folienbilder `public/folien/`, schrittweiser Aufbau aus `scripts/folien/aufbau.json`), Leitstand `/kurs/leitstand`, Teilnehmende `/live` → `/kurs/folien`, Kurzlinks `/f/:nr`. Live-Sync in `src/lib/kursLive.ts` (Supabase Realtime + BroadcastChannel). `folien.json`, `folien-notizen.json` und `public/folien/*` sind generiert, nicht von Hand ändern. „KI erklärt“ ist nach Lektionen geordnet (`erklaertImKurs.ts`, Zuordnung `animationen` in `fahrplan.json`).
+- **Offline-Fassung:** `npm run build:offline` (vite.offline.config.ts + scripts/build-offline.mjs) → `dist-offline/` mit `KI-erklaert.html` und je Animation einer Datei; Schriften (OFL) aus `offline/fonts/` eingebettet.
+
 ### Provider Hierarchy
 `QueryClientProvider` → `TooltipProvider` → `BrowserRouter` → `AuthProvider` → `SyncProvider` → `OrgProvider` → Routes
 
@@ -208,7 +216,7 @@ Einige shadcn/ui-Komponenten in `src/components/ui/` werden aktuell nicht verwen
 - Playground wählt KI-Stufe (Intern/Extern) automatisch vor
 - Vertrauliche Prompts blockieren externe API
 - `AIRoutingConfig` in `src/data/models.ts` steuert Routing-Regeln
-- Modelle: Standard (Gemini 3 Flash, Sonnet 4.6, GPT-5.4), Premium (Opus 4.6, Gemini 3.1 Pro), Open Source (7 Modelle), Custom
+- Modelle (Stand 22.11.2026, Klassen schnell · ausgewogen · stark): Standard (GPT-6 Luna, Claude Haiku 5.5, Gemini 3.8 Flash), Premium (GPT-6.2 Sol/Astra, Claude Sonnet/Opus 5.5, Gemini 4 Hydrogen/Neon, Mistral Medium 3.5), Open Source (4 Modelle), Custom. Bei Änderungen `MODEL_COSTS` in `llm-proxy` mitziehen.
 
 ### Prompt Library
 - 126+ Prompts in `src/data/prompts.ts`, gefiltert nach Abteilung
@@ -291,7 +299,8 @@ Sidebar-Label: "Lernpfad" (Kurs: "Übungen"). Route: /onboarding.
 - **Usage Tracking:** `llm-proxy` loggt jeden Request in `api_usage_log` (Tokens, geschätzte Kosten). Admin-Dashboard (`UsageOverview`) zeigt aggregierte Statistiken pro Teilnehmer.
 - **Key Sources:** Provisioned (OpenRouter via `OPENROUTER_API_KEY`, Budget/User) oder Custom OpenRouter Key (AES-256-GCM verschlüsselt)
 - **Budget Management:** Admins können Budget pro User oder Bulk für alle Teilnehmer setzen (via `UsageOverview`)
-- **Model Selection:** User wählt Modell auf Settings-Seite (Default: `google/gemini-3-flash-preview`)
+- **Budget-Einheit:** Startbudget 1 € pro Teilnehmer. DB und `llm-proxy` rechnen in US-Dollar (1,15 $), Anzeige und Eingabe in Euro über `src/lib/budget.ts` (`formatEuro`, `eurZuUsd`, `USD_PRO_EUR`). Kurs bei Bedarf dort und in `DEFAULT_BUDGET_USD` (`llm-proxy`) mitziehen.
+- **Model Selection:** User wählt Modell auf Settings-Seite (Default: `DEFAULT_MODEL` = `openai/gpt-6-luna`)
 
 ### Feedback-System
 - **Komponenten:** `src/components/feedback/` — FeedbackButton (FAB), FeedbackPanel (Wizard), FeedbackChatbot (LLM-Chat), FeedbackConfirmCard (Bestätigungskarte)
@@ -359,7 +368,7 @@ NIEMALS die Tailwind-Strings manuell kopieren! Immer aus Constants importieren.
 - **Card-Stil** immer: `className="card-section"` (NICHT `p-5 rounded-xl border border-border shadow-sm` manuell)
 - **Badge-Farben:** `BADGE_COLORS` / `PRIORITY_COLORS` / `RISK_COLORS` aus `@/lib/constants` importieren, KEINE raw amber/red Strings
 - **Keine neuen npm-Dependencies** ohne Absprache
-- **Dark Mode** muss immer funktionieren
+- **Nur helles Theme**, keine `dark:`-Varianten mehr ergänzen
 - **Content ist auf Deutsch** (UI Labels, Prompts, Übungen, Fehlermeldungen)
 - **Compliance-Hinweise** in Prompt-Texten (z.B. `[JURIST:IN PRÜFEN]`, `KEINE ECHTEN NAMEN`)
 - **Imports:** `@/*` Path Alias (maps to `src/*`)

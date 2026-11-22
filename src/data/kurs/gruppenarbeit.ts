@@ -161,7 +161,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     tools: ["NotebookLM"],
     ersatz: "Ohne Google-Konto: Zusammenfassung und Quiz mit einem Assistenten erzeugen und vortragen.",
     padlet: "Thema · Link oder Datei · zwei Sätze: Was war gut, was falsch?",
-    hinweis: "Die „kinoartigen“ Video-Überblicke gibt es bisher nur auf Englisch und im Abo.",
+    hinweis: "Video- und Audio-Überblicke gibt es kostenlos auf Deutsch, mit einem Tageslimit pro Konto. Die „kinoartigen“ Video-Überblicke (Cinematic) gibt es nur auf Englisch und im Ultra-Abo. Stand 22.11.2026.",
   },
   {
     id: "musikvideo",
@@ -182,9 +182,9 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     startPrompt: "Schreib einen Songtext im Stil {Genre} über {Thema} für {Anlass}. Zwei Strophen, ein Refrain, der sich leicht mitsingen lässt. Keine Namen echter Künstler.",
     pruefen: ["Passt der Song zum Anlass?", "Sind Personen oder Marken erkennbar, die nicht gefragt wurden?", "Was steht in den Nutzungsbedingungen zur Veröffentlichung?"],
     tools: ["Suno", "Flow Music", "Gemini Omni", "ChatGPT Bilder"],
-    ersatz: "Ohne Video-Abo: Bildergalerie mit Song als Diashow.",
+    ersatz: "Ohne Abo: kurzer Song (bis 30 Sekunden) direkt in der Gemini-App mit Lyria, dazu eine Bildergalerie als Diashow.",
     padlet: "Songtext · Song oder Video · eine Zeile zu den Rechten",
-    hinweis: "Gemini Omni setzt ein Google-AI-Abo voraus; im EWR können keine eigenen Videos hochgeladen werden. Vor dem Kurs testen.",
+    hinweis: "Suno: kostenlos 50 Credits pro Tag, Songs nur für private Nutzung, Downloads im Gratistarif begrenzt. Flow Music (Google): im Web kostenlos startbar, einige Funktionen nur mit Google-AI-Abo. Gemini Omni: nur mit Google-AI-Abo (Plus, Pro, Ultra); Text- und Bild-zu-Video gehen in Deutschland, eigene Videos hochladen und bearbeiten ist im EWR gesperrt. Stand 22.11.2026, vor dem Kurs testen.",
   },
   {
     id: "praesentation",

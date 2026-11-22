@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "build:offline": "node scripts/build-offline.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

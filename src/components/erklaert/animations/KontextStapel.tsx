@@ -12,7 +12,24 @@ const SCHICHTEN = [
   { name: "Deine neue Frage", beispiel: "Schreib mir einen Elternbrief zum Ausflug ins Museum.", wer: "du, jetzt", anteil: 4 },
 ];
 
-const FARBEN = ["bg-chart-4", "bg-primary", "bg-chart-2", "bg-confidential", "bg-success", "bg-warning", "bg-danger"];
+/* Eine Farbe in Abstufungen (Tinte, von dunkel nach hell); nur „Deine neue Frage“ in der Markenfarbe,
+ * weil sie die Pointe ist. Unterscheidung zusätzlich über Nummern, nicht über Farbe allein. */
+const DECKKRAFT = [0.86, 0.72, 0.6, 0.48, 0.38, 0.28];
+const flaeche = (i: number) =>
+  i === SCHICHTEN.length - 1 ? "hsl(var(--primary))" : `hsl(var(--foreground) / ${DECKKRAFT[i]})`;
+const schrift = (i: number) => (i === SCHICHTEN.length - 1 || DECKKRAFT[i] >= 0.48 ? "text-primary-foreground" : "text-foreground");
+
+function Marke({ i, klein }: { i: number; klein?: boolean }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center justify-center rounded font-semibold tabular-nums ${schrift(i)} ${klein ? "h-5 w-5 text-xs" : "mt-0.5 h-6 w-6 text-xs"}`}
+      style={{ backgroundColor: flaeche(i) }}
+      aria-hidden="true"
+    >
+      {i + 1}
+    </span>
+  );
+}
 
 export default function KontextStapel() {
   const captions = [
@@ -47,9 +64,9 @@ export default function KontextStapel() {
               {SCHICHTEN.slice(0, sichtbar).map((s, i) => (
                 <div
                   key={s.name}
-                  className={`flex items-start gap-3 rounded-lg border p-3 transition-all motion-reduce:transition-none ${i === sichtbar - 1 && !ende ? "border-input bg-brand-soft" : "border-border bg-card"}`}
+                  className={`flex min-w-0 items-start gap-3 rounded-lg border p-3 transition-all motion-reduce:transition-none ${i === sichtbar - 1 && !ende ? "border-input bg-brand-soft" : "border-border bg-card"}`}
                 >
-                  <span className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${FARBEN[i]}`} />
+                  <Marke i={i} />
                   <div className="min-w-0">
                     <div className="text-sm font-semibold">{s.name}</div>
                     <div className="truncate font-mono text-xs text-muted-foreground">{s.beispiel}</div>
@@ -65,15 +82,28 @@ export default function KontextStapel() {
             {ende && (
               <div className="rounded-lg border border-border bg-card p-5">
                 <div className="mb-2 text-sm font-semibold">Anteil am Text, den das Modell liest (Beispiel)</div>
-                <div className="flex h-8 overflow-hidden rounded-md">
+                <div className="flex h-9 gap-[2px] overflow-hidden rounded-md bg-card">
                   {SCHICHTEN.map((s, i) => (
-                    <div key={s.name} className={FARBEN[i]} style={{ width: `${s.anteil}%` }} title={`${s.name}: ${s.anteil} %`} />
+                    <div
+                      key={s.name}
+                      className={`flex items-center justify-center text-xs font-semibold tabular-nums ${schrift(i)}`}
+                      style={{ width: `${s.anteil}%`, backgroundColor: flaeche(i) }}
+                      title={`${s.name}: ${s.anteil} %`}
+                    >
+                      {i + 1}
+                    </div>
                   ))}
                 </div>
-                <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-                  <span>Systemanweisung</span>
-                  <span>Deine Frage: ca. 4 %</span>
-                </div>
+                <ul className="mt-3 grid gap-x-4 gap-y-1.5 text-xs text-muted-foreground sm:grid-cols-2">
+                  {SCHICHTEN.map((s, i) => (
+                    <li key={s.name} className="flex items-center gap-2">
+                      <Marke i={i} klein />
+                      <span className={i === SCHICHTEN.length - 1 ? "font-semibold text-foreground" : undefined}>
+                        {s.name} · ca. {s.anteil} %
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

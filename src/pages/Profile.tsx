@@ -1,3 +1,4 @@
+import { formatEuro, KURS_BUDGET_USD } from "@/lib/budget";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/contexts/AuthContext";
@@ -436,9 +437,9 @@ export const ProfileContent = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Verbleibend</span>
-                  <span className="font-semibold">${budget.provisioned_key_budget.toFixed(2)} / $5.00</span>
+                  <span className="font-semibold">{formatEuro(budget.provisioned_key_budget)} / {formatEuro(KURS_BUDGET_USD)}</span>
                 </div>
-                <Progress value={(budget.provisioned_key_budget / 5) * 100} className="h-2" />
+                <Progress value={Math.min((budget.provisioned_key_budget / KURS_BUDGET_USD) * 100, 100)} className="h-2" />
                 <div className="flex items-center gap-2">
                   {budget.active_key_source === "custom" ? (
                     <Badge variant="default" className="gap-1"><Key className="h-3 w-3" /> OpenRouter (eigener Key)</Badge>

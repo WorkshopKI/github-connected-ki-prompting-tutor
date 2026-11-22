@@ -122,6 +122,25 @@ export const KURS_MODULE: KursModul[] = [
     uebung: { aufgabe: "Erkenne in Beispiel-Prompts die sensiblen Daten und schwärze sie.", link: "/onboarding", linkLabel: "Datenschutz-Übung starten" },
   },
   {
+    id: "sprechen-und-sehen",
+    tag: 1,
+    disziplin: "fragen",
+    titel: "Sprechen, Fotos, Kamera",
+    dauer: "30 Min",
+    ziel: "Du nutzt die KI per Sprache, lässt Fotos und Dokumente auswerten und zeigst ihr live, was du siehst.",
+    kernpunkte: [
+      "Sprachmodus: frei sprechen wie am Telefon, die KI antwortet gesprochen. Gut beim Kochen, Autofahren, Üben einer Fremdsprache.",
+      "Fotos auswerten: Rechnung, Beipackzettel, Verkehrsschild, Pflanze, Tabelle an der Wand. Frag gezielt: „Was steht hier zur Kündigungsfrist?“",
+      "Live-Kamera und Bildschirm teilen (z. B. Gemini Live, ChatGPT): Die KI sieht mit und hilft Schritt für Schritt, etwa beim Einrichten eines Geräts.",
+      "ACTA gilt auch gesprochen: Sag, wofür du die Antwort brauchst und wie ausführlich sie sein soll.",
+      "Vorsicht: Fotos zeigen oft mehr als gedacht (Namen, Adressen, Kennzeichen, Gesichter). Vor dem Hochladen zuschneiden.",
+    ],
+    prompts: [
+      { titel: "Foto einer Rechnung", text: "Auf dem Foto ist meine Stromrechnung. Erkläre mir in einfachen Worten: Wie hoch ist mein Verbrauch, was kostet eine Kilowattstunde, und wann wird der nächste Abschlag fällig? Wenn etwas nicht lesbar ist, sag es." },
+      { titel: "Live-Hilfe mit Kamera", text: "Ich zeige dir jetzt die Rückseite meines Routers. Führ mich Schritt für Schritt durch das Einrichten des Gast-WLANs und warte nach jedem Schritt auf mein „fertig“." },
+    ],
+  },
+  {
     id: "bilder",
     tag: 1,
     disziplin: "fragen",
@@ -218,6 +237,26 @@ export const KURS_MODULE: KursModul[] = [
       "Abnahmekriterien vorab festlegen, nicht erst beim Ergebnis.",
     ],
     uebung: { aufgabe: "Zerleg ein eigenes Vorhaben mit dem Zerlegungs-Assistenten.", link: "/onboarding", linkLabel: "Workflow-Modul öffnen" },
+  },
+  {
+    id: "ki-im-betrieb",
+    tag: 2,
+    disziplin: "anwenden",
+    titel: "KI im Betrieb einführen",
+    dauer: "30 Min",
+    ziel: "Du weißt, wie Betriebe KI Schritt für Schritt einführen, und was du selbst beitragen kannst.",
+    kernpunkte: [
+      "Laut Bitkom (September 2026) nutzen 57 % der Unternehmen ab 20 Beschäftigten KI, vor zwei Jahren waren es 20 %. Zwei Drittel schätzen die KI-Kompetenz ihrer Beschäftigten als gering ein.",
+      "Typische Stufen: ausprobieren → Regeln festlegen (KI-Richtlinie) → Werkzeuge freigeben → Abläufe umbauen → Aufgaben an Agenten abgeben.",
+      "Eine KI-Richtlinie regelt: welche Tools, welche Daten, wer prüft Ergebnisse, wie wird gekennzeichnet.",
+      "KI-Kompetenz (Art. 4 KI-Verordnung): Der Betrieb sorgt dafür, dass Beschäftigte KI sicher nutzen können, z. B. mit Schulungen wie dieser.",
+      "Betriebsrat früh einbinden, wenn KI Arbeit oder Leistung von Beschäftigten berührt.",
+      "Guter Einstieg: eine wiederkehrende Aufgabe, die Zeit kostet, ein klarer Vorher-Nachher-Vergleich, eine Person, die Ergebnisse prüft.",
+    ],
+    prompts: [
+      { titel: "Einsatzideen finden", text: "Ich arbeite als {Beruf} in einem Betrieb mit {Anzahl} Beschäftigten. Liste zehn Aufgaben aus meinem Alltag, bei denen KI Zeit sparen könnte. Bewerte jede nach Nutzen, Risiko (Datenschutz, Fehlerfolgen) und Aufwand, und empfiehl die drei besten für den Start." },
+      { titel: "Entwurf KI-Richtlinie", text: "Entwirf eine einseitige KI-Richtlinie für einen Handwerksbetrieb mit 25 Beschäftigten: erlaubte Tools, verbotene Daten, Prüfpflicht, Kennzeichnung, Ansprechperson. Einfache Sprache, Stichpunkte. [JURIST:IN PRÜFEN]" },
+    ],
   },
   {
     id: "mini-projekte",

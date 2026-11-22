@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { KursLayout } from "@/components/kurs/KursLayout";
+import { UebungsListe } from "@/components/kurs/uebung/UebungsListe";
+import { uebungenFuer } from "@/data/kurs/uebungen";
+
+const istKurs = (link?: string) => !!link && (link.startsWith("/kurs") || link.startsWith("/erklaert"));
 import { PageHeader } from "@/components/PageHeader";
 import { KURS_MODULE, DISZIPLIN_LABEL, modulById } from "@/data/kurs/lernpfad";
 import { erklaertBySlug } from "@/data/kurs/erklaert";
@@ -94,6 +98,14 @@ export default function KursModulPage() {
               <div className="grid gap-3">{m.prompts.map((p) => <PromptKarte key={p.titel} {...p} />)}</div>
             </section>
           )}
+
+          {uebungenFuer(m.id).length > 0 && (
+            <section id="ueben">
+              <h2 className="mb-1 text-lg font-semibold">Üben</h2>
+              <p className="mb-3 text-sm text-muted-foreground">Ohne Anmeldung, mit Musterlösung. Deinen Prompt kannst du von jedem Chatbot prüfen lassen.</p>
+              <UebungsListe uebungen={uebungenFuer(m.id)} />
+            </section>
+          )}
         </div>
 
         <aside className="grid content-start gap-4">
@@ -132,14 +144,20 @@ export default function KursModulPage() {
             </div>
           )}
           {m.uebung && (
-            <div className="rounded-lg border border-border bg-brand-soft p-4">
-              <h2 className="eyebrow mb-2">Übung</h2>
+            <div className={`rounded-lg border border-border p-4 ${istKurs(m.uebung.link) ? "bg-brand-soft" : "bg-card"}`}>
+              <h2 className="eyebrow mb-2">{istKurs(m.uebung.link) ? "Übung" : "Vertiefen mit KI-Feedback"}</h2>
               <p className="mb-3 text-sm">{m.uebung.aufgabe}</p>
               {m.uebung.link && (
-                <Link to={m.uebung.link} className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-deep">
+                <Link
+                  to={m.uebung.link}
+                  className={istKurs(m.uebung.link)
+                    ? "inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-deep"
+                    : "inline-flex h-9 items-center rounded-md border border-input bg-card px-4 text-sm font-semibold hover:bg-accent"}
+                >
                   {m.uebung.linkLabel ?? "Los"} <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               )}
+              {!istKurs(m.uebung.link) && <p className="mt-2 text-xs text-muted-foreground">Mit Anmeldung, Zugangsdaten gibt es im Kurs.</p>}
             </div>
           )}
         </aside>
