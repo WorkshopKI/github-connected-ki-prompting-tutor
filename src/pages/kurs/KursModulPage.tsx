@@ -117,6 +117,20 @@ export default function KursModulPage() {
               </div>
             </div>
           )}
+          {m.mehr && m.mehr.length > 0 && (
+            <div className="rounded-lg border border-border bg-card p-4">
+              <h2 className="eyebrow mb-2">Weiter vertiefen</h2>
+              <ul className="grid gap-1.5">
+                {m.mehr.map((x) => (
+                  <li key={x.link}>
+                    <Link to={x.link} className="inline-flex items-center gap-1 text-sm font-semibold text-brand-ink hover:underline">
+                      {x.label} <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {m.uebung && (
             <div className="rounded-lg border border-border bg-brand-soft p-4">
               <h2 className="eyebrow mb-2">Übung</h2>

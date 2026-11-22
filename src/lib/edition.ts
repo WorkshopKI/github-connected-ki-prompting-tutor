@@ -29,3 +29,16 @@ export const isKursEdition = () => getEdition() === "kurs";
 export const PUBLIC_PREFIXES = ["/kurs", "/erklaert"];
 export const isPublicPath = (pathname: string) =>
   PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+/** Alte Adressen von prompt-tutor.kilab.org und prompting-tutor.kilab.org → neue Kursseiten.
+ *  Greift, sobald die alten Domains auf diese App zeigen. */
+export const LEGACY_REDIRECTS: Record<string, string> = {
+  "/bibliothek": "/kurs/vorlagen",
+  "/ressourcen": "/kurs/vorlagen",
+  "/lernen/alltagshelfer": "/kurs/vorlagen?stufe=alltag",
+  "/lernen/junior": "/kurs/vorlagen?stufe=beruf",
+  "/lernen/forschung": "/kurs/vorlagen?stufe=forschung",
+  "/advanced": "/kurs/profi",
+  "/acta": "/kurs/fragen-mit-acta",
+  "/ueben": "/onboarding",
+};

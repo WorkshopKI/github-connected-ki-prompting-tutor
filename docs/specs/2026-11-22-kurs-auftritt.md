@@ -21,6 +21,8 @@ Entscheidungen:
 | `/kurs` | Kursübersicht, 4 Disziplinen, Module Tag 1/2 | `pages/kurs/KursHome.tsx` |
 | `/kurs/:id` | Modul: Ziel, Kernpunkte, Vorher/Nachher, Prompts, Animationen, Übung | `pages/kurs/KursModulPage.tsx`, Daten `data/kurs/lernpfad.ts` |
 | `/kurs/gruppen` | Gruppenübungen und Mini-Projekte | `pages/kurs/KursGruppen.tsx`, `data/kurs/gruppenarbeit.ts` |
+| `/kurs/vorlagen` | 49 Beispiel-Prompts in drei Stufen (Alltagshelfer, Juniorassistent, Forschungsassistent), Suche, Checkliste | `pages/kurs/KursVorlagen.tsx`, `data/kurs/vorlagen.ts` |
+| `/kurs/profi` | Neun Profi-Techniken mit Einordnung 2026 | `pages/kurs/KursProfi.tsx`, `data/kurs/vorlagen.ts` |
 | `/kurs/stand` | Aktuelle Modelle, Tools, Neuigkeiten (monatlich pflegen) | `pages/kurs/KursStand.tsx`, `data/kurs/stand.ts` |
 | `/erklaert`, `/erklaert/:slug` | Erklär-Animationen | `pages/kurs/Erklaert.tsx`, Register `data/kurs/erklaert.ts`, Bausteine `components/erklaert/` |
 
@@ -29,6 +31,17 @@ Alle 16 Animationen sind fertig: 1 Nächstes Wort, 2 Tokens, 3 Aufmerksamkeit, 4
 Gruppenübungen (`data/kurs/gruppenarbeit.ts`): je Übung Phasen mit Minuten, Rollen, Startprompt, Prüfkriterien, leichtere/schwerere Variante, Plan B ohne Abo, Vorlage für den Padlet-Beitrag.
 
 Neue Animation anlegen: Komponente unter `components/erklaert/animations/` mit `StepPlayer`, Eintrag mit `lazy(() => import(...))` in `data/kurs/erklaert.ts`, Slug ggf. im Modul (`erklaert: [...]`) verlinken.
+
+## 2a Zusammenführung der Lern-Apps
+
+| Alte App | Was übernommen ist | Wo jetzt |
+| --- | --- | --- |
+| prompting-tutor.kilab.org | 4 Disziplinen, Projekt-Zerlegung | Kurs-Module `/kurs/:id` |
+| prompt-tutor.kilab.org | Bibliothek (49 Prompts, aktualisiert), drei Stufen, Advanced-Techniken, Ressourcen-Checkliste | `/kurs/vorlagen`, `/kurs/profi` |
+| miniprojekte.lovable.app | Gruppenübungen und Mini-Projekte | `/kurs/gruppen` |
+| prompting-studio.kilab.org | ist diese App | – |
+
+Alte Pfade leiten weiter (`LEGACY_REDIRECTS` in `lib/edition.ts`), sobald die alten Domains auf dieses Lovable-Projekt zeigen: `/bibliothek`, `/ressourcen` → `/kurs/vorlagen`; `/lernen/alltagshelfer|junior|forschung` → `/kurs/vorlagen?stufe=…`; `/advanced` → `/kurs/profi`; `/acta` → `/kurs/fragen-mit-acta`; `/ueben` → `/onboarding`. Die Domains stehen in `KURS_HOSTS` und zeigen damit automatisch den Kurs-Auftritt. miniprojekte.lovable.app ist eine Lovable-Subdomain; dort die Startseite durch einen Hinweis mit Link auf `/kurs/gruppen` ersetzen.
 
 ## 3 Betrieb
 

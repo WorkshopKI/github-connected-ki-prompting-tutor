@@ -24,6 +24,8 @@ export interface KursModul {
   prompts?: KursPrompt[];
   vergleich?: { vorher: string; nachher: string; warum: string };
   uebung?: { aufgabe: string; link?: string; linkLabel?: string };
+  /** Weiterführende Seiten im Kursbereich. */
+  mehr?: { label: string; link: string }[];
 }
 
 export const DISZIPLIN_LABEL: Record<Disziplin, string> = {
@@ -59,6 +61,7 @@ export const KURS_MODULE: KursModul[] = [
     disziplin: "fragen",
     titel: "Fragen mit der ACTA-Methode",
     dauer: "60 Min",
+    mehr: [{ label: "Vorlagen Stufe 1: Alltagshelfer", link: "/kurs/vorlagen?stufe=alltag" }, { label: "Vorlagen Stufe 2: Juniorassistent", link: "/kurs/vorlagen?stufe=beruf" }],
     ziel: "Du formulierst Anfragen so, dass die KI ohne Rückfragen ein brauchbares Ergebnis liefert.",
     kernpunkte: [
       "A – Rolle (Act as): Als wer soll die KI antworten?",
@@ -93,6 +96,7 @@ export const KURS_MODULE: KursModul[] = [
       "Quellen sind nur so gut wie ihre Prüfung: Zwei bis drei Links öffnen und Zahlen vergleichen.",
       "Gute Rechercheaufträge nennen Zeitraum, Gliederung, Mindestzahl an Quellen und gewünschte Quellenarten.",
     ],
+    mehr: [{ label: "Vorlagen Stufe 3: Forschungsassistent", link: "/kurs/vorlagen?stufe=forschung" }],
     erklaert: ["websuche", "reasoning", "halluzination"],
     prompts: [
       { titel: "Vergleichsstudie", text: "Vergleiche Offshore- und Onshore-Windkraft in Europa nach Kosten pro MWh, Umweltauswirkungen, Genehmigungsdauer und Akzeptanz. Nutze nur Quellen ab 2024, nenne mindestens vier Studien und stelle die Ergebnisse zuerst als Tabelle dar." },
@@ -165,6 +169,7 @@ export const KURS_MODULE: KursModul[] = [
     disziplin: "steuern",
     titel: "Steuern: weniger Regeln, klares Ziel",
     dauer: "45 Min",
+    mehr: [{ label: "Profi-Techniken: Prüfschleife, Gegenprobe, Grenzfälle", link: "/kurs/profi" }],
     ziel: "Du weißt, warum lange Regelkataloge bei neuen Modellen eher stören, und ersetzt sie durch Ziel und Abnahmekriterien.",
     kernpunkte: [
       "Starke Modelle denken von selbst Schritt für Schritt. „Denke Schritt für Schritt“ ist meist überflüssig.",

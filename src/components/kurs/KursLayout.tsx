@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { GraduationCap, Map as MapIcon, PlayCircle, Users, Layers } from "lucide-react";
+import { BookOpen, GraduationCap, Map as MapIcon, PlayCircle, Users, Layers } from "lucide-react";
 
 /**
  * Schlanker Rahmen für den öffentlichen Kursbereich (/kurs, /erklaert).
@@ -10,6 +10,7 @@ import { GraduationCap, Map as MapIcon, PlayCircle, Users, Layers } from "lucide
 const NAV = [
   { to: "/kurs", label: "Kurs", icon: MapIcon, end: true },
   { to: "/erklaert", label: "KI erklärt", icon: PlayCircle },
+  { to: "/kurs/vorlagen", label: "Vorlagen", icon: BookOpen },
   { to: "/kurs/gruppen", label: "Gruppenarbeit", icon: Users },
   { to: "/kurs/stand", label: "Aktuelle Modelle", icon: Layers },
 ];
