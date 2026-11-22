@@ -141,7 +141,10 @@ const AdminParticipants = () => {
   // Create guest code
   const handleCreateGuest = async () => {
     if (!guestName.trim() || !selectedCourse) return;
-    const token = Math.random().toString(36).substring(2, 10).toUpperCase();
+    // Sicherer Zufall (ohne verwechselbare Zeichen 0/O/1/I/L), ca. 50 Bit
+    const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    const bytes = crypto.getRandomValues(new Uint8Array(10));
+    const token = "GAST-" + Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
     const { error } = await supabase.from("guest_tokens").insert({
       display_name: guestName.trim(),
       token,

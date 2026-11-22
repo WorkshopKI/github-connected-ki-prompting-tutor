@@ -199,7 +199,7 @@ const Login = () => {
                   type="text"
                   value={guestCode}
                   onChange={e => setGuestCode(e.target.value.toUpperCase())}
-                  placeholder="z.B. GAST-7KM9"
+                  placeholder="z.B. GAST-7KM9X4QHRT"
                   className="w-full px-4 py-3 border border-border rounded-xl bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono uppercase"
                 />
               </div>

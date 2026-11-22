@@ -13,8 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { token } = await req.json();
-    if (!token) {
+    const body = await req.json().catch(() => ({}));
+    const token = typeof body?.token === "string" ? body.token.trim() : "";
+    if (!token || token.length > 40 || !/^[A-Za-z0-9-]+$/.test(token)) {
       return new Response(
         JSON.stringify({ error: "Token ist erforderlich." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
