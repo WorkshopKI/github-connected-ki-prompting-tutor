@@ -20,6 +20,10 @@ export const ROUTES = {
   LIVE: "/live",
 } as const;
 
+/* ── Kurs-Adressen (auf Folien, Spickzettel und im Padlet gleich halten) ── */
+export const KURS_PADLET = "t1p.de/chat-kurs";
+export const KURS_APP = "prompting-studio.kilab.org/kurs";
+
 /* ── localStorage Keys ── */
 export const LS_KEYS = {
   ORG_SCOPE: "org_scope",

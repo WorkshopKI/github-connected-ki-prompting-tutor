@@ -8,8 +8,9 @@ import {
   Settings2,
   PlayCircle,
   Map as MapIcon,
+  Undo2,
 } from "lucide-react";
-import { isKursEdition } from "@/lib/edition";
+import { isKursEdition, istOrgAufKursDomain, ORG_PFAD } from "@/lib/edition";
 import { Logo } from "@/components/Logo";
 import { UserMenu } from "@/components/UserMenu";
 import { useOrgContext } from "@/contexts/OrgContext";
@@ -142,6 +143,15 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
                 <span>Einstellungen</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            {istOrgAufKursDomain() && (
+              <SidebarMenuItem>
+                {/* Voller Seitenwechsel: der Auftritt wird beim Laden festgelegt (editionWahl.ts). */}
+                <SidebarMenuButton tooltip="Zur Kursversion" onClick={() => window.location.assign(`${ORG_PFAD}/aus`)}>
+                  <Undo2 className="h-4 w-4" />
+                  <span>Zur Kursversion</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
           <UserMenu scopeLabel={isDepartment && !isKursEdition() ? scopeLabel : undefined} />
         </SidebarFooter>

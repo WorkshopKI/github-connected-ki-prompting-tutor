@@ -43,6 +43,10 @@ export function getEdition(): Edition {
 
 export const isKursEdition = () => getEdition() === "kurs";
 
+/** Organisationsversion über /org auf einer Kurs-Domain gewählt? Dann gibt es den Rückweg „Zur Kursversion“. */
+export const istOrgAufKursDomain = () =>
+  getEdition() === "organisation" && typeof window !== "undefined" && KURS_HOSTS.includes(window.location.hostname);
+
 /** Öffentliche Bereiche ohne Login und ohne Moduswahl. */
 export const PUBLIC_PREFIXES = ["/kurs", "/erklaert", "/live", "/f"];
 export const isPublicPath = (pathname: string) =>
