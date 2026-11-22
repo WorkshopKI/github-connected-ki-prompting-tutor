@@ -148,6 +148,35 @@ export const KURS_UEBUNGEN: KursUebung[] = [
     muster: "Hilf mir, einer Kollegin [KOLLEGIN] aus der Buchhaltung eine Nachricht zu schreiben: In ihrer Abrechnung waren zum zweiten Mal Fehler. Ich möchte ihr fair sagen, dass ich das beim nächsten Mal an [VORGESETZTER] melden muss.\nTon: sachlich, wertschätzend, klar. Höchstens 100 Wörter.",
     warum: "Für gute Formulierungen braucht die KI die Lage, aber keine echten Personen.",
   },
+  // ── Sprechen, Fotos, Kamera
+  {
+    typ: "finden", id: "foto-zuschneiden", modul: "sprechen-und-sehen",
+    titel: "Was zeigt dein Foto mehr als nötig?",
+    lage: "Du willst ein Foto deiner Nebenkostenabrechnung erklären lassen. Auf dem Foto ist das ganze Blatt zu sehen, daneben liegt dein Handy mit einer offenen Nachricht.",
+    frage: "Was solltest du vor dem Hochladen abschneiden oder abdecken?",
+    aussagen: [
+      { text: "Deinen Namen und deine Adresse", richtig: true, erklaerung: "Für die Erklärung braucht die KI sie nicht." },
+      { text: "Die Kundennummer und IBAN", richtig: true, erklaerung: "Nummern, mit denen sich Konten oder Verträge zuordnen lassen, gehören nicht hoch." },
+      { text: "Die Tabelle mit den Kostenposten", richtig: false, erklaerung: "Die brauchst du für die Frage. Sie bleibt drauf." },
+      { text: "Das Handy mit der offenen Nachricht", richtig: true, erklaerung: "Fremde Nachrichten und Namen haben auf dem Foto nichts zu suchen." },
+    ],
+  },
+  // ── KI im Betrieb
+  {
+    typ: "verbessern", id: "betrieb-start", modul: "ki-im-betrieb",
+    titel: "Einen Pilotversuch beschreiben",
+    lage: "Du willst deiner Chefin vorschlagen, KI für eine konkrete Aufgabe vier Wochen lang zu testen.",
+    schwach: "Schreib einen Vorschlag, dass wir KI einführen.",
+    aufgabe: "Lass dir einen kurzen, überzeugenden Vorschlag für einen Test schreiben.",
+    kriterien: [
+      "Eine konkrete Aufgabe statt „KI einführen“",
+      "Messbarer Vergleich: Zeit oder Qualität vorher und nachher",
+      "Regeln: welches Tool, welche Daten nicht",
+      "Wer prüft die Ergebnisse, und wann wird entschieden",
+    ],
+    muster: "Ich arbeite im Kundenservice eines Versandhändlers mit 40 Beschäftigten. Schreib einen Vorschlag an meine Chefin (höchstens eine Seite) für einen vierwöchigen Test: KI formuliert Entwürfe für Antworten auf Standardanfragen, wir prüfen und senden selbst.\nEnthalten soll er: Ziel, Ablauf, gemessene Werte (Bearbeitungszeit, Rückfragen), Regeln (freigegebenes Tool, keine Kundendaten im Prompt), wer prüft, Entscheidung nach vier Wochen.\nTon: sachlich, ohne Übertreibung.",
+    warum: "Ein kleiner, messbarer Test überzeugt mehr als eine große Vision, und die Regeln nehmen Bedenken vorweg.",
+  },
   // ── Bilder
   {
     typ: "verbessern", id: "bild-4s", modul: "bilder",
