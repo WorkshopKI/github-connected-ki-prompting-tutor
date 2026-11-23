@@ -26,9 +26,9 @@ export const WISSENSCHECK: Record<1 | 2, CheckFrage[]> = {
     },
     {
       frage: "Du willst wissen, welche Förderprogramme es aktuell gibt. Was tust du?",
-      antworten: ["Einfach fragen, das Modell weiß es.", "Websuche nutzen und Quellen mit Datum verlangen.", "Die Frage mehrmals stellen, bis die Antwort gleich bleibt."],
+      antworten: ["Einfach fragen, das Modell weiß es.", "Nach dem aktuellen Stand fragen, Quellen mit Datum verlangen und prüfen, ob gesucht wurde.", "Die Frage mehrmals stellen, bis die Antwort gleich bleibt."],
       richtig: 1,
-      erklaerung: "Ohne Websuche kennt das Modell nur seinen Trainingsstand. Quelle und Datum machen die Antwort prüfbar.",
+      erklaerung: "ChatGPT und Claude suchen bei Aktuellem meist selbst. Ob sie es getan haben, zeigen die Quellen-Links; ohne Suche kennt das Modell nur seinen Trainingsstand.",
     },
     {
       frage: "Eine Antwort klingt sehr sicher und nennt ein Zitat mit Buchtitel. Was gilt?",
