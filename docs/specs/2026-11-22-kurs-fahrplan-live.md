@@ -26,6 +26,8 @@ Recherche, warum nicht PowerPoint fernsteuern: Office.js meldet keinen Folienwec
 - [x] „KI erklärt“ (App und Offline-Fassung) nach Lektionen geordnet, Detailseite mit Lektion, Folie, Modul.
 - [x] `npm run check`, `tsc`, `eslint` ohne Fehler.
 
+**Nachträge 23.11.2026:** fester Live-Code `VHS2026` (`kursCode` in `fahrplan.json`, Eingabe ohne Rücksicht auf Groß-/Kleinschreibung; QR auf Folie 2 führt direkt zu `/live/VHS2026`). PPTX: Abschnitte = Blöcke („Tag 1 · 3 Fragen mit ACTA“), größerer QR-Code, Schrittbalken in der Fußzeile (gefüllt = sichtbar, nur auf Folien mit Aufbau). Folienseite `/kurs/folien` mit einzeiligem Kopf und einzeiliger Steuerleiste.
+
 ## 2. Aufbau
 
 | Teil | Datei |

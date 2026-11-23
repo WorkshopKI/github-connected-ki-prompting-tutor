@@ -45,7 +45,7 @@ export default function KursLive() {
             <Input
               value={code}
               onChange={(e) => setCode(normiereCode(e.target.value))}
-              placeholder="z. B. K7QM"
+              placeholder="z. B. VHS2026"
               autoCapitalize="characters"
               autoComplete="off"
               inputMode="text"

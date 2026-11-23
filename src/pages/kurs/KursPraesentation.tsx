@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { PraesentationBuehne } from "@/components/kurs/live/PraesentationBuehne";
 import { PraesentationStart } from "@/components/kurs/live/PraesentationStart";
 import { usePraesentation, vollbildUmschalten } from "@/hooks/usePraesentation";
-import { setzeStand, starteLeitung, useKursLive, verlassen } from "@/lib/kursLive";
+import { setzeStand, starteLeitung, useKursLive } from "@/lib/kursLive";
 
 /**
  * /kurs/praesentation — Präsentieren aus der App.
@@ -35,13 +35,6 @@ export default function KursPraesentation() {
     setBuehne(false);
   };
 
-  const neuerCode = () => {
-    const nr = live.stand?.folie ?? 1;
-    verlassen();
-    starteLeitung();
-    p.gehe(nr);
-  };
-
   if (buehne) return <PraesentationBuehne p={p} onEnde={ende} />;
 
   return (
@@ -52,7 +45,7 @@ export default function KursPraesentation() {
           title="Präsentieren"
           description="Die Folien laufen hier in der App. Volle Folien bauen sich Schritt für Schritt auf, Teilnehmende sehen auf ihrem Gerät, wo du bist und was als Nächstes kommt."
         />
-        <PraesentationStart onStart={start} onNeuerCode={neuerCode} />
+        <PraesentationStart onStart={start} />
       </div>
     </KursLayout>
   );
