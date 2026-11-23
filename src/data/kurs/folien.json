@@ -1,7 +1,7 @@
 {
  "_hinweis": "Generiert von scripts/folien/folien.py export — nicht von Hand ändern.",
- "quelle": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v31.pptx",
- "version": "649d2614",
+ "quelle": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v32.pptx",
+ "version": "c7a4838a",
  "folien": [
   {
    "nr": 1,
@@ -295,7 +295,7 @@
    "nr": 49,
    "ueberzeile": "MINI-PROJEKTE · 90 MINUTEN",
    "titel": "Wähl ein Projekt und probier alles einmal selbst",
-   "schritte": 4
+   "schritte": 3
   },
   {
    "nr": 50,
