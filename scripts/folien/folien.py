@@ -146,6 +146,8 @@ def fusszeile_text(fp: dict, nr: int) -> str:
     b = block(fp, st["block"])
     je_tag = sum(1 for x in fp["bloecke"] if x["tag"] == b["tag"])
     text = f"Tag {b['tag']} · Block {b['nr']}/{je_tag} · {b['titel']}"
+    if st.get("optional"):
+        text = "OPTIONAL · " + text
     reihen = fp["bloecke"]
     pos = reihen.index(b)
     if pos + 1 < len(reihen):

@@ -68,3 +68,11 @@ Realtime muss im Supabase-Projekt für öffentliche Kanäle erlaubt sein (Standa
 - Sprechernotizen sind öffentlich abrufbar; keine vertraulichen Angaben hineinschreiben.
 - Folienbilder rendert LibreOffice; Schriften müssen installiert sein (Source Sans/Serif).
 - Hauptdomain festgelegt (22.11.2026): `prompting-studio.kilab.org` zeigt den Kurs-Auftritt. Der Organisations-Auftritt (KI-Werkstatt) ist dort über `/org` erreichbar (je Browser gemerkt, `/org/aus` schaltet zurück; `src/lib/editionWahl.ts`).
+
+## 5. Nachtrag 23.11.2026: Konto, Artefakte, Optional
+
+- Anlass: Thomas wünscht eine Übung zu Artefakten (Claude Artifacts, ChatGPT Canvas), eine Lektion zu den wichtigsten Einstellungen für neue Nutzer und eine Markierung optionaler Inhalte für den Fall, dass die Zeit nicht reicht.
+- Folien v30: neue Folie 3 „Konto einrichten“, Folien 41/42 „Artefakte“ und „Übung: Vom Chat zum fertigen Ergebnis“; Nummern ab 3 verschieben sich.
+- `fahrplan.json`: Stationen `konto` und `artefakte`, Feld `optional` (Tool-Vergleich, Sprechen und Sehen, Steuern-Duell, KI im Betrieb). Fußzeile der optionalen Folien beginnt mit „OPTIONAL ·“.
+- App: Module `konto-einrichten` (Checkliste mit Klickpfaden Claude/ChatGPT, Abhaken in `LS_KEYS.KURS_KONTO`) und `artefakte` (Ablauf in Schritten). Badge „Optional“ in Kursübersicht, Modulseite, Gruppenarbeit, Ablauf, Fahrplanleiste und Leitstand.
+- Abnahme: `/kurs/konto-einrichten` und `/kurs/artefakte` erreichbar, `/f/3` führt zur Konto-Lektion, optionale Inhalte sichtbar markiert, `npm run check` grün.

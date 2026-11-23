@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { GRUPPENAUFGABEN, dauerMin, type Gruppenaufgabe } from "@/data/kurs/gruppenarbeit";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, Copy, Info, ListChecks, Users } from "lucide-react";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
 
 function StartPrompt({ text }: { text: string }) {
   const [kopiert, setKopiert] = useState(false);
@@ -115,7 +116,7 @@ export default function KursGruppen() {
               <AccordionItem key={g.id} id={g.id} value={g.id} className="scroll-mt-24 rounded-lg border border-border bg-card px-4">
                 <AccordionTrigger className="text-left hover:no-underline">
                   <span>
-                    <span className="block font-semibold">{g.titel}</span>
+                    <span className="flex flex-wrap items-center gap-2 font-semibold">{g.titel}{g.optional && <OptionalBadge />}</span>
                     <span className="block text-sm font-normal text-muted-foreground">
                       {g.ziel}
                     </span>
