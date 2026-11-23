@@ -262,39 +262,97 @@ def animation_xml(folie, schritte: list[dict]) -> etree._Element | None:
     return timing
 
 
+MARKE = RGBColor(0xAD, 0x4E, 0x2C)  # Ziegel (--primary)
+P14 = "http://schemas.microsoft.com/office/powerpoint/2010/main"
+SEKTIONEN_URI = "{521415D9-36F7-43E2-AB2F-B90AF26B5E84}"
+
+
+def schrittbalken(folie, n: int, dunkel: bool) -> list[str]:
+    """Kleine Balken in der Fußzeile: je Aufbauschritt ein Balken, gefüllt = schon sichtbar.
+    Gibt die Namen der gefüllten Balken zurück (Index = Schritt)."""
+    breite, abstand, hoehe = 0.16 * E, 0.05 * E, 0.06 * E
+    rechts, y = 12.12 * E, 7.1 * E
+    x0 = rechts - n * breite - (n - 1) * abstand
+    leer = RGBColor(0x4A, 0x44, 0x3E) if dunkel else RGBColor(0xD9, 0xD3, 0xCA)
+    namen = []
+    for gefuellt in (False, True):
+        for k in range(n):
+            r = folie.shapes.add_shape(1, Emu(int(x0 + k * (breite + abstand))), Emu(int(y)), Emu(int(breite)), Emu(int(hoehe)))
+            r.fill.solid()
+            r.fill.fore_color.rgb = MARKE if gefuellt else leer
+            r.line.fill.background()
+            r.shadow.inherit = False
+            r.name = EIGEN + (f"Schritt {k}" if gefuellt else "Schritt leer")
+            if gefuellt:
+                namen.append(r.name)
+    return namen
+
+
+def abschnitte_setzen(prs, fp: dict):
+    """PowerPoint-Abschnitte = Blöcke des Fahrplans („Tag 1 · 3 Fragen mit ACTA“)."""
+    import uuid
+    pres = prs.part._element
+    ext_lst = pres.find(f"{{{P}}}extLst")
+    if ext_lst is None:
+        ext_lst = etree.SubElement(pres, f"{{{P}}}extLst")
+    for ext in ext_lst.findall(f"{{{P}}}ext"):
+        if ext.get("uri") == SEKTIONEN_URI:
+            ext_lst.remove(ext)
+    ext = etree.Element(f"{{{P}}}ext", uri=SEKTIONEN_URI)
+    ext_lst.insert(0, ext)
+    lst = etree.SubElement(ext, f"{{{P14}}}sectionLst", nsmap={"p14": P14})
+    ids = [s.slide_id for s in prs.slides]
+    for b in fp["bloecke"]:
+        folien = [n for st in fp["stationen"] if st["block"] == b["id"] for n in range(st["folien"][0], st["folien"][1] + 1)]
+        if not folien:
+            continue
+        sec = etree.SubElement(lst, f"{{{P14}}}section", name=f"Tag {b['tag']} · {b['nr']} {b['titel']}", id="{" + str(uuid.uuid4()).upper() + "}")
+        sl = etree.SubElement(sec, f"{{{P14}}}sldIdLst")
+        for n in sorted(folien):
+            etree.SubElement(sl, f"{{{P14}}}sldId", id=str(ids[n - 1]))
+
+
 def bauen(args):
     fp, aufbau = lade(FAHRPLAN), lade(AUFBAU)
     prs = Presentation(args.ein)
-    schritte = aufbau_fuer(prs, aufbau)
-    basis = args.basis_url.rstrip("/")
-    host = basis.split("://", 1)[-1]
-    for nr, folie in enumerate(prs.slides, 1):
+    # Erst alte Stempel und Animationen entfernen, dann Aufbau auflösen (Indizes der Formen!)
+    for folie in prs.slides:
         entferne_eigene(folie)
         alt = folie.element.find(f"{{{P}}}timing")
         if alt is not None:
             folie.element.remove(alt)
+    schritte = aufbau_fuer(prs, aufbau)
+    basis = args.basis_url.rstrip("/")
+    host = basis.split("://", 1)[-1]
+    code = fp["kursCode"]
+    for nr, folie in enumerate(prs.slides, 1):
         dunkel = ist_dunkel(folie)
         grau = RGBColor(0xC9, 0xC2, 0xB8) if dunkel else RGBColor(0x76, 0x6E, 0x64)
         if nr > 1:
-            textfeld(folie, "Fahrplan", 3.75 * E, 6.9 * E, 7.8 * E, 0.33 * E, fusszeile_text(fp, nr), 10, grau)
+            textfeld(folie, "Fahrplan", 3.75 * E, 6.9 * E, 6.9 * E, 0.33 * E, fusszeile_text(fp, nr), 10, grau)
         if nr in fp["qr"]:
-            pfad = fp["links"].get(str(nr))
-            ziel = f"{basis}/live" if pfad == "/live" else f"{basis}/f/{nr}"
-            bild = folie.shapes.add_picture(qr_bild(ziel), Emu(int(11.9 * E)), Emu(int(0.3 * E)), Emu(int(0.85 * E)), Emu(int(0.85 * E)))
+            live = fp["links"].get(str(nr)) == "/live"
+            ziel = f"{basis}/live/{code}" if live else f"{basis}/f/{nr}"
+            bild = folie.shapes.add_picture(qr_bild(ziel), Emu(int(11.6 * E)), Emu(int(0.2 * E)), Emu(int(1.25 * E)), Emu(int(1.25 * E)))
             bild.name = EIGEN + "QR"
-            anzeige = f"{host}/live" if pfad == "/live" else f"{host}/f/{nr}"
-            textfeld(folie, "QR-Text", 10.25 * E, 1.2 * E, 2.5 * E, 0.25 * E, anzeige, 8, grau, rechts=True)
-        if nr in schritte:
+            anzeige = f"{host}/live · Code {code}" if live else f"{host}/f/{nr}"
+            textfeld(folie, "QR-Text", 9.35 * E, 1.5 * E, 3.5 * E, 0.25 * E, anzeige, 10 if live else 9, grau, rechts=True)
+        if nr in schritte and len(schritte[nr]) > 1:
+            namen = schrittbalken(folie, len(schritte[nr]), dunkel)
+            formen = list(folie.shapes)
+            for k, name in enumerate(namen[1:], start=1):
+                idx = next(i for i, sh in enumerate(formen) if sh.name == name)
+                schritte[nr][k]["ganz"].add(idx)
             t = animation_xml(folie, schritte[nr])
-            if t is not None:
-                ext = folie.element.find(f"{{{P}}}extLst")
-                if ext is not None:
-                    ext.addprevious(t)
-                else:
-                    folie.element.append(t)
+            ext = folie.element.find(f"{{{P}}}extLst")
+            if ext is not None:
+                ext.addprevious(t)
+            else:
+                folie.element.append(t)
+    abschnitte_setzen(prs, fp)
     prs.save(args.aus)
     n = sum(len(s) - 1 for s in schritte.values())
-    print(f"gebaut: {args.aus} · {len(prs.slides)} Folien · {len(schritte)} mit Aufbau · {n} Klicks")
+    print(f"gebaut: {args.aus} · {len(prs.slides)} Folien · {len(schritte)} mit Aufbau · {n} Klicks · Code {code}")
 
 
 # ───────────── export ─────────────
@@ -312,6 +370,9 @@ def verstecke(prs, schritte: dict[int, list[dict]], stufe: int):
                 weg_abs += [ps[a]._p for a in abs_]
         for e in weg_abs:
             e.getparent().remove(e)
+        # gefüllte Schrittbalken späterer Schritte (Namen aus bauen/schrittbalken)
+        weg_formen += [sh._element for sh in formen if sh.name.startswith(EIGEN + "Schritt ") and sh.name[len(EIGEN) + 8:].isdigit()
+                       and int(sh.name[len(EIGEN) + 8:]) > stufe]
         for e in weg_formen:
             if e.getparent() is not None:
                 e.getparent().remove(e)

@@ -25,6 +25,9 @@ export interface Station {
   pfad: string;
 }
 
+/** Fester Code für die Live-Sitzung (Groß-/Kleinschreibung egal); steht auch auf Folie 2 und im QR-Code. */
+export const KURS_CODE = daten.kursCode;
+
 export const BLOECKE = daten.bloecke as Block[];
 export const STATIONEN = daten.stationen as Station[];
 const LINKS = daten.links as Record<string, string>;

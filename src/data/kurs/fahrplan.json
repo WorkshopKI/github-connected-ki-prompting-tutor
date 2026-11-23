@@ -1,7 +1,8 @@
 {
   "_hinweis": "Kurs-Fahrplan: eine Quelle für App (Du-bist-hier-Leiste, Präsentation, Leitstand, Kurzlinks /f/:nr) und Folien (Fußzeile, QR-Codes über scripts/folien/folien.py). Jede Folie gehört genau einer Station. Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md",
-  "stand": "22.11.2026",
-  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v27",
+  "stand": "23.11.2026",
+  "kursCode": "VHS2026",
+  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v29",
   "bloecke": [
     { "id": "t1-b1", "tag": 1, "nr": 1, "titel": "Ankommen, Ziele, Logins" },
     { "id": "t1-b2", "tag": 1, "nr": 2, "titel": "Wie ein Sprachmodell schreibt" },

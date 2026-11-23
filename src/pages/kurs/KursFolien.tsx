@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, ChevronLeft, ChevronRight, LocateFixed, Radio } from "lucide-react";
 import { KursLayout } from "@/components/kurs/KursLayout";
-import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { FolieBild, useVorladen } from "@/components/kurs/live/FolieBild";
 import { KursAblauf } from "@/components/kurs/live/KursAblauf";
 import { ROUTES } from "@/lib/constants";
 import { useKursLive } from "@/lib/kursLive";
-import { FOLIEN_ANZAHL, folie } from "@/data/kurs/folien";
+import { FOLIEN_ANZAHL } from "@/data/kurs/folien";
 import { blockLabel, linkFuerFolie, naechsteStation, stationFuerFolie } from "@/data/kurs/fahrplan";
 
 /**
@@ -27,7 +26,6 @@ export default function KursFolien() {
   const folgtLive = istLive && mitlaufen;
   const nr = folgtLive ? live.stand!.folie : eigene;
   const schritt = folgtLive ? live.stand!.schritt : undefined;
-  const f = folie(nr);
   const station = stationFuerFolie(nr);
   const naechste = naechsteStation(station);
   const link = linkFuerFolie(nr);
@@ -53,58 +51,62 @@ export default function KursFolien() {
 
   return (
     <KursLayout>
-      <div className="space-y-6">
-        <PageHeader
-          eyebrow={`${blockLabel(station)} · Folie ${nr} von ${FOLIEN_ANZAHL}`}
-          title="Folien"
-          description={
-            istLive
-              ? "Die Folien laufen mit der Kursleitung mit. Du kannst zurückblättern und jederzeit wieder einsteigen."
-              : "Alle Folien zum Nachlesen. Im Kurs gibst du den Code vom Beamer ein, dann laufen sie mit."
-          }
-          actions={
-            !live.code ? (
-              <Button asChild variant="outline">
-                <Link to={ROUTES.LIVE}>
-                  <Radio className="mr-2 h-4 w-4" strokeWidth={1.75} /> Live beitreten
-                </Link>
-              </Button>
-            ) : undefined
-          }
-        />
+      <div className="space-y-4">
+        {/* Kompakter Kopf: eine Zeile, damit die Folie möglichst groß ist */}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 className="font-serif text-2xl font-semibold">Folien</h1>
+          <span className="eyebrow">{blockLabel(station)}</span>
+          <span className="text-sm text-muted-foreground">
+            {istLive ? (mitlaufen ? "läuft live mit der Kursleitung" : "du blätterst selbst") : "zum Nachlesen"}
+          </span>
+          {!live.code && (
+            <Button asChild variant="outline" size="sm" className="ml-auto self-center">
+              <Link to={ROUTES.LIVE}>
+                <Radio className="mr-2 h-4 w-4" strokeWidth={1.75} /> Live beitreten
+              </Link>
+            </Button>
+          )}
+        </div>
 
         <div className="grid gap-3">
           <div className="overflow-hidden rounded-lg border border-border">
             <FolieBild nr={nr} schritt={schritt} wichtig />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Steuerleiste in einer Zeile: blättern · Position · Als Nächstes · Aktionen */}
+          <div className="flex flex-wrap items-center gap-2 text-sm">
             <Button variant="outline" size="icon" onClick={() => gehe(nr - 1)} disabled={nr <= 1} aria-label="Vorherige Folie">
               <ChevronLeft className="h-4 w-4" />
             </Button>
+            <span className="min-w-[3.5rem] text-center tabular-nums text-muted-foreground" aria-label={`Folie ${nr} von ${FOLIEN_ANZAHL}`}>
+              {nr} / {FOLIEN_ANZAHL}
+            </span>
             <Button variant="outline" size="icon" onClick={() => gehe(nr + 1)} disabled={nr >= FOLIEN_ANZAHL} aria-label="Nächste Folie">
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <span className="min-w-0 flex-1 truncate-safe text-sm">
-              <span className="font-semibold">{f?.titel}</span>
+            {naechste && (
+              <button
+                onClick={() => gehe(naechste.folien[0])}
+                className="min-w-0 flex-1 truncate-safe px-2 text-left text-muted-foreground hover:text-foreground"
+                title={`Zu Folie ${naechste.folien[0]}`}
+              >
+                Als Nächstes: {naechste.titel} · ab Folie {naechste.folien[0]}
+              </button>
+            )}
+            <span className="ml-auto inline-flex flex-wrap gap-2">
+              {istLive && !mitlaufen && (
+                <Button onClick={() => setMitlaufen(true)}>
+                  <LocateFixed className="mr-2 h-4 w-4" strokeWidth={1.75} /> Zur aktuellen Folie
+                </Button>
+              )}
+              {link !== ROUTES.LIVE && (
+                <Button asChild variant={istLive && !mitlaufen ? "outline" : "default"}>
+                  <Link to={link}>
+                    In der App öffnen <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.75} />
+                  </Link>
+                </Button>
+              )}
             </span>
-            {istLive && !mitlaufen && (
-              <Button onClick={() => setMitlaufen(true)}>
-                <LocateFixed className="mr-2 h-4 w-4" strokeWidth={1.75} /> Zur aktuellen Folie
-              </Button>
-            )}
-            {link !== ROUTES.LIVE && (
-              <Button asChild variant={istLive && !mitlaufen ? "outline" : "default"}>
-                <Link to={link}>
-                  In der App öffnen <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.75} />
-                </Link>
-              </Button>
-            )}
           </div>
-          {naechste && (
-            <p className="text-sm text-muted-foreground">
-              Als Nächstes: <span className="font-semibold text-foreground">{naechste.titel}</span> (ab Folie {naechste.folien[0]})
-            </p>
-          )}
         </div>
 
         <section aria-labelledby="ablauf" className="space-y-3">

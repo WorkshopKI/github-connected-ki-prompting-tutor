@@ -12,6 +12,9 @@
  * - BroadcastChannel: dieselben Nachrichten zwischen Fenstern desselben Browsers, auch offline
  *   (z. B. Beamer-Fenster und Leitstand-Fenster auf dem Kurs-Laptop).
  *
+ * Code: fest (KURS_CODE aus fahrplan.json, z. B. VHS2026), Eingabe ohne Rücksicht auf Groß-/Kleinschreibung.
+ * Laufen zwei Kurse mit demselben Code gleichzeitig, sehen beide denselben Stand.
+ *
  * Grenzen: Der Code ist kein Passwort. Wer ihn kennt, könnte technisch einen Leitungs-Stand
  * vortäuschen; Befehle an die Präsentation gehen nur über den Steuerkanal mit Token.
  * Es werden keine personenbezogenen Daten übertragen.
@@ -20,7 +23,7 @@
 import { useSyncExternalStore } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { LS_KEYS } from "@/lib/constants";
-import { stationFuerFolie } from "@/data/kurs/fahrplan";
+import { KURS_CODE, stationFuerFolie } from "@/data/kurs/fahrplan";
 
 export type LiveRolle = "leitung" | "leitstand" | "teilnehmer";
 export type Verbindung = "aus" | "verbinde" | "live" | "lokal";
@@ -204,12 +207,13 @@ function trennen() {
 
 /* ───────────── API ───────────── */
 
-/** Präsentationsmodus: Sitzung starten oder wiederaufnehmen. */
-export function starteLeitung(code?: string) {
+/** Präsentationsmodus: Sitzung mit dem festen Kurs-Code starten oder wiederaufnehmen. */
+export function starteLeitung(code: string = KURS_CODE) {
+  const ziel = normiereCode(code);
   const alt = lesen("leitung");
-  const weiter = alt?.rolle === "leitung" && (!code || alt.code === code) ? alt : null;
+  const weiter = alt?.rolle === "leitung" && alt.code === ziel ? alt : null;
   setze({
-    code: weiter?.code ?? (code ? normiereCode(code) : zufall(4)),
+    code: ziel,
     token: weiter?.token ?? zufall(12),
     rolle: "leitung",
     stand: weiter?.stand ?? null,

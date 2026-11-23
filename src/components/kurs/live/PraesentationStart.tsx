@@ -7,11 +7,10 @@ import { leitstandLink, teilnahmeLink, useKursLive } from "@/lib/kursLive";
 
 interface Props {
   onStart: (vonVorn: boolean) => void;
-  onNeuerCode: () => void;
 }
 
 /** Vor dem Präsentieren: Code für Teilnehmende, Leitstand-Link, Einstieg ab der letzten Folie. */
-export function PraesentationStart({ onStart, onNeuerCode }: Props) {
+export function PraesentationStart({ onStart }: Props) {
   const live = useKursLive();
   const [kopiert, setKopiert] = useState(false);
   const link = leitstandLink();
@@ -54,7 +53,7 @@ export function PraesentationStart({ onStart, onNeuerCode }: Props) {
       <div className="grid content-start gap-4">
         <section className="card-section">
           <h2 className="mb-1 text-sm font-semibold">Für Teilnehmende</h2>
-          <p className="text-sm text-muted-foreground">Adresse und Code stehen beim Präsentieren oben rechts und groß auf der Folie „Organisatorisches“.</p>
+          <p className="text-sm text-muted-foreground">Fester Code für alle Kurse. Er steht auf Folie 2 (auch in der PPTX), der QR-Code dort tritt direkt bei.</p>
           <p className="mt-3 text-lg">{teilnahmeLink()}</p>
           <p className="font-mono text-4xl font-semibold tracking-[0.2em]">{live.code ?? "…"}</p>
           <p className="mt-2 text-xs text-ink-subtle">
@@ -64,9 +63,6 @@ export function PraesentationStart({ onStart, onNeuerCode }: Props) {
                 ? "Nur dieser Browser verbunden (kein Internet zum Live-Dienst)"
                 : "Verbinde …"}
           </p>
-          <button onClick={onNeuerCode} className="mt-2 text-sm font-semibold text-brand-ink hover:underline">
-            Neuen Code erzeugen
-          </button>
         </section>
 
         <section className="card-section">
