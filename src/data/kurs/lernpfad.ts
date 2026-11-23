@@ -1,7 +1,8 @@
 /* ── Kurs-Lernpfad ──
  * Zwei Tage entlang der vier Disziplinen: Fragen → Gestalten → Steuern → Spezifizieren.
  * Inhalte zusammengeführt aus prompting-tutor.kilab.org, prompt-tutor.kilab.org,
- * miniprojekte.lovable.app und den Kursfolien v22. Stand: 22.11.2026.
+ * miniprojekte.lovable.app und den Kursfolien v22. Stand: 23.11.2026.
+ * `optional`: kann bei Zeitmangel entfallen (Hinweis, was dann geschieht). Gleiches Feld in fahrplan.json.
  */
 
 export type Disziplin = "verstehen" | "fragen" | "gestalten" | "steuern" | "spezifizieren" | "anwenden";
@@ -26,6 +27,21 @@ export interface KursModul {
   uebung?: { aufgabe: string; link?: string; linkLabel?: string };
   /** Weiterführende Seiten im Kursbereich. */
   mehr?: { label: string; link: string }[];
+  /** Bei Zeitmangel verzichtbar; der Text sagt, was dann passiert (z. B. „zu Hause nachholen“). */
+  optional?: string;
+  /** Checkliste mit Klickpfaden für Claude und ChatGPT (Lektion „Konto einrichten“). */
+  einstellungen?: Einstellung[];
+  /** Ablauf einer Übung in Schritten. */
+  schritte?: string[];
+}
+
+export interface Einstellung {
+  id: string;
+  thema: string;
+  warum: string;
+  claude: string;
+  chatgpt: string;
+  empfehlung: string;
 }
 
 export const DISZIPLIN_LABEL: Record<Disziplin, string> = {
@@ -39,6 +55,68 @@ export const DISZIPLIN_LABEL: Record<Disziplin, string> = {
 
 export const KURS_MODULE: KursModul[] = [
   // ───────────── Tag 1 ─────────────
+  {
+    id: "konto-einrichten",
+    tag: 1,
+    disziplin: "anwenden",
+    titel: "Konto einrichten: Datenschutz, Sicherheit, Anweisungen",
+    dauer: "15 Min",
+    ziel: "Du richtest Claude oder ChatGPT so ein, dass deine Daten geschützt sind und die Antworten zu dir passen.",
+    kernpunkte: [
+      "Claude und ChatGPT verwenden Chats aus privaten Konten standardmäßig zum Training. Du kannst das in den Einstellungen ausschalten; neue Chats sind dann ausgenommen.",
+      "Ein gut gesichertes Konto schützt deine Chats: Passkey oder Zwei-Faktor-Anmeldung, unbekannte Geräte abmelden.",
+      "Eigene Anweisungen gelten für alle Chats und sparen Wiederholungen. Halte sie kurz; an Tag 2 vertiefen wir das.",
+      "Das Gedächtnis merkt sich Dinge über dich. Sieh ab und zu nach, was gespeichert ist, und lösche Falsches.",
+      "Für einmalige, heikle Fragen gibt es einen Chat ohne Verlauf und Gedächtnis: temporärer Chat (ChatGPT) bzw. Inkognito-Chat (Claude).",
+    ],
+    einstellungen: [
+      {
+        id: "training",
+        thema: "Nicht zum Training verwenden",
+        warum: "Sonst können deine Chats in künftige Modelle einfließen und werden länger gespeichert.",
+        claude: "Einstellungen → Datenschutz → „Claude verbessern“ (Help improve Claude) ausschalten",
+        chatgpt: "Einstellungen → Datenkontrollen → „Das Modell für alle verbessern“ ausschalten",
+        empfehlung: "Aus, sobald du mit beruflichen oder persönlichen Inhalten arbeitest.",
+      },
+      {
+        id: "sicherheit",
+        thema: "Konto absichern",
+        warum: "Wer dein Konto übernimmt, liest alle Chats, Projekte und Dateien mit.",
+        claude: "Einstellungen → Konto → „Wo du angemeldet bist“: fremde Geräte abmelden. Anmeldung über Google oder E-Mail-Code.",
+        chatgpt: "Einstellungen → Sicherheit und Anmeldung: Passkey hinzufügen oder Authenticator-App einschalten, aktive Sitzungen prüfen",
+        empfehlung: "Passkey oder Authenticator-App; Geräte nach dem Kurs am Leihrechner abmelden.",
+      },
+      {
+        id: "profil",
+        thema: "Name und Arbeitsbereich",
+        warum: "Die KI spricht dich richtig an und wählt passende Beispiele.",
+        claude: "Einstellungen → Konto: „Wie soll Claude dich nennen?“ und „Was beschreibt deine Arbeit am besten?“",
+        chatgpt: "Einstellungen → Personalisierung: Spitzname und Beruf",
+        empfehlung: "Vorname oder Spitzname reicht, kein vollständiger Name nötig.",
+      },
+      {
+        id: "anweisungen",
+        thema: "Eigene Anweisungen",
+        warum: "Gelten für jeden Chat: Sprache, Ton, Rückfragen statt Raten.",
+        claude: "Einstellungen → Dein Claude → Anweisungen",
+        chatgpt: "Einstellungen → Personalisierung → Eigene Anweisungen",
+        empfehlung: "Drei bis fünf Sätze, Vorlage unten. Keine vertraulichen Angaben.",
+      },
+      {
+        id: "gedaechtnis",
+        thema: "Gedächtnis prüfen",
+        warum: "Falsche oder veraltete Erinnerungen färben jede Antwort.",
+        claude: "Einstellungen → Funktionen → Gedächtnis: ansehen, bearbeiten oder ausschalten",
+        chatgpt: "Einstellungen → ChatGPT-Speicher (früher Personalisierung → Gedächtnis): verwalten oder löschen",
+        empfehlung: "An lassen, aber einmal im Monat prüfen. Heikles im temporären bzw. Inkognito-Chat fragen.",
+      },
+    ],
+    prompts: [
+      { titel: "Kurzvorlage: eigene Anweisungen", text: "Ich bin {Beruf/Rolle}. Antworte auf Deutsch, klar und ohne Fachjargon.\nWenn dir Informationen fehlen, frag kurz nach, statt zu raten.\nNenne bei Zahlen, Gesetzen und Preisen eine Quelle." },
+      { titel: "Was weißt du über mich?", text: "Was hast du dir bisher über mich gemerkt? Liste es kurz auf, damit ich prüfen kann, ob etwas falsch ist oder gelöscht werden soll.", hinweis: "Funktioniert, wenn das Gedächtnis eingeschaltet ist." },
+    ],
+    uebung: { aufgabe: "Geh die fünf Punkte in deinem Konto durch und hake ab, was erledigt ist. Bezeichnungen können je nach App-Version leicht abweichen." },
+  },
   {
     id: "wie-sprachmodelle-arbeiten",
     tag: 1,
@@ -124,6 +202,7 @@ export const KURS_MODULE: KursModul[] = [
   {
     id: "sprechen-und-sehen",
     tag: 1,
+    optional: "Bei Zeitmangel kurz vorführen und zu Hause ausprobieren.",
     disziplin: "fragen",
     titel: "Sprechen, Fotos, Kamera",
     dauer: "30 Min",
@@ -181,6 +260,36 @@ export const KURS_MODULE: KursModul[] = [
       { titel: "Vorlage: eigene Anweisungen", text: "Ich arbeite als {Beruf} in {Branche}. Meine Leserinnen und Leser sind {Zielgruppe}.\nAntworte auf Deutsch, sachlich und knapp. Nutze Aufzählungen nur bei echten Listen.\nWenn dir Informationen fehlen, frage kurz nach, statt zu raten.\nNenne bei Fakten zu Gesetzen, Preisen und Personen eine Quelle." },
     ],
     uebung: { aufgabe: "Schreib deine eigenen Anweisungen und teste sie mit derselben Frage einmal mit und einmal ohne.", link: "/playground", linkLabel: "Werkstatt öffnen" },
+  },
+  {
+    id: "artefakte",
+    tag: 2,
+    disziplin: "gestalten",
+    titel: "Artefakte: vom Chat zum fertigen Ergebnis",
+    dauer: "35 Min",
+    ziel: "Du lässt Ergebnisse als bearbeitbares Dokument, Folien oder Tabelle erstellen, änderst gezielt einzelne Stellen und exportierst sie.",
+    kernpunkte: [
+      "Ein Artefakt ist ein Ergebnis, das neben dem Chat als eigenes Dokument entsteht: Text, Folien, Tabelle, Diagramm oder kleine Anwendung.",
+      "Claude: Docs, Slides, Sheets, Design, Data (Dashboards) und Whiteboard. Im Chat anfragen oder im Bereich „Artifacts“ starten. Welche Typen du hast, hängt vom Tarif ab.",
+      "ChatGPT: Canvas für Texte und Code (Befehl „/canvas“). Dokumente, Präsentationen und Tabellen erstellt ChatGPT als Dateien, je nach Tarif auch nach eigenen Vorlagen.",
+      "Nicht neu prompten, sondern gezielt ändern: Stelle markieren und sagen, was anders sein soll, oder selbst tippen.",
+      "Zum Schluss exportieren (PowerPoint, Word, Excel, PDF) oder per Link teilen. Ein geteilter Link ist für alle sichtbar, die ihn haben: nichts Vertrauliches hineinschreiben.",
+    ],
+    prompts: [
+      { titel: "Fünf Folien", text: "Erstelle eine Präsentation mit fünf Folien für {Zielgruppe} zum Thema {Thema}. Folie 1: Titel. Folien 2 bis 4: je eine Kernaussage mit drei Stichpunkten. Folie 5: nächste Schritte. Schlichtes Design, auf Deutsch.", hinweis: "In Claude entsteht eine Slides-Präsentation, in ChatGPT eine Präsentationsdatei." },
+      { titel: "Infoblatt im Canvas", text: "/canvas Schreibe ein einseitiges Infoblatt für {Zielgruppe}: „{Thema}“. Gliederung: Worum geht es, die drei wichtigsten Punkte, Ansprechperson. Höchstens 250 Wörter.", hinweis: "„/canvas“ gilt für ChatGPT; in Claude einfach „als Dokument“ schreiben." },
+      { titel: "Tabelle zum Weiterarbeiten", text: "Erstelle eine Tabelle mit den Spalten {Spalten} für {Zweck}. Fülle drei Beispielzeilen aus und markiere, welche Angaben ich selbst prüfen muss." },
+      { titel: "Nur eine Stelle ändern", text: "Ändere nur den markierten Abschnitt: kürzer und ohne Fachbegriffe. Alles andere bleibt genau so." },
+    ],
+    schritte: [
+      "Wähle: Infoblatt, fünf Folien oder Tabelle zu deinem Anwendungsfall von Tag 1.",
+      "Lass es als Artefakt (Claude) oder im Canvas bzw. als Datei (ChatGPT) erstellen. Nenne Zielgruppe und Umfang.",
+      "Ändere zwei Stellen gezielt: markieren und sagen, was anders sein soll.",
+      "Exportiere (PDF, PowerPoint, Word) oder erzeuge einen Link zum Teilen.",
+      "Link oder Datei ins Padlet, dazu ein Satz, was du geändert hast.",
+    ],
+    uebung: { aufgabe: "Vom Chat zum fertigen Ergebnis, 25 Minuten, allein oder zu zweit. Prüf am Ende: Stimmen Zahlen, Namen und Daten? Würdest du es so verschicken?" },
+    mehr: [{ label: "Mini-Projekt: Präsentation oder Website", link: "/kurs/gruppen#praesentation" }],
   },
   {
     id: "steuern",
@@ -241,6 +350,7 @@ export const KURS_MODULE: KursModul[] = [
   {
     id: "ki-im-betrieb",
     tag: 2,
+    optional: "Vor allem für Teilnehmende aus Betrieben und Verwaltung; sonst überspringen.",
     disziplin: "anwenden",
     titel: "KI im Betrieb einführen",
     dauer: "30 Min",

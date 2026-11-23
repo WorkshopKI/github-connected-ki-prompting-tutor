@@ -3,6 +3,7 @@ import { KursLayout } from "@/components/kurs/KursLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { KURS_MODULE, DISZIPLIN_LABEL, type KursModul } from "@/data/kurs/lernpfad";
 import { ArrowRight, ClipboardCheck, FileText, GraduationCap, PlayCircle } from "lucide-react";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
 
 const DISZIPLINEN = [
   { nr: 1, name: "Fragen", text: "Präzise fragen mit ACTA", tag: "Tag 1" },
@@ -19,7 +20,7 @@ function ModulKarte({ m, nr }: { m: KursModul; nr: number }) {
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-full border border-input font-semibold tabular-nums">{nr}</span>
       <span className="min-w-0">
-        <span className="block font-semibold">{m.titel}</span>
+        <span className="flex flex-wrap items-center gap-2 font-semibold">{m.titel}{m.optional && <OptionalBadge title={m.optional} />}</span>
         <span className="block text-sm text-muted-foreground">
           {DISZIPLIN_LABEL[m.disziplin]} · {m.dauer}
           {m.erklaert?.length ? ` · ${m.erklaert.length} Animation${m.erklaert.length > 1 ? "en" : ""}` : ""}
@@ -68,12 +69,12 @@ export default function KursHome() {
         <div className="grid gap-8 lg:grid-cols-2">
           <section aria-labelledby="t1">
             <h2 id="t1" className="text-xl font-semibold">Tag 1 · Verstehen und Fragen</h2>
-            <p className="mb-4 text-sm text-muted-foreground">Grundlagen, ACTA, Recherche, Grenzen, Bilder</p>
+            <p className="mb-4 text-sm text-muted-foreground">Konto, Grundlagen, ACTA, Recherche, Grenzen, Bilder</p>
             <div className="grid gap-3">{tag1.map((m, i) => <ModulKarte key={m.id} m={m} nr={i + 1} />)}</div>
           </section>
           <section aria-labelledby="t2">
             <h2 id="t2" className="text-xl font-semibold">Tag 2 · Gestalten, Delegieren, Prüfen</h2>
-            <p className="mb-4 text-sm text-muted-foreground">Kontext, Steuerung, Agenten, Projekte</p>
+            <p className="mb-4 text-sm text-muted-foreground">Kontext, Artefakte, Steuerung, Agenten, Projekte</p>
             <div className="grid gap-3">{tag2.map((m, i) => <ModulKarte key={m.id} m={m} nr={tag1.length + i + 1} />)}</div>
           </section>
         </div>

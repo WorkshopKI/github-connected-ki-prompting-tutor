@@ -59,6 +59,7 @@ export const LS_KEYS = {
   KURS_UEBUNGEN: "kurs-uebungen-erledigt",
   KURS_CHECK: "kurs-wissenscheck",
   KURS_LIVE: "kurs-live",
+  KURS_KONTO: "kurs-konto-checkliste",
   EDITION: "app-edition",
   KURS_LEITSTAND: "kurs-leitstand",
   FEEDBACK_ITEMS: "ps-feedback",

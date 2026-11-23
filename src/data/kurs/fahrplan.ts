@@ -23,6 +23,8 @@ export interface Station {
   minuten: number;
   folien: [number, number];
   pfad: string;
+  /** Bei Zeitmangel verzichtbar. */
+  optional?: boolean;
 }
 
 /** Fester Code für die Live-Sitzung (Groß-/Kleinschreibung egal); steht auch auf Folie 2 und im QR-Code. */

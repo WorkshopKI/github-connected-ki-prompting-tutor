@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
 import { BADGE_COLORS, LS_KEYS } from "@/lib/constants";
 import { loadFromStorage, saveToStorage } from "@/lib/storage";
 import { TYP_LABEL, blockById, blockLabel, geplanterStart, naechsteStation, stationFuerFolie } from "@/data/kurs/fahrplan";
@@ -70,7 +71,10 @@ export function LeitstandZeit({ stand }: { stand: LiveStand | null }) {
         <span className="font-mono text-2xl tabular-nums">{uhr(new Date(jetzt))}</span>
       </div>
       <div>
-        <div className="font-semibold">{station.titel}</div>
+        <div className="flex flex-wrap items-center gap-2 font-semibold">
+          {station.titel}
+          {station.optional && <OptionalBadge title="Bei Zeitmangel überspringen" />}
+        </div>
         <div className="text-sm text-muted-foreground">{TYP_LABEL[station.typ]} · geplant {station.minuten} Min</div>
       </div>
       <div className="flex items-center gap-3">

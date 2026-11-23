@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
 import { BLOECKE, STATIONEN, TYP_LABEL, type Station } from "@/data/kurs/fahrplan";
 
 interface KursAblaufProps {
@@ -43,6 +44,7 @@ export function KursAblauf({ aktiv, live, onWahl }: KursAblaufProps) {
                         >
                           <span className="min-w-0 flex-1">
                             {s.titel}
+                            {s.optional && <OptionalBadge className="ml-2 align-middle" />}
                             {istLive && <span className="ml-2 text-xs font-semibold text-brand-ink">● jetzt</span>}
                           </span>
                           <span className="shrink-0 text-xs text-ink-subtle">

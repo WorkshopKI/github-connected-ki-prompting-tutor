@@ -1,100 +1,480 @@
 {
-  "_hinweis": "Kurs-Fahrplan: eine Quelle für App (Du-bist-hier-Leiste, Präsentation, Leitstand, Kurzlinks /f/:nr) und Folien (Fußzeile, QR-Codes über scripts/folien/folien.py). Jede Folie gehört genau einer Station. Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md",
+  "_hinweis": "Kurs-Fahrplan: eine Quelle für App (Du-bist-hier-Leiste, Präsentation, Leitstand, Kurzlinks /f/:nr) und Folien (Fußzeile, QR-Codes über scripts/folien/folien.py). Jede Folie gehört genau einer Station. Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md Stationen mit \"optional\": true können bei Zeitmangel entfallen (Fußzeile und App zeigen das).",
   "stand": "23.11.2026",
   "kursCode": "VHS2026",
-  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v29",
+  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v30",
   "bloecke": [
-    { "id": "t1-b1", "tag": 1, "nr": 1, "titel": "Ankommen, Ziele, Logins" },
-    { "id": "t1-b2", "tag": 1, "nr": 2, "titel": "Wie ein Sprachmodell schreibt" },
-    { "id": "t1-b3", "tag": 1, "nr": 3, "titel": "Fragen mit ACTA" },
-    { "id": "t1-b4", "tag": 1, "nr": 4, "titel": "Recherche" },
-    { "id": "t1-b5", "tag": 1, "nr": 5, "titel": "Daten, Recht, Sprechen und Fotos" },
-    { "id": "t1-b6", "tag": 1, "nr": 6, "titel": "Bilder im Dialog" },
-    { "id": "t1-b7", "tag": 1, "nr": 7, "titel": "Mein Anwendungsfall, Wissenscheck" },
-    { "id": "t2-b1", "tag": 2, "nr": 1, "titel": "Rückblick und Fragen" },
-    { "id": "t2-b2", "tag": 2, "nr": 2, "titel": "Gestalten: Projekte, Anweisungen, Skills" },
-    { "id": "t2-b3", "tag": 2, "nr": 3, "titel": "Steuern" },
-    { "id": "t2-b4", "tag": 2, "nr": 4, "titel": "Delegieren an KI-Agenten" },
-    { "id": "t2-b5", "tag": 2, "nr": 5, "titel": "Spezifizieren, KI im Betrieb" },
-    { "id": "t2-b6", "tag": 2, "nr": 6, "titel": "Mini-Projekte in Gruppen" },
-    { "id": "t2-b7", "tag": 2, "nr": 7, "titel": "Vorstellung, Wissenscheck, Feedback" }
+    {
+      "id": "t1-b1",
+      "tag": 1,
+      "nr": 1,
+      "titel": "Ankommen, Ziele, Konto einrichten"
+    },
+    {
+      "id": "t1-b2",
+      "tag": 1,
+      "nr": 2,
+      "titel": "Wie ein Sprachmodell schreibt"
+    },
+    {
+      "id": "t1-b3",
+      "tag": 1,
+      "nr": 3,
+      "titel": "Fragen mit ACTA"
+    },
+    {
+      "id": "t1-b4",
+      "tag": 1,
+      "nr": 4,
+      "titel": "Recherche"
+    },
+    {
+      "id": "t1-b5",
+      "tag": 1,
+      "nr": 5,
+      "titel": "Daten, Recht, Sprechen und Fotos"
+    },
+    {
+      "id": "t1-b6",
+      "tag": 1,
+      "nr": 6,
+      "titel": "Bilder im Dialog"
+    },
+    {
+      "id": "t1-b7",
+      "tag": 1,
+      "nr": 7,
+      "titel": "Mein Anwendungsfall, Wissenscheck"
+    },
+    {
+      "id": "t2-b1",
+      "tag": 2,
+      "nr": 1,
+      "titel": "Rückblick und Fragen"
+    },
+    {
+      "id": "t2-b2",
+      "tag": 2,
+      "nr": 2,
+      "titel": "Gestalten: Projekte, Anweisungen, Artefakte"
+    },
+    {
+      "id": "t2-b3",
+      "tag": 2,
+      "nr": 3,
+      "titel": "Steuern"
+    },
+    {
+      "id": "t2-b4",
+      "tag": 2,
+      "nr": 4,
+      "titel": "Delegieren an KI-Agenten"
+    },
+    {
+      "id": "t2-b5",
+      "tag": 2,
+      "nr": 5,
+      "titel": "Spezifizieren, KI im Betrieb"
+    },
+    {
+      "id": "t2-b6",
+      "tag": 2,
+      "nr": 6,
+      "titel": "Mini-Projekte in Gruppen"
+    },
+    {
+      "id": "t2-b7",
+      "tag": 2,
+      "nr": 7,
+      "titel": "Vorstellung, Wissenscheck, Feedback"
+    }
   ],
   "stationen": [
-    { "id": "start", "block": "t1-b1", "titel": "Begrüßung und Organisatorisches", "typ": "vortrag", "minuten": 20, "folien": [1, 6], "pfad": "/kurs" },
-    { "id": "ankommen", "block": "t1-b1", "titel": "Ankommen: Erwartungen", "typ": "gespraech", "minuten": 15, "folien": [7, 7], "pfad": "/kurs" },
-    { "id": "grundlagen", "block": "t1-b2", "titel": "Was hinter ChatGPT & Co. steckt", "typ": "vortrag", "minuten": 15, "folien": [8, 10], "pfad": "/kurs/wie-sprachmodelle-arbeiten" },
-    { "id": "wort-fuer-wort", "block": "t1-b2", "titel": "Wort für Wort, Tokens, Aufmerksamkeit", "typ": "demo", "minuten": 25, "folien": [11, 13], "pfad": "/erklaert" },
-    { "id": "training-modelle", "block": "t1-b2", "titel": "Training, Temperatur, Modelle wählen", "typ": "vortrag", "minuten": 30, "folien": [14, 18], "pfad": "/kurs/stand" },
-    { "id": "grenzen", "block": "t1-b2", "titel": "Grenzen und Halluzinationen", "typ": "vortrag", "minuten": 15, "folien": [19, 20], "pfad": "/kurs/grenzen-und-recht" },
-    { "id": "acta", "block": "t1-b3", "titel": "Fragen mit der ACTA-Methode", "typ": "uebung", "minuten": 35, "folien": [21, 24], "pfad": "/kurs/fragen-mit-acta" },
-    { "id": "prompt-labor", "block": "t1-b3", "titel": "Gruppe: Prompt-Labor", "typ": "gruppe", "minuten": 25, "folien": [25, 25], "pfad": "/kurs/gruppen#prompt-labor" },
-    { "id": "recherche", "block": "t1-b4", "titel": "Websuche und Deep Research", "typ": "vortrag", "minuten": 15, "folien": [26, 26], "pfad": "/kurs/recherche" },
-    { "id": "tool-vergleich", "block": "t1-b4", "titel": "Gruppe: Tool-Vergleich", "typ": "gruppe", "minuten": 30, "folien": [27, 27], "pfad": "/kurs/gruppen#tool-vergleich" },
-    { "id": "daten-recht", "block": "t1-b5", "titel": "Datenschutz und Recht", "typ": "vortrag", "minuten": 20, "folien": [28, 29], "pfad": "/kurs/grenzen-und-recht" },
-    { "id": "sprechen-sehen", "block": "t1-b5", "titel": "Sprechen, Fotos, Kamera", "typ": "demo", "minuten": 15, "folien": [30, 30], "pfad": "/kurs/sprechen-und-sehen" },
-    { "id": "bilder", "block": "t1-b6", "titel": "Bilder im Dialog erstellen", "typ": "uebung", "minuten": 45, "folien": [31, 34], "pfad": "/kurs/bilder" },
-    { "id": "anwendungsfall", "block": "t1-b7", "titel": "Gruppe: Mein Anwendungsfall, dann Wissenscheck", "typ": "gruppe", "minuten": 45, "folien": [35, 35], "pfad": "/kurs/gruppen#eigener-anwendungsfall" },
-    { "id": "rueckblick", "block": "t2-b1", "titel": "Rückblick und Fragen vom Vortag", "typ": "gespraech", "minuten": 15, "folien": [36, 36], "pfad": "/kurs/check" },
-    { "id": "gestalten", "block": "t2-b2", "titel": "Kontext gestalten", "typ": "vortrag", "minuten": 45, "folien": [37, 39], "pfad": "/kurs/gestalten" },
-    { "id": "steuern", "block": "t2-b3", "titel": "Steuern: klares Ziel statt Regeln", "typ": "vortrag", "minuten": 20, "folien": [40, 40], "pfad": "/kurs/steuern" },
-    { "id": "steuern-duell", "block": "t2-b3", "titel": "Gruppe: Steuern-Duell", "typ": "gruppe", "minuten": 25, "folien": [41, 41], "pfad": "/kurs/gruppen#steuern-duell" },
-    { "id": "delegieren", "block": "t2-b4", "titel": "Delegieren an KI-Agenten", "typ": "demo", "minuten": 50, "folien": [42, 43], "pfad": "/kurs/delegieren" },
-    { "id": "spezifizieren", "block": "t2-b5", "titel": "Spezifizieren: Aufträge für Agenten", "typ": "uebung", "minuten": 25, "folien": [44, 44], "pfad": "/kurs/spezifizieren" },
-    { "id": "ki-im-betrieb", "block": "t2-b5", "titel": "KI im Betrieb einführen", "typ": "vortrag", "minuten": 20, "folien": [45, 45], "pfad": "/kurs/ki-im-betrieb" },
-    { "id": "mini-projekte", "block": "t2-b6", "titel": "Mini-Projekte in Gruppen", "typ": "gruppe", "minuten": 100, "folien": [46, 47], "pfad": "/kurs/mini-projekte" },
-    { "id": "abschluss", "block": "t2-b7", "titel": "Vorstellung, Wissenscheck, Feedback", "typ": "gespraech", "minuten": 45, "folien": [48, 48], "pfad": "/kurs/check" }
+    {
+      "id": "start",
+      "block": "t1-b1",
+      "titel": "Begrüßung und Organisatorisches",
+      "typ": "vortrag",
+      "minuten": 10,
+      "folien": [
+        1,
+        2
+      ],
+      "pfad": "/kurs"
+    },
+    {
+      "id": "konto",
+      "block": "t1-b1",
+      "titel": "Konto einrichten: Datenschutz, Sicherheit, Anweisungen",
+      "typ": "uebung",
+      "minuten": 15,
+      "folien": [
+        3,
+        3
+      ],
+      "pfad": "/kurs/konto-einrichten"
+    },
+    {
+      "id": "lern-app",
+      "block": "t1-b1",
+      "titel": "Kursablauf und Lern-App",
+      "typ": "vortrag",
+      "minuten": 10,
+      "folien": [
+        4,
+        7
+      ],
+      "pfad": "/kurs"
+    },
+    {
+      "id": "ankommen",
+      "block": "t1-b1",
+      "titel": "Ankommen: Erwartungen",
+      "typ": "gespraech",
+      "minuten": 15,
+      "folien": [
+        8,
+        8
+      ],
+      "pfad": "/kurs"
+    },
+    {
+      "id": "grundlagen",
+      "block": "t1-b2",
+      "titel": "Was hinter ChatGPT & Co. steckt",
+      "typ": "vortrag",
+      "minuten": 15,
+      "folien": [
+        9,
+        11
+      ],
+      "pfad": "/kurs/wie-sprachmodelle-arbeiten"
+    },
+    {
+      "id": "wort-fuer-wort",
+      "block": "t1-b2",
+      "titel": "Wort für Wort, Tokens, Aufmerksamkeit",
+      "typ": "demo",
+      "minuten": 25,
+      "folien": [
+        12,
+        14
+      ],
+      "pfad": "/erklaert"
+    },
+    {
+      "id": "training-modelle",
+      "block": "t1-b2",
+      "titel": "Training, Temperatur, Modelle wählen",
+      "typ": "vortrag",
+      "minuten": 30,
+      "folien": [
+        15,
+        19
+      ],
+      "pfad": "/kurs/stand"
+    },
+    {
+      "id": "grenzen",
+      "block": "t1-b2",
+      "titel": "Grenzen und Halluzinationen",
+      "typ": "vortrag",
+      "minuten": 15,
+      "folien": [
+        20,
+        21
+      ],
+      "pfad": "/kurs/grenzen-und-recht"
+    },
+    {
+      "id": "acta",
+      "block": "t1-b3",
+      "titel": "Fragen mit der ACTA-Methode",
+      "typ": "uebung",
+      "minuten": 35,
+      "folien": [
+        22,
+        25
+      ],
+      "pfad": "/kurs/fragen-mit-acta"
+    },
+    {
+      "id": "prompt-labor",
+      "block": "t1-b3",
+      "titel": "Gruppe: Prompt-Labor",
+      "typ": "gruppe",
+      "minuten": 25,
+      "folien": [
+        26,
+        26
+      ],
+      "pfad": "/kurs/gruppen#prompt-labor"
+    },
+    {
+      "id": "recherche",
+      "block": "t1-b4",
+      "titel": "Websuche und Deep Research",
+      "typ": "vortrag",
+      "minuten": 15,
+      "folien": [
+        27,
+        27
+      ],
+      "pfad": "/kurs/recherche"
+    },
+    {
+      "id": "tool-vergleich",
+      "block": "t1-b4",
+      "titel": "Gruppe: Tool-Vergleich",
+      "typ": "gruppe",
+      "minuten": 30,
+      "folien": [
+        28,
+        28
+      ],
+      "pfad": "/kurs/gruppen#tool-vergleich",
+      "optional": true
+    },
+    {
+      "id": "daten-recht",
+      "block": "t1-b5",
+      "titel": "Datenschutz und Recht",
+      "typ": "vortrag",
+      "minuten": 20,
+      "folien": [
+        29,
+        30
+      ],
+      "pfad": "/kurs/grenzen-und-recht"
+    },
+    {
+      "id": "sprechen-sehen",
+      "block": "t1-b5",
+      "titel": "Sprechen, Fotos, Kamera",
+      "typ": "demo",
+      "minuten": 15,
+      "folien": [
+        31,
+        31
+      ],
+      "pfad": "/kurs/sprechen-und-sehen",
+      "optional": true
+    },
+    {
+      "id": "bilder",
+      "block": "t1-b6",
+      "titel": "Bilder im Dialog erstellen",
+      "typ": "uebung",
+      "minuten": 45,
+      "folien": [
+        32,
+        35
+      ],
+      "pfad": "/kurs/bilder"
+    },
+    {
+      "id": "anwendungsfall",
+      "block": "t1-b7",
+      "titel": "Gruppe: Mein Anwendungsfall, dann Wissenscheck",
+      "typ": "gruppe",
+      "minuten": 45,
+      "folien": [
+        36,
+        36
+      ],
+      "pfad": "/kurs/gruppen#eigener-anwendungsfall"
+    },
+    {
+      "id": "rueckblick",
+      "block": "t2-b1",
+      "titel": "Rückblick und Fragen vom Vortag",
+      "typ": "gespraech",
+      "minuten": 15,
+      "folien": [
+        37,
+        37
+      ],
+      "pfad": "/kurs/check"
+    },
+    {
+      "id": "gestalten",
+      "block": "t2-b2",
+      "titel": "Kontext gestalten",
+      "typ": "vortrag",
+      "minuten": 45,
+      "folien": [
+        38,
+        40
+      ],
+      "pfad": "/kurs/gestalten"
+    },
+    {
+      "id": "artefakte",
+      "block": "t2-b2",
+      "titel": "Artefakte: vom Chat zum fertigen Ergebnis",
+      "typ": "uebung",
+      "minuten": 35,
+      "folien": [
+        41,
+        42
+      ],
+      "pfad": "/kurs/artefakte"
+    },
+    {
+      "id": "steuern",
+      "block": "t2-b3",
+      "titel": "Steuern: klares Ziel statt Regeln",
+      "typ": "vortrag",
+      "minuten": 20,
+      "folien": [
+        43,
+        43
+      ],
+      "pfad": "/kurs/steuern"
+    },
+    {
+      "id": "steuern-duell",
+      "block": "t2-b3",
+      "titel": "Gruppe: Steuern-Duell",
+      "typ": "gruppe",
+      "minuten": 25,
+      "folien": [
+        44,
+        44
+      ],
+      "pfad": "/kurs/gruppen#steuern-duell",
+      "optional": true
+    },
+    {
+      "id": "delegieren",
+      "block": "t2-b4",
+      "titel": "Delegieren an KI-Agenten",
+      "typ": "demo",
+      "minuten": 50,
+      "folien": [
+        45,
+        46
+      ],
+      "pfad": "/kurs/delegieren"
+    },
+    {
+      "id": "spezifizieren",
+      "block": "t2-b5",
+      "titel": "Spezifizieren: Aufträge für Agenten",
+      "typ": "uebung",
+      "minuten": 25,
+      "folien": [
+        47,
+        47
+      ],
+      "pfad": "/kurs/spezifizieren"
+    },
+    {
+      "id": "ki-im-betrieb",
+      "block": "t2-b5",
+      "titel": "KI im Betrieb einführen",
+      "typ": "vortrag",
+      "minuten": 20,
+      "folien": [
+        48,
+        48
+      ],
+      "pfad": "/kurs/ki-im-betrieb",
+      "optional": true
+    },
+    {
+      "id": "mini-projekte",
+      "block": "t2-b6",
+      "titel": "Mini-Projekte in Gruppen",
+      "typ": "gruppe",
+      "minuten": 100,
+      "folien": [
+        49,
+        50
+      ],
+      "pfad": "/kurs/mini-projekte"
+    },
+    {
+      "id": "abschluss",
+      "block": "t2-b7",
+      "titel": "Vorstellung, Wissenscheck, Feedback",
+      "typ": "gespraech",
+      "minuten": 45,
+      "folien": [
+        51,
+        51
+      ],
+      "pfad": "/kurs/check"
+    }
   ],
   "links": {
     "2": "/live",
-    "3": "/kurs",
-    "4": "/erklaert",
-    "5": "/kurs/uebungen",
-    "6": "/playground",
-    "9": "/kurs/wie-sprachmodelle-arbeiten",
+    "3": "/kurs/konto-einrichten",
+    "4": "/kurs",
+    "5": "/erklaert",
+    "6": "/kurs/uebungen",
+    "7": "/playground",
     "10": "/kurs/wie-sprachmodelle-arbeiten",
-    "11": "/erklaert/naechstes-wort",
-    "12": "/erklaert/tokens",
-    "13": "/erklaert/aufmerksamkeit",
-    "14": "/erklaert/training",
-    "15": "/erklaert/temperatur",
-    "16": "/kurs/stand",
+    "11": "/kurs/wie-sprachmodelle-arbeiten",
+    "12": "/erklaert/naechstes-wort",
+    "13": "/erklaert/tokens",
+    "14": "/erklaert/aufmerksamkeit",
+    "15": "/erklaert/training",
+    "16": "/erklaert/temperatur",
     "17": "/kurs/stand",
-    "18": "/erklaert/reasoning",
-    "19": "/kurs/grenzen-und-recht",
-    "20": "/erklaert/halluzination",
-    "22": "/kurs/fragen-mit-acta",
+    "18": "/kurs/stand",
+    "19": "/erklaert/reasoning",
+    "20": "/kurs/grenzen-und-recht",
+    "21": "/erklaert/halluzination",
     "23": "/kurs/fragen-mit-acta",
     "24": "/kurs/fragen-mit-acta",
-    "26": "/erklaert/websuche",
-    "28": "/erklaert/daten",
-    "29": "/erklaert/kennzeichnung",
-    "32": "/erklaert/diffusion",
-    "33": "/kurs/bilder",
-    "34": "/erklaert/bias",
-    "37": "/kurs",
-    "38": "/erklaert/kontext-stapel",
-    "39": "/erklaert/kontextfenster",
-    "42": "/kurs/delegieren",
-    "43": "/erklaert/agenten-schleife",
-    "48": "/kurs/check"
+    "25": "/kurs/fragen-mit-acta",
+    "27": "/erklaert/websuche",
+    "29": "/erklaert/daten",
+    "30": "/erklaert/kennzeichnung",
+    "33": "/erklaert/diffusion",
+    "34": "/kurs/bilder",
+    "35": "/erklaert/bias",
+    "38": "/kurs",
+    "39": "/erklaert/kontext-stapel",
+    "40": "/erklaert/kontextfenster",
+    "41": "/kurs/artefakte",
+    "42": "/kurs/artefakte",
+    "45": "/kurs/delegieren",
+    "46": "/erklaert/agenten-schleife",
+    "51": "/kurs/check"
   },
   "animationen": {
-    "naechstes-wort": 11,
-    "tokens": 12,
-    "bedeutungsraum": 12,
-    "aufmerksamkeit": 13,
-    "training": 14,
-    "temperatur": 15,
-    "reasoning": 18,
-    "halluzination": 20,
-    "websuche": 26,
-    "daten": 28,
-    "kennzeichnung": 29,
-    "diffusion": 32,
-    "bias": 34,
-    "kontext-stapel": 38,
-    "kontextfenster": 39,
-    "agenten-schleife": 43
+    "naechstes-wort": 12,
+    "tokens": 13,
+    "bedeutungsraum": 13,
+    "aufmerksamkeit": 14,
+    "training": 15,
+    "temperatur": 16,
+    "reasoning": 19,
+    "halluzination": 21,
+    "websuche": 27,
+    "daten": 29,
+    "kennzeichnung": 30,
+    "diffusion": 33,
+    "bias": 35,
+    "kontext-stapel": 39,
+    "kontextfenster": 40,
+    "agenten-schleife": 46
   },
-  "qr": [2, 5, 6, 24, 25, 27, 35, 41, 44, 46, 48]
+  "qr": [
+    2,
+    3,
+    6,
+    7,
+    25,
+    26,
+    28,
+    36,
+    42,
+    44,
+    47,
+    49,
+    51
+  ]
 }

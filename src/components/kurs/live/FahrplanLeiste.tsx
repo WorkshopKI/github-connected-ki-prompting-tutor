@@ -25,6 +25,7 @@ export function FahrplanLeiste() {
       </span>
       <span className="text-muted-foreground">
         Station {stationIndex(station) + 1} von {STATIONEN.length}: {station.titel} · {TYP_LABEL[station.typ]}
+        {station.optional && " · optional"}
       </span>
       {naechste && (
         <Link

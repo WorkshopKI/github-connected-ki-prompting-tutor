@@ -9,6 +9,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { KURS_MODULE, DISZIPLIN_LABEL, modulById } from "@/data/kurs/lernpfad";
 import { erklaertBySlug } from "@/data/kurs/erklaert";
 import { ArrowLeft, ArrowRight, Check, Copy, PlayCircle } from "lucide-react";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
+import { EinstellungenCheckliste } from "@/components/kurs/EinstellungenCheckliste";
 
 function PromptKarte({ titel, text, hinweis }: { titel: string; text: string; hinweis?: string }) {
   const [kopiert, setKopiert] = useState(false);
@@ -60,6 +62,11 @@ export default function KursModulPage() {
         title={m.titel}
         description={m.ziel}
       />
+      {m.optional && (
+        <p className="-mt-4 mb-8 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <OptionalBadge /> {m.optional}
+        </p>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="grid gap-8">
@@ -74,6 +81,27 @@ export default function KursModulPage() {
               ))}
             </ul>
           </section>
+
+          {m.einstellungen && m.einstellungen.length > 0 && (
+            <section id="checkliste">
+              <h2 className="mb-1 text-lg font-semibold">Checkliste: Schritt für Schritt</h2>
+              <EinstellungenCheckliste punkte={m.einstellungen} />
+            </section>
+          )}
+
+          {m.schritte && m.schritte.length > 0 && (
+            <section id="ablauf">
+              <h2 className="mb-3 text-lg font-semibold">Übung: Ablauf</h2>
+              <ol className="grid gap-2">
+                {m.schritte.map((x, i) => (
+                  <li key={i} className="flex gap-3 rounded-lg border border-border bg-card p-3">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{i + 1}</span>
+                    <span>{x}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
 
           {m.vergleich && (
             <section>

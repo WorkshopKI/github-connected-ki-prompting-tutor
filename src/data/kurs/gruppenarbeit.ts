@@ -28,6 +28,8 @@ export interface Gruppenaufgabe {
   ersatz?: string;
   padlet: string;
   hinweis?: string;
+  /** Bei Zeitmangel verzichtbar (gleiche Markierung wie im Fahrplan). */
+  optional?: boolean;
 }
 
 export const dauerMin = (g: Gruppenaufgabe) => g.phasen.reduce((a, p) => a + p.min, 0);
@@ -42,7 +44,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
   {
     id: "prompt-labor",
     tag: 1,
-    wann: "nach Modul 2 (ACTA)",
+    wann: "nach Modul 3 (ACTA)",
     titel: "Prompt-Labor: Welcher Baustein wirkt?",
     ziel: "Ihr erlebt, welcher ACTA-Baustein eine Antwort am stärksten verbessert.",
     gruppe: "zu dritt",
@@ -69,8 +71,9 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
   },
   {
     id: "tool-vergleich",
+    optional: true,
     tag: 1,
-    wann: "nach Modul 3 (Recherche)",
+    wann: "nach Modul 4 (Recherche)",
     titel: "Tool-Vergleich: Drei Assistenten, eine Frage",
     ziel: "Ihr findet heraus, welcher Assistent für welche Art Aufgabe am besten passt.",
     gruppe: "zu dritt, jede Person ein Tool",
@@ -120,8 +123,9 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
   },
   {
     id: "steuern-duell",
+    optional: true,
     tag: 2,
-    wann: "nach Modul 7 (Steuern)",
+    wann: "nach Modul 10 (Steuern)",
     titel: "Steuern-Duell: Regelkatalog gegen klares Ziel",
     ziel: "Ihr prüft selbst, ob viele Regeln oder ein klares Ziel das bessere Ergebnis bringen.",
     gruppe: "zwei Teams à zwei",
