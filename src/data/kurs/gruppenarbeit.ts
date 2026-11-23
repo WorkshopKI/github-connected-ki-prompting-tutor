@@ -79,7 +79,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     gruppe: "zu dritt, jede Person ein Tool",
     phasen: [
       { min: 3, text: "Gemeinsam eine Frage wählen, die aktuelles Wissen braucht, z. B. „Was ändert sich 2027 beim Deutschlandticket?“" },
-      { min: 7, text: "Jede Person stellt dieselbe Frage in einem anderen Tool, mit Websuche." },
+      { min: 7, text: "Jede Person stellt dieselbe Frage in einem anderen Tool. Erscheinen Quellen-Links? Sonst Websuche einschalten." },
       { min: 10, text: "Bewertungstabelle ausfüllen (je 1 bis 3 Punkte): Richtigkeit, Aktualität, Quellen, Verständlichkeit." },
       { min: 7, text: "Je Tool eine genannte Quelle öffnen: Steht das wirklich dort?" },
       { min: 3, text: "Sieger küren und ins Padlet posten." },
@@ -90,7 +90,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
       "Widersprechen sich die Tools? Wer hat recht?",
     ],
     varianten: {
-      einsteiger: "Zwei Tools und eine Alltagsfrage ohne Websuche.",
+      einsteiger: "Zwei Tools und eine Alltagsfrage, die kein aktuelles Wissen braucht.",
       fortgeschritten: "Zusätzlich Deep Research in einem Tool starten und mit den schnellen Antworten vergleichen.",
     },
     tools: ["ChatGPT", "Claude", "Gemini", "Mistral Vibe", "Perplexity"],

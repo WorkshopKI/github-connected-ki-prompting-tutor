@@ -112,12 +112,12 @@ export const KURS_UEBUNGEN: KursUebung[] = [
     aufgabe: "Formuliere den Prompt so, dass die Antwort aktuell und überprüfbar ist.",
     kriterien: [
       "Ort und Zielgruppe sind genannt",
-      "Websuche wird ausdrücklich verlangt",
+      "Es ist klar, dass aktuelle Angaben gebraucht werden (Stand, Zeitraum)",
       "Quelle und Stand (Datum) werden für jede Angabe verlangt",
       "Es ist gesagt, was passieren soll, wenn nichts gefunden wird",
     ],
-    muster: "Nutze die Websuche: Gibt es aktuell Zuschüsse für Lastenräder für Privatpersonen in {Stadt} oder {Bundesland}?\nNenne für jedes Programm Förderhöhe, Bedingungen, Frist, Link und das Datum der Seite.\nNutze bevorzugt Seiten von Stadt, Land und Verbraucherzentrale. Wenn du nichts Aktuelles findest, sag das ausdrücklich, statt alte Programme aufzulisten.",
-    warum: "Mit Ort, Datum und Quellenpflicht kannst du jede Aussage in einer Minute selbst prüfen.",
+    muster: "Gibt es derzeit Zuschüsse für Lastenräder für Privatpersonen in {Stadt} oder {Bundesland}?\nNenne für jedes Programm Förderhöhe, Bedingungen, Frist, Link und das Datum der Seite.\nNutze bevorzugt Seiten von Stadt, Land und Verbraucherzentrale. Wenn du nichts Aktuelles findest, sag das ausdrücklich, statt alte Programme aufzulisten.",
+    warum: "Mit Ort, Stand und Quellenpflicht kannst du jede Aussage in einer Minute selbst prüfen. „Nutze die Websuche“ ist nicht nötig: Bei so einer Frage sucht die KI selbst. Fehlen in der Antwort die Links, Suche per Symbol einschalten.",
   },
   // ── Grenzen, Datenschutz, Recht
   {

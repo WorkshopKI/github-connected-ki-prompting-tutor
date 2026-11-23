@@ -24,7 +24,7 @@ export default function Websuche() {
     <>
       <p><strong>Für dich heißt das:</strong></p>
       <ol className="ml-5 list-decimal space-y-2">
-        <li>Bei allem Aktuellen Websuche nutzen oder ein Recherche-Tool wie Perplexity.</li>
+        <li>ChatGPT und Claude suchen bei Aktuellem meist selbst. Prüf an den Quellen-Links, ob gesucht wurde, sonst Suche einschalten.</li>
         <li>Mindestens zwei Quellen öffnen: Stimmt die Aussage? Wie alt ist die Seite? Wer steht dahinter?</li>
         <li>Deep Research macht das in größerem Stil: viele Suchen, viele Seiten, ein Bericht. Die Prüfung bleibt bei dir.</li>
       </ol>

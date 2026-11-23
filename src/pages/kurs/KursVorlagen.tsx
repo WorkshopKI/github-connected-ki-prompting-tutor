@@ -27,7 +27,7 @@ export default function KursVorlagen() {
         className="mb-8"
         eyebrow="Vorlagen"
         title="Beispiel-Prompts in drei Stufen"
-        description="Vom Alltagshelfer über den Juniorassistenten bis zum Forschungsassistenten. Kopier eine Vorlage, pass sie an deine Lage an und ergänze, was fehlt."
+        description="Vom Alltagshelfer über den Juniorassistenten bis zum Forschungsassistenten. Kopier eine Vorlage, ersetz die {Platzhalter} durch deine Lage und ergänze, was fehlt. „Nutze die Websuche“ brauchst du nicht mehr: Bei Aktuellem sucht die KI selbst."
         actions={
           <Link to="/kurs/profi" className="inline-flex h-9 items-center gap-2 rounded-md border border-input bg-card px-4 text-sm font-semibold hover:bg-accent">
             Profi-Techniken <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
@@ -79,10 +79,11 @@ export default function KursVorlagen() {
                 kopf={
                   <span className="flex flex-wrap items-center gap-1.5 text-xs text-ink-subtle">
                     {v.kategorie}
-                    {v.websuche && <span className="inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-info"><Globe className="h-3 w-3" strokeWidth={1.75} /> Websuche</span>}
-                    {v.deepResearch && <span className="inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-info"><Telescope className="h-3 w-3" strokeWidth={1.75} /> Deep Research</span>}
+                    {v.aktuell && <span title="Braucht aktuelle Daten: Die KI sucht selbst im Web. Prüf, ob Quellen-Links erscheinen." className="inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-info"><Globe className="h-3 w-3" strokeWidth={1.75} /> Aktuell</span>}
+                    {v.deepResearch && <span title="Deep Research im Chat auswählen (Modus oder Werkzeug-Menü)" className="inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-info"><Telescope className="h-3 w-3" strokeWidth={1.75} /> Deep Research</span>}
                   </span>
                 }
+                fuss={v.hinweis && <p className="text-sm text-muted-foreground">{v.hinweis}</p>}
               />
             ))}
           </div>
