@@ -2,7 +2,7 @@
   "_hinweis": "Kurs-Fahrplan: eine Quelle für App (Du-bist-hier-Leiste, Präsentation, Leitstand, Kurzlinks /f/:nr) und Folien (Fußzeile, QR-Codes über scripts/folien/folien.py). Jede Folie gehört genau einer Station. Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md Stationen mit \"optional\": true können bei Zeitmangel entfallen (Fußzeile und App zeigen das).",
   "stand": "23.11.2026",
   "kursCode": "VHS2026",
-  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v31",
+  "foliensatz": "Kurs-ChatGPT-Einführung-und-Fortgeschrittene-Nov2026-v32",
   "bloecke": [
     {
       "id": "t1-b1",
