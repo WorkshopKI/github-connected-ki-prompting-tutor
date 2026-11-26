@@ -24,11 +24,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const LOG_DIR = join(ROOT, 'node_modules', '.cache', 'check');
 // lokal:stufen
 /**
- * Gate-Stufen: Namen von Skripten in package.json. Nur, was am 19.11.2026 grün war.
- * Offen, bevor sie dazukommen: `typecheck` (1 Fehler, src/services/feedbackService.ts:212),
- * `lint` (10 Fehler, 29 Warnungen). Einen Test-Runner hat die App nicht.
+ * Gate-Stufen: Namen von Skripten in package.json. `typecheck` und `lint` seit
+ * 22.11.2026 grün und im Gate (lint: 0 Fehler, Warnungen bleiben erlaubt).
+ * Einen Test-Runner hat die App nicht.
  */
-export const STUFEN = ['build'];
+export const STUFEN = ['build', 'typecheck', 'lint'];
 /** Skript, das vor den Stufen allein läuft (z. B. ein erzeugtes Modul), oder null. */
 export const VORAB = null;
 // /lokal:stufen
