@@ -326,19 +326,19 @@ def bauen(args):
     schritte = aufbau_fuer(prs, aufbau)
     basis = args.basis_url.rstrip("/")
     host = basis.split("://", 1)[-1]
-    code = fp["kursCode"]
     for nr, folie in enumerate(prs.slides, 1):
         dunkel = ist_dunkel(folie)
         grau = RGBColor(0xC9, 0xC2, 0xB8) if dunkel else RGBColor(0x76, 0x6E, 0x64)
         if nr > 1:
             textfeld(folie, "Fahrplan", 3.75 * E, 6.9 * E, 6.9 * E, 0.33 * E, fusszeile_text(fp, nr), 10, grau)
         if nr in fp["qr"]:
-            live = fp["links"].get(str(nr)) == "/live"
-            ziel = f"{basis}/live/{code}" if live else f"{basis}/f/{nr}"
+            # Die Kursübersicht (Folie 2) bekommt eine Adresse zum Abtippen, alle anderen den Kurzlink /f/<nr>
+            start = fp["links"].get(str(nr)) == "/kurs"
+            ziel = f"{basis}/kurs" if start else f"{basis}/f/{nr}"
             bild = folie.shapes.add_picture(qr_bild(ziel), Emu(int(11.6 * E)), Emu(int(0.2 * E)), Emu(int(1.25 * E)), Emu(int(1.25 * E)))
             bild.name = EIGEN + "QR"
-            anzeige = f"{host}/live · Code {code}" if live else f"{host}/f/{nr}"
-            textfeld(folie, "QR-Text", 9.35 * E, 1.5 * E, 3.5 * E, 0.25 * E, anzeige, 10 if live else 9, grau, rechts=True)
+            anzeige = f"{host}/kurs" if start else f"{host}/f/{nr}"
+            textfeld(folie, "QR-Text", 9.35 * E, 1.5 * E, 3.5 * E, 0.25 * E, anzeige, 10 if start else 9, grau, rechts=True)
         if nr in schritte and len(schritte[nr]) > 1:
             namen = schrittbalken(folie, len(schritte[nr]), dunkel)
             formen = list(folie.shapes)
@@ -354,7 +354,7 @@ def bauen(args):
     abschnitte_setzen(prs, fp)
     prs.save(args.aus)
     n = sum(len(s) - 1 for s in schritte.values())
-    print(f"gebaut: {args.aus} · {len(prs.slides)} Folien · {len(schritte)} mit Aufbau · {n} Klicks · Code {code}")
+    print(f"gebaut: {args.aus} · {len(prs.slides)} Folien · {len(schritte)} mit Aufbau · {n} Klicks")
 
 
 # ───────────── export ─────────────
@@ -424,7 +424,12 @@ def export(args):
             ganz = soffice_pdf(pptx, tmp)
             shutil.copy(ganz, args.pdf)
             print(f"  PDF: {args.pdf}")
+    daten_schreiben(prs, pptx, anzahl)
+    print(f"export: {sum(anzahl.values())} Bilder in {BILDER.relative_to(ROOT)}, Daten in {FOLIEN_JSON.relative_to(ROOT)}")
 
+
+def daten_schreiben(prs, pptx: Path, anzahl: dict[int, int]):
+    """folien.json (Titel, Überzeile, Schritte, Version) und folien-notizen.json aus der PPTX."""
     folien, notizen = [], {}
     for nr, folie in enumerate(prs.slides, 1):
         ueber = ""
@@ -443,7 +448,6 @@ def export(args):
     FOLIEN_JSON.write_text(json.dumps(daten, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     NOTIZEN_JSON.write_text(json.dumps({"_hinweis": daten["_hinweis"], "notizen": notizen}, ensure_ascii=False, indent=1) + "\n",
                             encoding="utf-8")
-    print(f"export: {sum(anzahl.values())} Bilder in {BILDER.relative_to(ROOT)}, Daten in {FOLIEN_JSON.relative_to(ROOT)}")
 
 
 def main():

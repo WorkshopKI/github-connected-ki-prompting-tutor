@@ -60,9 +60,16 @@ Verifikation: Gate; Abnahme im eingebauten Browser (Kurs-Auftritt per `app-editi
 ## 6. Bewusst draußen
 
 - Präsentieren aus der App und Leitstand bleiben, samt Realtime-Kanälen der Leitung.
-- Folie 2 der PPTX zeigt noch den Live-Code; beim nächsten `folien.py bauen` führt der QR-Code über `/f/2` auf `/kurs` (Link in `fahrplan.json` geändert). Folientext von Hand anpassen.
+- Folie 2 der PPTX: erledigt in Folien v33 (Nachtrag unten).
 - Keine Synchronisation des Fortschritts zwischen Geräten; die Kurs-Position gilt nur im eigenen Browser.
 
 ## 7. Offene Fakten
 
 - Ob jeder Browser den anderen Tab per `focus()` nach vorn holt, hängt vom Browser ab (Chrome: Tab wird umgeleitet, im Test kein neuer Tab). Holt er ihn nicht nach vorn, ist der Inhalt trotzdem dort.
+
+## 8. Nachtrag 26.11.2026: Folie 2 ohne Live-Code (Folien v33)
+
+- Folie 2: „Lern-App: QR-Code oben rechts, dann „Folien im zweiten Tab“ öffnen“ statt Live-Code; QR-Code und Adresse `prompting-studio.kilab.org/kurs` (`folien.py bauen`: Folie mit Link `/kurs` bekommt die Adresse zum Abtippen statt `/f/<nr>`). Sprechernotiz erklärt die zwei Tabs.
+- `folien.py export` schreibt die Daten jetzt über `daten_schreiben()`; so lassen sich einzelne Folien neu rendern.
+- Gerendert auf Windows ohne `pdftoppm` und ohne die Ersatzschrift der bisherigen Bilder: Bilder von Folie 2 (`public/folien/f02-*.webp`) und `Kursfolien_November_2026_v33.pdf` über PowerPoint, also mit der echten Aptos. Die übrigen Folienbilder stammen weiter aus LibreOffice mit Inter als Ersatz für Aptos; der Fließtext von Folie 2 sieht in der App darum etwas anders aus als auf den Nachbarfolien. Beim nächsten vollständigen `export` gleicht sich das wieder an.
+- Abnahme: QR-Code in `f02-3.webp` liest sich als `https://prompting-studio.kilab.org/kurs`; Text von v32 und v33 unterscheidet sich nur auf Folie 2; `validate.py` ohne Fehler; `npm run check` grün.
