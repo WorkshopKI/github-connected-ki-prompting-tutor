@@ -58,7 +58,7 @@ export default function KursModulPage() {
       </Link>
       <PageHeader
         className="mb-8"
-        eyebrow={`Tag ${m.tag} · ${DISZIPLIN_LABEL[m.disziplin]} · ${m.dauer}`}
+        eyebrow={`Modul ${idx + 1} von ${KURS_MODULE.length} · Tag ${m.tag} · ${DISZIPLIN_LABEL[m.disziplin]} · ${m.dauer}`}
         title={m.titel}
         description={m.ziel}
       />

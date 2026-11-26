@@ -15,13 +15,14 @@ import { GuestBanner } from "@/components/GuestBanner";
 import { AppShell } from "@/components/AppShell";
 import { TeamMembers } from "@/components/TeamMembers";
 import { PendingReviews } from "@/components/PendingReviews";
-import { LiveBand } from "@/components/kurs/live/LiveBand";
+import { LeitungZurueck } from "@/components/kurs/live/LeitungZurueck";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ModeSelection from "./pages/ModeSelection";
 import { isKursEdition, isPublicPath, LEGACY_REDIRECTS } from "@/lib/edition";
+import { ROUTES } from "@/lib/constants";
 
 // Öffentlicher Kursbereich: ohne Login, ohne Moduswahl (Spec: docs/specs/2026-11-22-kurs-auftritt.md)
 const KursHome = lazy(() => import("./pages/kurs/KursHome"));
@@ -33,7 +34,6 @@ const KursProfi = lazy(() => import("./pages/kurs/KursProfi"));
 const KursFolien = lazy(() => import("./pages/kurs/KursFolien"));
 const KursPraesentation = lazy(() => import("./pages/kurs/KursPraesentation"));
 const KursLeitstand = lazy(() => import("./pages/kurs/KursLeitstand"));
-const KursLive = lazy(() => import("./pages/kurs/KursLive"));
 const KurzlinkFolie = lazy(() => import("./pages/kurs/KurzlinkFolie"));
 const KursUebungen = lazy(() => import("./pages/kurs/KursUebungen"));
 const KursCheck = lazy(() => import("./pages/kurs/KursCheck"));
@@ -52,7 +52,7 @@ const queryClient = new QueryClient();
 
 const PlatformLayout = ({ children }: { children: React.ReactNode }) => (
   <AppShell>
-    <LiveBand />
+    <LeitungZurueck />
     <GuestBanner />
     {children}
   </AppShell>
@@ -122,8 +122,9 @@ const PublicApp = () => (
       <Route path="/kurs/folien" element={<KursFolien />} />
       <Route path="/kurs/praesentation" element={<KursPraesentation />} />
       <Route path="/kurs/leitstand" element={<KursLeitstand />} />
-      <Route path="/live" element={<KursLive />} />
-      <Route path="/live/:code" element={<KursLive />} />
+      {/* Live-Beitritt entfernt (26.11.2026); gedruckte QR-Codes auf Folie 2 führen zur Kursübersicht. */}
+      <Route path="/live" element={<Navigate to={ROUTES.KURS} replace />} />
+      <Route path="/live/:code" element={<Navigate to={ROUTES.KURS} replace />} />
       <Route path="/f/:nr" element={<KurzlinkFolie />} />
       <Route path="/kurs/:id" element={<KursModulPage />} />
       <Route path="/erklaert" element={<ErklaertIndex />} />

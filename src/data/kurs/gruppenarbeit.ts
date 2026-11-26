@@ -3,7 +3,9 @@
  * auf zwei Kurstage umgeschnitten. Tools Stand 22.11.2026.
  * Jede Übung: feste Phasen mit Zeit, Rollen, Startprompt zum Kopieren, Prüfkriterien,
  * Varianten für Einsteiger und Fortgeschrittene, Vorlage für den Padlet-Beitrag.
+ * Prompt-Inspiration je Übung: gruppenInspiration.ts.
  */
+import { stationById, stationFuerPfad, type Station } from "./fahrplan";
 
 export interface Phase {
   min: number;
@@ -30,9 +32,21 @@ export interface Gruppenaufgabe {
   hinweis?: string;
   /** Bei Zeitmangel verzichtbar (gleiche Markierung wie im Fahrplan). */
   optional?: boolean;
+  /** Station im Fahrplan, wenn sie nicht `/kurs/gruppen#<id>` ist (Mini-Projekte teilen sich eine Station). */
+  station?: string;
 }
 
 export const dauerMin = (g: Gruppenaufgabe) => g.phasen.reduce((a, p) => a + p.min, 0);
+
+/** Station im Fahrplan: per Anker (/kurs/gruppen#id) oder ausdrücklich (Mini-Projekte). */
+export const stationDerAufgabe = (g: Gruppenaufgabe): Station | undefined =>
+  stationById(g.station) ?? stationFuerPfad("/kurs/gruppen", `#${g.id}`);
+
+/** Station zum Anker der Gruppenarbeits-Seite, z. B. „#lernvideo“ → Mini-Projekte. */
+export function stationFuerGruppenAnker(hash: string): Station | undefined {
+  const g = GRUPPENAUFGABEN.find((x) => x.id === hash.replace(/^#/, ""));
+  return g ? stationDerAufgabe(g) : undefined;
+}
 
 const ROLLEN_STANDARD = [
   "Steuer: tippt die Prompts",
@@ -144,6 +158,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     id: "lernvideo",
     tag: 2,
     wann: "Mini-Projekt, Nachmittag",
+    station: "mini-projekte",
     titel: "Mini-Projekt: Lernvideo aus eigenen Quellen",
     ziel: "Ihr macht aus Unterlagen ein verständliches Erklärvideo oder einen Podcast und prüft es gegen die Quellen.",
     gruppe: "zu zweit bis viert",
@@ -171,6 +186,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     id: "praesentation",
     tag: 2,
     wann: "Mini-Projekt, Nachmittag",
+    station: "mini-projekte",
     titel: "Mini-Projekt: Präsentation oder Website",
     ziel: "Ihr recherchiert ein Thema, lasst Folien oder eine Seite bauen und prüft jede Zahl.",
     gruppe: "zu zweit bis viert",
@@ -192,6 +208,7 @@ export const GRUPPENAUFGABEN: Gruppenaufgabe[] = [
     id: "agenten-aufgabe",
     tag: 2,
     wann: "Mini-Projekt, Nachmittag",
+    station: "mini-projekte",
     titel: "Mini-Projekt: Eine Aufgabe delegieren",
     ziel: "Ihr gebt eine echte Aufgabe an einen Agenten ab und bewertet das Ergebnis gegen eure eigenen Abnahmekriterien.",
     gruppe: "zu zweit bis dritt",

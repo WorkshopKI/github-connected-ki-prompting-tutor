@@ -3,13 +3,14 @@ import { Check, Copy, ExternalLink, Play, RotateCcw, Tablet } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { FolieBild } from "@/components/kurs/live/FolieBild";
 import { folie } from "@/data/kurs/folien";
-import { leitstandLink, teilnahmeLink, useKursLive } from "@/lib/kursLive";
+import { leitstandLink, useKursLive } from "@/lib/kursLive";
+import { KURS_APP } from "@/lib/constants";
 
 interface Props {
   onStart: (vonVorn: boolean) => void;
 }
 
-/** Vor dem Präsentieren: Code für Teilnehmende, Leitstand-Link, Einstieg ab der letzten Folie. */
+/** Vor dem Präsentieren: Hinweis für Teilnehmende, Leitstand-Link, Einstieg ab der letzten Folie. */
 export function PraesentationStart({ onStart }: Props) {
   const live = useKursLive();
   const [kopiert, setKopiert] = useState(false);
@@ -53,15 +54,9 @@ export function PraesentationStart({ onStart }: Props) {
       <div className="grid content-start gap-4">
         <section className="card-section">
           <h2 className="mb-1 text-sm font-semibold">Für Teilnehmende</h2>
-          <p className="text-sm text-muted-foreground">Fester Code für alle Kurse. Er steht auf Folie 2 (auch in der PPTX), der QR-Code dort tritt direkt bei.</p>
-          <p className="mt-3 text-lg">{teilnahmeLink()}</p>
-          <p className="font-mono text-4xl font-semibold tracking-[0.2em]">{live.code ?? "…"}</p>
-          <p className="mt-2 text-xs text-ink-subtle">
-            {live.verbindung === "live"
-              ? `Verbunden · ${live.teilnehmende} Teilnehmende`
-              : live.verbindung === "lokal"
-                ? "Nur dieser Browser verbunden (kein Internet zum Live-Dienst)"
-                : "Verbinde …"}
+          <p className="text-sm text-muted-foreground">
+            Teilnehmende öffnen <span className="font-semibold text-foreground">{KURS_APP}</span> und daraus die Folien in einem zweiten Tab.
+            Sie blättern selbst; die Leiste oben auf jeder Kursseite zeigt Tag, Thema und Übung, die Folien-Nummer verbindet beide Tabs.
           </p>
         </section>
 

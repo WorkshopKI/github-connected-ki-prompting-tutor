@@ -8,7 +8,7 @@ import { LeitstandAnsage } from "@/components/kurs/live/LeitstandAnsage";
 import { FOLIEN, FOLIEN_ANZAHL, folie, weiter } from "@/data/kurs/folien";
 import { STATIONEN } from "@/data/kurs/fahrplan";
 import { ROUTES } from "@/lib/constants";
-import { beitreten, lokaleLeitung, sendeBefehl, useKursLive, wiederaufnehmen } from "@/lib/kursLive";
+import { leitstandVerbinden, leitstandWiederaufnehmen, lokaleLeitung, sendeBefehl, useKursLive } from "@/lib/kursLive";
 
 /**
  * /kurs/leitstand — für die Kursleitung auf Tablet, Handy oder im zweiten Fenster:
@@ -24,9 +24,9 @@ export default function KursLeitstand() {
     const c = h.get("c");
     const t = h.get("t");
     if (c && t) {
-      beitreten(c, "leitstand", t);
+      leitstandVerbinden(c, t);
       window.history.replaceState(null, "", window.location.pathname);
-    } else wiederaufnehmen("leitstand");
+    } else leitstandWiederaufnehmen();
     import("@/data/kurs/folien-notizen.json").then((m) => setNotizen(m.notizen as Record<string, string>));
   }, []);
 
@@ -55,7 +55,7 @@ export default function KursLeitstand() {
           Öffne den Leitstand über den Link im Präsentationsmodus („Leitstand für dich“). Er enthält einen geheimen Schlüssel, mit dem du die Präsentation steuerst.
         </p>
         <div className="flex flex-wrap gap-2">
-          {lokal && <Button onClick={() => beitreten(lokal.code, "leitstand", lokal.token)}>Mit der Präsentation in diesem Browser verbinden</Button>}
+          {lokal && <Button onClick={() => leitstandVerbinden(lokal.code, lokal.token)}>Mit der Präsentation in diesem Browser verbinden</Button>}
           <Button asChild variant="outline">
             <Link to={ROUTES.KURS_PRAESENTATION}>Zum Präsentationsmodus</Link>
           </Button>
@@ -78,7 +78,7 @@ export default function KursLeitstand() {
         <span className="inline-flex items-center gap-1.5">
           <Radio className={live.verbindung === "live" ? "h-4 w-4 text-success" : "h-4 w-4 text-warning"} strokeWidth={1.75} />
           Code <span className="font-mono font-semibold">{live.code}</span>
-          {live.verbindung === "live" ? ` · ${live.teilnehmende} Teilnehmende` : live.verbindung === "lokal" ? " · nur dieser Browser" : " · verbinde …"}
+          {live.verbindung === "live" ? " · verbunden" : live.verbindung === "lokal" ? " · nur dieser Browser" : " · verbinde …"}
         </span>
         {!s && <span className="text-warning">Präsentation noch nicht gestartet</span>}
       </header>

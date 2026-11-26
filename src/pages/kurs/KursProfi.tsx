@@ -10,7 +10,7 @@ export default function KursProfi() {
   return (
     <KursLayout>
       <Link to="/kurs/vorlagen" className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="mr-1 h-4 w-4" strokeWidth={1.75} /> Vorlagen
+        <ArrowLeft className="mr-1 h-4 w-4" strokeWidth={1.75} /> Prompt-Vorlagen
       </Link>
       <PageHeader
         className="mb-8"

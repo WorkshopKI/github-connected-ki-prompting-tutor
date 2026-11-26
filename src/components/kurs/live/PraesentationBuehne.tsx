@@ -1,9 +1,8 @@
-import { ChevronLeft, ChevronRight, ExternalLink, HelpCircle, Maximize, Radio, Square, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, HelpCircle, Maximize, Square, X } from "lucide-react";
 import { FolieBild, useVorladen } from "@/components/kurs/live/FolieBild";
 import { FOLIEN_ANZAHL, folie } from "@/data/kurs/folien";
-import { STATIONEN, linkFuerFolie, stationFuerFolie, stationIndex } from "@/data/kurs/fahrplan";
-import { ROUTES } from "@/lib/constants";
-import { teilnahmeLink, useKursLive } from "@/lib/kursLive";
+import { STATIONEN, stationFuerFolie, stationIndex } from "@/data/kurs/fahrplan";
+import { useKursLive } from "@/lib/kursLive";
 import type { Praesentation } from "@/hooks/usePraesentation";
 
 const TASTEN: [string, string][] = [
@@ -12,7 +11,6 @@ const TASTEN: [string, string][] = [
   ["12 ⏎", "zu Folie 12 springen"],
   ["L", "zugehörige Seite der App öffnen (Animation, Übung); Esc führt zurück"],
   ["B  .", "Beamer schwarz"],
-  ["C", "Code für Teilnehmende ein/aus"],
   ["F", "Vollbild"],
   ["?", "diese Hilfe"],
 ];
@@ -22,15 +20,13 @@ interface Props {
   onEnde: () => void;
 }
 
-/** Vollbild-Bühne am Beamer: Folienbild, Ansage, Code für Teilnehmende, dezente Bedienleiste. */
+/** Vollbild-Bühne am Beamer: Folienbild, Ansage, dezente Bedienleiste. */
 export function PraesentationBuehne({ p, onEnde }: Props) {
   const live = useKursLive();
   const { nr, schritt } = p;
   const f = folie(nr);
   const station = stationFuerFolie(nr);
   const fortschritt = ((stationIndex(station) + 1) / STATIONEN.length) * 100;
-  const link = linkFuerFolie(nr);
-  const codeGross = link === ROUTES.LIVE;
   useVorladen(nr, schritt, 3);
 
   return (
@@ -45,29 +41,6 @@ export function PraesentationBuehne({ p, onEnde }: Props) {
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 rounded-lg border border-border bg-card px-8 py-4 text-3xl font-semibold">
           {live.stand.ansage.text}
           {live.stand.ansage.bis && <span className="font-normal text-muted-foreground"> · bis {live.stand.ansage.bis} Uhr</span>}
-        </div>
-      )}
-
-      {(p.chip || codeGross) && live.code && !p.dunkel && (
-        <div
-          className={
-            codeGross
-              ? "absolute bottom-16 right-10 rounded-lg border border-border bg-card px-6 py-4 text-right"
-              : "absolute right-3 top-3 rounded-md border border-border bg-card/95 px-3 py-1.5 text-sm"
-          }
-        >
-          {codeGross ? (
-            <>
-              <div className="text-lg text-muted-foreground">{teilnahmeLink()}</div>
-              <div className="font-mono text-6xl font-semibold tracking-[0.2em]">{live.code}</div>
-            </>
-          ) : (
-            <span className="inline-flex items-center gap-2">
-              <Radio className="h-4 w-4 text-brand-ink" strokeWidth={1.75} />
-              {teilnahmeLink()} · <span className="font-mono font-semibold">{live.code}</span>
-              {live.verbindung === "live" && <span className="text-muted-foreground">· {live.teilnehmende} dabei</span>}
-            </span>
-          )}
         </div>
       )}
 
@@ -87,7 +60,7 @@ export function PraesentationBuehne({ p, onEnde }: Props) {
             {(f?.schritte ?? 1) > 1 && <span className="text-muted-foreground"> · {schritt + 1}/{f!.schritte}</span>}
           </span>
           <IconKnopf label="Weiter" onClick={p.weiter}><ChevronRight className="h-4 w-4" /></IconKnopf>
-          {link !== ROUTES.LIVE && <IconKnopf label="In der App zeigen (L)" onClick={p.appOeffnen}><ExternalLink className="h-4 w-4" /></IconKnopf>}
+          <IconKnopf label="In der App zeigen (L)" onClick={p.appOeffnen}><ExternalLink className="h-4 w-4" /></IconKnopf>
           <IconKnopf label="Schwarz (B)" onClick={p.schwarz}><Square className="h-4 w-4" /></IconKnopf>
           <IconKnopf label="Vollbild (F)" onClick={p.vollbild}><Maximize className="h-4 w-4" /></IconKnopf>
           <IconKnopf label="Hilfe (?)" onClick={() => p.setHilfe(true)}><HelpCircle className="h-4 w-4" /></IconKnopf>
