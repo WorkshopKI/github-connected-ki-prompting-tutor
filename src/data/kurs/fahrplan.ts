@@ -42,7 +42,7 @@ export const TYP_LABEL: Record<StationTyp, string> = {
   gespraech: "Gespräch",
 };
 
-/** Bei diesen Stationen arbeiten Teilnehmende selbst in der App; „Folgen“ öffnet die Seite. */
+/** Bei diesen Stationen arbeiten Teilnehmende selbst in der App (Übung oder Gruppenarbeit). */
 export const ist_mitmach = (s: Station) => s.typ === "uebung" || s.typ === "gruppe";
 
 export const blockById = (id: string) => BLOECKE.find((b) => b.id === id)!;
@@ -60,12 +60,29 @@ export function linkFuerFolie(nr: number): string {
   return LINKS[String(nr)] ?? stationFuerFolie(nr).pfad;
 }
 
-/** Station zu einer App-Seite (Pfad ohne #), für die Du-bist-hier-Leiste ohne Live-Sitzung. */
-export function stationFuerPfad(pathname: string): Station | undefined {
+export const stationById = (id: string | undefined): Station | undefined => (id ? STATIONEN.find((s) => s.id === id) : undefined);
+
+/**
+ * Station zu einer App-Seite, für die Du-bist-hier-Leiste.
+ * - Anker zählt: /kurs/gruppen#steuern-duell ist die Station „Steuern-Duell“, nicht die erste Gruppenübung.
+ * - Teilen sich mehrere Stationen eine Seite (z. B. /kurs/check an Tag 1 und Tag 2), gewinnt `bevorzugt`
+ *   (die zuletzt besuchte Station), sonst die erste.
+ * - Seiten, deren Stationen alle per Anker unterschieden werden (Gruppenarbeit), haben ohne passenden
+ *   Anker keine eigene Station.
+ */
+export function stationFuerPfad(pathname: string, hash = "", bevorzugt?: string): Station | undefined {
   const p = pathname.replace(/\/$/, "") || "/";
   if (p === "/kurs") return undefined;
+  const anker = hash.replace(/^#/, "");
+  const aufSeite = STATIONEN.filter((s) => s.pfad.split("#")[0] === p);
+  if (aufSeite.length) {
+    const genau = anker ? aufSeite.find((s) => s.pfad === `${p}#${anker}`) : undefined;
+    if (genau) return genau;
+    const vorher = aufSeite.find((s) => s.id === bevorzugt);
+    if (vorher) return vorher;
+    return aufSeite.every((s) => s.pfad.includes("#")) ? undefined : aufSeite.find((s) => !s.pfad.includes("#"));
+  }
   return (
-    STATIONEN.find((s) => s.pfad.split("#")[0] === p) ??
     STATIONEN.find((s) => linkFuerFolie(s.folien[0]).split("#")[0] === p) ??
     (p.startsWith("/erklaert/")
       ? STATIONEN.find((s) => {
@@ -99,3 +116,17 @@ export function blockLabel(s: Station): string {
   const b = blockById(s.block);
   return `Tag ${b.tag} · Block ${b.nr}/${bloeckeJeTag(b.tag)}`;
 }
+
+/** „Tag 1 · Block 3/7 · Fragen mit ACTA“ — genau wie die Fußzeile der Folien am Beamer. */
+export function themaLabel(s: Station): string {
+  return `${blockLabel(s)} · ${blockById(s.block).titel}`;
+}
+
+/** „Folie 22“ oder „Folien 22–25“ */
+export function folienLabel(s: Station): string {
+  const [a, b] = s.folien;
+  return a === b ? `Folie ${a}` : `Folien ${a}–${b}`;
+}
+
+/** Stationstitel ohne vorangestelltes „Gruppe: “ (der Typ steht daneben). */
+export const stationKurztitel = (s: Station) => s.titel.replace(/^Gruppe:\s*/, "");

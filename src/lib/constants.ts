@@ -17,7 +17,8 @@ export const ROUTES = {
   KURS_FOLIEN: "/kurs/folien",
   KURS_PRAESENTATION: "/kurs/praesentation",
   KURS_LEITSTAND: "/kurs/leitstand",
-  LIVE: "/live",
+  KURS_VORLAGEN: "/kurs/vorlagen",
+  KURS_GRUPPEN: "/kurs/gruppen",
 } as const;
 
 /* ── Kurs-Adressen (auf Folien, Spickzettel und im Padlet gleich halten) ── */
@@ -59,6 +60,7 @@ export const LS_KEYS = {
   KURS_UEBUNGEN: "kurs-uebungen-erledigt",
   KURS_CHECK: "kurs-wissenscheck",
   KURS_LIVE: "kurs-live",
+  KURS_POSITION: "kurs-position",
   KURS_KONTO: "kurs-konto-checkliste",
   EDITION: "app-edition",
   KURS_LEITSTAND: "kurs-leitstand",

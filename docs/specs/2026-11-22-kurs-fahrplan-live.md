@@ -83,3 +83,7 @@ Realtime muss im Supabase-Projekt für öffentliche Kanäle erlaubt sein (Standa
 - Recherche: ChatGPT und Claude suchen bei Aktuellem selbst (Suche kann per Symbol erzwungen werden, in Firmen-Workspaces oft per Admin freizuschalten). OpenAI und Anthropic empfehlen Ziel, Kontext und Erfolgskriterien statt Schritt-für-Schritt-Vorgaben und Begründungen statt Großbuchstaben.
 - Umgesetzt: 50 Vorlagen neu formuliert (Feld `aktuell` statt `websuche`, `hinweis`), neue Vorlage „Suche erzwingen und prüfen“, Profi-Techniken „Ergebnis zuerst“ und „Annahmen offenlegen“, Checkliste und Fehler ergänzt; Recherche-Modul, Übung, Wissenscheck, Animation Websuche, Gruppenarbeit angepasst; ACTA: Rolle optional. Folien 20, 23, 25, 27, 28 in v31.
 - Abnahme: kein Prompt enthält mehr „Nutze die Websuche“, `npm run check` grün, Vorlagen-Seite zeigt „Aktuell“ und Hinweise.
+
+## 7. Nachtrag 26.11.2026: Live-Sync für Teilnehmende entfernt
+
+Im Workshop am 26.11.2026 lief der Sync für Teilnehmende nicht zuverlässig. Entfernt: Rolle `teilnehmer`, `/live` (leitet auf `/kurs`), Live-Band, „Folgen“, Presence-Zählung. Präsentieren und Leitstand bleiben. Orientierung der Teilnehmenden jetzt ohne Netz über zwei benannte Tabs und die Du-bist-hier-Leiste: [2026-11-26-kurs-orientierung.md](2026-11-26-kurs-orientierung.md). Die Tabelle in §2 und der Abschnitt Live-Sync beschreiben den Stand vom 22.11.

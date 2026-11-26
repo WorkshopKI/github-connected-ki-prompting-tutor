@@ -11,7 +11,7 @@ const inMinuten = (min: number) => {
   return d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
 };
 
-/** Ansagen an Beamer und Teilnehmende: Pause, Gruppenarbeit, freier Text. */
+/** Ansagen auf den Beamer: Pause, Gruppenarbeit, freier Text. */
 export function LeitstandAnsage({ stand }: { stand: LiveStand | null }) {
   const [text, setText] = useState("");
   const station = stationFuerFolie(stand?.folie ?? 1);

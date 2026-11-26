@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FOLIEN_ANZAHL, folie, weiter as vor, zurueck as rueck } from "@/data/kurs/folien";
 import { linkFuerFolie } from "@/data/kurs/fahrplan";
-import { ROUTES } from "@/lib/constants";
 import { aufBefehl, setzeStand, useKursLive, type Befehl } from "@/lib/kursLive";
 
 export interface Praesentation {
@@ -12,14 +11,12 @@ export interface Praesentation {
   /** Ziffern, die gerade für einen Sprung getippt werden („12“ + Enter). */
   eingabe: string;
   hilfe: boolean;
-  chip: boolean;
   weiter: () => void;
   zurueck: () => void;
   gehe: (nr: number, schritt?: number) => void;
   appOeffnen: () => void;
   schwarz: () => void;
   setHilfe: (an: boolean) => void;
-  setChip: (an: boolean) => void;
   vollbild: () => void;
 }
 
@@ -48,7 +45,6 @@ export function usePraesentation(aktiv: boolean): Praesentation {
   const dunkel = !!stand?.dunkel;
   const [eingabe, setEingabe] = useState("");
   const [hilfe, setHilfe] = useState(false);
-  const [chip, setChip] = useState(true);
   const pos = useRef({ nr, schritt });
   pos.current = { nr, schritt };
 
@@ -66,7 +62,7 @@ export function usePraesentation(aktiv: boolean): Praesentation {
   }, [gehe]);
   const appOeffnen = useCallback(() => {
     const pfad = linkFuerFolie(pos.current.nr);
-    if (!pfad || pfad === ROUTES.LIVE) return;
+    if (!pfad) return;
     setzeStand({ modus: "app", pfad });
     navigate(pfad);
   }, [navigate]);
@@ -104,7 +100,7 @@ export function usePraesentation(aktiv: boolean): Praesentation {
         Home: () => gehe(1), End: () => gehe(FOLIEN_ANZAHL, 99),
         b: () => setzeStand({ dunkel: !dunkel }), ".": () => setzeStand({ dunkel: !dunkel }),
         f: vollbildUmschalten, l: appOeffnen, a: appOeffnen,
-        c: () => setChip((x) => !x), "?": () => setHilfe((x) => !x), h: () => setHilfe((x) => !x),
+        "?": () => setHilfe((x) => !x), h: () => setHilfe((x) => !x),
         Escape: () => setHilfe(false),
       };
       const f = keys[k] ?? keys[k.toLowerCase()];
@@ -118,5 +114,5 @@ export function usePraesentation(aktiv: boolean): Praesentation {
   }, [aktiv, eingabe, dunkel, weiter, zurueck, gehe, appOeffnen]);
 
   const schwarz = () => setzeStand({ dunkel: !dunkel });
-  return { nr, schritt, dunkel, eingabe, hilfe, chip, weiter, zurueck, gehe, appOeffnen, schwarz, setHilfe, setChip, vollbild: vollbildUmschalten };
+  return { nr, schritt, dunkel, eingabe, hilfe, weiter, zurueck, gehe, appOeffnen, schwarz, setHilfe, vollbild: vollbildUmschalten };
 }

@@ -76,7 +76,7 @@ export default function KursSpickzettel() {
           <p className="text-sm print:text-[13.5px]"><span className="font-semibold">Schnell</span> für Alltag, <span className="font-semibold">ausgewogen</span> für Beruf, <span className="font-semibold">stark</span> für Analysen und Agenten. Mit „schnell“ starten, bei Bedarf eine Stufe höher.</p>
         </Block>
         <Block titel="Weiter üben">
-          <p className="text-sm print:text-[13.5px]">Lern-App: <span className="whitespace-nowrap">{KURS_APP}</span> (Kurs, Übungen, Vorlagen, „KI erklärt“) · Padlet: <span className="whitespace-nowrap">{KURS_PADLET}</span></p>
+          <p className="text-sm print:text-[13.5px]">Lern-App: <span className="whitespace-nowrap">{KURS_APP}</span> (Kurs, Übungen, Prompt-Vorlagen, „KI erklärt“) · Padlet: <span className="whitespace-nowrap">{KURS_PADLET}</span></p>
         </Block>
       </div>
       <p className="mt-4 text-xs text-ink-subtle print:mt-2">Stand November 2026 · keine Rechtsberatung</p>

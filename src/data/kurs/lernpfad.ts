@@ -139,7 +139,7 @@ export const KURS_MODULE: KursModul[] = [
     disziplin: "fragen",
     titel: "Fragen mit der ACTA-Methode",
     dauer: "60 Min",
-    mehr: [{ label: "Vorlagen Stufe 1: Alltagshelfer", link: "/kurs/vorlagen?stufe=alltag" }, { label: "Vorlagen Stufe 2: Juniorassistent", link: "/kurs/vorlagen?stufe=beruf" }],
+    mehr: [{ label: "Prompt-Vorlagen Stufe 1: Alltagshelfer", link: "/kurs/vorlagen?stufe=alltag" }, { label: "Prompt-Vorlagen Stufe 2: Juniorassistent", link: "/kurs/vorlagen?stufe=beruf" }],
     ziel: "Du formulierst Anfragen so, dass die KI ohne Rückfragen ein brauchbares Ergebnis liefert.",
     kernpunkte: [
       "A – Rolle (Act as), optional: Als wer soll die KI antworten? Zweck und Kontext wirken bei heutigen Modellen stärker als eine Rolle.",
@@ -175,7 +175,7 @@ export const KURS_MODULE: KursModul[] = [
       "Quellen sind nur so gut wie ihre Prüfung: Zwei bis drei Links öffnen und Zahlen vergleichen.",
       "Gute Rechercheaufträge nennen Zweck und Leser, Zeitraum, gewünschte Quellenarten und was am Ende entschieden werden soll.",
     ],
-    mehr: [{ label: "Vorlagen Stufe 3: Forschungsassistent", link: "/kurs/vorlagen?stufe=forschung" }],
+    mehr: [{ label: "Prompt-Vorlagen Stufe 3: Forschungsassistent", link: "/kurs/vorlagen?stufe=forschung" }],
     erklaert: ["websuche", "reasoning", "halluzination"],
     prompts: [
       { titel: "Vergleichsstudie", text: "Für eine Bürgerversammlung brauche ich einen sachlichen Vergleich von Offshore- und Onshore-Windkraft in Europa: Kosten pro MWh, Umweltauswirkungen, Genehmigungsdauer, Akzeptanz. Nur Quellen der letzten drei Jahre, mindestens vier Studien. Zuerst eine Tabelle, am Ende die offenen Streitfragen." },

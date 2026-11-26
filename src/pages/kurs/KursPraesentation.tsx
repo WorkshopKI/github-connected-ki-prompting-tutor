@@ -8,7 +8,7 @@ import { setzeStand, starteLeitung, useKursLive } from "@/lib/kursLive";
 
 /**
  * /kurs/praesentation — Präsentieren aus der App.
- * Folien als Bilder mit schrittweisem Aufbau; jeder Klick wird an Teilnehmende und Leitstand verteilt.
+ * Folien als Bilder mit schrittweisem Aufbau; jeder Klick geht an den Leitstand der Kursleitung.
  * Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md
  */
 export default function KursPraesentation() {
@@ -43,7 +43,7 @@ export default function KursPraesentation() {
         <PageHeader
           eyebrow="Für die Kursleitung"
           title="Präsentieren"
-          description="Die Folien laufen hier in der App. Volle Folien bauen sich Schritt für Schritt auf, Teilnehmende sehen auf ihrem Gerät, wo du bist und was als Nächstes kommt."
+          description="Die Folien laufen hier in der App. Volle Folien bauen sich Schritt für Schritt auf. Notizen, Zeitplan und Fernbedienung hast du im Leitstand."
         />
         <PraesentationStart onStart={start} />
       </div>

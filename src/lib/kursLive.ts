@@ -1,31 +1,32 @@
-/* ── Kurs live: Präsentation, Leitstand und Teilnehmende synchron ──
+/* ── Kurs live: Präsentation und Leitstand der Kursleitung synchron ──
  *
  * Rollen
  * - leitung:    der Präsentationsmodus am Beamer. Einzige Quelle des Stands (Folie, Schritt, Ansage).
  * - leitstand:  Tablet/Handy der Kursleitung. Liest den Stand, schickt Befehle an die Leitung.
- * - teilnehmer: Geräte der Teilnehmenden. Lesen den Stand, zählen sich über Presence.
+ *
+ * Teilnehmende sind seit 26.11.2026 nicht mehr verbunden: Live-Beitritt (/live) und „Folgen“
+ * liefen im Workshop unzuverlässig und sind entfernt. Teilnehmende blättern die Folien selbst;
+ * wo sie im Kurs stehen, zeigt die Fahrplanleiste (src/components/kurs/live/FahrplanLeiste.tsx).
+ * Spec: docs/specs/2026-11-26-kurs-orientierung.md
  *
  * Transporte (beide gleichzeitig, Nachrichten werden über `ts` entdoppelt)
- * - Supabase Realtime: öffentlicher Kanal `kurs-live:<CODE>` (Presence: Stand der Leitung,
- *   Zahl der Teilnehmenden; spät Dazukommende bekommen den Stand sofort) und geheimer
- *   Steuerkanal `kurs-steuer:<CODE>:<TOKEN>` (Broadcast) für Leitstand → Leitung.
+ * - Supabase Realtime: Kanal `kurs-live:<CODE>` (Presence: Stand der Leitung, damit ein später
+ *   geöffneter Leitstand ihn sofort hat) und geheimer Steuerkanal `kurs-steuer:<CODE>:<TOKEN>`
+ *   (Broadcast) für Leitstand → Leitung.
  * - BroadcastChannel: dieselben Nachrichten zwischen Fenstern desselben Browsers, auch offline
  *   (z. B. Beamer-Fenster und Leitstand-Fenster auf dem Kurs-Laptop).
  *
- * Code: fest (KURS_CODE aus fahrplan.json, z. B. VHS2026), Eingabe ohne Rücksicht auf Groß-/Kleinschreibung.
- * Laufen zwei Kurse mit demselben Code gleichzeitig, sehen beide denselben Stand.
- *
- * Grenzen: Der Code ist kein Passwort. Wer ihn kennt, könnte technisch einen Leitungs-Stand
- * vortäuschen; Befehle an die Präsentation gehen nur über den Steuerkanal mit Token.
+ * Code: fest (KURS_CODE aus fahrplan.json). Befehle an die Präsentation gehen nur über den
+ * Steuerkanal mit Token, der allein im Leitstand-Link steht.
  * Es werden keine personenbezogenen Daten übertragen.
- * Spec: docs/specs/2026-11-22-kurs-fahrplan-live.md
+ * Spec (Ursprung): docs/specs/2026-11-22-kurs-fahrplan-live.md
  */
 import { useSyncExternalStore } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { LS_KEYS } from "@/lib/constants";
 import { KURS_CODE, stationFuerFolie } from "@/data/kurs/fahrplan";
 
-export type LiveRolle = "leitung" | "leitstand" | "teilnehmer";
+export type LiveRolle = "leitung" | "leitstand";
 export type Verbindung = "aus" | "verbinde" | "live" | "lokal";
 
 export interface Ansage {
@@ -63,9 +64,6 @@ export interface LiveZustand {
   token: string | null;
   verbindung: Verbindung;
   stand: LiveStand | null;
-  teilnehmende: number;
-  /** Teilnehmende: App-Seiten der Leitung automatisch öffnen. */
-  folgen: boolean;
 }
 
 /* ───────────── Speicher ───────────── */
@@ -74,7 +72,6 @@ interface Gespeichert {
   code: string;
   rolle: LiveRolle;
   token?: string | null;
-  folgen?: boolean;
   stand?: LiveStand | null;
 }
 
@@ -104,16 +101,23 @@ function speichern(rolle: LiveRolle | null = z.rolle) {
     else
       localStorage.setItem(
         schluessel(rolle),
-        JSON.stringify({ code: z.code, rolle: z.rolle, token: z.token, folgen: z.folgen, stand: z.rolle === "leitung" ? z.stand : null }),
+        JSON.stringify({ code: z.code, rolle: z.rolle, token: z.token, stand: z.rolle === "leitung" ? z.stand : null }),
       );
   } catch {
     /* privater Modus: dann eben ohne Wiederaufnahme */
   }
 }
 
+/* Alte Teilnehmer-Sitzungen (bis 26.11.2026) nicht mehr wiederaufnehmen. */
+try {
+  localStorage.removeItem(`${LS_KEYS.KURS_LIVE}:teilnehmer`);
+} catch {
+  /* ohne Speicher nichts zu tun */
+}
+
 /* ───────────── Store ───────────── */
 
-let z: LiveZustand = { code: null, rolle: null, token: null, verbindung: "aus", stand: null, teilnehmende: 0, folgen: true };
+let z: LiveZustand = { code: null, rolle: null, token: null, verbindung: "aus", stand: null };
 const hoerer = new Set<() => void>();
 const setze = (teil: Partial<LiveZustand>) => {
   z = { ...z, ...teil };
@@ -158,17 +162,16 @@ async function verbinden() {
     if (rolle !== "leitung") bc.postMessage({ art: "hallo" });
   }
 
-  // 2) Supabase Realtime (Geräte im Raum)
+  // 2) Supabase Realtime (Leitstand auf einem anderen Gerät)
   try {
     const { supabase } = await import("@/integrations/supabase/client");
     if (z.code !== code) return; // inzwischen gewechselt
     kanal = supabase.channel(`kurs-live:${code}`, { config: { presence: { key: clientId }, broadcast: { self: false } } });
-    // Jeder Klick kommt per Broadcast (schnell); Presence trägt den Stand für spät Dazukommende.
+    // Jeder Klick kommt per Broadcast (schnell); Presence trägt den Stand für einen spät geöffneten Leitstand.
     kanal.on("broadcast", { event: "stand" }, ({ payload }) => standUebernehmen(payload as LiveStand));
     kanal.on("presence", { event: "sync" }, () => {
-      const alle = Object.values(kanal?.presenceState() ?? {}).flat() as unknown as { rolle?: LiveRolle; stand?: LiveStand }[];
+      const alle = Object.values(kanal?.presenceState() ?? {}).flat() as unknown as { rolle?: string; stand?: LiveStand }[];
       const leitung = alle.filter((p) => p.rolle === "leitung" && p.stand).sort((a, b) => b.stand!.ts - a.stand!.ts)[0];
-      setze({ teilnehmende: alle.filter((p) => p.rolle === "teilnehmer").length });
       standUebernehmen(leitung?.stand);
     });
     kanal.subscribe(async (status) => {
@@ -179,7 +182,7 @@ async function verbinden() {
         setze({ verbindung: bc ? "lokal" : "aus" });
       }
     });
-    if (token && (rolle === "leitung" || rolle === "leitstand")) {
+    if (token) {
       steuer = supabase.channel(`kurs-steuer:${code}:${token}`, { config: { broadcast: { self: false } } });
       steuer.on("broadcast", { event: "befehl" }, ({ payload }) => befehlEmpfangen(payload as Befehl & { token: string }));
       steuer.subscribe();
@@ -217,34 +220,26 @@ export function starteLeitung(code: string = KURS_CODE) {
     token: weiter?.token ?? zufall(12),
     rolle: "leitung",
     stand: weiter?.stand ?? null,
-    teilnehmende: 0,
   });
   speichern();
   void verbinden();
 }
 
-export function beitreten(code: string, rolle: Exclude<LiveRolle, "leitung">, token?: string) {
+/** Leitstand: mit Code und Token aus dem Leitstand-Link verbinden. */
+export function leitstandVerbinden(code: string, token: string) {
   const c = normiereCode(code);
-  if (!c) return;
-  const alt = lesen(rolle);
-  setze({ code: c, rolle, token: token ?? null, stand: null, teilnehmende: 0, folgen: alt?.folgen ?? true });
+  if (!c || !token) return;
+  setze({ code: c, rolle: "leitstand", token, stand: null });
   speichern();
   void verbinden();
 }
 
-export function verlassen() {
-  const rolle = z.rolle;
-  trennen();
-  setze({ code: null, rolle: null, token: null, verbindung: "aus", stand: null, teilnehmende: 0 });
-  speichern(rolle);
-}
-
-/** Nach einem Neuladen die letzte Sitzung wieder aufnehmen (Teilnehmende; der Leitstand auf seiner Seite). */
-export function wiederaufnehmen(rolle: Exclude<LiveRolle, "leitung"> = "teilnehmer") {
+/** Nach einem Neuladen den Leitstand wieder verbinden. */
+export function leitstandWiederaufnehmen() {
   if (z.code) return;
-  const alt = lesen(rolle);
-  if (!alt?.code || !alt.rolle) return;
-  setze({ code: alt.code, rolle: alt.rolle, token: alt.token ?? null, folgen: alt.folgen ?? true });
+  const alt = lesen("leitstand");
+  if (!alt?.code || alt.rolle !== "leitstand" || !alt.token) return;
+  setze({ code: alt.code, rolle: "leitstand", token: alt.token });
   void verbinden();
 }
 
@@ -257,7 +252,7 @@ function presenceSpaeter() {
   }, 1500);
 }
 
-/** Nur Leitung: Stand ändern und an alle verteilen. */
+/** Nur Leitung: Stand ändern und an den Leitstand verteilen. */
 export function setzeStand(teil: Partial<Omit<LiveStand, "ts" | "station" | "stationSeit">>) {
   if (z.rolle !== "leitung") return;
   const basis: LiveStand = z.stand ?? { folie: 1, schritt: 0, modus: "folie", station: stationFuerFolie(1).id, stationSeit: Date.now(), ts: 0 };
@@ -290,11 +285,6 @@ export function aufBefehl(h: (b: Befehl) => void) {
   };
 }
 
-export function setzeFolgen(an: boolean) {
-  setze({ folgen: an });
-  speichern();
-}
-
 export function leitstandLink(): string | null {
   if (!z.code || !z.token) return null;
   return `${window.location.origin}/kurs/leitstand#c=${z.code}&t=${z.token}`;
@@ -305,8 +295,6 @@ export function lokaleLeitung(): { code: string; token: string } | null {
   const l = lesen("leitung");
   return l?.code && l.token ? { code: l.code, token: l.token } : null;
 }
-
-export const teilnahmeLink = () => `${window.location.host}/live`;
 
 /* ───────────── React ───────────── */
 

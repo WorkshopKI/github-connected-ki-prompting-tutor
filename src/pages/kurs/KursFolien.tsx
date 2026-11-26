@@ -1,40 +1,49 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowRight, ChevronLeft, ChevronRight, LocateFixed, Radio } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { KursLayout } from "@/components/kurs/KursLayout";
 import { Button } from "@/components/ui/button";
 import { FolieBild, useVorladen } from "@/components/kurs/live/FolieBild";
 import { KursAblauf } from "@/components/kurs/live/KursAblauf";
+import { OptionalBadge } from "@/components/kurs/OptionalBadge";
+import { TabLink } from "@/components/kurs/TabLink";
 import { ROUTES } from "@/lib/constants";
-import { useKursLive } from "@/lib/kursLive";
+import { merkePosition, useZuletzt } from "@/lib/kursPosition";
 import { FOLIEN_ANZAHL } from "@/data/kurs/folien";
-import { blockLabel, linkFuerFolie, naechsteStation, stationFuerFolie } from "@/data/kurs/fahrplan";
+import { TYP_LABEL, folienLabel, ist_mitmach, linkFuerFolie, naechsteStation, stationById, stationFuerFolie, stationKurztitel, themaLabel } from "@/data/kurs/fahrplan";
+
+const begrenzt = (n: number) => Math.min(FOLIEN_ANZAHL, Math.max(1, n));
 
 /**
- * Folien für Teilnehmende. Live: läuft mit der Kursleitung mit (gleicher Aufbauschritt);
- * zurückblättern geht jederzeit, „Zur aktuellen Folie“ springt wieder mit.
- * Ohne Live-Sitzung: alle Folien vollständig zum Nachlesen.
+ * Folien für Teilnehmende, meist in einem eigenen Tab neben der App. Sie blättern selbst
+ * (der Live-Sync ist seit 26.11.2026 entfernt). Über der Folie steht dieselbe Lage wie in der
+ * Fußzeile am Beamer; „Zur Übung“ öffnet die Übung im App-Tab, die Folien bleiben stehen.
  */
 export default function KursFolien() {
-  const live = useKursLive();
+  const zuletzt = useZuletzt();
   const [params, setParams] = useSearchParams();
   const ausLink = Number(params.get("f")) || 0;
-  const [eigene, setEigene] = useState<number>(ausLink || 1);
-  const [mitlaufen, setMitlaufen] = useState(!ausLink);
+  // Ohne Link dort weiter, wo man zuletzt war (Folie oder Station aus dem App-Tab).
+  const [nr, setNr] = useState<number>(() => begrenzt(ausLink || zuletzt?.folie || stationById(zuletzt?.station)?.folien[0] || 1));
 
-  const istLive = live.rolle === "teilnehmer" && !!live.stand;
-  const folgtLive = istLive && mitlaufen;
-  const nr = folgtLive ? live.stand!.folie : eigene;
-  const schritt = folgtLive ? live.stand!.schritt : undefined;
+  // Link aus dem App-Tab (?f=44) springt zur Folie, auch wenn der Folien-Tab schon offen ist.
+  useEffect(() => {
+    if (ausLink) setNr(begrenzt(ausLink));
+  }, [ausLink]);
+
   const station = stationFuerFolie(nr);
   const naechste = naechsteStation(station);
   const link = linkFuerFolie(nr);
-  useVorladen(nr, schritt ?? 0, 1);
+  const mitmach = ist_mitmach(station);
+  useVorladen(nr, 0, 1);
+
+  useEffect(() => {
+    merkePosition(station.id, nr);
+  }, [station.id, nr]);
 
   const gehe = (n: number) => {
-    const z = Math.min(FOLIEN_ANZAHL, Math.max(1, n));
-    setEigene(z);
-    setMitlaufen(false);
+    const z = begrenzt(n);
+    setNr(z);
     setParams({ f: String(z) }, { replace: true });
   };
 
@@ -52,27 +61,25 @@ export default function KursFolien() {
   return (
     <KursLayout>
       <div className="space-y-4">
-        {/* Kompakter Kopf: eine Zeile, damit die Folie möglichst groß ist */}
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        {/* Kompakter Kopf: Lage wie am Beamer, damit die Folie möglichst groß ist */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <h1 className="font-serif text-2xl font-semibold">Folien</h1>
-          <span className="eyebrow">{blockLabel(station)}</span>
-          <span className="text-sm text-muted-foreground">
-            {istLive ? (mitlaufen ? "läuft live mit der Kursleitung" : "du blätterst selbst") : "zum Nachlesen"}
+          <span className="inline-flex items-center gap-1.5 text-sm font-semibold">
+            <MapPin className="h-4 w-4 text-brand-ink" strokeWidth={1.75} />
+            {themaLabel(station)}
           </span>
-          {!live.code && (
-            <Button asChild variant="outline" size="sm" className="ml-auto self-center">
-              <Link to={ROUTES.LIVE}>
-                <Radio className="mr-2 h-4 w-4" strokeWidth={1.75} /> Live beitreten
-              </Link>
-            </Button>
-          )}
+          <span className="inline-flex flex-wrap items-center gap-1.5 text-sm">
+            <span className="rounded bg-brand-soft px-1.5 py-0.5 text-xs font-semibold text-brand-soft-ink">{TYP_LABEL[station.typ]}</span>
+            {stationKurztitel(station)}
+            {station.optional && <OptionalBadge />}
+          </span>
         </div>
 
         <div className="grid gap-3">
           <div className="overflow-hidden rounded-lg border border-border">
-            <FolieBild nr={nr} schritt={schritt} wichtig />
+            <FolieBild nr={nr} wichtig />
           </div>
-          {/* Steuerleiste in einer Zeile: blättern · Position · Als Nächstes · Aktionen */}
+          {/* Steuerleiste in einer Zeile: blättern · Position · Als Nächstes · zur Übung */}
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <Button variant="outline" size="icon" onClick={() => gehe(nr - 1)} disabled={nr <= 1} aria-label="Vorherige Folie">
               <ChevronLeft className="h-4 w-4" />
@@ -89,31 +96,33 @@ export default function KursFolien() {
                 className="min-w-0 flex-1 truncate-safe px-2 text-left text-muted-foreground hover:text-foreground"
                 title={`Zu Folie ${naechste.folien[0]}`}
               >
-                Als Nächstes: {naechste.titel} · ab Folie {naechste.folien[0]}
+                Als Nächstes: {stationKurztitel(naechste)} · ab Folie {naechste.folien[0]}
               </button>
             )}
-            <span className="ml-auto inline-flex flex-wrap gap-2">
-              {istLive && !mitlaufen && (
-                <Button onClick={() => setMitlaufen(true)}>
-                  <LocateFixed className="mr-2 h-4 w-4" strokeWidth={1.75} /> Zur aktuellen Folie
-                </Button>
-              )}
-              {link !== ROUTES.LIVE && (
-                <Button asChild variant={istLive && !mitlaufen ? "outline" : "default"}>
-                  <Link to={link}>
-                    In der App öffnen <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.75} />
-                  </Link>
-                </Button>
-              )}
-            </span>
+            <TabLink
+              to={mitmach ? station.pfad : link}
+              tab="app"
+              title="Öffnet im App-Tab, die Folien bleiben hier offen"
+              className={
+                mitmach
+                  ? "ml-auto inline-flex h-10 items-center gap-2 rounded-md bg-primary px-4 font-semibold text-primary-foreground hover:bg-primary-deep"
+                  : "ml-auto inline-flex h-10 items-center gap-2 rounded-md border border-input bg-card px-4 font-semibold hover:bg-accent"
+              }
+            >
+              {mitmach ? `Zur ${station.typ === "gruppe" ? "Gruppenarbeit" : "Übung"}` : "In der App öffnen"}
+              <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+            </TabLink>
           </div>
+          <p className="text-xs text-ink-subtle">
+            {folienLabel(station)} gehören zu „{stationKurztitel(station)}“. Links öffnen den App-Tab, die Folien bleiben hier stehen. Blättern auch mit ← →.
+          </p>
         </div>
 
         <section aria-labelledby="ablauf" className="space-y-3">
           <h2 id="ablauf" className="text-xl font-semibold">
             Ablauf
           </h2>
-          <KursAblauf aktiv={station.id} live={istLive ? live.stand!.station : undefined} onWahl={(s) => gehe(s.folien[0])} />
+          <KursAblauf aktiv={station.id} onWahl={(s) => gehe(s.folien[0])} />
         </section>
         <p className="text-sm text-muted-foreground">
           Für die Kursleitung:{" "}
